@@ -29,6 +29,9 @@ def synchtml(url,path):
         return open(path).read()
     else:
         html = readurl(url)
+        if '<title>(access denied)' in html:
+            html = ''
+            print >>sys.stderr, "access denied for %s" % page
         writefile(path, html)
         return html
 
