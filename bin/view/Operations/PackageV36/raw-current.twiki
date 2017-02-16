@@ -1,0 +1,164 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;VO Packages&quot; }%*
+
+---+ v36
+
+---++ SGVO Added
+
+[[https://ticket.grid.iu.edu/goc/viewer?id=10242][Ticket]]
+
+---+++ vomses file Addition
+&lt;verbatim&gt;
+&quot;suragrid&quot; &quot;voms.hpcc.ttu.edu&quot; &quot;15003&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=http/voms.hpcc.ttu.edu&quot; &quot;suragrid&quot;
+&lt;/verbatim&gt;
+
+
+---+++ edg_mkgridmap.conf Addition
+&lt;verbatim&gt;
+#USER-VO-MAP suragrid SURAGrid - 46 - Alan Sill (alan.sill@ttu.edu)
+group vomss://voms.hpcc.ttu.edu:8443/voms/suragrid suragrid
+&lt;/verbatim&gt;
+
+
+---+++ GUMS Config Addition
+&lt;verbatim&gt;
+&lt;!-- 46 SURAGrid --&gt;
+&lt;groupMapping name=&#39;suragrid&#39; accountingVo=&#39;suragrid&#39; accountingDesc=&#39;SURAGrid&#39;&gt;
+     &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+     url=&#39;https://voms.hpcc.ttu.edu:8443/voms/suragrid/services/VOMSAdmin&#39;     
+     persistenceFactory=&#39;mysql&#39;     
+     name=&#39;suragrid&#39;      
+     voGroup=&quot;/suragrid&quot;     
+     sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;     sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;     
+     matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&#39;true&#39; /&gt;     
+    &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39; 
+     groupName=&#39;suragrid&#39; /&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Plus added suragrid to hostGroup className.
+
+---+++ UNIX Accounts
+Create: suragrid
+
+
+---++ CDF Change
+
+[[https://ticket.grid.iu.edu/goc/viewer?id=10284][Ticket]]
+
+---+++ GUMS Template Addition
+&lt;verbatim&gt;
+&lt;groupMapping name=&quot;cdf-fnal&quot; accountingVo=&quot;cdf&quot; accountingDesc=&quot;CDF&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot;
+    url=&quot;https://voms.fnal.gov:8443/voms/cdf/services/VOMSAdmin&quot;
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;cdf-fnal&quot; 
+    voGroup=&quot;/cdf&quot;
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot;
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot;
+    groupName=&quot;cdf&quot;/&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Plus added cdf-fnal to hostGroup className. 
+
+---++ CSIU Capitalization Fix
+
+---+++ GUMS Configuration Change
+In CSIU VO 
+&lt;verbatim&gt;
+     voGroup=&quot;/csiu&quot;
+&lt;/verbatim&gt;
+to
+&lt;verbatim&gt;
+     voGroup=&quot;/CSIU&quot;
+&lt;/verbatim&gt;
+
+---++ GM2 and MAP Fermigrid !SubVO Added (Next VO Package Release)
+
+[[https://ticket.grid.iu.edu/goc/viewer?id=10271][Ticket]] and [[https://ticket.grid.iu.edu/goc/viewer?id=10273][Ticket]]
+
+&lt;verbatim&gt;
+&lt;groupMapping name=&quot;map&quot; accountingVo=&quot;map&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; 
+name=&quot;map&quot; voGroup=&quot;/fermilab/map&quot; 
+sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;map&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;gm2&quot; accountingVo=&quot;gm2&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; 
+name=&quot;gm2&quot; voGroup=&quot;/fermilab/gm2&quot; 
+sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;gm2&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;!-- Fermilab subgroup Production roles below this --&gt;
+
+&lt;groupMapping name=&quot;map-production&quot; accountingVo=&quot;map&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; 
+name=&quot;map-production&quot; voGroup=&quot;/fermilab/map&quot; voRole=&quot;Production&quot; 
+sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;mappro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;gm2-production&quot; accountingVo=&quot;gm2&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; 
+name=&quot;gm2-production&quot; voGroup=&quot;/fermilab/gm2&quot; voRole=&quot;Production&quot; 
+sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;gm2pro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;mapana&quot; accountingVo=&quot;map&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; 
+name=&quot;mapana&quot; voGroup=&quot;/fermilab/map&quot; voRole=&quot;Analysis&quot; 
+sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;mapana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;gm2ana&quot; accountingVo=&quot;gm2&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; 
+name=&quot;gm2ana&quot; voGroup=&quot;/fermilab/gm2&quot; voRole=&quot;Analysis&quot; 
+sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;gm2ana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;mapgli&quot; accountingVo=&quot;map&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; 
+name=&quot;mapgli&quot; voGroup=&quot;/fermilab/map&quot; voRole=&quot;pilot&quot; 
+sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;mapgli&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;gm2gli&quot; accountingVo=&quot;gm2&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; 
+name=&quot;gm2gli&quot; voGroup=&quot;/fermilab/gm2&quot; voRole=&quot;pilot&quot; 
+sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;gm2gli&quot;/&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Plus added gm2, map, gm2-production, map-production, gm2ana, mapana, gm2gli, mapgli to hostGroup className. 
+
+---+++ UNIX Accounts
+Create: map, gm2, mappro, gm2pro, mapana, gm2ana, mapgli, gm2gli
+
+---++ VO Package Files Location
+
+   * For ITB VO Files see:
+
+http://software-itb.grid.iu.edu/pacman/tarballs/vo-package/
+
+   * For Production VO Files see:
+
+http://software.grid.iu.edu/pacman/tarballs/vo-package/
+
+-- Main.RobQ - 26 Apr 2011

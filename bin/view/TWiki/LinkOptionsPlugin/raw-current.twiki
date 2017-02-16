@@ -1,0 +1,109 @@
+---+!! &lt;nop&gt;%TOPIC%
+&lt;!--
+   Contributions to this TWiki plugin are appreciated. Please update the plugin page at
+   http://twiki.org/cgi-bin/view/Plugins/LinkOptionsPlugin or provide feedback at
+   http://twiki.org/cgi-bin/view/Plugins/LinkOptionsPluginDev.
+   If you are a TWiki contributor please update the plugin in the SVN repository.
+--&gt;
+&lt;sticky&gt;&lt;div style=&quot;float:right; background-color:#EBEEF0; margin:0 0 20px 20px; padding: 0 10px 0 10px;&quot;&gt;
+%TOC{title=&quot;Page contents&quot;}%
+&lt;/div&gt;&lt;/sticky&gt;
+%SHORTDESCRIPTION%
+
+---++ Introduction
+
+This plugin adds one third block to _&quot;Forced Specific Links&quot;_ in the format: %BR%
+==[&lt;nop&gt;[URL or &lt;nop&gt;TopicName][Link Text][Option:value]]==
+
+Some new options and CSS sets can be used simultaneously, separated by a pipe (|): %BR%
+==[&lt;nop&gt;[URL or &lt;nop&gt;TopicName][Link Text][Option1:value1|Option2:value2|...|OptionN:valueN]]==
+
+---++ Syntax Rules
+
+|  *Options*  |  *Values*  |  *Coment*  |
+|  ==NewWin==  |  %GREEN%X%ENDCOLOR%x%GREEN%Y%ENDCOLOR%  | %GREEN%X%ENDCOLOR% and %GREEN%Y%ENDCOLOR% must be integer values. This option will open a new window with no menu, butons, or url bar, but it well have status bar |
+|  ==Name==  |  %GREEN%Name%ENDCOLOR%  | %GREEN%Name%ENDCOLOR% can be a target name (using fames) or the name of a new window |
+|  ==Title==  |  %GREEN%Text%ENDCOLOR%  | A text to be a hint for the link |
+|  ==Class==  |  %GREEN%Name%ENDCOLOR%  | The name of a class (to define CSS style) |
+|  ==ID==  |  %GREEN%Name%ENDCOLOR%  | This %GREEN%Name%ENDCOLOR% must be unique on the web page |
+|  ==Skin==  |  %GREEN%&lt;nop&gt;SkinName%ENDCOLOR%  | %GREEN%SkinName%ENDCOLOR% must be a valid TWiki skin |
+|  ==CSS==  |  %GREEN%CSS Code%ENDCOLOR%  | %GREEN%CSS Code%ENDCOLOR% is any valid CSS property and value that would apply to hyper links. You can insert as many properties as you like. For Example, ==color== is a CSS property, and you can put values like =%GREEN%#00A0F0%ENDCOLOR%= or =%GREEN%red%ENDCOLOR%=. See more colors in %TWIKIWEB%.StandardColors. See more in the [[http://www.w3.org/TR/REC-CSS2/cover.html#minitoc][CSS2 Specification in the W3C Web Site]] for CSS Link appropriate properties. |
+
+The option names are case &lt;strong&gt;&lt;em&gt;in&lt;/em&gt;&lt;/strong&gt;sensitive for LinkOptionsPlugin or !CSS, but the !W3C defines that !CSS properties should be in lower case and it is important to code validation. The LinkOptionsPlugin options will work any way you prefer.
+
+---++ Examples
+
+The text in Red:
+
+   * *Code:* =[&lt;nop&gt;[WebHome][Start Page][Color:red|Title:Go to the Start!]]=
+   * *Expand to:* &lt;a href=&quot;WebHome&quot; title=&quot;Go to the Start!&quot; style=&quot;color:red;&quot;&gt;Start Page&lt;/a&gt;
+      * *If installed:* [[WebHome][Start Page][Color:red|Title:Go to the Start!]]
+
+(Stop the mouse over the link to see the title)
+
+Opening in other target:
+
+   * *Code:* =[&lt;nop&gt;[http://www.gnu.org][the GNU web site][Name:_blank|Class:myclass|ID:myid]]=
+   * *Expand to:* &lt;a href=&quot;http://www.gnu.org&quot; class=&quot;myclass&quot; id=&quot;myid&quot; target=&quot;_blank&quot;&gt;the GNU web site&lt;/a&gt;
+      * *If installed:* [[http://www.gnu.org][the GNU web site][Name:_blank|Class:myclass|ID:myid]]
+(=_blank= is no target. It will Open in a new window)
+
+Opening in a new window (with options):
+
+   * *Code:* =[&lt;nop&gt;[%SYSTEMWEB%.TWikiVariables][See the TWiki Variables][NewWin:600x500|Name:winTWikiVariables|Skin:plain]]=
+   * *Expand to:* &lt;a href=&quot;%SCRIPTURL{view}%/%SYSTEMWEB%/TWikiVariables?skin=plain&quot; target=&quot;winTWikiVariables&quot;\
+ onclick=&quot;open(&#39;%SCRIPTURL{view}%/%SYSTEMWEB%/TWikiVariables?skin=plain&#39;,\
+ &#39;winTWikiVariables&#39;, &#39;titlebar=0,width=600,height=500,resizable,scrollbars&#39;); return false;&quot;&gt;See the TWiki Variables&lt;/a&gt;
+      * *If installed:* [[%SYSTEMWEB%.TWikiVariables][See the TWiki Variables][NewWin:600x500|Name:winTWikiVariables|Skin:plain]]
+
+Crazy CSS use:
+
+   * *Code:* =[&lt;nop&gt;[&lt;nop&gt;WebHome][Crazy Link!][color:green|background-color:#FFF0A0|border:3px dotted #FFC030|text-decoration:none|letter-spacing:10px|padding:4px|font-size:15px|font-weight:900]]=
+   * *Expand to:* &lt;a  style=&quot;color:green; background-color:#FFF0A0; border:3px dotted #FFC030; text-decoration:none; letter-spacing:10px; padding:4px; font-size:15px; font-weight:900; &quot; class=&quot;twikiLink&quot; href=&quot;/twiki/bin/view/TWiki/WebHome&quot;&gt;Crazy Link!&lt;/a&gt;
+      * *If installed:* [[WebHome][Crazy Link!][color:green|background-color:#FFF0A0|border:3px dotted #FFC030|text-decoration:none|letter-spacing:10px|padding:4px|font-size:15px|font-weight:900]]
+
+---++ Plugin Settings
+
+Plugin settings are stored as preferences variables. To reference a plugin setting write ==%&lt;nop&gt;&amp;lt;plugin&amp;gt;_&amp;lt;setting&amp;gt;%==, i.e. ==%&lt;nop&gt;INTERWIKIPLUGIN_SHORTDESCRIPTION%==
+
+   * One line description, shown in the %SYSTEMWEB%.TextFormattingRules topic:
+      * Set SHORTDESCRIPTION = Extends the _&quot;Forced Specific Links&quot;_ syntax ==[&lt;nop&gt;[URL or &lt;nop&gt;TopicName][Link Text][Options]]==
+
+   * Set DEBUG to 1 to get debug messages in data/debug.txt. Default: 0
+      * Set DEBUG = 0
+
+---++ Plugin Installation Instructions
+
+__Note:__ You do not need to install anything on the browser to use this plugin. The following instructions are for the administrator who installs the plugin on the server where TWiki is running. 
+
+   * Download the ZIP file from the repository on twiki.org (see below)
+   * Unzip ==%TOPIC%.zip== in your twiki installation directory. Content:
+     | *File:* | *Description:* |
+     | ==data/TWiki/%TOPIC%.txt== | Plugin topic |
+     | ==data/TWiki/%TOPIC%.txt,v== | Plugin topic repository |
+     | ==lib/TWiki/Plugins/%TOPIC%.pm== | Plugin Perl module |
+   * Visit =configure= in your TWiki installation, and enable the plugin in the {Plugins} section.
+   * Test if the installation was successful.
+     you should see rendered dates on the [[#Examples][example session]].
+
+---++ Plugin Info
+
+|  Plugin Author: | TWiki:Main.AurelioAHeckert |
+|  Copyright: | &amp;copy; 2005-2006, TWiki:Main.AurelioAHeckert &lt;br /&gt; &amp;copy; 2006-2010 TWiki:TWiki.TWikiContributor |
+|  Plugin Version: | 2010-12-11 (v1.1) |
+|  Change History: | &lt;!-- versions below in reverse order --&gt;&amp;nbsp; |
+|  2010-12-11: | TWikibug:Item6530: Doc improvements, changing TWIKIWEB to SYSTEMWEB -- TWiki:Main.ScottGutman |
+|  27 Jul 2006 | (v1.001) - TWiki:Main.AntonioTerceiro: Dakar compatibility |
+|  29 Mar 2005 | Initial version |
+|  TWiki Dependency: | $TWiki::Plugins::VERSION 1.024 |
+|  CPAN Dependencies: | none |
+|  Other Dependencies: | none |
+|  Perl Version: | 5.005 |
+|  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
+|  TWiki:Plugins/Benchmark: | %SYSTEMWEB%.GoodStyle 100%, %SYSTEMWEB%.FormattedSearch 100%, %TOPIC% 100% |
+|  Plugin Home: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC% |
+|  Feedback: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC%Dev |
+|  Appraisal: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC%Appraisal |
+
+__Related Topics:__ %SYSTEMWEB%.TWikiPreferences, %SYSTEMWEB%.TWikiPlugins
+

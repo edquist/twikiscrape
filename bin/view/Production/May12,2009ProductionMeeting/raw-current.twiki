@@ -1,0 +1,135 @@
+-- Main.DanFraser - 05 May 2009
+---++ Action Items
+   * What should OSG be preparing for the STEP09 drill coming later this month
+      * %BLUE% Consensus is that OSG does not need to make special preparations for now.%ENDCOLOR%
+   * Still sorting out LIGO &amp; Nebraska (Dan, Kent, Burt, Britta, Brian)
+---++ Attendees:
+   * Xin, Britta, Mats, Brian, Suchandra, Marco, Burt, Rob Q., Mine, Chander, Dan
+---++ CMS (Burt)
+   * We ran only 95k hours/day.  This is a big decrease from last week.
+      * Gap in workflow requests
+      * We are actively solving with bottlenecks in the CMS data registration system
+   * Job efficiency: 94%.  CPU/wallclock efficiency was 71%.
+   * LIGO @ UNL followup: we provided data back to LIGO on the circumstances regarding the death spiral at Nebraska&#39;s CE.  Rob Engel identified one issue with the interaction between LIGO&#39;s submitter and GRAM status updates that could lead to overload.  Solution is not yet understood and I have not yet had time to correlate his findings with the UNL gatekeeper logs.
+   * STEP09 is coming: this is a serious of functional tests to get WLCG as close to data-taking as possible
+      * We will be ramping up analysis using glide-in technology on the OSG Tier 2s.  This depends on stability of CEs, SEs, and BDII.
+
+---++ Atlas (Armen &amp; Xin)
+
+   * job statistics for last week. 
+      * Last week there were ~4000 running jobs all the time on USATLAS sites, lower than the normal number of ~6000. Because of the site issues mentioned below. 
+      * Gratia report: USATLAS ran 880K jobs, with CPU/Walltime ratio of 80.3%. 
+      * PanDA world-wide production report (real jobs):
+         * completed successfully 478,682 managed MC production, validation and reprocessing jobs
+         * average  ~68,383 jobs per day
+         * failed   123,608  jobs
+         * average efficiency: 79.5% for jobs and 94.9% for walltime
+   * Site issues
+         * Several T2 sites remained down last week, for upgrading to newer versions of DDM software (DQ2), SRM server and dCache. 
+   * STEP09 
+         * Purpose: try to create an as real a data taking condition as possible, with all parts of job processing and data movements system involved, including production, reconstruction, user analysis. All steps will involve tape staging. T0/T1/T2 sites will also participate. 
+         * All LHC VOs will do the exercise together, to test resource sharing. 
+         * Schedule : Last week of May is setup step, first two weeks of June will be running time.    
+   * Condor-G 
+         * After adding more sites to condor-g submission, slow sites with slow WAN slows down the whole condor-g grid manager, making BNL T1 sites only 50% utilized. 
+         * Condor team plans to improve this by starting a new grid manager for each site.  
+ 
+---++ LIGO (Britta)
+
+   * Current week&#39;s total usage: 2 users utilized 19 sites
+      * 18362 jobs total (17066 / 1296 = 92.9% success);
+      * 52669.9 wall clock hours total (47203.2 / 5466.6 = 89.6% success);
+
+   * Previous week&#39;s total usage: 3 users utilized 17 sites
+      * 10050 jobs total (5293 / 4757 = 52.7% success);
+      * 42749.0 wall clock hours total (37539.6 / 5209.4 = 87.8% success);
+
+   * E@H stats
+
+      * Recent Average Credit (RAC): 111,384.16742 (+30,000)
+      * E@H rank based on RAC: 9 (-2)
+      * E@H rank based on accumulated Credits: 38 (+1)
+   
+   * Job success rate up after removal of CIT_CMS_T2, SPRACE, MIT_CMS from submit list (CMS eviction)
+
+   * Reduced job submissions at all sites (high load on GK with GT2 submissions) 
+
+   * 05/07, 05/08 not running at
+
+      * ANTAEUS (high load)
+      * CIT_CMS_T2, SPRACE, MIT_CMS (CMS eviction)
+      * AGLT2, OUHEP_OSG (can&#39;t authenticate - GOC open/closed-- reduce load limit to 2)
+      * UmissHEP,  NYSGRID_CORNELL_NYS1 (down)
+
+   * 05/08 -- 05/11
+      * LIGO submit host down 
+
+   * Robert is working on code changes to deal with CMS job eviction
+
+---++ Site Coordination, Integration (Suchandra)
+---+++ Integration
+   * Planning still in progress for next cycle
+   * Some dCache testing is currently being run by Iwona and Suchandra, will give results/feedback to storage group
+   * The VTB and ITB ticketing will probably move to using the footprints system at the goc.
+---+++ Sites
+   * Marco will be surveying sites to get information on OSG 1.0.1 adoption and their plans to upgrade
+
+Checking by hand in !MyOSG (RSV status) the update status of the sites I noticed that OSG installed versions range from 0.6.0 to 1.0.1, with the majority of CEs at OSG 1.0.0.  The VDT version is not really correlated and there are plenty of VDT versions, from 1.6.1k, to 1.8.1b, to many 1.10.1_whole_alphabet.
+The report table ([[%ATTACHURL%/osg-upgrade-status-090512.xls][osg-upgrade-status-090512.xls]]) is attached and contains CEs currently reporting to RSV and classified as OSG sites in !MyOSG. 
+Some notes:  
+   * There are 9 CEs with OSG 1.0.1
+   * UNM_HPC has OSG 1.0.1 and VDT 1.10.1u (Rob Q reported that OSG 1.0.1 started with VDT 1.10.1v)
+   * There are 2 CEs with OSG 0.6.0 and 4 with 0.8.0
+
+---++ Engagement (Mats)
+
+
+------------------------------------------------------------------------
+     | VO             | # of Jobs | Wall Dur. | Cpu / Wall |      Delta
+------------------------------------------------------------------------
+  8  | engage         |     6,923 |    38,832 |       74.3 |         15
+
+
+Production problem: Strong thunderstorms brought down RENCI&#39;s machine
+room on Saturday, and broke the main UPS. Many of Trash/Engagement&#39;s
+infrastructure machines went offline. This included VOMRS/VOMS,
+engage-central (Trash/Engagement&#39;s top-level OSGMM/ReSS host, which does
+the site maintenance and verification), and our main submit host
+(engage-submit.renci.org). Systems are now back, but we think a scratch
+file system is not recoverable, so some outputs were lost.
+
+
+---++ Metrics (Brian)
+   * We now have a weekly &quot;installed capacity&quot; report set up, done by Karthik.  Waiting on OIMv2 for some of the inputs for the report.
+      * We don&#39;t have the transfer of installed capacity OSG-&gt;WLCG finalized; perhaps need to work with GOC on this?
+   * New &quot;Live Display&quot; of incoming Gratia records: http://gratia.fnal.gov/Files/osg_gratia_display/today/live_display.png
+   * Up to 14 sites are now reporting Gratia Transfer records; an alpha version of a Hadoop probe is running at Nebraska (developed by a local grad student).
+      * I&#39;d really like to see this working again at BNL; it stopped a few weeks ago.
+
+---++ Virtual Organizations Group (Abhishek)
+
+In midst of travel today. Will communicate with Dan offline later this week.
+
+No immediate or new production issues.
+
+---++ Grid Operations Center (Rob Q.)
+
+   * BDII Issues from Friday (Intermittent Connectivity 15:30 EDT to ~19:00 EDT) [[http://osggoc.blogspot.com/2009/05/bdii-instability.html][Notification]]
+   * BDII Maintenance Tomorrow and Thursday [[http://osggoc.blogspot.com/2009/05/osg-bdii-maintenance-wednesday-may-13.html][Wed Maintenance Notification]], [[http://osggoc.blogspot.com/2009/05/osg-bdii-maintenance-thursday-may-14.html][Thursday Maintenance]]
+   * Trouble Ticket Exchange Issues with FNAL [[https://twiki.grid.iu.edu/bin/view/Operations/TTExchange2009May12][Issues Report from Elizabeth]]
+   * OIMv2 Feedback is rolling in...
+      * Installed Capacity - Ken Bloom has played in OIM but not made it here yet, no word from Rob Gardner
+   * SLA for BDII [[https://twiki.grid.iu.edu/bin/view/Operations/BDIIServiceLevelAgreement][(Available Here)]] has been approved by Frank and Burt at CMS, is being sent on the Ian Fisk for final CMS sign off
+
+---++ Security (Mine)
+
+   * First drill was a success !!!! BNL was tested and they responded very well. We have not started grading yet. We will do once we test FNAL on 5/18.
+many thanks to GOC staff and Aashish. Aashish spent a lot of time to get the incident script to run on BNL. We get the script from EGEE and it
+did not run due to several problems such as web proxy problems, osg specific job submission different than egee, and etc.
+
+   * Security test and evaluation: almost done. had a sit-down with Rob and Fred. evaluated GOC services. first step: get a commercial certificate for CA distribution service. VDT is looking for ways to get rid of VDT CA distribution service. otherwise, they will also get a commercial cert. security team evaluated a few commercial CAs and chose Thawte or Verisign as candidates. they are distributed in SL4/5 and debian. they are not very expensive.
+
+   * VDT software distribution: work progress on how to securely distribute our software from VDT caches. a DOEgrids cert can be used for authN. for integrity, I tested pacball, a pacman fetaure that can check md5sums. but realized pacball is not updateable. Alain and I are still working on this
+
+   * DOEgrids risk assessment is complete. We completed the recovery plan. We started with the contingency plan. Contingency plan will include enforcing/testing/building recovery plans for high risk cases. We won&#39;t start implementing anything out of the blue. We can ask ESNet to build something, we can test some plans. if there would be big implementation, we will do that under STG guidance.
+

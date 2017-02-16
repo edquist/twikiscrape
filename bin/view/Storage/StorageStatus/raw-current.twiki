@@ -1,0 +1,100 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+
+This is an internal page for Doug Strain to keep track of what he is doing:
+
+---++ Ongoing tasks (from OSG Storage):
+
+High-level view:
+|Project|Task|Percentage FTE|Priority|Comments|
+|Support|osg-storage,GOC tickets|20%|High|Users should be high priority, mailing lists ~2-3 issues/week, Alain said could spend up to 50% of allocated .5 FTE|
+|Packaging|Many packages|40%|Medium-High|Between all the packages below, keeps me busy|
+|Testing|Fermicloud smoke test + test stand|15%|Medium|Test stand failing, drop it?|
+|Development|Bestman,probes,discovery tools|5%|Low|Spikes occasionally, Bestman scares me|
+|Documentation||20%-&gt;5%|Low|Big effort previously, but should ramp down|
+
+Detailed view:
+
+|Project|Task|Software|Owner|Comments|
+|Storage Software in VDT|Packaging, Configuration||||
+|||xrootd|Doug|Current: 3.1.1|
+|||!BeStMan|Doug|Current: 2.2.0|
+|||Hadoop+HDFS plugins|Doug| Current 0.20|
+|||!GridFTP|Doug+Matyas||
+|||xrootd-dsi|Doug||
+|||srm-clients|Doug|fermi,lbnl,lcg-utils|
+|||gridftp transfer probe|Neha?||
+|||dcache (storage+transfer) probe|Neha||
+|||hadoop (storage+transfer) probe|Neha?||
+|||xrootd (storage+transfer) probe|Neha?||
+||Also development|RSV probes|Doug||
+||Also development|Pigeon probes|Doug|untested and unpackaged|
+||Also development|discovery tools|Doug|in osg-client, needs sl6|
+|||CEMon|Doug,Matyas|CEmon for storage, etc|
+|Development||||
+|||RSV probes|Doug||
+|||Pigeon probes|Doug|untested and unpackaged|
+|||discovery tools|Doug|in osg-client, needs sl6|
+|||!BeStMan|Neha,Doug||
+|Testing|||All|Doug,Neha||
+||maintaining test stand|???|???||
+||developing test framework|Neha|||
+|Documentation|Write,maintain|general|Doug|Planning, reference,etc|
+|||Release Documentation|Doug|In good shape, reviewing still required|
+||Review, test|All|Neha||
+|Support||dcache,bestman,hadoop,xrootd,probes|OSG Software|Users should create GOC tickets|
+||GOC tickets||Doug||
+||osg-storage,osg-hadoop mailing list||Doug||
+|Misc|Support Triage,OSG Release|All||
+
+---++ Upcoming Tasks:
+
+   * Packaging
+      * pigeon tools (medium -&gt; low priority)
+      * xrootd 3.1.1 release
+      * !BeStMan dependency reduction: ongoing
+      * SL6 packages: discovery tools, BeStMan, other SE packages
+    * Open JIRA tickets: about 8-10
+    * Open GOC tickets: zero currently
+ 
+---++ Testing framework
+
+The following serves as internal notes to remind me of the existing test infrastructure and aid in determining the form of future testing effort.
+It is still in very rough format.
+
+Current test frameworks:
+   * Validation testing by Tanya (using static test stand)
+   * Stress testing by Haifeng Pi
+   * Java based web framework done by Neha
+   * RSV / pigeon probes by Doug
+
+Current testing matrix (from validation tests):
+   * bestman2_gateway_disk
+   * bestman2_gateway_hadoop
+   * bestman2_gateway_xrootd
+   * bestman_fullmode (drop?) [space reservation]
+   * xrootd with 2 clusters and &quot;global&quot; redirector with FRM
+   * dCache (only used to test third-party transfer)
+
+Each one should be tested:
+   * With static tokens (used by Atlas) &amp; Without static tokens   
+   * With clients lcg, fermi, and lbnl  (used to check with 
+   * third party transfers between each pair
+   * upgrade procedure
+
+Currently using:
+   * *Hadoop*: namenode gw018k0, secondary name-node+!GridFTP+!BeStMan gw018k1, data nodes: gw015k2, gw015k3, gw016k2, gw016k3, gw017k2, gw017k3, gw018k2, gw018k3
+   * Xrootd: Bestman gateway gw015k1, cluster: gw016k0 rdr, gw016k1, gw017k0, gw017k1 (gw014k1 global redirector)
+   * Bestman standalone without tokens:
+   * Bestman standalone with tokens:
+   * RSV / monitoring: gw014k0
+   * dCache: (not supported) gwdca06 dCache admin node, gwdca05 PNFS node, gwdca04 SRM, gwdca03 Dcap, GridFTP doors, gwdca02,gwdca01 pool node
+
+
+
+   * Bestman on disk: fg0x5 (going away), ?? fg7x5 (going away)
+   * Xrootd: cluster on fermicloud (going away)
+   * !BeStMan Stress test: some bare-metal in ITB ???fgitb315.fnal.gov:10443 (going away)
+
+-- Main.DouglasStrain - 24 Oct 2011
+

@@ -1,0 +1,72 @@
+---+ Package =TWiki::Prefs::PrefsCache=
+
+The PrefsCache package holds a cache of topics that have been read in, using
+the TopicPrefs class.  These functions manage that cache.
+
+We maintain 2 hashes of values:
+   * {locals} Contains all locals at this level. Locals are values that
+     only apply when the current topic is the topic where the local is
+     defined. The variable names are decorated with the locality where
+     they apply.
+   * {values} contains all sets, locals, and all values inherited from
+     the parent level
+
+As each cache level is built, the values are copied down from the parent
+cache level. This sounds monstrously inefficient, but in fact perl does
+this a lot better than doing a multi-level lookup when a value is referenced.
+This is especially important when many prefs lookups may be done in a
+session, for example when searching.
+
+
+%TOC%
+
+---++ ClassMethod *new* &lt;tt&gt;($prefs,$parent,$type,$web,$topic,$prefix)&lt;/tt&gt;
+
+Creates a new Prefs object.
+   * =$prefs= - controlling TWiki::Prefs object
+   * =$parent= - the PrefsCache object to use to initialise values from
+   * =$type= - Type of prefs object to create, see notes.
+   * =$web= - web containing topic to load from (required is =$topic= is set)
+   * =$topic= - topic to load from
+   * =$prefix= - key prefix for all preferences (used for plugins)
+If the specified topic is not found, returns an empty object.
+
+
+
+---++ ObjectMethod *finalise* &lt;tt&gt;($parent)&lt;/tt&gt;
+Finalise preferences in this cache, by freezing any preferences
+listed in FINALPREFERENCES at their current value.
+   * $parent = object that supports getPreferenceValue
+
+
+
+---++ ObjectMethod *loadPrefsFromTopic* &lt;tt&gt;($web,$topic,$keyPrefix)&lt;/tt&gt;
+
+Loads preferences from a topic. All settings loaded are prefixed
+with the key prefix (default &#39;&#39;).
+
+
+
+---++ ObjectMethod *loadPrefsFromText* &lt;tt&gt;($text,$meta,$web,$topic)&lt;/tt&gt;
+
+Loads preferences from text and optional metadata. All settings loaded
+are prefixed with the key prefix (default &#39;&#39;). If =$meta= is defined,
+then metadata will be taken from that object. Otherwise, =$text= will
+be parsed to extract meta-data.
+
+
+
+---++ ObjectMethod *insert* &lt;tt&gt;($type,$key,$val)&lt;/tt&gt;
+Adds a key-value pair of the given type to the object. Type is Set or Local.
+Callback used for the Prefs::Parser object, or can be used to add
+arbitrary new entries to a prefs cache.
+
+Note that attempts to redefine final preferences will be ignored.
+
+
+
+---++ ObjectMethod *stringify* &lt;tt&gt;($html,\%shown) -&gt; $text&lt;/tt&gt;
+Generate an (HTML if $html) representation of the content of this cache.
+
+
+

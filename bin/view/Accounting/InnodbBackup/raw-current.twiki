@@ -1,0 +1,117 @@
+&lt;table width=&quot;100%&quot;&gt;
+&lt;tr&gt;&lt;td valign=&quot;top&quot;&gt;
+&lt;/td&gt;
+&lt;td valign=&quot;top&quot;&gt;
+---+!! Gratia Backups
+%TOC%
+&lt;/td&gt;
+&lt;td valign=&quot;top&quot; align=&quot;right&quot; width=&quot;25%&quot;&gt;
+%TABLE{ sort=&quot;off&quot; dataalign=&quot;left&quot; tableborder=&quot;0&quot; cellpadding=&quot;1&quot; cellspacing=&quot;3&quot; headerbg=&quot;#F3EDE7&quot; databg=&quot;#F3EDE7&quot;}%
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+%STARTINCLUDE%
+
+---+ Database Backups
+
+---++ Stragegy
+
+To backup and restore the !MySQL database when using !InnoDB we have 3 possible levels depending on the uptime and recovery time requirement.
+
+---+++ Simplest
+
+The database are backed up locally using mysqldump.  To simplify the backup maintenance scheduling and recovery are done via [[http://mysqlbackup.zmanda.com/][Zmanda]]
+
+---+++ Higher availability.
+
+The database is replicated to a secondary node.  The replicated database is backed up via mysql dump which can be used to recover both
+the main and replicated database. This is the scheme in normal operation on the !FermiGrid Gratia DB systems.
+
+---+++ Lowest recovery time.
+
+The database is replicated to a secondary node.  The replicated database is backed up by shutting down the DB server and doing a cold
+copy of the file system.
+
+---++Implementation
+
+---+++ Backup
+
+On each reporting DB system,  the backups are driven by the script gratia_backup_cron.sh, producing a local backup using mysql-zrm which is then backed up to tape via the central !TiBS backup system.
+
+The local backup configurations are in /etc/mysql-zrm/[SchemaName]
+
+Note: We are not using the mysql-zrm scheduler directly in order to enforce the sequentially of the backups.
+
+In the Operations repository, =:ext:cvsuser@cdcvs.fnal.gov:/cvs/cd/fermigrid/gratia-ops/backup/=, there is a subdirectory =mysql-zrm= containing =mysql-zrm.conf= files for insertion or linkage into =/etc/mysql-zrm= or =/etc/mysql-zrm/&amp;lt;schema;&amp;gt;= as appropriate. In addition, there is a script =patch-mysql-zrm-backup= to be run each time the ZRM software is installed in order to improve the emails sent at the end of each backup.
+
+---+++ Recovery
+
+---++++ Simple reload of one of the schema:
+
+&lt;pre&gt;mysql-zrm --verbose --action restore --backup-set gratia_qcd --source-directory /test/zrm/gratia_qcd/_last_directory_ --tmpdir=/test/tmp&lt;/pre&gt;
+
+where /test/tmp has enough space to hold a copy of the backup files.
+
+---++++Full reload of the database
+
+This is intended to be used in case of total loss of the DB disks.
+
+   1. Create empty !MySQL database, add the usual users (reader, gratia).
+   1. Create the empty databases (fermi_osg, gratia_itb, gratia_osg_integration, gratia_qcd, fermi_itb, gratia, gratia_osg_daily, gratia_psacct)
+   1. Restore the data from the backups of each database (see above .....)
+   1. Catalyze the restoration of triggers and procedures by executing this SQL prior to starting the collector for recovery:%BR%&lt;verbatim&gt;update SystemProplist set cdr = 0 where BINARY car like &#39;%Version&#39;&lt;/verbatim&gt;
+
+---++ Installation and configuration of ZRM
+
+%STARTSECTION{name=&quot;InstallConfigureZRM&quot;}%
+
+See Documentation at http://mysqlbackup.zmanda.com/
+
+ZRM v1.2.1 is currently installed on gratia06.
+
+Obtain and download new versions from http://www.zmanda.com/download-zrm.php in RPM form. You may need to remove the existing ZRM RPMS with =rpm -e= first to avoid conflicts
+
+In the event of a non-optimal upgrade, downgrade by the normal RPM method of either removing the newer RPM before installing the older one; or by adding the =--oldpackage= option to the rpm upgrade command.
+
+Location of configuration files: /etc/mysql_zrm/*/mysql-zrm.conf
+
+Performance info: &lt;pre&gt;mysql-zrm-reporter --show backup-performance-info --destination /test/zrm/&lt;/pre&gt;
+
+Backup &#39;now&#39;:
+
+&lt;pre&gt;mysql-zrm-scheduler --now --backup-set dailyrun --backup-level 0&lt;/pre&gt;
+
+Get information about the backups:
+
+&lt;pre&gt;mysql-zrm --action list --backup-set gratia_pcanal&lt;/pre&gt;
+
+Restore:
+
+&lt;pre&gt;mysql-zrm --verbose --action restore --backup-set itb_innodb --source-directory /test/zrm/itb_innodb/20080214144217/ --tmpdir=/test/tmp&lt;/pre&gt;
+
+where /test/tmp has enough space to hold a copy of the backup files.
+
+
+Changes from the default zrm configuration file:
+&lt;pre&gt;
+# Request explicitly full backups
+backup-level=0
+# Select where to write the backup file
+destination=/backup/mysqldb/zrm
+# Select how many days (D) to keep the backup file
+retention-policy=3D
+# Request explicit compression
+compress=1
+# Select which schema to backup (eg):
+databases=gratia_qcd
+# Select the DB user
+user=&quot;...&quot;
+password=&quot;....&quot;
+# Select where to send result emails, use an empty string for no emails at all.
+mailto=&quot;gratia-root@fnal.gov&quot;
+# Tell ZRM to compress on-the-fly (v2.0 and above)
+compress-mysqldump-onthefly=1
+
+%ENDSECTION{name=&quot;InstallConfigureZRM&quot;}%
+
+-- Main.ChrisGreen - 22 Sep 2008
+
+-- Main.PhilippeCanal - 27 Feb 2008

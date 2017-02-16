@@ -1,0 +1,62 @@
+%TMPL:INCLUDE{&quot;view&quot;}%
+
+
+%TMPL:DEF{&quot;content&quot;}%
+---+ %MAKETEXT{&quot;Create New Topic in [_1] Web&quot; args=&quot;&lt;nop&gt;%BASEWEB%&quot;}%
+%TMPL:P{&quot;formstartstep&quot;}%
+%TMPL:P{&quot;topicnamestep&quot;}%
+%TMPL:P{&quot;topicparentstep&quot;}%
+%TMPL:P{&quot;topictemplatestep&quot;}%
+%TMPL:P{&quot;submitstep&quot;}%
+%TMPL:P{&quot;formendstep&quot;}%
+%TMPL:END%
+
+
+%{ do not show the following elements }%
+%TMPL:DEF{&quot;topicaction&quot;}%%TMPL:END%
+%TMPL:DEF{&quot;topicinfo&quot;}%%TMPL:END%
+%TMPL:DEF{&quot;toolbar&quot;}%%TMPL:END%
+%TMPL:DEF{&quot;topicpathinfo&quot;}%%TMPL:END%
+%TMPL:DEF{&quot;breadcrumb&quot;}%%TMPL:END%
+%TMPL:DEF{&quot;top:toolbarbuttons&quot;}%%TMPL:END%
+
+
+%TMPL:DEF{&quot;formstartstep&quot;}%%TMPL:P{&quot;formstart&quot;}%%TMPL:END%
+
+%TMPL:DEF{&quot;formendstep&quot;}%%TMPL:P{&quot;formend&quot;}%%TMPL:END%
+
+%TMPL:DEF{&quot;topicnamestep&quot;}%---+++ %MAKETEXT{&quot;Topic name:&quot;}%
+&lt;p&gt;
+%TMPL:P{&quot;topicname&quot;}%%TMPL:P{&quot;nonwikiword&quot;}%
+&lt;/p&gt;%TMPL:END%
+
+%TMPL:DEF{&quot;topicparentstep&quot;}%---+++ %MAKETEXT{&quot;Topic parent:&quot;}%
+&lt;p&gt;
+%TMPL:P{&quot;topicparent&quot;}%
+&lt;/p&gt;%TMPL:END%
+
+%TMPL:DEF{&quot;topictemplatestep&quot;}%---+++ %MAKETEXT{&quot;Use template:&quot;}%
+&lt;p&gt;
+%TMPL:P{&quot;topictemplate&quot;}%
+&lt;/p&gt;%TMPL:END%
+
+%TMPL:DEF{&quot;submitstep&quot;}%&lt;p&gt;
+%TMPL:P{&quot;submit&quot;}%
+&lt;/p&gt;%TMPL:END%
+
+
+%TMPL:DEF{&quot;formstart&quot;}%&lt;form name=&quot;newtopicform&quot; id=&quot;newtopicform&quot; action=&quot;%SCRIPTURLPATH{edit}%/%BASEWEB%/&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;onlynewtopic&quot; value=&quot;on&quot; /&gt;%TMPL:END%
+
+
+%TMPL:DEF{&quot;topicname&quot;}%&lt;input type=&quot;text&quot; class=&quot;twikiInputField&quot; name=&quot;topic&quot; id=&quot;topic&quot; size=&quot;40&quot; %IF{&quot;&#39;%PREFILLTOPIC%&#39;=&#39;1&#39;&quot; then=&quot;value=\&quot;%BASETOPIC%\&quot;&quot;}% %IF{&quot;&#39;%URLPARAM{&quot;newtopic&quot;}%&#39;&quot; then=&quot;value=\&quot;%URLPARAM{&quot;newtopic&quot;}%\&quot;&quot;}% /&gt;%TMPL:END%
+
+
+%TMPL:DEF{&quot;topicparent&quot;}%%IF{&quot;defined pickparent&quot; then=&quot;&lt;select name=&#39;topicparent&#39; size=&#39;10&#39; class=&#39;twikiSelect&#39;&gt;$percntTOPICLIST{$quot&lt;option $marker value=&#39;$name&#39;&gt;$name&lt;/option&gt;$quot marker=$quotselected$quot separator=$quot$quot selection=$quot$percntURLPARAM{ $quottopicparent$quot default=$quot%MAKETEXT{&quot;(no parent, orphaned topic)&quot;}%$quot }$percnt$quot}$percnt&lt;option value=$quot$quot&gt;$percntMAKETEXT{$quot(no parent, orphaned topic)$quot}$percnt&lt;/option&gt;&lt;/select&gt;&quot; else=&quot;&lt;input type=&#39;text&#39; size=&#39;40&#39; name=&#39;topicparent&#39; class=&#39;twikiInputField&#39; value=&#39;%URLPARAM{topicparent}%&#39; /&gt;&amp;nbsp;&lt;a id=&#39;pickparent&#39; href=&#39;$percntSCRIPTURLPATH{view}$percnt/$percntBASEWEB$percnt/$percntBASETOPIC$percnt?$percntQUERYSTRING$percnt;pickparent=1&#39;&gt;%MAKETEXT{&quot;Pick from a list&quot;}%&lt;/a&gt;&quot;}%%TMPL:END%
+
+%TMPL:DEF{&quot;topictemplate&quot;}%&lt;select name=&quot;templatetopic&quot; class=&quot;twikiSelect&quot;&gt;%IF{&quot;&#39;%URLPARAM{&quot;templatetopic&quot;}%&#39;&quot; then=&#39;&lt;option selected=&quot;selected&quot;&gt;%URLPARAM{&quot;templatetopic&quot;}%&lt;/option&gt;&#39;}%&lt;option value=&quot;&quot;&gt;%MAKETEXT{&quot;Default template&quot;}%&lt;/option&gt;%SEARCH{&quot;.*Template$&quot; scope=&quot;topic&quot; excludetopic=&quot;WebTopicEditTemplate,WebCreateNewTopicTemplate,*ViewTemplate&quot; type=&quot;regex&quot; nonoise=&quot;on&quot; format=&quot;&lt;option&gt;$topic&lt;/option&gt;&quot;}%&lt;/select&gt; &lt;a id=&quot;viewtemplates&quot; href=&quot;%SCRIPTURL{view}%/%SYSTEMWEB%/WebTemplateTopics?web=%BASEWEB%&quot;&gt;%MAKETEXT{&quot;View templates&quot;}%&lt;/a&gt; %TMPL:END%
+
+%TMPL:DEF{&quot;submit&quot;}%&lt;input id=&quot;submit&quot; type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&#39;%MAKETEXT{&quot;Create this topic&quot;}%&#39; /&gt;%TMPL:END%
+
+%TMPL:DEF{&quot;formend&quot;}%&lt;/form&gt;%TMPL:END%
+

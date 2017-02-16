@@ -1,0 +1,127 @@
+---+ Running !SuperB  Jobs on OSG
+
+---++Introduction
+
+Members of the [[http://web.infn.it/superb/][!SuperB]]
+VO would like to start running
+jobs on OSG. To talk about this, there was a
+meeting on 1/17/12 including Armando Fella (INFN
+Padova), Luca Tomassetti (INFN Ferrara), Steffen Luitz
+(SLAC), Marko, Tanya, and Gabriele.
+
+---++History
+
+In the past !SuperB has run at SLAC and Caltech on
+RH5/SL5 x86_64 using the gLite suite to submit jobs via
+an EGI WMS system. This is a push-based system.  The
+system submits to the sites using a CE hostname list
+(GRAM URL: CE / Hostname / port).
+
+The !SuperB VOMS servers are
+  https://voms2.cnaf.infn.it:8443/voms/superbvo.org
+and
+  voms-2.pd.infn.it
+These should interoperate with OSG.
+
+---++Requirements
+
+Input and Output data: Applications need to access 10GB
+to 50GB of common input data.  Probably more like to 10GB. This data
+is stored in files that are about 1GB large, and each individual
+job needs access to just one file, and the accesses shouldn&#39;t
+all happen at the same time.  There is also a tar file that is about 30-60 MB
+large and that contains the executable which also needs to be
+prestaged. It seems alright to keep both of these in OSG_DATA.
+These don&#39;t change over the duration of the campaign.
+
+Either POSIX or SRM access has been used in that past and is ok.
+
+  There is about 200MB of output data per job now. Not
+expected to be over 1GB. Use lcg-utils to register and
+send output data back.
+
+  Access to the !SuperB storage should be controlled by
+VOMS Roles. For example, only users presenting a VOMS proxy Role
+&quot;ProductionManager&quot; should have write access to MC production
+output dedicated areas.
+
+Amount of compute time: The last production used 400
+dedicated cores at SLAC which amounted to 8% of
+production. The jobs each last from 16 to 20 hours.
+
+!SuperB does not need to recover failed jobs. Can just
+resubmit.
+
+---+++ Existing Framework Software
+
+   * Use GANGA as a job submission engine.  Ports are the same as
+     before.
+   * Use a Nagios per VO system to monitor availability of grid resources.
+   * !SuperB jobs communicate using curl to a [[http://glite.cern.ch/glite-LB/][bookkeeping DB]]
+     at CNAF to record whether they are running, pending or failed.
+    On CNAF side there is an apache server
+     listening on 8443 and 8080. On job side the curl command
+    just chooses the first available high port on WN and
+    uses that.
+
+The following URL includes the ports used per EGI
+service and LHC experiment on the worker nodes:
+  https://twiki.cern.ch/twiki/bin/view/LCG/LCGPortTable
+
+---+++ Application Software
+
+The main application is a Monte Carlo analysis using
+geant4. It takes up about ~50MB. This is prestaged as
+a tar ball in advance of the runs, then each run
+sends a small amount of data.
+
+The application depends on the following software:
+
+&lt;pre&gt;
+   yum-utils-1.1.16-14.el5.noarch
+   openmotif-2.3.1-2.el5.x86_64
+   lapack-3.0-37.el5.x86_64
+   boost-1.33.1-10.el5.x86_64
+   blas-3.0-37.el5.x86_64
+   pcre-6.6-2.el5_1.7.x86_64
+&lt;/pre&gt;
+
+A check at two OSG sites showed that these were present
+except for boost and yum-utils. If necessary it should also be possible to
+send this software with the job.
+
+---++ Status of Work
+
+   * superbvo.org is a recognized OSG VO. According to
+     the command
+        get_os_versions --vo superbvo.org
+     it has access to CIT_CMS_T2, CIT_HEP,
+     !GridUNESP_CENTRAL, SPRACE, WT2. 
+     There are questions about access to some
+     of these, especially SPRACE.
+
+   * There was a problem with !GridUNESP_CENTRAL reporting
+     which has been solved. !GRIDUNESP_CENTRAL is now
+     showing up at
+        http://is.grid.iu.edu/cgi-bin/status.cgi&lt;br&gt;
+     The !SuperB jobs access information about the CE and
+     SE&#39;s from BDII in order to move data to and from the
+     worker nodes using lcg-utils tools. There is a
+     failover method in the job wrapper that allows the
+     jobs to return data even if BDII is not working.
+
+   * We have asked that Production request wider support
+     for the !SuperB VO. In particular, the Ohio 
+     Supercomputing Center could be contacted. They had
+     begun installing the OSG software.
+     
+   * Have found out from OSG Sites that we could put in a
+     request for sites to map each VOMS role, like
+     !ProductionManager, into a separate unix account. Then
+     it&#39;s up to the VO to set up the directories and
+     permissions as needed. At least CMS and Atlas already
+     use roles this way at OSG sites.
+
+   * The next !SuperB production run should be around June.
+
+-- OSG User Support with help from the !SuperB VO

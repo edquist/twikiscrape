@@ -1,0 +1,142 @@
+-- Main.DanFraser - 09 Jul 2009
+---++ Action/Significant Items
+   * Early STEP09 analysis available (links below), still more questions than answers
+      * No specific OSG issues have been identified yet.
+   * Gratia still 1 week behind on processing FNAL data transfer results. 
+      * Current understanding is that Gratia is CPU bound. New hardware has been ordered.
+   * We discussed the updated plan for distributing/updating RSV probes:
+      * There are two RSV probe caches, one for testing, one for production.
+      * Production cache ONLY has probes that have been approved by the VDT validation process.
+      * Sites can update RSV probes separately from a VDT update -- but these probes are the same ones that the VDT installation would also pull down.
+      * Per CMS we still need to make sure the config_OSG does not automatically update the RSV probes (Rob).
+   * OSG 1.2 release still on track (only 4 days behind).
+   * Root Cause Analysis of CMS outage last week in progress -- link provided below (Rob, Arvind, Fred, Dan)
+---++ Attendees:
+   * Xin, Armen, Britta, Mats, Brian, Suchandra, Burt, Marco, Abhishek, Rob Q., Chander, Dan
+---++ CMS (Burt)
+   * Last week: 107 khour/day, 85% success.  CPU/wallclock at 45% (excluding FNAL skims: 56%).
+   * STEP09 post-mortem details:
+      * High-level summary: STEP09 went well. T0 performance good, might want more monitoring. T1 tape performance overall good (FZK and IN2P3 had downtimes), problems addressed at FNAL -- will use results to design pre-stage system.  T1 batch slots pledged met.  Analysis went well but error rates above 10% at 3 US sites (problems with data access)
+      * Twiki: https://twiki.cern.ch/twiki/bin/view/CMS/Step09PostMortem
+      * Overview talk: http://indico.cern.ch/getFile.py/access?contribId=2&amp;sessionId=0&amp;resId=0&amp;materialId=slides&amp;confId=56580
+      * STEP09 analysis: http://indico.cern.ch/getFile.py/access?contribId=25&amp;sessionId=11&amp;resId=0&amp;materialId=slides&amp;confId=58153
+
+---++ Atlas (Armen &amp; Xin)
+
+   * job statistics for last week. 
+      * Last week production continued on all USATLAS sites, keeping 6k~7k jobs running all the time, with high success rate.
+      * Gratia report: USATLAS ran 651K jobs, with CPU/Walltime ratio of 83%. 
+      * PanDA world-wide production report (real jobs):
+         * completed successfully 635K managed MC production, validation jobs
+         * average  91K jobs per day
+         * failed   40K  jobs
+         * average efficiency: 94% for jobs and 96% for walltime
+
+   * Site issues
+         * BNL T1 is preparing to move all worker nodes to SLC5/64bit platform. At least 0.5 PB dCache pool disk space will be removed from the worker nodes, replaced by new dedicated storage with more space.  Testing is ongoing. 
+
+   * condor-g issues
+      * waiting for globus bug fix for a memory leak
+      * https://bugzilla.mcs.anl.gov/globus/show_bug.cgi?id=6787  
+      * about to start the stress test on WISC condor pool, results expected in a couple of weeks. 
+
+
+---++ LIGO (Britta)
+
+*  Issues with LIGO voms server (07/19 -- 07/20)
+
+* Condor Issue on submit host  osg-job  (07/19 -- 07/20)
+
+* ITB validation: 
+   * E@OSG 
+      * 5 ITB sites validated, CIT_ITB_1 needs admin attention
+   * BINARY INSPIRAL
+      * FNAL_FERMIGRID_ITB, LIGO_CIT  validated
+      * Problems at remaining 4 sites:
+
+https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationOSG12LIGOComments#LBNL_DSD_ITB_grolsch_lbl_gov_Las
+
+
+* Gratia Reports:
+
+   * No LIGO metrics this week (used to be Monday morning)?
+      * 13,960 jobs
+      * 46,216 wall clock hours
+      * CPU/WALL: 89.3
+   * Last week&#39;s total usage: 3 users utilized 17 sites;
+      * 9491 jobs total (8438 / 1053 = 88.9% success)
+      * 34250.4 wall clock hours total (29988.9 / 4261.5 = 87.6% success);
+
+---++ Integration (Suchandra)
+   * Currently trying to finish testing
+   * Most issues look like they&#39;re resolved
+   * Waiting for vo validation results and documentation changes
+
+---++ Site Coordination (Marco)
+   * Site Administrators workshop:
+      * session requirements specified
+      * common Wiki format for hands-on sessions: https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationHandsOn
+   * Site Administrators telecom on Thursday 7/23 (ITB slot and coordinates, 2.30 Central):
+      * Adobe Connect test
+      * brief on OSG 1.2
+      * presentation of sessions and requirements for OSG Site Administrator Workshop
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.0.4
+      * 1 OSG 1.1.6 resource (BNL_ITB_Test1)
+      * 36 OSG 1.0.X resources (18 are 1.0.4)                                                                                                                                                                  
+      * 53 OSG 1.0.0
+      * 4 OSG 0.8.0 
+         * Sites are: LIGO_UWM_NEMO, OU_OCHEP_SWT2, OU_OSCER_CONDOR, UIC_PHYSICS
+         * There are also 3 sites with expired information at 0.8: cinvestav, LONI_OSG1, UmissHEP
+
+---++ Engagement (Mats)
+
+10 users utilized 32 sites;
+
+
+54606 jobs total (49690 / 4916 = 91.0% success);
+
+
+206417.7 wall clock hours total (110519.6 / 95898.1 = 53.5% success);
+
+
+Low wall clock success due to a user submitting jobs with too short wall time limit.
+Because these were long jobs, we did not notice until the run had already claimed
+a lot of resources.
+
+
+
+---++ Metrics (Brian)
+
+   * Gathering measurements for upcoming Metrics document, to be presented at the August 10 meeting.  If you&#39;re on this call and owe me measurements, please do not forget!  You will be getting at least 2 more emails.
+   * After working with the Gratia team, we think we are moving through the backlog in the Gratia transfer collector.  FNAL is *still* &gt; 1 week behind.
+   * In the last 2 weeks, Engage has been able to start running on a large scale at Nebraska; they have been able to utilize up to 2,000 CPUs (limited by their submission infrastructure).  This makes a noticeable difference in the Engage VO  weekly hours for the last 100 days: http://t2.unl.edu/gratia/bar_graphs/facility_hours_bar_smry?vo=engage&amp;span=604800&amp;starttime=time.time()-100*86400 but not yet in the overall non-HEP VO monthly plots http://t2.unl.edu/gratia/xml/monthly_non_hep.  Hopefully, NYSGrid and/or DOSAR might want to someday also run at Firefly.
+
+---++ Virtual Organizations Group (Abhishek)
+
+   * OSG 1.2 pre-release validation is ongoing. 
+   * ALICE, ATLAS, CDF, CMS, DES, Dzero, DOSAR, Engage, Fermilab-VO, LIGO, nanoHUB, SBGrid/NEBioGrid, and STAR are participating.
+      * URL: https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationSiteValidationOSG12#VO_validation   
+      * Dzero, DES, DOSAR, Engage-VO, Fermilab-VO, nanoHUB have successfully completed validation, and have officially given green flags toward OSG 1.2.
+      * ATLAS and CMS are validating workflows on 1 site each. Work is in progress.
+      * LIGO has succeeded on 2 sites; is in progress on 4 sites. Failures are being noted and worked upon.
+      * STAR has succeeded on 1 site; is in progress on 2 sites.
+      * ALICE is in progress on 1 site.
+      * CDF has succeeded on 2 sites; is in progress on 3 sites.
+      * SBGrid has succeeded on 2 sites; and !NEBioGrid on 0 sites so far.
+
+   * D0 MC Production dropped last week. D0 accounting reflects 7 million events. Drop in production was due to D0-internal reasons: a catastrophic failure of the SAM Oracle DB; caused by faulty disk driver upgrade; a change made to the configuration of routing files to the workers from the Storage Elements by SAM operations at FNAL; resulted in all jobs using SEs failing to get their files. Joel, D0 MC lead, has conveyed just now that operations are back to normal.
+   
+
+---++ Grid Operations Center (Rob Q.)
+
+---+++ This Week in Operations
+   * We will be continuing to test contact information update reminders for OIM with select testers; expect release sometime soon. 
+   * Root Cause Analysis of Top Level BDII with IP Move at the GOC [[https://twiki.grid.iu.edu/bin/view/Operations/BDIIRootCauseAnalysis][Link]] 
+
+---+++ Future Operations Events
+   * VORS Turn Down Scheduled for August 3rd - If you know anyone who uses VORS, please remind them. (Need LIGO Update)
+   * August 6th and 7th - Site Administrators Meeting in Indianapolis -- Please register if you have not already done so!
+   * September Machine Room Move in Bloomington September 19 2009 - All GOC Services in Bloomington are expected to be down. IUPUI will still be handling BDII traffic. GOC will attempt to install as many other services on an Indianapolis based server/VM as possible, especially other critical ones like !MyOSG?. 
+
+---++ Security (Mine)

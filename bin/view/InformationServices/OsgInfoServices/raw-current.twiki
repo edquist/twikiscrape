@@ -1,0 +1,109 @@
+---+ OSG Info Services Overview
+
+The OSG provides a variety of information about its services and resources.  The information services currently deployed have been maturing over the last several years, and it appears they will be relatively stable for the next few years.  This document aims to help an application developer who wants to utilize one (or more) of the OSG information services.  By the end of the document, you should have a feel for what types of information exists, where to get &quot;authoritative&quot; views of the information, and what kinds of query formats are available.
+
+This document is broken into three parts:
+   * *Information Types*: Broad categorization of different information available about OSG resources and services.
+   * *Information Producers*: Grid Services and Software which produce or save information about OSG resources and services.
+   * *Information Interfaces*: Machine or human readable interfaces that an application developer might interact with.
+
+This *does not* cover the technical aspects of utilizing OSG information services.  It also *does not* cover any of the client tools that might make querying some of the information services more pleasant.
+
+---++ Information Types
+
+We divide the different types of grid information
+   1 *Naming or topology*: The official names for an OSG facility, site, resource-group, or resource.  The mapping between hostname and official name.  How the various grid constructs (facility, site, resource-group, and resource) relate to each other in the official topology.  _Example_: The facility &quot;University of Nebraska&quot; contains two sites, &quot;Nebraska-Lincoln&quot; and &quot;Nebraska-Omaha&quot;.  Nebraska-Omaha has one resource group called &quot;Firefly&quot;.  Firefly is composed of three CEs (Firefly, Firefly-2, and Firefly-3) and one SE (Firefly-SE).  Firefly-SE has a hostname of ff-se.unl.edu
+   1 *Endpoint Information*: Static or semi-static information needed to find and utilize an OSG service.  This might include the Globus contact strings for a service, the SRM endpoint, or the location of the $OSG_APP directory.  _Example_: Firefly-SE has an SRM endpoint of srm://ff-se.unl.edu:8443/srm/v2/server.  The Engage VO can write into the directory /panfs/panasas/CMS/data/engage.
+   1 *Status*: The current status of an OSG service.  _Example_: Firefly-SE is not in downtime and passing all the critical SRMv2 tests.
+   1 *State*: The current operational statistics of the service.  _Example_: Firefly-SE has 140TB total, 20TB free.  Firefly-3 has 800 CMS jobs (20 waiting) and 200 HCC jobs (30 waiting).  There are 0 free jobs slots.
+
+This is one broad classification of the information; it is possible to find OSG information that does not fit neatly into one of the above categories.  However, we believe this covers the majority of the pertinent information for application developers.
+
+---++ Information Producers
+
+This section provides a short description of each of the information producers in the OSG.  It is useful for the application developer to have a general idea of how each works.  Note that none of the information producers listed below can be directly queried by developers (this is the job of the Information Interfaces, listed below).
+
+---+++ RSV
+RSV (Resource and Service Validation) is a framework designed to monitor OSG services.  It consists of three parts:
+   1 *Probes*:  Each RSV probe is a simple perl script utilizing a perl API.  Each probe has multiple metrics - individual tests - that it runs.  Each metric can be either critical (failure indicates the service is down) or non-critical (failure may indicate service is partially down or some part incorrectly configured).   Each service has several probes available - the probes are engineered so they do not have to be launched from the host the OSG service runs on. 
+   1 *Core*:  The RSV core is a set of scripts and Condor-Cron jobs which configure RSV, handle the launching of probes, and transforming the probe output into different formats.
+   1 *Transport*: RSV utilizes the same HTTP-based transport protocol developed for Gratia.  This allows a site to record its historical data locally and forward the status of its services to the central OSG services.
+
+The core is developed under the oversight of the OSG Software Tools Group and many of the probes are developed by different OSG groups (i.e., the SRM probes are developed by the OSG-Storage team).
+
+---+++ GIP
+The GIP (Generic Information Provider) is software which runs on the OSG CE that interacts with various system components of the site.  It takes in information from the config files, authorization info, batch system, and the SE in order to come up with a description of the local site.  This description is generate according to a schema called GLUE and expressed in LDAP format.
+
+The GLUE data is used heavily by international grids and is important for interoperability.  However, the GLUE schema is old by grid standards - a lot of information is &quot;wedged in&quot; in order to fit today&#39;s grids - and there is a high barrier to using the data, especially for new developers.
+
+It is currently developed and maintained by the USCMS Grid Services and Interoperability effort.
+
+---+++ OIM
+OIM (OSG Information Management) is the official registration database of the OSG.  This holds the authoritative list of resources and service provided, as well as contact information and the list of all the official OSG VOs.  There is one instance of OIM - run at the GOC.  It is based upon a MySQL database with a simple web interface.
+
+The web interface is simple - it allows an authenticated user to create, update, and edit the resources they own.  It has no machine readable views and it is not useful for end-users trying to discover new resources.
+
+OIM is currently maintained by the OSG Software Tools Group with effort from the GOC team.
+
+---++ Information Interfaces
+
+This section outlines the different information interfaces an application developer may want to query.  Each interface interacts with one or more information producers listed above.
+
+---+++ !MyOSG
+!MyOSG (http://myosg.grid.iu.edu) is a web application developed by the Indiana University.  There are two DNS-load-balanced instances of !MyOSG which are centrally run by the GOC.  It is considered a &quot;high importance&quot; service, which means that the OSG strives for the best-availability possible, but we do not consider it critical for jobs.  Thus, any user of this information should cache the output as necessary and running jobs should not depend on its availability.
+
+!MyOSG contains data generated by RSV and OIM.
+
+---+++ BDII
+The BDII provides an LDAP service containing a GLUE-compliant description of the OSG sites.  It is a product developed by EGEE and deployed at the GOC.  The &quot;GOC BDII&quot; is actually two DNS-load-balanced services whose contents are replicated to CERN for LHC sites.  The BDII is considered a critical service, and hence can be relied upon by running jobs.
+
+The BDII contains data originally generated by the GIP instances located on each CE.  
+
+---+++ !ReSS
+!ReSS contains a transformation of the GLUE data (produced by the GIP) into Condor !ClassAd format.  The !ReSS service is a Condor collector and can be queried using the &quot;normal&quot; Condor tools such as =condor_status=.  !ReSS is a highly-available service run by the !FermiGrid at Fermilab.  There is currently no SLA in place for !ReSS, but it is fairly reliable due to its HA nature.
+
+---++ Information Flow in the OSG
+
+This section outlines the relationships between information producers, information interfaces, and any intermediate software between the two of them.
+
+---+++ Naming and Topology
+
+&lt;img src=&quot;%ATTACHURLPATH%/OSGInfoServicesNaming.png&quot; alt=&quot;OSGInfoServicesNaming.png&quot;/&gt;
+
+---+++ Endpoint Information
+
+&lt;img src=&quot;%ATTACHURLPATH%/OSGInfoServicesState.png&quot; alt=&quot;OSGInfoServicesState.png&quot;/&gt;
+
+---+++ Status
+
+&lt;img src=&quot;%ATTACHURLPATH%/OSGInfoServicesStatus.png&quot; alt=&quot;OSGInfoServicesStatus.png&quot;/&gt;
+
+---+++ State
+
+&lt;img src=&quot;%ATTACHURLPATH%/OSGInfoServicesState.png&quot; alt=&quot;OSGInfoServicesState.png&quot;/&gt;
+
+---+++ Complete Picture
+The below image attempts to be a mostly-complete overview of all the information flows:
+
+&lt;img src=&quot;%ATTACHURLPATH%/OSGInfoServicesComplete.png&quot; alt=&quot;OSGInfoServicesComplete.png&quot;/&gt;
+
+---++ Querying information
+The table below summarizes, for each type of information, what data format (XML, !ClassAd, or LDAP) can be used to query the information.
+| | Query Format |
+| Info Type | XML | !ClassAd | LDAP |
+| Naming | !MyOSG | - | - |
+| Endpoint | (1) | !ReSS | BDII |
+| Status | !MyOSG | (2) | (2) |
+| State | (1) | !ReSS | BDII |
+*Notes*:
+   1 This is an extension which doesn&#39;t exist, but is currently under discussion
+   1 This is an extension under development requested by USCMS.  The status information is limited to downtime status, and does not include RSV test results.
+
+This table illustrates one deficiency of the OSG information services which has traditionally been a headache for application developers - there is no one query format which can be used to access all types of information on the OSG.  At best, one needs two completely different query formats to get all data.  This situation has led to the proposed extension of !MyOSG to cover endpoint and state information.
+
+Some query formats may appear to have data that is not listed in the above table.  For example, there certainly is a &quot;site name&quot; required by GLUE for the LDAP format - this is naming/topology information.  However, this information is not synchronized with the authoritative data source (OIM) and may be incorrect.  The above table only shows the authoritative data sources - if you do not use authoritative data sources, you may have stall or completely incorrect information!
+
+Common mistakes include:
+   * Using !MyOSG to get CE endpoints or list of VOs a CE supports
+   * Using !BDII to get a list of site names or SE names.
+

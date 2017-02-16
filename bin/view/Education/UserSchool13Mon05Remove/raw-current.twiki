@@ -1,0 +1,48 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+---+ Monday Exercise 5: Remove Jobs From the Queue
+
+The goal of this exercise is to remove jobs from the queue. This is helpful if you make a mistake, do not want to wait for a job to complete, or otherwise need to fix things.
+
+This exercise is very short, but if you are out of time, come back to it later.
+
+
+---++ Removing a Job From the Queue
+
+To practice removing jobs from the queue, you need a job in the queue!
+
+   1. Submit a job from an earlier exercise
+   1. Determine the job ID (=cluster.process=) from the =condor_submit= output or from =condor_q=
+   1. Remove the job:\
+       &lt;pre class=&quot;screen&quot;&gt;%UCL_PROMPT_SHORT% &lt;strong&gt;condor_rm &lt;em&gt;job_id&lt;/em&gt;&lt;/strong&gt;&lt;/pre&gt;\
+       &lt;p&gt;Use the full job ID this time, e.g., =5759.0=.&lt;/p&gt;
+   1. Did the job leave the queue immediately? If not, about how long did it take?
+
+So far, we have created job clusters that contain only one job process (the =.0= part of the job ID). That will change soon, so it is good to know how to remove a specific job ID. However, it is possible to remove all jobs that are part of a cluster at once. Simply omit the job process (the =.0= part of the job ID) in the =condor_rm= command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;condor_rm &lt;em&gt;cluster&lt;/em&gt;&lt;/strong&gt;
+&lt;/pre&gt;
+
+Finally, you can include many job clusters and full job IDs in a single =condor_rm= command. For example:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;condor_rm 5768 5769 5770.0 5771.2&lt;/strong&gt;
+&lt;/pre&gt;
+
+
+---++ Removing All of Your Jobs
+
+If you really want to remove all of your jobs at once, you can do that.
+
+   1. Quickly submit several jobs from past exercises
+   1. View the jobs in the queue with =condor_q=
+   1. Remove them all at once\
+       &lt;pre class=&quot;screen&quot;&gt;%UCL_PROMPT_SHORT% &lt;strong&gt;condor_rm &lt;em&gt;userid&lt;/em&gt;&lt;/strong&gt;&lt;/pre&gt;\
+       &lt;p&gt;Use your login user ID for =userid=.&lt;/p&gt;
+   1. Use =condor_q= to track progress
+
+In case you are wondering, you can remove only your own jobs. HTCondor administrators can remove anyone’s jobs, so be nice to them.

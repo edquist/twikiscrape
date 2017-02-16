@@ -1,0 +1,75 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;VO Packages&quot; }%*
+%TOC{depth=&quot;2&quot;}%
+
+---+ v30
+---++ CDF
+CDF has requested the evaluation order of CDF User Groups be changed. 
+[[https://ticket.grid.iu.edu/goc/viewer?id=7829][GOC ticket 7829]]
+
+---+++ GUMS changes
+The requires a change in the order of the _group_ attribute in the _hostGroup_ element(s) of the _gums.config_ file for the CDF user groups.
+&lt;verbatim&gt;
+from. cdf-cnaf,cdfdev-cnaf,cdffgrid-cnaf,cdfnam-cnaf,cdftestcaf-cnaf,
+         cdf-pd,cdfdev-pd,cdffgrid-pd,cdfnam-pd,cdftestcaf-pd,
+         cdfdev-fnal,cdffgrid-fnal,cdfnam-fnal,cdftestcaf-fnal
+
+to.... cdfdev-fnal,cdffgrid-fnal,cdfnam-fnal,cdftestcaf-fnal
+         cdf-cnaf,cdfdev-cnaf,cdffgrid-cnaf,cdfnam-cnaf,cdftestcaf-cnaf,
+         cdf-pd,cdfdev-pd,cdffgrid-pd,cdfnam-pd,cdftestcaf-pd,
+&lt;/verbatim&gt;
+This can be performed:
+   * using the GUMS UI &quot;Host To Group Mappings&quot; menu item
+   * or manually in the hostGroup element of the gums.config.
+
+REMEMBER: if you have multiple host groups, this has to be changed in them all.
+
+---+++ edg_mkgridmap.conf changes
+This reflects a change to both the contact and the order of the VOMS servers.
+&lt;verbatim&gt;
+# USER-VO-MAP cdf CDF -- 1 -- Dennis Box (dbox@fnal.gov)
+group vomss://voms.fnal.gov:8443/voms/cdf cdf
+group vomss://voms.cnaf.infn.it:8443/voms/cdf cdf
+&lt;/verbatim&gt;
+
+---+++ vomses file changes
+None.
+
+
+---+++ UNIIX Accounts
+No change required.
+
+---++ !GridUNESP
+
+---+++ GUMS changes
+The !GridUNESP VO has been added to the gums.template with the following userGroup.
+&lt;verbatim&gt;
+&lt;groupMapping name=&#39;gridunesp&#39; accountingVo=&#39;gridunesp&#39; accountingDesc=&#39;GridUNESP&#39;&gt;
+    &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+    url=&#39;https://voms.grid.unesp.br:8443/voms/GridUNESP/services/VOMSAdmin&#39;      
+    persistenceFactory=&#39;mysql&#39;
+    name=&#39;gridunesp&#39;    voGroup=&quot;/GridUNESP&quot;
+    sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+    sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39;
+    groupName=&#39;gridunesp&#39; /&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+   This new user group &#39;gridunesp&#39; should be added to all Host Groups.
+
+---+++ edg_mkgridmap.conf changes
+This is a new addition to the configuration file:
+&lt;verbatim&gt;
+#USER-VO-MAP gridunesp GridUNESP - 41 - Sergio Novaes (sergio.novaes@cern.ch)
+group vomss://voms.grid.unesp.br:8443/voms/GridUNESP gridunesp
+&lt;/verbatim&gt;
+
+---+++ vomses file changes
+This is an addition to the vomses file.
+&lt;verbatim&gt;
+&quot;GridUNESP&quot; &quot;voms.grid.unesp.br&quot; &quot;15000&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=http/voms.grid.unesp.br&quot; &quot;GridUNESP&quot;
+&lt;/verbatim&gt;
+
+---+++ UNIIX Accounts
+Add:  gridunesp

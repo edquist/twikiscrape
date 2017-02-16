@@ -1,0 +1,96 @@
+
+
+---++ IMPORTANT NOTE: This document is no longer being used as the means to collect requirements/feature requests for the OIM project. Instead we&#39;re using our [[http://code.google.com/p/osggoc/issues/list][bug-report/feature-request tool here]].
+
+---++ Feature Additions Immediate
+
+   * Restricted, and Private access to registration information view.
+      * 
+      * Authorized views of OIM data for registered users: 
+         * Contacts for various entities 
+      * Add Area to create CSV files of OIM data (later) 
+
+---++ Bug fixes/Errors - ASAP Timeframe -- in order of decreasing priority.
+   * Add check so that a service must be selected when setting a maintenance. 
+
+---++ Immediate - ASAP Timeframe -- in order of decreasing priority.
+   * Add authentication access ranges as a function. Use config file so we can easily add new authentication ranges if need be. Arvind to expand upon this. 
+   * Validation for maintenance form that ensures someone cannot setup two overlapping maintenance records for the same resource-service mapping 
+   * Bug in edit_resource form - If &quot;Default/fake&quot; facility and site chosen at resource_add time, then attempts to edit that resource, produce a foreign key constraint -- I can replicate the error if you need me to -agopu mid 2008-06, 2008-07-11 
+
+---++ Short term Timeframe
+
+   * Edit_AddedContact: For added contacts, can you slip in a &quot;None - no DN associated with this user yet, contact GOC if you&#39;d like this user to become active on OIM&quot; type message? next to the Certificate DN: &lt;blank&gt; row 
+   * Web form so that any registered OIM user can send email to any list. (osggeneral, osg-sites, etc) 
+   * Add SC contact information (read-only) on resource and SC registration views. 
+   * Edit_Person: Display all updated user info once user is updated 
+   * resource/resource.php: Does not show anything in site if the &quot;Default site&quot; is chosen .. it&#39;d be nice if you showed some off-colored text that said &quot;appropriate facility and site&quot; are not assigned to this resource -- contact GOC, blah blah.. 
+   * [[UpdateEmailTemplates][Update Email Templates]] 
+   * Add signing to all OIM correspondence. 
+      * add an email form so GOC can send email to any OIM user. 
+   * Edit all persons (admin) interface should show DN of person in each row -- ideally, the page would show name, email, phone, DN in some sort of tabular format. 
+
+---++ Medium term Timeframe
+
+   * ADMIN-Resource -- Allows me to activate a resource even though: 
+      * it does not have a proper facility/site associated with it. 
+      * it does not have the required contacts in it yet. 
+   * Is the primary, secondary, etc contacts automatically generated? I.e if a particular contact has more than 2 contacts, then will a tertiary contact section show up automatically? 
+   * Add Instant Messenger contact information to people registrations. 
+
+---++ Long term Timeframe
+   * Secure Web Pages access based on Security Contacts listing 
+
+---
+---
+
+&lt;strong&gt;&lt;br /&gt;&lt;/strong&gt;
+
+---++ Done (please include timestamp)
+
+   * Admin - edit resource gives me a 404 -- it&#39;s looking for resource.php.php -- should be an easy fix? - 2008-5-23-12:3O 
+   * Edit/Display Resource/VO/SC pages need to show current active/inactive status .. and resoruce page should also show Status (ie up/ down maint, etc.) - 2008-5-23-16:50 
+   * Edit_Resource -- we should not allow an admin to choose a random site while editing a resource; they should only be able to choose a site within the chosen facility. If they want to change the facility itself, then we (GOC) will have to do it OR we could add functionality to do that too.. - 2008-5-23-16:50 (GOC Admin users do have the ability to select any site. Normal users do not) 
+   * inactive_list.php: lists no one (I guess because I made everyone active for contacts purposes in the DB ) -- there&#39;s a really tiny link in that empty page which when I click, says &quot;An email has been sent to: ... &quot; [empty string]. This page should show anyone who does not have a DN irrespective of whether or not they are an active OIM person. - last week, forgot to move it 
+   * edit group contacts: expects first and last name ... should only expect one name ... and removed middle name - June 4, 2008 
+   * Edit person page should allow switching between group user and person user .. at least for GOC staff. There&#39;s a CMS Tier1 user right now in both groups. - June 4, 2008 
+   * add toggle for active/inactive for person group - June 4, 2008 
+   * Add SC information to Resource stuff on Admin interface. Also should be for resource page, I think. - June 4, 2008 
+   * We need to be able to remove contacts, and not just change... (of course there will be ramifications.. for example a resource will become inactive if its primary required contacts is removed.)(we will use an oim-deleter user sometime here, but for now oim-updater) - June 5, 2008 
+   * Added all of Arvind&#39;s mail messages and notification messages sent in the pdf - June 5, 2008 
+   * Add/Edit_Resource: We&#39;re allowing selection of any resource as parent ... you should only allow resources in a particular site (chosen) as parent resource -- important validation we&#39;ll need RSN if not today. June 6,2008 
+   * Add or display time registration was originally submitted, as well as last updated date/time.- Done July 8, 2008 
+   * Scheduled Maintenance Summary Page - Done AG July 4 2008. 
+   * Fix error (again) that makes the same person selectable for primary and secondary contacts.Done (Will be totally revamped when new contact system is created) 
+   * Make &quot;add a new person/group&quot; have same constraits as person (no duplicate email address) Done - KG July 11 2008 
+   * Finish validation of Person Name and Resource Name, etc. --- Did this...and SC and VO. Since SC and VOwill likely never change names, I also locked out changes from regular users to VO/SC names after registering, as was talked about a while back. 
+   * Update GOC Notification to Use OIM contact information -- agopu 2008-07-11 (script on funafuti modified, will go into production on Monday) 
+   * Bug in maintenance submission form: Abhishek somehoe managed to submit maintenance records that had 0000:00:00 00:00:00 as the end_time; so we need to have: one validation (and possibly more) that ensures the end_time cannot be &lt; start time. -kyle fixed this, agopu 2008-07-11 
+   * Medium: Checkboxes to select resource types -- this is done, albeit code handles services for each resource, instead of resource type -agopu 2008-07-11 
+   * Medium: Web Form to send email to goc@ -- done by kyle, agopu 2008-07-11 
+   * Public views of OIM dat 
+      * VO - done for osg-includes -agopu 2008-07-11 
+      * SC - partially done-agopu 2008-07-11 
+   * Finish Quick Links section on OIM home page -- to include view/edit and maintenance links (where applicable) for resources, VOs, SCs, added contacts. Arvind has put together a prototype for this on the dev server. Consider creating pop-up page if number of resources &gt; N. Use icons/images for view/edit/maintenance links. - Done July14 KG 
+   * Disable button in the admin resource list- Done KG July 16 
+   * Clear up confusion re: SE read/write/regex fields or remove them temporarily.&lt;strong&gt;-- THESE HAVE BEEN REMOVED TEMPORARILY - KG July 17&lt;br /&gt;&lt;/strong&gt; 
+   * Allow Multiple (Currently limited to two) Contacts for Operations and Security Contacts. (July 25th Deadline) -- done by KG -agopu 2008-07-25 
+   * Public, Restricted, and Private access to registration information view. (July 25th Deadline) -- done -agopu 2008-07-25 
+      * Resource, maintenance info 
+      * SC -- including osg-includes view 
+      * VO -- including osg-includes view 
+      * Facility, site 
+      * person (for GOC view only) 
+
+   * Registration Core Infrastructure Service. (July 25th Deadline): This should come with some grouping of resource types.Done 12-aug KG 
+   * Grid Services -- Child elements: {Compute Element, Storage Element {SRM v1, SRM v2, Bestman/Xrootd, !GridFTP} } Done 12-aug KG 
+   * Core Infrastructure Service: For example: {Auth/Auth: {VOMS server, GUMS server}, Accounting: {Gratia}, Monitoring: {RSV Collector, BDII Collector} } Done 12-aug KG 
+   * Views for OSG Staff - Done KG Aug 22 
+   * *View 1* List of all active persons and groups sorted by last name, with contact information. - Done KG Aug 22 
+   * *View 2* List of Resources sorted by name, with Primary and Secondary Operations and Security Email - Done KG Aug 22 
+   * *View 3* Same as 2 above but with SC - Done KG Aug 22 
+   * *View 4* Same as 2 above but with VO - Done KG Aug 22 
+
+-- Main.ArvindGopu - 11 Jul 2008
+
+

@@ -1,0 +1,35 @@
+---++ Using scripting languages
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; border: 1px solid black; padding: 0.5em;&quot;&gt;
+---+++ Objective of this exercise
+The objective of this exercise is to demonstrate that you can submit jobs to Condor in any language, including scripting languages.
+&lt;/div&gt;
+
+At this point, you might be asking yourself, &quot;This is all well and good, but I don&#39;t write programs in C. Can I use other languages?&quot; Absolutely.
+
+Let&#39;s assume you like to write program in Bourne shell. Make sure your program begins with =#!/bin/sh=, and you&#39;re good to go. Try out this example:
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+#!/bin/sh
+
+if [ $# -ne 2 ]; then
+    echo &quot;Usage: simple.sh sleep-time integer&quot;
+    exit 1
+fi
+
+echo &quot;Thinking really hard for $1 seconds..&quot;
+sleep $1
+answer=$(( $2 * 2 ))
+echo &quot;We calculated $answer.&quot;
+exit 0
+&lt;/pre&gt;
+
+Can you write a submit file to run this job? This should be easy--the script is your _Executable_, not &quot;/bin/sh&quot;. You may also want to change the name of your submit.log, submit.out, and submit.err in your =submit= file to be sure they are not written over when you run this submission. 
+
+---++ Challenge
+Rewrite this script in Perl or Python (if you&#39;re comfortable with one of those languages). Does it still work for you?
+
+
+---++ Onward...
+
+Excellent! You made it! [[HTCReviewCondorFiles][Click here to continue on to part two!]]

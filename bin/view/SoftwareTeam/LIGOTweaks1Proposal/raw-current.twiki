@@ -1,0 +1,46 @@
+---+ Proposal — Project 4 — LIGO Debian Packaging Tweaks
+
+---++ Status
+
+This work has been completed.
+
+---++ Requirements
+
+---+++ Concise Statement
+
+After an initial release to production of Globus Toolkit 5.0.2 and related packages, subsequent use turned up a few minor issues with the RPM and Debian packages. This project aims to fix the issues.
+
+---+++ Deadline
+
+No specific deadline has been requested.
+
+---+++ Stakeholders
+
+LIGO
+
+---++ Proposed Scope of Work
+
+Make the following updates:
+
+   * Add an ld.so.conf.d file to vdt-globus-common, so that Globus Toolkit shared libraries can be found by Python bindings.
+   * Run ldconfig as appropriate during install and removal to pick up the ld.so.conf.d change.
+   * Debian: Change version dependency declarations to use a variable instead of a hard-coded number.
+
+After the changes are made, the following source packages will need to be rebuilt, tested, given to LIGO for testing, and ultimately promoted to production.
+
+   * vdt-globus-toolkit
+   * vdt-myproxy
+
+---++ Proposed WBS
+
+*Note:* For our estimates of effort, we are using “FTE weeks” according to Chander’s definition: “1 FTE week (at CS UW-Madison) is the amount of work that can be reasonably completed by 1 person in one week working on one task (at CS UW-Madison). This implicitly covers all the overheads and interrupts that occur in this environment.” Thus, actual calendar time may be greater, if other projects or delays intervene.
+
+%TABLE{sort=&quot;off&quot;}%
+| *WBS* | *Task* | *Estimate* | *Notes* |
+| *1* | *Make changes* |||
+| 1.1 | Update Globus Toolkit to use ld.so.conf | 6 FTE hours| Includes metadata updates, test build, and test install |
+| 1.2 | Update !MyProxy dependency | 1 FTE hours| Includes metadata updates, test build, and test install |
+| *2* | *Build packages* |||
+| 2.1 | Do final build of vdt-globus-toolkit | 2 FTE hours| |
+| 2.2 | Do final build of vdt-myproxy | 1 FTE hours| |
+| *TOTAL* || *0.3 FTE weeks* | ** |

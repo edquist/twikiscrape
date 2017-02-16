@@ -1,0 +1,292 @@
+---+!! How to Write Automated Tests for OSG Software (osg-test)
+
+%TOC%
+
+---++ Where to Write Tests
+
+All of the OSG Software automated tests are located in the =osg-test= software and package.
+
+The software itself is in !GitHub repository at https://github.com/opensciencegrid/osg-test; current code is kept in the =master= branch.
+
+The software package is defined in our Subversion repository at =native/redhat/trunk/osg-test=.
+
+---+++ Directory Organization
+
+The test software is written in Python and consists of:
+
+   * A driver program, =osg-test=
+   * A set of support libraries (Python modules) in =osgtest/library=
+   * The tests themselves (also Python modules) in =osgtest/tests=
+   * Extra files needed at runtime in =files=
+
+The whole system uses the standard Python =unittest= framework to run.
+Note that all tests have to be compatible with Python 2.4; when reading the docs for =unittest=, keep note of when a feature was introduced.
+
+---+++ Test Sequence
+
+During a test run, the test modules are run in sequence as follows:
+
+| *File* | *When* | *Purpose* |
+| =special_user.py= | Tests not suppressed,&amp;#8232;or explicitly requested | Add user (if asked)&lt;br&gt;Check user&lt;br&gt;Set up mapfile |
+| =special_install.py= | Packages given | Check repositories&lt;br&gt;Clean yum cache&lt;br&gt;Install packages |
+| =test_NN_*.py= | Tests not suppressed | Configure&lt;br&gt;Test&lt;br&gt;Tear down |
+| =special_cleanup.py= | Explicitly requested | Remove user (if added)&lt;br&gt;Remove packages (if installed) |
+
+The =test_*= modules are organized roughly into three phases, based on the sequence number of the file:
+
+| *Test Files* | *Purpose* |
+| =test_[00-29]_*= | Set up |
+| =test_[30-69]_*= | Tests |
+| =test_[70-99]_*= | Tear down |
+
+---++ Coding Tips
+
+It is important to know the basics of the Python =unittest= module; [[http://docs.python.org/release/2.4.3/lib/module-unittest.html read the documentation for it]].
+We build on top of the =unittest= module, by providing an =osgunittest= module that inherits from it.
+
+---+++ Basic Structure of a Test Module
+
+Each test module must import the =osgunittest= library, plus whichever of the =osg-test= libraries are needed (conventionally with shortened aliases):
+
+%CODE{&quot;python&quot;}%
+import osgunittest
+
+import osgtest.library.core as core
+import osgtest.library.files as files
+%ENDCODE%
+
+Then, a single test class is defined, deriving from =osgunittest.OSGTestCase=; the individual tests are sequentially numbered functions within the class:
+
+%CODE{&quot;python&quot;}%
+class TestFooBarBaz(osgunittest.OSGTestCase):
+
+    def test_01_first_thing(self):
+        # test stuff!
+
+    def test_02_more(self):
+        # test stuff!
+
+    # Tests return (success) or raise (failure)
+%ENDCODE%
+
+*Note:* =osgunittest= was introduced in osg-test 1.2.5; tests written for earlier versions may still be using =unittest= directly.
+These tests should be updated to use =osgunittest= instead.
+
+---+++ Test Assertions
+
+Within each test function, use the [[http://docs.python.org/release/2.4.3/lib/testcase-objects.html TestCase object functions]] to assert things that should be true:
+
+%CODE{&quot;python&quot;}%
+def test_99_example(self):
+    result = do_something()
+    self.assert_(result &amp;gt; 42, &#39;result too low&#39;)
+    self.assertEqual(result, 57, &#39;result ok&#39;)
+%ENDCODE%
+
+Be sure to learn and use all of the assertion functions, for greatest expressive power and clarity! For example, there are also:
+
+   * &lt;code&gt;assertNotEqual&lt;/code&gt;(&lt;em&gt;first&lt;/em&gt;, &lt;em&gt;second&lt;/em&gt;[, &lt;em&gt;message&lt;/em&gt;])
+   * &lt;code&gt;assertRaises&lt;/code&gt;(&lt;em&gt;exception&lt;/em&gt;, &lt;em&gt;callable&lt;/em&gt;, …)
+
+---+++ Skipping Tests
+
+There are two cases in which a test should be skipped, and they have different semantics in =osgunittest=:
+   1. If the packages they depend on are not installed. This is called an =OkSkip=, since it does not indicate any sort of error.
+   1. If the packages they depend on _are_ installed, but required services were unavailable. This is called a =BadSkip=, since it indicates a cascading failure -- an error in a previous step that is causing problems in the current step.
+One of the extensions that =osgunittest= adds to =unittest= is the ability to report on these kinds of failures.
+
+The following =osgunittest= methods cause the test to be skipped with an =OkSkip= ( =OkSkipException= ):
+   $ &lt;code&gt;skip_ok&lt;/code&gt;([&lt;i&gt;message&lt;/i&gt;=&lt;i&gt;None&lt;/i&gt;]): skip, with optional message
+   $ &lt;code&gt;skip_ok_if&lt;/code&gt;(&lt;i&gt;expr&lt;/i&gt;, [&lt;i&gt;message&lt;/i&gt;=&lt;i&gt;None&lt;/i&gt;]): skip if =expr= is True, with optional message
+   $ &lt;code&gt;skip_ok_unless&lt;/code&gt;(&lt;i&gt;expr&lt;/i&gt;, [&lt;i&gt;message&lt;/i&gt;=&lt;i&gt;None&lt;/i&gt;]): skip if =expr= is False, with optional message
+and the following =osgunittest= methods cause the test to be skipped with a =BadSkip= ( =BadSkipException= ):
+   $ &lt;code&gt;skip_bad&lt;/code&gt;([&lt;i&gt;message&lt;/i&gt;=&lt;i&gt;None&lt;/i&gt;]): skip, with optional message
+   $ &lt;code&gt;skip_bad_if&lt;/code&gt;(&lt;i&gt;expr&lt;/i&gt;, [&lt;i&gt;message&lt;/i&gt;=&lt;i&gt;None&lt;/i&gt;]): skip if =expr= is True, with optional message
+   $ &lt;code&gt;skip_bad_unless&lt;/code&gt;(&lt;i&gt;expr&lt;/i&gt;, [&lt;i&gt;message&lt;/i&gt;=&lt;i&gt;None&lt;/i&gt;]): skip if =expr= is False, with optional message
+
+Note that the =OkSkip= methods are often not directly used, and convenience functions in =osgtest.core= are used instead.
+
+---++++!! Skipping Due to Missing Packages (!OkSkip)
+
+The following two patterns are used for skipping tests due to missing packages; use the simplest one for your case (or follow conventions of other tests):
+
+Example 1: A single package with custom skip message
+%CODE{&quot;python&quot;}%
+def test_01_start_condor(self):
+    core.skip_ok_unless_installed(&#39;condor&#39;,
+                                  message=&#39;HTCondor not installed&#39;)
+%ENDCODE%
+
+Example 2: A normal check of several packages at once:
+%CODE{&quot;python&quot;}%
+def test_02_condor_job(self):
+   core.skip_ok_unless_installed(&#39;globus-gram-job-manager-condor&#39;,
+                                 &#39;globus-gram-client-tools&#39;,
+                                 &#39;globus-proxy-utils&#39;)
+%ENDCODE%
+
+Note that old unit test code might be using the methods =core.rpm_is_installed()= or =core.missing_rpm()= for this purpose.
+These just printed a message if the test was to be skipped, but the test writer had to actually perform the skip manually.
+
+The following patterns should be converted to match the first and second example, respectively:
+
+Old Example 1:
+%CODE{&quot;python&quot;}%
+if not core.rpm_is_installed(&#39;condor&#39;): # OLD CODE
+    core.skip(&#39;not installed&#39;)
+    return
+%ENDCODE%
+Old Example 2:
+%CODE{&quot;python&quot;}%
+if core.missing_rpm(&#39;globus-gram-job-manager-condor&#39;, # OLD CODE
+                    &#39;globus-gram-client-tools&#39;,
+                    &#39;globus-proxy-utils&#39;):
+    return
+%ENDCODE%
+
+*Note:* Add skip tests to *all* functions that depend on a particular package, not just the first one within a test module.
+
+---++++!! Skipping Due to Failure in Required Service (!BadSkip)
+
+Tests often require a service to be up and running.
+If the service is not running, then it is expected that the test will fail through no fault of the component being tested.
+These cascading failures often mask the root cause of the problem.
+In order to avoid that, we instead skip the test, and mark it as having been skipped due to a previous failure (a !BadSkip).
+Note that these should be raised only _after_ making sure the service has been installed.
+
+The following examples show how this is done:
+%CODE{&quot;python&quot;}%
+core.skip_ok_unless_installed(&#39;globus-gram-job-manager-condor&#39;)
+self.skip_bad_unless(core.state[&#39;condor.running-service&#39;],
+                     message=&#39;HTCondor service not running&#39;)
+%ENDCODE%
+
+%CODE{&quot;python&quot;}%
+core.skip_ok_unless_installed(
+    &#39;globus-gram-job-manager-pbs&#39;,
+    &#39;globus-gram-client-tools&#39;,
+    &#39;globus-proxy-utils&#39;,
+    &#39;globus-gram-job-manager-pbs-setup-seg&#39;)
+
+if (not core.state[&#39;torque.pbs-configured&#39;] or
+    not core.state[&#39;torque.pbs-mom-running&#39;] or
+    not core.state[&#39;torque.pbs-server-running&#39;] or
+    not core.state[&#39;globus.pbs_configured&#39;]):
+    
+    self.skip_bad(&#39;pbs not running or configured&#39;)
+%ENDCODE%
+
+*Note:* Add skip tests to *all* functions that depend on a particular service, not just the first one within a test module.
+
+
+---+++ Running System Commands
+
+Most tests run commands on the system; this is the nature of our testing environment. Thus, the test libraries have extra support for running system commands. Use these functions! Do not reinvent the wheel.
+
+See the !PyDoc for the =core= library for full documentation on the functions. Below are examples.
+
+The basic system-call pattern:
+
+%CODE{&quot;python&quot;}%
+def test_99_made_up_example(self):
+    command = (&#39;/usr/bin/id&#39;,&#39;-u&#39;)
+    status, stdout, stderr = core.system(command, True)
+    fail = core.diagnose(&#39;id of test user&#39;, status, stdout, stderr)
+    self.assertEqual(status, 0, fail)
+    # Maybe more checks and assertions
+%ENDCODE%
+
+In the most common case, you run the =core.system()= function, check its exit status against 0, and then possibly test its stdout and stderr for problems. There is a helper function for this common case:
+
+%CODE{&quot;python&quot;}%
+def test_01_web100clt(self):
+    if core.missing_rpm(&#39;ndt&#39;):
+        return
+    command = (&#39;web100clt&#39;, &#39;-v&#39;)
+    stdout, stderr, fail = core.check_system(command, &#39;NDT client&#39;)
+    result = re.search(&#39;ndt.+version&#39;, stdout, re.IGNORECASE)
+    self.assert_(result is not None)
+%ENDCODE%
+
+---+++ Configuration and State
+
+The test framework does not automatically preserve values across test modules, so you must do so yourself if needed. But, the test library does provide standard mechanisms for saving configuration values and system state.
+
+Store all cross-module configuration values in =core.config= (a dictionary):
+
+%CODE{&quot;python&quot;}%
+def test_04_config_voms(self):
+    core.config[&#39;voms.vo&#39;] = &#39;osgtestvo&#39;
+    # ...
+%ENDCODE%
+
+Record cross-module state values in =core.state= (a dictionary):
+
+%CODE{&quot;python&quot;}%
+def test_01_start_mysqld(self):
+    core.state[&#39;mysql.started-server&#39;] = False
+    # Try to start MySQL service, raise on fail
+    core.state[&#39;mysql.started-server&#39;] = True
+%ENDCODE%
+
+
+---+++ Module-Wide Setup and Teardown
+
+Sometimes a module needs certain operations to be done for setting up tests.
+For example, the tests for osg-configure involve importing the unit test modules provided by osg-configure itself, and need to add an entry to =sys.path=.
+This kind of setup should be put _inside_ the test class; it will not get reliably run if it is only inside the module.
+Making separate test functions for the setup and teardown steps (named, for example, =test_00_setup= and =test_99_teardown=) is a good way of handling this.
+
+
+---++ Testing your changes
+
+Before you go and commit your changes, it&#39;s a good idea to make sure they don&#39;t break everything. Our [[http://vdt.cs.wisc.edu/tests/latest.html][nightlies]] run tests against the master version of osg-test so to avoid the embarassment of everyone knowing that your code is broken, you&#39;ll want to make sure your tests work!
+
+---+++ Fermicloud VMs
+
+   1. Start a fermicloud VM and install the OSG !RPMs, the latest build of =osg-test= and =osg-tested-internal=.
+   1. Get rid of the old tests: &lt;pre class=&quot;rootscreen&quot;&gt;
+%RED%# For RHEL 5, CentOS 5, and SL5%ENDCOLOR%
+%UCL_PROMPT_ROOT% rm -rf /usr/lib/python2.4/site-packages/osgtest
+%RED%# For RHEL 6, CentOS 6, and SL6 or OSG 3 older than 3.1.15%ENDCOLOR%
+%UCL_PROMPT_ROOT% rm -rf /usr/lib/python2.6/site-packages/osgtest
+%RED%# For RHEL 7, CentOS 7, and SL7%ENDCOLOR%
+%UCL_PROMPT_ROOT% rm -rf /usr/lib/python2.7/site-packages/osgtest
+&lt;/pre&gt;
+   1. =cd= into your clone of the =osg-test= repo and copy over your tests to your VM: &lt;pre class=&quot;screen&quot;&gt;
+%RED%# For RHEL 5, CentOS 5, and SL5 VMs%ENDCOLOR%
+%UCL_PROMPT% scp -r osgtest/ %RED%&amp;lt;VM Hostname&amp;gt;%ENDCOLOR%:/usr/lib/python2.4/site-packages
+%RED%# For RHEL 6, CentOS 6, and SL6 VMs%ENDCOLOR%
+%UCL_PROMPT% scp -r osgtest/ %RED%&amp;lt;VM Hostname&amp;gt;%ENDCOLOR%:/usr/lib/python2.6/site-packages
+%RED%# For RHEL 7, CentOS 7, and SL7 VMs%ENDCOLOR%
+%UCL_PROMPT% scp -r osgtest/ %RED%&amp;lt;VM Hostname&amp;gt;%ENDCOLOR%:/usr/lib/python2.7/site-packages
+&lt;/pre&gt;
+   1. Run the tests and monitor their output: &lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% osg-test -vad &amp;gt; %RED%&amp;lt;outfile&amp;gt;%ENDCOLOR% 2&amp;gt;&amp;amp;1 &amp;amp;
+%UCL_PROMPT_ROOT% tail -f %RED%&amp;lt;outfile&amp;gt;%ENDCOLOR%
+&lt;/pre&gt;
+
+---+++ VM Universe
+
+It&#39;s a good idea to test your changes in the VM Universe if you&#39;ve made big changes like adding tests or changing entire test modules. Otherwise, you can go ahead and skip this step.
+
+   1. SSH to =osghost.chtc.wisc.edu=
+   1. Prepare a test run: &lt;pre class=&quot;screen&quot;&gt;
+osg-run-tests -sl %RED%&amp;lt;Test comment&amp;gt;%ENDCOLOR%
+&lt;/pre&gt;
+   1. =cd= into the directory that is indicated by the output of =osg-run-tests=
+   1. Run =git diff master= from your clone of the =osg-test= repo to get the changes that you&#39;re interested in and fill =test-changes.patch= with these changes.
+   1. Edit =test-parameters.yaml= so that the =sources= section reads: &lt;pre class=&quot;file&quot;&gt;
+sources:
+  - opensciencegrid:master; 3.3; osg-testing
+&lt;/pre&gt;
+   1. Start the tests: &lt;pre class=&#39;screen&#39;&gt;
+%UCL_PROMPT% condor_submit_dag master-run.dag
+&lt;/pre&gt;
+
+---++ See also
+
+The main [[SoftwareTeam.TestingHome][Automated Testing for OSG RPMs]] page for more information.
+
+&lt;!-- vim:ft=twiki:sw=3
+--&gt;

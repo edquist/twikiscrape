@@ -1,0 +1,23 @@
+#VarURLPARAM
+---+++ URLPARAM{&quot;name&quot;} -- get value of a URL parameter
+   * Returns the value of a URL parameter.
+   * Syntax: =%&lt;nop&gt;URLPARAM{&quot;name&quot;}%=
+   * Supported parameters:
+     | *Parameter:* | *Description:* | *Default:* |
+     | =&quot;name&quot;= | The name of a URL parameter | required |
+     | =default=&quot;...&quot;= | Default value in case parameter is empty or missing | empty string |
+     | =newline=&quot;&amp;lt;br /&amp;gt;&quot;= | Convert newlines in textarea to other delimiters | no conversion |
+     | =encode=&quot;entity&quot;= | Encode special characters into HTML entities. See [[%IF{&quot;&#39;%INCLUDINGTOPIC%&#39;=&#39;TWikiVariables&#39;&quot; then=&quot;#&quot;}%VarENCODE][ENCODE]] for more details. | no encoding |
+     | =encode=&quot;url&quot;= | Encode special characters for URL parameter use, like a double quote into =%22= | no encoding |
+     | =encode=&quot;quote&quot;= | Escape double quotes with backslashes (=\&quot;=), does not change other characters; required when feeding URL parameters into other TWiki variables | no encoding |
+     | =multiple=&quot;on&quot;= %BR% =multiple=&quot;[&lt;nop&gt;[$item]]&quot;= | If set, gets all selected elements of a =&amp;lt;select multiple=&quot;multiple&quot;&amp;gt;= tag. A format can be specified, with =$item= indicating the element, e.g. =multiple=&quot;Option: $item&quot;= | first element |
+     | =separator=&quot;, &quot;= | Separator between multiple selections. Only relevant if multiple is specified | =&quot;\n&quot;= (new line) |
+   * Example: =%&lt;nop&gt;URLPARAM{&quot;skin&quot;}%= returns =print= for a =.../view/%WEB%/%INCLUDINGTOPIC%?skin=print= URL
+   * __%X% Notes:__
+      * *IMPORTANT:* There is a risk that this variable could be misused for [[http://en.wikipedia.org/wiki/Cross-site_scripting][cross-site scripting]] (XSS).
+      * URL parameters passed into HTML form fields __must be__ entity [[%IF{&quot;&#39;%INCLUDINGTOPIC%&#39;=&#39;TWikiVariables&#39;&quot; then=&quot;#&quot;}%VarENCODE][ENCODEd]].%BR% Example: =&amp;lt;input type=&quot;text&quot; name=&quot;address&quot; value=&quot;%&lt;nop&gt;URLPARAM{ &quot;address&quot; encode=&quot;entity&quot; }%&quot; /&amp;gt;=
+      * Double quotes in URL parameters must be escaped when passed into other TWiki variables.%BR% Example: =%&lt;nop&gt;SEARCH{ &quot;%&lt;nop&gt;URLPARAM{ &quot;search&quot; encode=&quot;quotes&quot; }%&quot; noheader=&quot;on&quot; }%=
+      * When used in a template topic, this variable will be expanded when the template is used to create a new topic. See TWikiTemplates#TemplateTopicsVars for details.
+      * Watch out for TWiki internal parameters, such as =rev=, =skin=, =template=, =topic=, =web=; they have a special meaning in TWiki. Common parameters and view script specific parameters are documented at TWikiScripts.
+      * If you have =%&lt;nop&gt;URLPARAM{= in the value of a URL parameter, it will be modified to =%&amp;lt;nop&amp;gt;URLPARAM{=. This is to prevent an infinite loop during expansion.
+   * Related: [[%IF{&quot;&#39;%INCLUDINGTOPIC%&#39;=&#39;TWikiVariables&#39;&quot; then=&quot;#&quot;}%VarENCODE][ENCODE]], [[%IF{&quot;&#39;%INCLUDINGTOPIC%&#39;=&#39;TWikiVariables&#39;&quot; then=&quot;#&quot;}%VarSEARCH][SEARCH]], FormattedSearch, [[%IF{&quot;&#39;%INCLUDINGTOPIC%&#39;=&#39;TWikiVariables&#39;&quot; then=&quot;#&quot;}%VarQUERYSTRING][QUERYSTRING]]

@@ -1,0 +1,109 @@
+---+ OSG Technology Area Meeting, 19 October 2015
+
+*Coordinates:* Conference: 857-216-4999, PIN: 32390; https://www.uberconference.com/osgcat
+
+*Attending:* !BrianL, Carl, Derek, !JohnH, Jose, Mat, !TimC, !TimT, Xin
+&lt;!-- !BrianB, !BrianL, Carl, Derek, Edgar, Jeff, !JohnH, Jose, Marian, Mat, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+   * !BrianB is out on paternity leave (100% for 2 more weeks, then 50% for 3 weeks)
+
+---+++ Triage Duty
+   * This week: !BrianL
+   * Next week: Edgar
+   * 9 (+0) open tickets
+
+---+++ JIRA
+   * Open: 176 (+6)
+   * In Progress: 25 (+0)
+   * Ready for Testing: 1 (–22)
+   * Ready for Release: 0 (–8)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| OSG CA | 3.2.29 / 3.3.3 | N/A | 2015-10-26 | 2015-11-03 | Special Release of IGTF 1.69 with OSG CA |
+| November | 3.2.30 / 3.3.4 | 2015-10-26 | 2015-11-02 | 2015-11-10 | |
+| December | 3.2.31 / 3.3.5 | 2015-11-23 | 2015-11-30 | 2015-12-08 | |
+| January | 3.2.32 / 3.3.6 | 2015-12-28 | 2016-01-04 | 2016-01-12 | 5 week cycle |
+
+*Notes:* Additional “urgent” releases may be scheduled for the 4th Tuesday of each month. The *Testing* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+
+---++ OSG Software Team
+
+---+++ Discussions
+
+*VDT website.* We (in Madison) are making some changes to ACLs in the vdt.cs.wisc.edu web area. They should not affect any use cases (that we care about), but if you notice any new issues, please let us know right away. Mostly, no one uses the old VDT website anyway.
+
+*GRAM/PBS failures.* No progress last week. !TimC will talk to Jeff about whether Hyak is ready for ITB pilots, and will assign someone from the software team to start thinking about debugging. Also, we will need to reproduce the issue.
+
+*Repo consolidation.* There is [[SW024_ConsolidateRepos][a new little project]] to consolidate all of our public software repositories to repo.grid.iu.edu, thereby allowing the GOC to decommission software.grid.iu.edu. At the moment, it seems that this change will affect only certain CA certificate use cases and any software that depends on the old host.
+
+*EL&amp;nbsp;7 support.* The three main runtime failures in automated testing are with Gratia, !MyProxy, and PBS, and most of the failures are due to service start-up issues and the !MySQL &amp;rarr; !MariaDB transition; Carl is fixing the tests and patching Gratia (at least) and has some confidence that tests will be cleaner by release. Mat has built GUMS and !BeStMan, but is still working on GUMS runtime issues with low confidence that anything will be ready in time for the November release.
+
+*EL&amp;nbsp;7 on !FermiCloud.* Wrote Steve Timm, “We are dependent on the Scientific Linux team blessing Scientific Linux 7 for official use at Fermilab and official confirmation that it conforms to the Fermilab baseline.” In the meantime, contact Mat for help on how to do EL&amp;nbsp;7 testing. Also, John offered (again) the use of BNL facilities to do EL&amp;nbsp;7 testing on VMs. John and Mat will write an internal TWiki document with the different methodologies for EL&amp;nbsp;7 testing and share the link with the Software team.
+
+*GPU support in !GlideinWMS.* Wrote Marco, “I added a feature in !GlideinWMS to tell glideins to auto discover GPUs using condor_gpu_discovery and advertise them to user jobs but I have no node with GPUs to test it. Is it there any cluster with GPUs that I could access?” Yes, Nebraska! Derek will reply to Marco.
+
+---+++ Major Activities
+   * Support EL 7 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1541][SW-1541]])
+   * Fix routine automated test failures ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1996][SW-1996]])
+   * Documentation
+   * !StashCache ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1815][SW-1815]])
+   * HTCondor-CE ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1813][SW-1813]])
+   * [[SW024_ConsolidateRepos][Software repository consolidation]]
+   * IPv6 evaluation ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1525][SW-1525]])
+   * [[https://twiki.opensciencegrid.org/bin/view/Trash/SoftwareTeamSiteSupportStatus][Support]]
+
+
+---++ OSG Release Team
+   * Madison ITB site
+      * Plan next steps
+   * Special November 3rd Release - OSG 3.2.29 and OSG 3.3.3 (OSG CA)
+      * Tim Theisen is handling the release
+      * IGTF 1.69 including the OSG CA
+   * Regular November 10th Release - OSG 3.2.30 and OSG 3.3.4
+      * Brian Lin is handling the [[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.3.4%2C%203.2.30%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][November 10th Release]]
+      * Development Freeze next week
+      * Release filter points to this release
+      * Promotions to prerelease will be delayed until after the November 3rd release
+
+%TABLE{sort=&quot;off&quot;}%
+| *3.2.30* | *Both* | *3.3.4* | *Total* | *Status* |
+| 2 (+0) | 10 (+0) | 1 (+0) | 13 (+0) | Open |
+| 0 (+0) | 1 (+0) | 4 (+0) | 5 (+0) | In Progress |
+| 0 (+0) | 0 (+0) | 1 (+0) | 1 (+0) | Ready for Testing |
+| 0 (+0) | 0 (+0) | 0 (+0) | 0 (+0) | Ready for Release |
+| 2 (+0) | 11 (+0) | 6 (+0) | 19 (+0) | Totals |
+
+   * Status
+      * Post-Mortem of release gaffe
+   * OSG 3.2.30 and OSG 3.3.4
+      * RSV - Monitor health of !XRootD caches
+      * osg-configure - run condor_ce_reconfig after generating job environment files
+      * lcmaps-plugins-process-tracking
+      * HTCondor-CE enhancements
+   * OSG 3.3.4 Only
+      * More EL7 support
+         * GUMS
+      * HTCondor 8.4.1
+      * HTCondor 8.5.0 in upcoming
+   * OSG 3.2.30 only
+      * jGlobus for EL5
+      * HTCondor 8.2.10
+
+---+++ Notes
+In the discussion of the release problem, we will highlight the packages to be released that have a newer version in development.
+
+---++ OSG Investigations Team
+
+   * OASIS:
+      * (old) New version goes out to ITB tomorrow (primary feature: ability to replicate any repository and still follow OSG-Security constraints).  Assuming successful production deploy, we will need to do a new client config RPM in November.
+   * StashCache:
+      * StashCache tester continues to gather good performance data at https://stashcache.github.io/.  Now including Cache information in addition to testing sites.
+      * Prototype of CVMFS-over-StashCache continues to make progress.  CVMFS team is reviewing the pull requests.  All parts are now functional.  Now working on coding style comments and testing for regressions.
+      * Making progress in puppetizing GOC configuration.  DNS alias still giving problems with XRootD rediretor.
+   * CEMon (part of HTCondor-CE): 
+      * Got first round of requests for improvements from AGIS.  Ball is in our court now, on going.
+   * OSG-CE-BOSCO: No progress to report

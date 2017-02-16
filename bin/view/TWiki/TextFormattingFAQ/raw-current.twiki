@@ -1,0 +1,162 @@
+---++ Text Formatting FAQ
+
+The most frequently asked questions about text formatting are answered. Also, TextFormattingRules contains the complete TWiki shorthand system on one quick reference page.
+
+%TOC%
+
+---
+---+++ How do I make a separator?
+
+Create a separator - a horizontal rule - by entering three dashes at the beginning of a blank line: =---=. You can enter more than three if you like, for a more visible separator in edit mode: &lt;br /&gt;
+=--------------=
+
+--------------
+---+++ How do I create a heading?
+
+You can create six sizes of headings - &amp;lt;h1&amp;gt;...&amp;lt;h6&amp;gt; in HTML - by typing, from the beginning of a line, three dashes (-), from one to six plus signs (+), a space, and your heading text. The FAQ questions on this page are created with: =---+++ Have a question?=.
+   * You can insert a nested table of contents, generated from headings, by placing =%&lt;nop&gt;TOC%= wherever you like on a page (see %TWIKIWEB%.TWikiVariables for more =%&lt;nop&gt;TOC%= options).
+
+-----
+#TextEnclosed
+---+++ Text enclosed in angle brackets like &amp;lt;filename&amp;gt; is not displayed. How can I show it as it is?
+
+TWiki interprets text as HTML, and the &#39;&amp;lt;&#39; and &#39;&amp;gt;&#39; characters define where HTML commands start and end. Text _inside_ angle brackets is treated as HTML, and ignored if it doesn&#39;t actually do anything - either way, the brackets and its contents are not displayed.
+
+If you want to display angle brackets, enter them as HTML codes instead of typing them in directly:
+   * =&amp;amp;lt;= = =&amp;lt;= &lt;br /&gt;
+     =&amp;amp;gt;= = =&amp;gt;=
+
+   * __You enter:__ =(a &amp;amp;gt; 0)= &lt;p /&gt; 
+     __Result:__ =(a &amp;gt; 0)=
+
+---
+---+++ Some words appear highlighted, with a &quot;?&quot; link at the end. How can I prevent that?
+
+A question mark after a word is a link to a topic that doesn&#39;t yet exist - click it to create the new page. This is a TWiki feature - typing a MeaningfulTitle in a comment is an invitation for someone else to add a new branch to the topic.  
+
+To prevent auto-linking - say you want to enter a word like &lt;nop&gt;JavaScript (the proper spelling!) - prefix the WikiStyleWord with an exclamation point: 
+
+   * =!WikiStyleWord= displays as !WikiStyleWord
+
+---
+---+++ How can I write fixed font text?
+
+The quickest way is to enclose the text in equal signs:
+
+   * __You enter:__ =Proportional text, &lt;nop&gt;=fixed font=&lt;nop&gt;, proportional again.= &lt;p /&gt;
+     __Result:__ Proportional text, =fixed font=, proportional again.
+
+---
+#VerbatimText
+---+++ Text I enter gets wrapped around. How can I keep the formatting as it is?
+
+TWiki interprets text as HTML, so you can use the =preformatted= HTML option to keep the new line of text as is. Enclose the text in &amp;lt;pre&amp;gt; &amp;lt;/pre&amp;gt;, or in TWiki&#39;s own &amp;lt;verbatim&amp;gt; &amp;lt;/verbatim&amp;gt; tag:
+&lt;pre&gt;
+This text will keep its format as it is:
+&amp;lt;verbatim&amp;gt;
+  Unit     Price   Qty  Cost
+  -------  ------  ---  ------
+  aaa       12.00    3   36.00
+&amp;lt;/verbatim&amp;gt;
+&lt;/pre&gt;
+
+The =pre= tag is standard HTML; =verbatim= is a special TWiki tag that forces text to fixed font mode, and also prevents other tags and TWiki shortcuts from being expanded.
+
+*NOTE:* VARIABLES are still Set within verbatim tags (this is a historical peculiarity)
+
+---
+---+++ How do I create tables?
+
+There are three possibilities:
+   1 Use Wiki rule with &quot;|&quot; vertical bars.
+   2 Use HTML tables with &amp;lt;table&amp;gt;, &amp;lt;tr&amp;gt;, &amp;lt;td&amp;gt; tags.
+   3 Use preformatted text with &amp;lt;verbatim&amp;gt; tags.
+
+*1. Use Wiki rule with &quot;|&quot; vertical bars*
+
+   * Example text: %BR%
+     =| cell A1 | cell B1 | cell C1 |= %BR%
+     =| cell A2 | cell B2 | cell C2 |=
+   * Example output: 
+     | cell A1 | cell B1 | cell C1 |
+     | cell A2 | cell B2 | cell C2 |
+
+*2. Use HTML tables with &amp;lt;table&amp;gt;, &amp;lt;tr&amp;gt;, &amp;lt;td&amp;gt; tags*
+
+This is a manual process using HTML commands. 
+
+__You enter:__
+
+&lt;pre&gt;
+&amp;lt;table border=&quot;1&quot;&amp;gt;
+  &amp;lt;tr&amp;gt;
+    &amp;lt;th&amp;gt; Head A  &amp;lt;/th&amp;gt; &amp;lt;th&amp;gt; Head B  &amp;lt;/th&amp;gt;
+  &amp;lt;/tr&amp;gt;&amp;lt;tr&amp;gt;
+    &amp;lt;td&amp;gt; Cell A2 &amp;lt;/td&amp;gt; &amp;lt;td&amp;gt; Cell B2 &amp;lt;/td&amp;gt;
+  &amp;lt;/tr&amp;gt;&amp;lt;tr&amp;gt;
+    &amp;lt;td&amp;gt; Cell A3 &amp;lt;/td&amp;gt; &amp;lt;td&amp;gt; Cell B3 &amp;lt;/td&amp;gt;
+  &amp;lt;/tr&amp;gt;
+&amp;lt;/table&amp;gt;
+&lt;/pre&gt;
+
+__Result:__
+
+&lt;table border=&quot;1&quot;&gt;
+  &lt;tr&gt;
+    &lt;th&gt; Head A  &lt;/th&gt; &lt;th&gt; Head B  &lt;/th&gt;
+  &lt;/tr&gt;&lt;tr&gt;
+    &lt;td&gt; Cell A2 &lt;/td&gt; &lt;td&gt; Cell B2 &lt;/td&gt;
+  &lt;/tr&gt;&lt;tr&gt;
+    &lt;td&gt; Cell A3 &lt;/td&gt; &lt;td&gt; Cell B3 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+*3. Use preformatted text with &amp;lt;verbatim&amp;gt; tags*
+
+See [[#VerbatimText][&quot;Text I enter gets wrapped around...&quot;]] 
+
+
+---
+
+---+++ Can I include images on a page?
+
+Yes. The easiest way is to [[FileAttachment][attach]] a GIF, JPG or PNG file to a topic and then to place it with: =%&lt;nop&gt;ATTACHURL%/myImage.gif=. This works only for the topic where the image is attached to.
+
+To place an image on any topic, there are two ways of including inline images.
+
+*1. Using URL ending in .gif, .jpg, .jpeg, .png*
+
+This is a simple and automatic way of including inline images. Simply write the URL of the image file, this will create the inline image for you. __NOTE:__ The images must be [[#ImgUpload][accessible]] as a URL.
+
+   * __You enter:__ &lt;code&gt; %&lt;nop&gt;PUBURL%/%TWIKIWEB%/TWikiLogos/T-logo-80x15.gif logo.&lt;/code&gt; &lt;br /&gt;
+     __Result:__ %PUBURL%/%TWIKIWEB%/TWikiLogos/T-logo-80x15.gif logo.
+
+#ImgUpload
+You can upload images directly to your server with FTP access. You can also [[FileAttachment][attach]] image files to a topic - you could even create a dedicated image topic, like =ImageLibrary= - and then link to the images directly:
+   * Attach =pic.gif= to =Someweb.SomeTopic= &lt;br /&gt;
+     Display with =%&lt;nop&gt;PUBURL%/Someweb/SomeTopic/pic.gif=
+
+*2. Using &amp;lt;img&amp;gt; tag*
+
+This is a manual process where you have more control over the rendering of the image. Use the &amp;lt;img&amp;gt; tag of HTML to include GIF, JPG and PNG files. *Note:* The rendering of the topic is faster if you include the =width= and =height= parameters that have the actual image size. http://www.htmlhelp.com/reference/wilbur/special/img.html has more on inline images.
+
+   * __You enter:__ &lt;code&gt; &amp;lt;img src=&quot;%&lt;nop&gt;PUBURLPATH%/%TWIKIWEB%/TWikiLogos/T-logo-80x15.gif&quot; width=&quot;80&quot; height=&quot;15&quot; border=&quot;0&quot; alt=&quot;logo&quot; /&amp;gt; logo.&lt;/code&gt;&lt;br /&gt;
+    __Result:__ &lt;br /&gt; &lt;img src=&quot;%PUBURLPATH%/%TWIKIWEB%/TWikiLogos/T-logo-80x15.gif&quot; width=&quot;80&quot; height=&quot;15&quot; border=&quot;0&quot; alt=&quot;logo&quot; /&gt; logo.
+
+-----
+---+++ Can I write colored text?
+
+TWikiPreferences defines some commonly used colors: *%YELLOW% %&lt;nop&gt;YELLOW%%ENDCOLOR%, %RED% %&lt;nop&gt;RED%%ENDCOLOR%, %PINK% %&lt;nop&gt;PINK%%ENDCOLOR%, %PURPLE% %&lt;nop&gt;PURPLE%%ENDCOLOR%, %TEAL% %&lt;nop&gt;TEAL%%ENDCOLOR%, %NAVY% %&lt;nop&gt;NAVY%%ENDCOLOR%, %BLUE% %&lt;nop&gt;BLUE%%ENDCOLOR%, %AQUA% %&lt;nop&gt;AQUA%%ENDCOLOR%, %LIME% %&lt;nop&gt;LIME%%ENDCOLOR%, %GREEN% %&lt;nop&gt;GREEN%%ENDCOLOR%, %OLIVE% %&lt;nop&gt;OLIVE%%ENDCOLOR%, %MAROON% %&lt;nop&gt;MAROON%%ENDCOLOR%, %BLACK% %&lt;nop&gt;BLACK%%ENDCOLOR%, %GRAY% %&lt;nop&gt;GRAY%%ENDCOLOR%, %SILVER% %&lt;nop&gt;SILVER%%ENDCOLOR%* and *%&lt;nop&gt;ENDCOLOR%*.
+
+   * __You enter:__ =%&lt;nop&gt;RED% red text %&lt;nop&gt;ENDCOLOR% and %&lt;nop&gt;GREEN% green text %&lt;nop&gt;ENDCOLOR%= &lt;p /&gt; 
+     __Result:__ %RED% red text %ENDCOLOR% and %GREEN% green text %ENDCOLOR%
+
+__Note:__ =%&amp;lt;color&amp;gt;%= text must end with =%&lt;nop&gt;ENDCOLOR%= . If you want to switch from one color to another one you first need to end the active color with =%&lt;nop&gt;ENDCOLOR%=, e.g. write =%&lt;nop&gt;RED% some text %&lt;nop&gt;ENDCOLOR% %&lt;nop&gt;GREEN% more text %&lt;nop&gt;ENDCOLOR%=.
+
+If you need more colors you can use HTML, like =&amp;lt;font color=&quot;#ff0000&quot;&amp;gt; red text &amp;lt;/font&amp;gt;=. You can also use the up-to-date =style= attribute - ex:  =style=&quot;color:#ff0000&quot;= - placed in most HTML tags. =span= is an all-purpose choice: =&amp;lt;span style=&quot;color:#ff0000&quot;&amp;gt;CoLoR&amp;lt;/span&amp;gt;=. Only old (like 3.x IE &amp;amp; NS) browsers have a problem with =style=.
+
+The code is the _hexadecimal RGB color code_, which is simply Red, Green and Blue values in hex notation (base 16, 0-F). For pure red, the RGB components are 255-0-0 - full red (255), no green or blue. That&#39;s FF-0-0 in hex, or =&quot;#ff0000&quot;= for Web page purposes. StandardColors lists basic colors.
+
+-----
+
+

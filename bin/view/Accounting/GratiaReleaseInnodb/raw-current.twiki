@@ -1,0 +1,177 @@
+&lt;!--
+These are general in nature and should be changed in the this template if the location changes:
+   * Set CURRENT_TOMCAT = ==gratia09==
+   * Set CURRENT_MYSQL = __gratia06__
+   * Set NEW_TOMCAT = ==gratia07==
+   * Set NEW_MYSQL = __ gratia07__
+   * Set TOMCAT_ALIAS = ==gratia.opensciencegrid.org==
+   * Set MYSQL_ALIAS = ==gratia-db01.fnal.gov==
+   * Set RELEASE_TAR_REPOSITORY = /afs/fnal.gov/files/expwww/gratia/html/Files
+
+These are specific to a release and require changing:
+   * Set RELEASE_DATE = 2/14/2008 - 3/10/2008
+   * Set CURRENT_RELEASE = v0.32.1
+   * Set RELEASE_TAG = REMOVE
+   * Set NEXT_DEVEL_VERSION = REMOVE
+   * Set BUILD_DIRECTORY = REMOVE
+   * Set INNODB = &lt;nop&gt;InnoDB
+
+   * Set EDITTHISTEXT = &lt;div class=&quot;twikiSmall&quot;&gt;&lt;a href=&quot;%TOPIC%&quot;&gt;edit this section&lt;/a&gt;&lt;/div&gt;
+--&gt;
+
+
+---+!! Gratia Release %CURRENT_RELEASE%  %INNODB% (%RELEASE_DATE% - 4/2/2008)%BR% 
+
+
+%TOC%
+
+%STARTINCLUDE%
+---+ Overview
+This release (%CURRENT_RELEASE%) is a technical  release to convert the &lt;nop&gt;MySql database tables from &lt;nop&gt;MyISAM to %INNODB%.  
+
+There are no software updates included.
+
+All databases will be converted to use the %INNODB% engine with the *exception* of the following which require software updates that will be available in v0.34:
+   * gratia_psacct
+   * gratia_osg_daily
+
+The _gratia_qcd_ was converted to %INNODB% on 2/14/2008.
+
+
+&lt;!--   -------------------------------------------- --&gt;
+---+ Anticipated downtime
+These conversions will take place over a 2 week period.  The _gratia_qcd_ database was already converted on 2/14/2008.  Unfortunately, no data was collected at that time to judge anticipated down time.  It is expected that down time for Gratia services will be minimal.
+
+The changes affecting downtime for this release are:
+   1 Length of time to make a backup of the database to the backup area using =mysqlhotcopy=
+   1 Installation and validation on the 6 Gratia schemas
+
+
+&lt;!--   -------------------------------------------- --&gt;
+---+ Collectors and Databases Affected
+The following Gratia collectors and databases have been converted to %INNODB%:
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Schema*|*URL*|*Description*|&quot; format=&quot;| text, 20 | text, 12 | text, 20 | text, 35 | text, 15 | text, 7 | text, 12 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Schema*|*Date converted*|*&lt;nop&gt;MySql port*|*Collector URL*|*Collector host*|*Size (bytes)*|*Size (rows)*|*Convertion Time*|
+| gratia_qcd  | 2/14/2008 | __gratia06__.fnal.gov:3320 | gratia-fermi.fnal.gov:8883 | gratia08.fnal.gov: |  3.5 Gb |  971,574 |  n/a |
+| fermi_itb | 3/3/2008 | __gratia06__.fnal.gov:3320 |      gratia-fermi.fnal.gov:8881 | gratia08.fnal.gov: |  44 Mb |  19,976 |  12s |
+| gratia_osg_integration | 3/3/2008 | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8885 | gratia09.fnal.gov |  4.5 Gb |  1,237,028 |  16 minutes |
+| fermi_osg | 3/3/2008 | __gratia06__.fnal.gov:3320 | gratia-fermi.fnal.gov:8880 | gratia08.fnal.gov: |  12 Gb |  5,906,303 |  42 minutes |
+
+
+The following Gratia collectors and databases will be converted with this release:
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Schema*|*URL*|*Description*|&quot; format=&quot;| text, 20 | text, 20 | text, 35 | text, 15 | text, 7 | text, 12 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Schema*|*&lt;nop&gt;MySql port*|*Collector URL*|*Collector host*|*Size (bytes)*|*Size (rows)*|
+| gratia_itb | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8881 | gratia09.fnal.gov |  12 Gb |  6,985,631 |
+| gratia | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8880 | gratia09.fnal.gov |  53 Gb |  51,322,746 |
+
+
+%BR%
+The following Gratia collectors and databases will __NOT__  be converted with this release.  These repositories require v0.34 and will be converted at that time.  %BR%
+
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Schema*|*URL*|*Description*|&quot; format=&quot;| text, 20 | text, 20 | text, 35 | text, 15 | text, 7 |  text, 12 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Schema*|*&lt;nop&gt;MySql port*|*Collector URL*|*Collector host*|*Size (bytes)*|*Size (rows)*|
+| gratia_psacct | __gratia06__.fnal.gov:3320 | gratia08.fnal.gov:8882 | gratia08.fnal.gov: |  9.3 Gb |    5,694,312 |
+| gratia_osg_daily | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8884 | gratia09.fnal.gov |   85 Mb |       80,178      |
+
+
+
+
+
+
+ 
+
+
+On the !MySql server node ( %CURRENT_MYSQL% ):
+
+Take a back up the database instances (this will include all schema) using part of the _msqlhotcopy_cron_ script from the command line as _root_ user.
+%BR%Backup will only being done to  _/backup/mysqldb_ on %CURRENT_MYSQL% in order to reduce the downtime.
+   * PSWD=xxxx (root passwd)
+   * mysqlhotcopy -p $PSWD --addtodest fermi_itb /backup/mysqldb       
+   * mysqlhotcopy -p $PSWD --addtodest gratia_osg_daily /backup/mysqldb    
+   * mysqlhotcopy -p $PSWD --addtodest gratia_qcd /backup/mysqldb     
+   * mysqlhotcopy -p $PSWD --addtodest gratia_osg_integration /backup/mysqldb  
+   * mysqlhotcopy -p $PSWD --addtodest fermi_osg /backup/mysqldb   
+   * mysqlhotcopy -p $PSWD --addtodest gratia_psacct /backup/mysqldb   
+   * mysqlhotcopy -p $PSWD --addtodest gratia_itb /backup/mysqldb   
+   * mysqlhotcopy -p $PSWD --addtodest gratia /backup/mysqldb    
+  
+
+Backup times:
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Schema*|*Duration - Last Release*|*Actual Duration*|&quot; format=&quot;| text, 20 | text, 20 | text, 20 | text, 20 | text, 20 | text, 20 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Schema*|*Duration - Last Release%BR%mysqlhotcopy*|*Actual Time%BR% Mar 4 2008 *|*Backup%BR%Size*|*Compressed%BR%Size*|*Type*|
+| fermi_itb | 1 sec |  00:00:11 |  44.03 MB |  1.65 MB | mysqldump |
+| gratia_osg_daily | 1 secs  |  00:00:11 |  84.57 MB |  11.77 MB | mysqlhotcopy |
+| gratia_qcd  | 80 secs |  00:07:26 |  2.63 GB |  174.42 MB | mysqldump |
+| gratia_osg_integration | 134 secs  |  00:14:16 |  4.53 GB |  239.92 MB | mysqldump |
+| fermi_osg | 302 secs |  00:32:47 |  11.46 GB |  639.66 MB | mysqldump |
+| gratia_psacct | 269 secs  |  00:24:06 |  9.31 GB |  1.18 GB | mysqlhotcopy |
+| gratia_itb | 338 secs (6+ min)  |  00:31:22 |  12.01 GB |  1.43 GB | mysqlhotcopy |
+| gratia | 2358 secs (39+ min)   |  |  |  |  |
+
+
+
+     &lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;!-- ----------------- UPGRADE AND IMPLEMENTATION ------------- --&gt;
+---+ Conversion and implementation
+We will perform these upgrades based on the size of the individual database schema, in ascending order.
+
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Schema*|*Duration - Last Release*|*Actual Duration*|&quot; format=&quot;| text, 30 | text, 10 | text, 30 | text, 20 | text, 12 | text, 12|&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Schema*|*Host*|*TOMCAT_LOCATION*|*tomcat service*|*Start*|*Ended*|
+| fermi_itb | gratia08 | /data/tomcat-fermi_itb | tomcat-fermi_itb |  |  20328 ms |
+| gratia_osg_integration | gratia09 | /data/tomcat-osg_integration | tomcat-osg_integration |  |  992939 ms |
+| fermi_osg | gratia08 | /data/tomcat-fermi_osg | tomcat-fermi_osg |  |  2572958 ms |
+| gratia_itb | gratia09 | /data/tomcat-itb | tomcat-itb |  |  |
+| gratia | gratia09 | /data/tomcat-gratia | tomcat-gratia |  |  |
+
+
+&lt;hr width=95% /&gt;
+
+For the _gratia_itb_ and _gratia_ database conversions, a little different approach will be taken.  The _gratia_itb_ will be a practice of the conversion steps necessary for the _gratia_ instance.  The conversion time for the _gratia_ database conversion is unknown and is not expected to scale linearly based on the others instances.  
+
+&lt;!--
+   * Set EDITTHISTEXT = &lt;div class=&quot;twikiSmall&quot;&gt;&lt;a href=&quot;%TOPIC%&quot;&gt;edit this section&lt;/a&gt;&lt;/div&gt;
+
+   * Set PROD_VER      = &lt;b&gt;v0.32&lt;/b&gt;
+
+   * Set PROD_NODE    = &lt;b&gt;gratia09&lt;/b&gt;
+   * Set PROD_DB       = &lt;b&gt;gratia06&lt;/b&gt;
+   * Set PROD_TC       = &lt;b&gt;%PROD_NODE%:/data/tomcat-itb&lt;/b&gt;
+
+   * Set TEMP_NODE    = &lt;b&gt;gratiax23&lt;/b&gt;
+   * Set TEMP_DB       = &lt;b&gt;gratia07&lt;/b&gt;
+   * Set TEMP_TC       = &lt;b&gt;%TEMP_NODE%:VDT_LOCATION/tomcat/v55&lt;/b&gt;
+   * Set TEMP_URL      = http://gratiax23.fnal.gov:8880/gratia-administration
+
+   * Set DB_NAME       = &lt;b&gt;gratia_itb&lt;/b&gt;
+
+   * Set JUR               = &lt;nop&gt;JobUsageRecord
+   * Set CONFIG          = &lt;b&gt;./gratia/service-configuration.properties&lt;/b&gt;
+--&gt;
+
+%INCLUDE{GratiaInnodbUpgrade}%
+
+
+
+
+&lt;!-- ----------------- POST MORTEM  ------------- --&gt;
+---+ Post-mortem
+At this time, this will appear to be random notes.  After the conversion, they may be organized.
+
+
+
+%STOPINCLUDE%
+
+&lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+---++!! Major updates
+&lt;!--Future editors should add their signatures beneath yours!--&gt;
+-- Main.JohnWeigand - 29 Feb 2008
+

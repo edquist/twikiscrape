@@ -1,0 +1,401 @@
+%LINKCSS%
+
+[[http://www.ci.uchicago.edu/~benc/tmp/b.odp][befile]]
+
+&lt;verbatim&gt;
+%CACHE%
+&lt;/verbatim&gt;
+
+&lt;pre class=&quot;screen&quot;&gt;
+%CACHE%
+&lt;/pre&gt;
+
+
+%IF{ &quot;$CACHE = &#39;ITB&#39;&quot; then=&quot;We&#39;re having a party!&quot; else=&quot;&quot; }%
+
+&lt;div class=&quot;topnotch&quot;&gt;
+
+
+
+%WIKIVERSION% 
+
+Some text &lt;span style=&quot;padding: .25em; font-family: monospace; color: white; background-color: blue; text-align:center; border: 1px solid black; width:auto;&quot;&gt;Some text here that only goes this far&lt;/span&gt; some text
+
+%PLUGINVERSION%. %ACTIVATEDPLUGINS%
+
+&lt;!--                                                                            
+   * Set INDIGODIR = %URLPARAM{&quot;indigodir&quot; default=&quot;D:\indigoperl&quot;}%
+   * Set TWIKIDIR = %URLPARAM{&quot;twikidir&quot; default=&quot;D:\twiki&quot;}%
+   * Set LOGINHOST = %URLPARAM{&quot;loginhost&quot; default=&quot;workshop1.lac.uic.edu&quot; }%
+   * Set LOGINIP = %URLPARAM{&quot;loginip&quot; default=&quot;131.193.181.56&quot; }%
+   * Set GRIDHOST = %URLPARAM{&quot;gridhost&quot; default=&quot;tg-login.sdsc.teragrid.org&quot; }%
+   * Set OTHERHOST = %URLPARAM{&quot;otherhost&quot; default=&quot;workshop2.lac.uic.edu&quot; }%
+   * Set CERTSUBJECT = /O=Grid/OU=OSG/CN=Training User 99
+   * Set HOMEDIR = /home/%LOGINNAME%
+
+&lt;div style=&quot;background-color: #FFFF66&quot;&gt;
+USING %BLUE% user *%LOGINNAME%* on host *%LOGINHOST%* %ENDCOLOR%
+
+&lt;form name=&quot;setPageDefaults&quot; action=&quot;%SCRIPTURL%/view/%WEB%/%TOPIC%&quot; onLoad=&quot;var doShow = getPref(&#39;LOGINNAME&#39;); var doShow = getPref(&#39;LOGINHOST&#39;);&quot;&gt;
+
+*This topic is a !TWikiApplication*. Enter your required paths, and hit &quot;Rewrite the instructions using these paths&quot; to tailor the instructions for your system.
+
+&lt;noautolink&gt;
+Login host is: &lt;input name=&quot;loginhost&quot; type=&quot;text&quot; size=&quot;60&quot; value=&quot;%LOGINHOST%&quot; /&gt;%BR%
+Login name is: &lt;input name=&quot;loginname&quot; type=&quot;text&quot; size=&quot;60&quot; value=&quot;%LOGINNAME%&quot; /&gt;%BR%
+IP address for the login host is: &lt;input name=&quot;loginip&quot; type=&quot;text&quot; size=&quot;60&quot; value=&quot;%LOGINIP%&quot; /&gt;%BR%
+Grid host FQDN is: &lt;input name=&quot;gridhost&quot; type=&quot;text&quot; size=&quot;60&quot; value=&quot;%GRIDHOST&quot; /&gt;%BR%
+Other host is: &lt;input name=&quot;otherhost&quot; type=&quot;text&quot; size=&quot;60&quot; value=&quot;%OTHERHOST%&quot; /&gt;%BR%
+Your certificate SUBJECT is: &lt;input name=&quot;certsubject&quot; type=&quot;text&quot; size=&quot;60&quot; value=&quot;%CERTSUBJECT%&quot; /&gt;%BR%
+Your $HOME directory: &lt;input name=&quot;homedir&quot; type=&quot;text&quot; size=&quot;60&quot; value=&quot;/home/%LOGINNAME%&quot; /&gt;
+
+&lt;input type=&quot;button&quot; value=&quot;Rewrite the instructions using these paths&quot; onClick=&quot;setPref(&#39;LOGINNAME&#39;, loginname); setPref(&#39;LOGINHOST&#39;, loginhost); setPref(&#39;LOGINIP&#39;, loginip); setPref(&#39;GRIDHOST&#39;, gridhost); setPref(&#39;OTHERHOST&#39;, otherhost); setPref(&#39;CERTSUBJECT&#39;, certsubject); setPref(&#39;HOMEDIR&#39;, homedir);&quot;/&gt;
+&lt;/form&gt;
+&lt;/div&gt;
+--&gt;
+
+
+%STARTINCLUDE%
+%STOPINCLUDE%
+
+---++ Upgrading dCache
+
+&lt;verbatim&gt;
+--- install.sh.orig	2007-06-13 10:42:00.000000000 -0700
++++ install.sh	2007-06-14 09:56:35.000000000 -0700
+@@ -59,8 +59,9 @@
+ 
+ RPMSDIR=`pwd`/../RPMS
+ 
+-logfile=vdt-install.log
+-logerr=vdt-install.err
++mkdir logs
++logfile=logs/vdt-install-`hostname`.log
++logerr=logs/vdt-install-`hostname`.err
+ 
+ CONFIGURATIONMODULESDIR=`pwd`
+ 
+--- rpm_unpack.sh.orig	2007-06-13 10:42:22.000000000 -0700
++++ rpm_unpack.sh	2007-06-12 21:19:29.000000000 -0700
+@@ -8,7 +8,10 @@
+     isunpacked=`rpm -qa | grep dcache-server`
+     VEROLD=`echo ${isunpacked} | grep -o &#39;\&lt;[0-9]*\.[0-9]*\&gt;&#39;`
+     VERNEW=`echo ${DCACHE_SERVER_RPM} | grep -o &#39;\&lt;[0-9]*\.[0-9]*\&gt;&#39;`
+-    if [ &quot;x$VEROLD&quot; == &quot;x$VERNEW&quot; -a ${DCACHE_SERVER_RPM#$isunpacked} != &quot;.rpm&quot; -a ${DCACHE_SERVER_RPM#$isunpacked} != &quot;noarch.rpm&quot; ] ; then
++# 2007.06.12 note from [log in to unmask]
++# The first comparison here was wrong.  I changed
++# the &#39;==&#39; to &#39;!=&#39;.
++    if [ &quot;x$VEROLD&quot; != &quot;x$VERNEW&quot; -a ${DCACHE_SERVER_RPM#$isunpacked} != &quot;.rpm&quot; -a ${DCACHE_SERVER_RPM#$isunpacked} != &quot;noarch.rpm&quot; ] ; then
+       UPGRADE=&quot;true&quot;
+     fi
+     if [ &quot;x$isunpacked&quot; != &quot;x&quot; -a &quot;$UPGRADE&quot; != &quot;true&quot; ] ; then
+(null)    
+&lt;/verbatim&gt;
+
+
+
+---+++ Caltech Experience from Ilya Narsky:
+&lt;blockquote&gt;
+
+We have successfully upgraded to dcache 1.7.0-36 at Caltech. Thanks a lot to Neha and others for help. Below is a summary of problems we encountered during installation.
+
+In fairness, the VDT install script did not make our lives much harder. There was no single problem that stood out. We lost most of the time (2-3 hrs) because we accidentally deleted the control directory on the dcache pool we were using for tests. Entirely our fault. But we fixed many small-scale problems during two days we spent completing the upgrade. And so - the VDT install script did not make our lives much easier either.
+
+-Ilya
+
+---++++ Problems due to our mistakes:
+
+1) After reinstalling dcache on the pnfs node, the pnfs content disappeared. pnfs was running the whole time on the node during installation because we had no intention of reinstalling it. Restart of pnfs fixed it.
+
+2) We accidentally deleted the control directory on the pool we used for testing. The pool was accessible from the admin interface but did not show up on the dcache web monitor page and all transfers to the pool failed. There were no obvious errors in the pool logs. Neha noticed that the control directory was missing. The control dir was restored following Tigran&#39;s recipe.
+
+
+---++++ Problems due to the VDT install scripts:
+
+1) It seems that the most natural way of propagating the install scripts to all cluster nodes is to put them on an nfs shared partition. But the install script directs log and err output to the same file and this file is written over when you install on a new node. Michael made a patch to the install script (attached) that
+appends the hostname to the file names and puts all logs into a
+separate subdir.
+
+2) The [[http://vdt.cs.wisc.edu/extras/InstallingDcacheForOSG.html#Configuring_Installation][instructions]] do not say anything about setting DCACHE_REPLICA_MANAGER. After I set it to FQHN where the replica manager is expected to run, the install script correctly set replicaManager=yes in node_config on the replica manager node. But in dCacheSetup there is a block that says:
+
+&lt;pre class=&quot;screen&quot;&gt;
+#  ---- Will the Replica Manager be started?
+#   Values:  no, yes
+#   Default: no
+#
+#   This has to be set to &#39;yes&#39; on every node, if there is a replica
+#   manager in this dCache instance. Where the replica manager is started
+#   is controlled in &#39;etc/node_config&#39;. If it is not started and this is
+#   set to &#39;yes&#39; there will be error messages in log/dCacheDomain.log. If
+#   this is set to &#39;no&#39; and a replica manager is started somewhere, it will
+#   not work properly.
+&lt;/pre&gt;
+
+The way I am reading this, we need to set replicaManager=yes in
+dCacheSetup on every node. The install script did not do this.
+
+3) The script asks for FQHN&#39;s for all admin nodes. The name of the
+pnfs node, I think, is only used to set ADMIN_NODE in node_config and
+consequently it is only used to mount pnfs on door nodes. Our nodes
+are on both WAN and LAN and they have both public and private
+names. To mount pnfs, we definitely need to use a private name
+(pnfs-0-0) instead of a public name (cithep131.ultralight.org). The
+install script attempted to mount cithep131.ultralight.org:/fs and
+this broke the install.
+
+4) The install script attempted to mount pnfs on another admin node
+where no doors or pnfs or pnfs manager is running. Not clear to me
+why. Pnfs does not need to be mounted there at all. Pnfs was already
+mounted there from the older dcache install - just for convenience
+purposes. The script choked on mounting pnfs on that node because it
+was mounted as
+
+&lt;pre class=&quot;screen&quot;&gt;
+pnfs-0-0:/pnfsdoors /pnfs/ultralight.org
+&lt;/pre&gt;
+
+and the install script wanted to mount it as
+
+&lt;pre class=&quot;screen&quot;&gt;
+pnfs-0-0:/fs /pnfs/fs
+&lt;/pre&gt;
+
+and then make a symbolic link:
+
+&lt;pre class=&quot;screen&quot;&gt;
+cd /pnfs
+ln -s fs/usr ultralight.org
+&lt;/pre&gt;
+
+5) There is no way to do a customized install of postgres using the
+VDT script. We like to install postgres not in the standard /var/lib
+location but on a raid1. This gives reliability and also the raid
+partition is not touched when the node is reinstalled. If we install
+postgres manually and have it running, the dcache install script skips
+not only postgres install (which is good) but also initialization of
+postgres users and databases (which is not good). I am hardly an
+expert on postgres but - isn&#39;t there a way to query the running
+postgres process if a certain user or database exists and create one if
+it doesn&#39;t?
+
+6) The install script on each pool node does not respect the old max
+pool size setting in pool/setup and puts a different number into
+pool_path. As per discussion in osg-storage, the setting in pool/setup
+overrides the one in pool_path. Not a big deal then.
+
+7) Server and host keys were not installed in /opt/d-cache/config on
+the admin node where adminDoor runs. This prevented me from connecting
+to the dcache admin interface.
+
+8) Upgrading to 1.7.0-36 breaks interaction with older srm clients
+because they want to use dcap protocol first instead of gsiftp. The
+right solution, I think, is the one posted by Jon - set
+srmIgnoreClientProtocolOrder=true in dCacheSetup on the srm server.
+
+9) After upgrading to the latest dcache client, &#39;export
+LD_PRELOAD=/opt/d-cache/dcap/lib/libdcap.so&#39; no longer works on our
+site. The library can be loaded but &#39;ls -l&#39; no longer returns the
+correct file size.  We used this option to verify the size of files
+downloaded by Phedex. We reverted to srm-get-metadata which opens more
+JVM&#39;s on the phedex node and occasionally exhausts node memory. The
+preload dcap lib is not working either on our 64-bit nodes or on the
+phedex node, which is still 32-bit. Not resolved.
+
+10) We specified USE_MULTI_MOVER_QUEUES=yes in site-info.def:
+
+&lt;pre class=&quot;programlisting&quot;&gt;
+USE_MULTI_MOVER_QUEUES:gsiftpIoQueue=WAN \
+USE_MULTI_MOVER_QUEUES:gsidcapIoQueue=LAN \
+USE_MULTI_MOVER_QUEUES:dcapIoQueue=LAN \
+USE_MULTI_MOVER_QUEUES:poolIoQueue=default,WAN,LAN \
+&lt;/pre&gt;
+
+But dcap transfers from node to node are going over WAN. Even if I
+specify dcap source using a node name mapped to private ip, for
+example, dcap://compute-0-19:22125/path. All our nodes are both on WAN
+and LAN. Not resolved.
+
+&lt;/blockquote&gt;
+
+
+
+
+
+---
+
+
+
+
+---+!! Using Certificates
+---+++ Default Credential Location
+
+By default the user certificate and user key are installed in =~/.globus=. Unless overriden explicitly on command line, the clients use these credentials.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LOGINNAME% ~]$ &lt;userinput&gt;ls -lt ~/.globus/&lt;/userinput&gt;
+total 12
+-rw-------  1 %LOGINNAME% %LOGINNAME% 1743 Jun 22 16:45 userkey.pem
+-rw-------  1 %LOGINNAME% %LOGINNAME% 5011 Jun 22 16:37 usercert.pem
+[%LOGINNAME% ~]$ 
+&lt;/pre&gt;
+
+---++++ Notes
+
+The userkey.pem is the file containing encrypted private key. The permissions on that file are restrictive, such that only the owner can read or write to that file.
+
+The usercert.pem is the certificate, containting the public key. This file is not encrypted and can be distributed freely.
+
+
+
+
+---+ Topics I Edited in the last Two Weeks
+Here they are below
+
+&lt;span id=&quot;twid_%CALC{$SETM(twisty_id, + 1)$GET(twisty_id)}%show&quot; class=&quot;twistyMakeVisible&quot;&gt;&lt;a href=&quot;#&quot; class=&quot;twistyTrigger&quot;&gt;more...&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;twid_%CALC{$GET(twisty_id)}%hide&quot; class=&quot;twistyHidden&quot;&gt;&lt;a href=&quot;#&quot; class=&quot;twistyTrigger&quot;&gt;close&lt;/a&gt;&lt;/span&gt;
+&lt;div id=&quot;twid_%CALC{$GET(twisty_id)}%toggle&quot; class=&quot;twistyMakeHidden&quot;&gt;
+
+%SEARCH{ search=&quot;[T]opicInfo.*author\=.*[F]orrest&quot; web=&quot;Education, Integration, Integration.ITB_0_5, Documentation, Main&quot; type=&quot;regex&quot; scope=&quot;all&quot; date=&quot;P1w/$today&quot; order=&quot;modified&quot; format=&quot;$web.$topic&quot; separator=&quot;, &quot; }%
+
+&lt;/div&gt;
+
+
+---+ dCache Services
+%STARTMore%
+
+| *Location Manager* | Supplies IP address and port of dCache domain |
+| *dCache* | Routes messages between dCache services |
+| *admin* | Allows login to running services |
+| *pnfsManager* | Queries the pnfs service |
+| *pinManager* | Prevents modification of files during transfer |
+| *replicaManager* | Maintains replica count of files on pools |
+| *Billing* | Maintains records and statistics of all transactions |
+| *http* | Provides information on state of dCache |
+| *gPlazma* | Authorizes users |
+
+%ENDMore%
+
+---++ Fermilab SRM clients
+&lt;pre class=&quot;screen&quot;&gt;
+srmcp srm://ligodata.uwm.edu:8443/pnfs/uwm.edu/data/testfile file:////tmp/test.tmp
+srmcp srm://storage.ligo.lsu.edu.:8443/pnfs/uwm.edu/data/file.01 srm://ligodata.uwm.edu:8443/pnfs/uwm.edu/data/testfile.01 
+&lt;/pre&gt;
+
+srmcp uses a GSI X.509 proxy, which can contain attributes for both group and role memberships. 
+srmcp can specify for gridftp transfers
+Port range
+Number of streams
+Buffer size, ...
+srmls, srmrm
+
+---++ Private Networks and Firewalls
+Many dCache installations will have portions on private networks or exist behind firewalls. dCache supports both.
+
+---++ dCache Authorization
+dCache supports authorization through put GSI and kerberos. 
+
+Host certificates on SRM, gridftp, gsidcap, gPlazma
+
+Client proxies are delegated within dCache. This allows SRM to act as a client.
+
+Gridftp doors must be on public network
+
+Pools may be on private network. This requires gridFTP adapter for local to SRM transfers, although SRM to SRM transfers may be possible.
+
+Additionally, dCache allows you to specify certain ports or port ranges for use when behind firewalls.
+
+
+---+++ gPLAZMA
+Our prefered authorization is through gPlazma, which allows choice of authorization methods. It support role-based authorization.
+
+Additionally, gPLAZMA can use the GUMS server for centralized administration. This requires that storage obligations be added to GUMS permit decision. 
+
+
+---+ Generic USCMS Tier2 SRM/dCache Installation Example
+&lt;table&gt;&lt;tr&gt;&lt;td&gt;
+Admin node:
+   * lmDomain
+   * poolManager
+   * adminDoor
+   * httpDomain 
+   * utilityDomain 
+   * gplazmaService
+   * infoProvider
+&lt;/td&gt;&lt;td&gt;
+pnfs node 
+   * pnfsManager
+   * dirDomain
+&lt;/td&gt;&lt;td&gt;
+SRM node
+   * Three door nodes running dcap + grid doors
+   * Pools on worker nodes or RAID
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+This should be around 30 terabytes with a throughput of ~20 MB/sec.
+
+
+---++ Inputs Required for Installation of SRM/dCache
+   * Number of storage nodes in your site
+      * The installation script suggests service distribution
+   * Hostnames
+   * Paths to and sizes of your pools
+   * Doors: types, number
+
+
+%BR%
+
+ForrestChristianSandboxDocScientists
+
+---
+
+%INCLUDE{ &quot;Documentation.ToolsBottomMatter&quot; }%
+-- Main.ForrestChristian - 12 Sep 200 %BR%
+
+   * [[%ATTACHURL%/dcb.css][Stylesheet for HTML file]]
+   * [[%ATTACHURL%/InstallingDcacheForOSG.html][Installing dCache for the Open Science Grid]]
+   * [[%ATTACHURL%/efc_css_test.css][Tasty css]] 
+   * [[%ATTACHURL%/forrestSideBar.css][forrestSideBar.css]]: 
+   * [[%ATTACHURL%/forrestSideBar.css][forrestSideBar.css]]: Tasty sidebar css
+   * [[%ATTACHURL%/PacmanInfo.html][PacmanInfo.html]]: Printable version of pacmaninfo for testing
+   * [[%ATTACHURL%/javascript_cookies.js][javascript_cookies.js]]: Javascript cookies js file
+&lt;img src=&quot;%ATTACHURLPATH%/natskintest_patternskin_low.gif&quot; alt=&quot;natskintest_patternskin_low.gif&quot; style=&quot;border:2px; width:25%; height:25%;&quot; /&gt;
+
+&lt;/div&gt;
+
+
+---
+
+---
+notes from 
+
+Porting an application
+what your application requires
+	versions
+		kernel 
+		perl
+		shell
+		
+		
+categorize your application
+	Does it need external access in any way?
+	Do you need certain libraries on the system or can you take them with you?
+		which you may or may not know without trying it first
+	How does you application set work in terms of mnultiple stages&gt;?
+		Run one thing, then run another things based on its results, then one or more things based on those results....
+		Can you put it into a DAG?
+			Stage
+				Can only have 30-60 jobs at a time
+	Is your app going to run well on OSG?
+		MPI not well supported
+		Lattice QCD people at Fermilab. Have their own MPI farm. 
+		If you toss your app to OSG, you have to discover which sites support MPI, what version they are running, then rest of the problems getting it to work.
+		It&#39;s not 100% certain you can get it to work. See engagement group.
+		
+Is it worth it?
+	What you have now vs. on the Grid, trading off with the costs of running it on the Grid.
+	If your job needs to accept incoming connections, you will be very restricted on what sites you can use. most sites do not allow incoming connections. So it is probably not worth it.
+	Big thing is SYN. &quot;Syn packet&quot; is the initial packet that gets thrown to a server from a client. Firewall may drop syn packets. So it&#39;s a site issue, not just server configurations.
+	Some things a site manager don&#39;t want to fix. Such as worker nodes writing to OSG_APP area. 
+  
+    
+

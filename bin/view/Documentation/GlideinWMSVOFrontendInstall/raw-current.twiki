@@ -1,0 +1,176 @@
+%LINKCSS%
+
+&lt;!-- This is the default OSG documentation template. Please modify it in --&gt;
+&lt;!-- the sections indicated to create your topic.                        --&gt; 
+
+&lt;!-- By default the title is the WikiWord used to create this topic. If  --&gt;
+&lt;!-- you want to modify it to something more meaningful, just replace    --&gt;
+&lt;!-- %TOPIC% below with i.e &quot;My Topic&quot;.                                  --&gt;
+
+---+!! This document is OBSOLETE! Please use/edit [[Documentation/Release3.InstallGlideinWMSFrontend][InstallGlideinWMSFrontend in Release3]]
+
+---+!! !GlideinWMS VO Frontend Installation
+%TOC%
+
+---++ About This Document
+
+This document describes how to install the Glidein Workflow Managment System (!GlideinWMS) VO Frontend.  The VO Frontend is the minimum required software for a Virtual Organization to submit grid jobs using the !GlideinWMS system.  This installation guide describes installation using the RPM prepared by the OSG.  
+
+
+---++ Requirements
+Non-Firewalled ports from 9618 to 9660 for both TCP connections and UDP packets.
+
+
+Required software:
+   * [[https://twiki.grid.iu.edu/bin/view/ReleaseDocumentation/ClientInstallationGuide][OSG Client]] (Do no install condor with the client)
+   * [[http://www.cs.wisc.edu/condor/downloads-v2/download.pl][Condor RPM (Development series)]]
+   * [[http://sourceforge.net/projects/javascriptrrd/files/][JavascriptRRD/Flot]].  RPM available [[http://t2.unl.edu/store/rpms/SL5/x86_64/javascriptrrd-0.5.0-2.noarch.rpm][Here]]
+   * Available from add-on repos (Such as [[http://fedoraproject.org/wiki/EPEL][EPEL]].  Repo [[http://fedoraproject.org/wiki/EPEL/FAQ#howtouse][Install]]):
+      * Apache httpd.  Install and enable:
+        &lt;pre class=&quot;screen&quot;&gt;
+yum install httpd
+chkconfig --add httpd
+chkconfig httpd on&lt;/pre&gt;
+      * rrdtool-python.  Install:
+      &lt;pre class=&quot;screen&quot;&gt;
+yum install rrdtool-python&lt;/pre&gt;
+
+
+
+---++ Installation Procedure
+   0. Download and install the pre-requisite software
+   1. Download and install the VO Frontend RPM
+   1. Edit Frontend configuration options
+   1. Edit Condor configuration options
+   1. Create a Condor grid map file
+   1. Reconfigure and Start frontend
+
+
+---+++ Download and install the VO Frontend RPM
+
+The RPM is currently available from [[http://koji.hep.caltech.edu/public/packages/GlideinWMSFrontend/2.5.1/9/noarch/GlideinWMSFrontend-2.5.1-9.noarch.rpm][the glideinWMS project]].  The source RPM is available at [[http://koji.hep.caltech.edu/public/packages/GlideinWMSFrontend/2.5.1/6/src/GlideinWMSFrontend-2.5.1-9.src.rpm][the glideinWMS project]] also.
+
+   1. Download/Install the RPM
+   &lt;pre class=&quot;screen&quot;&gt;
+$ rpm -Uvh http://koji.hep.caltech.edu/public/packages/GlideinWMSFrontend/2.5.1/9/noarch/GlideinWMSFrontend-2.5.1-9.noarch.rpm&lt;/pre&gt;
+  
+   If the install succeeded, then there will be no output from the command.
+
+
+
+---+++ Configuring the Frontend
+
+The configuration file is =/etc/gwms-frontend/frontend.xml=.  The next steps will describe each line that you will need to edit.  The portions to edit are highlighted in red font.
+
+   1. The VO you are affiliated with.
+   &lt;pre class=&quot;file&quot;&gt;
+&amp;lt;factory query_expr=&#39;((stringListMember(&quot;%RED%VO%ENDCOLOR%&quot;, GLIDEIN_Supported_VOs)))&#39;&gt;&lt;/pre&gt;
+   1. The username that you are assigned from the factory (email osg-gfactory-support@physics.ucsd.edu) (scroll right).
+   &lt;pre class=&quot;file&quot;&gt;
+&amp;lt;collector DN=&quot;/DC=org/DC=doegrids/OU=Services/CN=glidein-1.t2.ucsd.edu&quot; comment=&quot;Define factory collector globally for simplicity&quot; factory_identity=&quot;gfactory@glidein-1.t2.ucsd.edu&quot; my_identity=&quot;%RED%username%ENDCOLOR%@glidein-1.t2.ucsd.edu&quot; node=&quot;glidein-1.t2.ucsd.edu&quot;/&gt;
+   &lt;/pre&gt;
+   1. The Schedd information.  The Cert DN is the DN specified in the GSI_DAEMON_PROXY or GSI_DAEMON_CERT when condor is configured.  A secondary schedd is optional.  You will need to delete the secondary schedd line if you are not using it.
+   &lt;pre class=&quot;file&quot;&gt;
+&amp;lt;schedds&gt;
+   &amp;lt;schedd DN=&quot;%RED%Cert DN used by the schedd at fullname:%ENDCOLOR%&quot; fullname=&quot;%RED%Hostname of the schedd%ENDCOLOR%&quot;/&gt;
+   &amp;lt;schedd DN=&quot;%RED%Cert DN used by the second Schedd at fullname:%ENDCOLOR%&quot; fullname=&quot;%RED%schedd name%ENDCOLOR%@%RED%Hostname of second schedd%ENDCOLOR%&quot;/&gt;
+&amp;lt;/schedds&gt;&lt;/pre&gt;
+   1. The DN of the cert that the frontend will use to communicate with the factory and use to submit to the factory.
+   &lt;pre class=&quot;file&quot;&gt;
+&amp;lt;security classad_proxy=&quot;/tmp/x509up_u99&quot; proxy_DN=&quot;%RED%DN of proxy owned by user nobody%ENDCOLOR%&quot; proxy_selection_plugin=&quot;ProxyAll&quot; security_name=&quot;%RED%The security name, this is used by factory%ENDCOLOR%&quot; sym_key=&quot;aes_256_cbc&quot;&gt; &lt;/pre&gt;
+   1. The hostname of the frontend.
+   &lt;pre class=&quot;file&quot;&gt;
+&amp;lt;stage base_dir=&quot;/usr/share/gwms-frontend/www/stage&quot; use_symlink=&quot;True&quot; web_base_url=&quot;http://%RED%hostname of frontend%ENDCOLOR%/vofrontend/stage&quot;/&gt; &lt;/pre&gt;
+   1. The hostname of the collectors.
+   &lt;pre class=&quot;file&quot;&gt;
+&amp;lt;collector DN=&quot;DN of main collector&quot; node=&quot;%RED%hostname of collector%ENDCOLOR%&quot; secondary=&quot;False&quot;/&gt;
+&amp;lt;collector DN=&quot;DN of secondary collectors (usually same as DN in line above)&quot; node=&quot;%RED%hostname of secondary collectors (usually same as hostname in line above)%ENDCOLOR%:9620-9660&quot; secondary=&quot;True&quot;/&gt;
+&lt;/pre&gt;
+
+---+++ Configuring Condor
+In versions of Condor 7.4.4 and above, the condor configuration for the frontend is placed in =/etc/condor/config.d/00_frontend.config=.  If you have a version less than 7.4.4, a local condor configuration file is located at =/etc/condor/condor_config.local=.  Adding the following to the bottom of =condor_config.local= will pick up the !GlideinWMS condor configuration.
+&lt;pre class=&quot;file&quot;&gt;
+LOCAL_CONFIG_DIR = /etc/condor/config.d&lt;/pre&gt;
+
+After configuring condor, be sure to restart condor:
+&lt;pre class=&quot;screen&quot;&gt;
+service condor restart&lt;/pre&gt;
+
+The lines you have to edit:
+   1. Credentials of the machine.  You can either run using a proxy, or a service certificate.  It is recommended to use a service certificate, which uses the variables GSI_DAEMON_CERT and GSI_DAEMON_KEY.  The proxy and certificate files should be owned by user =condor=.
+   &lt;pre class=&quot;file&quot;&gt;
+############################
+# Credentials
+############################
+#GSI_DAEMON_PROXY = /tmp/x509up_u1349
+
+# EDIT THESE VALUES
+# If you ever decide to use a Certificate, see below
+GSI_DAEMON_CERT = /etc/grid-security/glideincert.pem
+GSI_DAEMON_KEY  = /etc/grid-security/glideinkey.pem &lt;/pre&gt;
+   1. Location of the condor grid map (description in the next section)
+   &lt;pre class=&quot;file&quot;&gt;
+#################################
+# Where to find ID-&gt;uid mappings EDIT THIS
+#################################
+CERTIFICATE_MAPFILE=/opt/glidecondor/certs/condor_mapfile &lt;/pre&gt;
+   1. Add the DN&#39;s for the certificates that your daemons will use.  Examples are placed below.
+   &lt;pre class=&quot;file&quot;&gt;
+#####################################
+# Add whitelist of condor daemon DNs EDIT THIS
+#####################################
+GSI_DAEMON_NAME=/DC=org/DC=doegrids/OU=People/CN=Derek Weitzel 285345,/DC=org/DC=doegrids/OU=People/CN=Derek Weitzel 285345/CN=993078166,/DC=org/DC=doegrids/OU=Services/CN=host/glidein.unl.edu,/DC=org/DC=doegrids/OU=Services/CN=glidein-1.t2.ucsd.edu &lt;/pre&gt;
+
+
+---+++ Create a Condor grid map file.
+The condor grid map file is used for authentication between the glidein running on a remote worker node, and the local collector.  Condor uses the mapfile to map certificates to users on the local machine.  It is important that you map the DN&#39;s of:
+   * Each schedd that the frontend talks to
+   * The DN that the frontend uses
+
+Below is an example mapfile:
+   &lt;pre class=&quot;file&quot;&gt;
+GSI &quot;^\/DC\=org\/DC\=doegrids\/OU\=People\/CN\=Derek\ Weitzel\ 285345$&quot; frontend
+GSI &quot;^\/DC\=org\/DC\=doegrids\/OU\=Services\/CN\=host\/hcc\-grid\.unl\.edu$&quot; dweitzel
+GSI &quot;^\/DC\=org\/DC\=doegrids\/OU\=Services\/CN\=host\/cpass\.unl\.edu$&quot; dweitzel
+GSI (.*) anonymous
+FS (.*) \1 &lt;/pre&gt;
+
+
+---+++ Proxy Configuration
+By default, the frontend will run as user =nobody=.  In order for the frontend to use the certificate for user =nobody=, it has to exist and be owned by the user =nobody=.
+   1. Create the proxy
+   &lt;pre class=&quot;screen&quot;&gt;
+user&gt; $ voms-proxy-init -valid &amp;lt;hours_valid&gt; -voms &amp;lt;vo&gt; &lt;/pre&gt;
+   1. Copy the proxy to the correct name
+   &lt;pre class=&quot;screen&quot;&gt;
+user&gt; $ cp /tmp/x509up_u`id -u` /tmp/x509up_u`id -u nobody` &lt;/pre&gt;
+   1. Change ownership of the proxy
+   &lt;pre class=&quot;screen&quot;&gt;
+root&gt; $ chown nobody: /tmp/x509up_u`id -u nobody` &lt;/pre&gt;
+
+
+---+++ Reconfigure and verify installation
+In order to use the frontend, first you must reconfigure it.
+
+&lt;pre class=&quot;screen&quot;&gt;
+/etc/init.d/frontend_startup reconfig &lt;/pre&gt;
+
+After reconfiguring, you can start the frontend:
+&lt;pre class=&quot;screen&quot;&gt;
+/etc/init.d/frontend_startup start &lt;/pre&gt;
+
+
+
+
+---++ Important file locations
+
+|  *File Description*  |  *File Location*  |
+|Configuration file | /etc/gwms-frontend/frontend.xml |
+|Logs | /var/log/gwms-frontend/ |
+|Startup script | /etc/init.d/frontend_startup |
+|Web Directory | /usr/share/gwms-frontend/www |
+|Working Directory | /usr/share/gwms-frontend/frontend-temp/ |
+
+
+
+-- Main.DerekWeitzel - 25 Jun 2010

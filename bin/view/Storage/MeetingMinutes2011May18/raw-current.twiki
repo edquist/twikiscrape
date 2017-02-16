@@ -1,0 +1,102 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Jeff Dost
+   * Neha Sharma
+   * Alex Sim
+   * Doug Strain
+   * Tanya Levshina
+
+
+---+++ Guests
+   * Brian Bockelman
+   * Suchandra Thapa
+   
+---++ Status report
+&lt;!-- DESCRIPTION --&gt;
+Alex:&lt;pre class=&quot;screen&quot;&gt;
+ - Support on space token size as max integer
+ - scalability/robustness (concurrent and long running) testing on srm-ls and srm-copy against bestman2 gateway server
+ - Status updates on SRM security over SSL
+ - bestman2 RPM configuration discussion for hadoop release
+&lt;/pre&gt;
+
+Doug:&lt;pre class=&quot;screen&quot;&gt;
+- xrootd: Recreated xrootd-dsi rpm without library and re-packaged release candidate
+- Bestman RPM: working with Jeff and Brian about Bestman RPM
+&lt;/pre&gt;
+
+Jeff:&lt;pre class=&quot;screen&quot;&gt;
+- resolved bestman2 issue - fetch-crl rpm that is brought in as dependency no longer starts on installation
+- crl directory was no longer being updated, must start fetch-crl from init.d script now
+- in the process of testing Brian&#39;s new Bestman2 build - will solve configuration problems, be FHS compliant
+&lt;/pre&gt;
+
+Neha:&lt;pre class=&quot;screen&quot;&gt;
+built new vdt-dcache-3.0.7 tarballs which contain dcache 1.9.5-26. 
+upgraded gridworks. 
+performed preliminary testing. looks ok. 
+released to ITB. Suchandra will test later today.
+&lt;/pre&gt;
+
+Tanya:&lt;pre class=&quot;screen&quot;&gt;
+- tested xrootd-3.0.4rc1, discussed logfile rotation handling in xrootd. Configured xrootdfs with security enabled. Installed prima.rpm, configured gridftp to work with GUMS. Updated documentation pages.
+- installed bestman2.0.10 from rpm. Have found several problems, discussed bestman rpm packaging 
+- dcache 1.9.5-26 certification tests
+- support
+&lt;/pre&gt;
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+Hadoop 0.20
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+HDFS has been installed on ITB cluster and tested by Suchandra. He proposed several changes in doc as well as some modifications of the  init script. Jeff will incorporate the changes. There was no significant progress in doc update. Jeff has figured his problems with his BeStMan installation (old crl CA files).
+
+---++ Second Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+bestman rpm
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+The current bestman.rpm package  and native bestman configuration script have to be modified:
+  1. configure script should not change the content of bestman.server, all the parameters that may be changed should be placed in a separate configuration file (/etc/sysconfig/bestman2)
+  2.  bestman.server should exec java process instead of spawning sub-process
+  3. GSI exceptions should be preserved 
+
+Brian will send all the proposed patches to Alex. Alex will review them and modify configure script and bestman.server accordingly. Jeff will try to install and test a new rpm by the end of this week. If it works, we will test it at Fermilab and then release to ITB. If we need more time for these fixes we will move the current version of hadoop packages (bestman 2.0.10/hdfs 0.20) to &quot;stable&quot; and continue work on bestman rpms.
+
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+vdt-dcache 3.0.7
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+vdt-dcache-3.0.7 is released. Neha will work with Doug to see if she can built gratia dcache probe rpm in mock environment. It makes more sense to install probes form vdt repo.
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+xrootd rpm
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+We have two xrootd clusters and global redirector installed on our test nodes. 
+First cluster (SRM endpoint):
+   1. bestman. gridftp-dsi-xrootd, xrootdfs, 
+   1. redirector node: xrootd redirector,cmsd, xrood for CNS
+   1. 3 data server nodes: xroord, cmsd, cnsd (simple security enabled)
+
+Secod cluster( Tier-3 imitation):
+   1. grdiftp, 2 xrootdfs - local (security enabled) and remote mounts
+   1. redirector: xroord,cmsd, xrootd for SSI
+   1. data servers: xrootd,cmsd,cnsd,frm  (simple security enabled)
+
+We are waiting for release of 3.0.4 rc2 source rpm that should contain several bug fixes and some minor changes in configuration.
+
+---++ Fifth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Tickets
+---+++ Discussion
+no new tickets
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 18 May 2011

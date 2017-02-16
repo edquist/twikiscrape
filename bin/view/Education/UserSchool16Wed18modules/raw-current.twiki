@@ -1,0 +1,79 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+---+ Bonus: Installing Modules to your Python Installation
+
+Most scientific software uses at least one specialized Python _module_ with special functionality for analysis.  In this exercise, you will pre-build a Python installation that includes the =numpy= module.  This exercise should take 10-15 minutes.  
+
+*Note: This exercise is untested!* Give it a shot, but recognize that some things may not work exactly.  
+
+---++ Build Job
+
+As in [[UserSchool16Wed15pybuilt][Exercise 1.5]], we are going to submit an interactive job for building our installation.  You can choose to either add the module to your existing installation or start over from scratch.
+
+   1. Log into =learn.chtc.wisc.edu= and go into the directory you created for the previous Python exercises.  
+   2. Find the =build.submit= file you used in [[UserSchool16Wed15pybuilt][Exercise 1.5]].  If you want to add the modules to your existing installation, list your pre-built Python \
+file in =transfer_input_files=.  If you want to start over from scratch, leave the Python source in =transfer_input_files=. 
+   3. Submit the build submit file using the =-i= option to =condor_submit=. 
+   4. Once the job starts, either untar your pre-built Python installation from before, or build one from source using the instructions from a previous exercise.  
+   5. Set your =PATH= to include your installation:  \
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;strong&gt;export PATH=$(pwd)/python/bin:$PATH&lt;/strong&gt;
+&lt;/pre&gt;
+
+---++ Adding Modules
+
+In this example, we will be installing the =numpy= module.  There are at least two ways to install Python modules - pick one of the two options below.  
+
+---+++ Using =setup.py=
+
+One way to install a Python module is to download the source from [[https://pypi.python.org/pypi][The Python Package Index]] and install it using the standard \
+=setup.py= script.  
+
+   1. Go to the Python Package Index and search for numpy.  Once you find the page for numpy, scroll down the list of downloads to find the source =tar.gz= file.  Save the link \
+location and download it into the interactive job using =wget=.  
+   2. Untar the numpy source, and move into the created directory.  Try running the given standard =setup.py= script using: \
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;strong&gt;python3 setup.py install&lt;/strong&gt;
+&lt;/pre&gt;
+   3. It turns out we also need to install =setuptools=!  Move back in the main working directory of the job and repeat steps 1 and 2, but with the =setuptools= module.  
+   4. Once =setuptools= is installed, move back into the =numpy-1.11.1= directory and try running the install command again: \
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;strong&gt;python3 setup.py install&lt;/strong&gt;
+&lt;/pre&gt;
+   5. If all goes well, the installation process should complete.  Congratulations!  You&#39;ve now included numpy in your installation.  
+
+---+++ Using =pip=
+
+=pip= is a package management tool that can be used to install and manage Python modules.  To install modules (in our case, numpy) using pip, simply run: 
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;strong&gt;pip3 install numpy&lt;/strong&gt;
+&lt;/pre&gt;
+
+*Note:* If you are using your installation from before, this command will error out, because =pip= has stored the location of the directory where you originally built python.  To fix this, you just need to add =python3= before the =pip= command: 
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;strong&gt;python3 pip3 install numpy&lt;/strong&gt;
+&lt;/pre&gt;
+
+---++ Using Your Installation
+
+   1. Once you have installed your modules using either method, create a tarball of your new installation.  You just need to re-tar your =python= installation directory \
+as the modules have been installed to a sub-directory inside.  *From the working directory* run: \
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;strong&gt;tar czf python_np.tar.gz python/&lt;/strong&gt;
+&lt;/pre&gt;
+   1. Exit the interactive job.  Your new installation, =python_np.tar.gz= should have returned to the submit server with you.  
+   1. Download a test script: \
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;strong&gt;wget http://proxy.chtc.wisc.edu/SQUID/osgschool16/np_test.py&lt;/strong&gt;
+&lt;/pre&gt;
+   1. Make a copy of a script and submit file from the previous exercises, modifying them to use your =python_np.tar.gz= file as the pre-built installation and to run the \
+script you just downloaded.  
+   1. Submit your job. Does it work? 
+
+---++ Alternatively...
+
+If you need a lot of python packages, using a distribution like [[https://www.continuum.io/downloads][Anaconda]] might be an easier way to install what you need.  The Anaconda \
+download page provides an installation script and instructions.  Anaconda installs to a single directory - this is the directory that you&#39;ll want to tar/gzip and use to run your jobs.  

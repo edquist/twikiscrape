@@ -1,0 +1,148 @@
+-- Main.DanFraser - 13 Apr 2010
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+---++ Action/Significant Items:
+   * The CERN BDIIs exceeded an internal 5MB limit and info became unavailable when BNL-Atlas added two additional CEs to its resource group. The problem was restored when the CEs were pulled back. Brian is working with Atlas to upgrade to the multi-CE configuration but this requires a GIP upgrade as well. Tests are underway to temporarily upgrade the Gratia binaries since a full upgrade will need to wait until Atlas downtime. This should reduce the data to less than 3MB, even with the new CEs. (Xin, Brian)
+   * CERN BDII operations are not currently considered as a critical service although both CMS and Atlas consider their dependency on BDII to be critical, with CERN requiring 30 minute response time. This is being addressed by WLCG management. (Rob)
+   * There was a Gratia outage for over 20 hours. Brian discovered this by watching the DOE display.  There were no reports from the Gratia team. outage was restored when the backup Gratia DB was switched to the active one. Need to have a post-mortem of this outage and importantly the communications channel. The DOE display handled this outage correctly and gracefully as designed.
+
+---++ Attendees:
+   * Xin, Armen, Brian, Suchandra, Tony, Marco, Abhishek, Rob Q., Dan
+ 
+---++ CMS (Burt - Tony)
+
+   * 96 khours/day 97% success
+   * LHC Data taking ongoing at 7TeV center-of-mass-energy
+   * Machine is slowly increasing instantaneous luminosity still around 3 - 5E27/cm^2/s
+      * (plan was to be at &gt; 8E29/cm^2/s) - consequence: low data volumes
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * LHC operations last week was mixture of commissioning and collisions. So delivered luminosity with stable beam conditions was not very high. Commissioning will continue during the week. High intensity tests with stable low energy beams (450GeV/beam) during the weekend. Half of the next week technical stop for LHC.  During the last week ATLAS production was quite stable, at the average level of 8-9k/day running jobs, mainly simulation. Next reprocessing will start 1st week of May. 
+   * Job statistics for last week. 
+      * Gratia report: USATLAS ran 2.1M jobs, with CPU/Walltime ratio of 81%. 
+      * Panda world-wide production report (real jobs): 
+         * completed successfully 1.4M managed MC production, validation and reprocessing jobs 
+         * average 206K jobs per day
+         * failed 133K jobs
+         * average efficiency:  jobs  - 92%,  walltime - 94%
+   * Data Transfer statistics for last week
+      * BNL T1 data transfer rate is 200~250TB/day last week. Consistent with 
+   * Issues
+      * BDII uploading to WLCG: info size limit exceeded, causing no info from BNL on cern BDII, critical for production
+         * cern BDII has a limit of 5MB
+         * some mis-configured info from BNL CE GIP, being worked on.   
+      * Opportunistic SE usage for D0 : mapping issues should be fixed. Further tests are interrupted by a major problem on the local xrootd SE at UTA T2, which is now understood. Will continue and do more testing this week. 
+         
+
+---++ LIGO (Britta, Rob E.)
+   * Robert and I will be attending a face-to-face meeting with the Pegasus folks at ISI and will not be able to call in
+---+++ Gratia Reports
+   *  Current week&#39;s total usage: 4 users utilized 37 sites
+      * 84855 jobs total (26574 / 58281 = 31.3% success)
+      * 580605.8 wall clock hours total (478393.4 / 102212.4 = 82.4% success)
+   * Previous week&#39;s total usage: 3 users utilized 36 sites;
+      * 105583 jobs total (34595 / 70988 = 32.8% success)
+      * 762307.7 wall clock hours total (651387.5 / 110920.2 = 85.4% success)
+
+---+++ LIGO / E@H
+   * Recent Average Credit (RAC): 1,809,868.32657
+   * E@H rank based on RAC: 2 (-1)
+   * E@H rank based on accumulated Credits: 4 (+0) 
+
+---+++ LIGO / INSPIRAL
+   * Testing work-flows on Firefly/LIGO ITB cluster for run-time comparison, Firefly:  jobs held with globus error 47, contacted sys admin
+   * Waiting for Science Run 6 code to be ready for testing
+
+
+---++ Grid Operations Center (Rob Q.)
+
+---+++ Operations Last Week 
+   * Availability metrics for the last week 
+      * [[http://tinyurl.com/y48765w][GOC Services: BDII, MyOSG, RSV Collector, OSG Display]]
+      * [[http://tinyurl.com/y27mhfv][GOC hosted Security services managed by OSG security team]]
+   * *BNLT1 issue with top level WLCG BDII*
+      * Resource_group (BNL_ATLAS) got dropped from top level WLCG BDII sometime on Friday; [[https://ticket.grid.iu.edu/goc/viewer?id=8451#1271454066][See followup ticket here]]
+         * Note from ticket: The EGEE/WLCG top-level BDII currently has a limit of 5 MB per source: if a site produces more, it is rejected as a protection against misconfigured sites. An update is expected to be released soon that will increase the limit to 10 MB.  In the meantime sites will have to comply with the 5 MB limit to avoid problems.
+         * It was suggested that the GOC alert members whose BDII entries may soon reach the limit.
+   * *IUPUI Network Glitch on April 18th 2010*
+      * IUPUI based GOC services [is2, myosg2, ticket2, oim, twiki] may have been intermittently unavailable for 1-2 hours on the early morning (US-Eastern) hours of Sunday, April 18th 2010 
+         * is1 based out of Bloomington continued to work fine through the morning as did myosg1, ticket1
+   * *Ticket Exchange (TX)*: 
+      * *GGUS*
+         * GGUS presented null data for some fields where this was not allowed; GOC patched production instance to check for this case, and present warning
+      * *BNL RT*
+         * Tweaked OIM SC registration to use GOC-TX for real production tickets; following approval from ATLAS; Working well
+            * [[http://docs.google.com/Doc?docid=0AQGl_1gJKDWDZGY5ZnR6anZfMjFmMmpzZmc1cA&amp;hl=en#Transition_from_email_based_ex_7272405605382354][GOC-TX  section with detailed transition proposal]]
+      * *FNAL Remedy*
+         * Further connections issues and problem with web service interface reported to Remedy developers; Not high priority at FNAL
+      * *VDT*, *PROD_SLAC*, *UC_CI*, *SBGrid* - No change
+
+---+++ Operations This Week
+   * *Ticket Exchange (TX)*: 
+      * *GGUS*
+         * No updates
+      * *BNL RT*
+         * Add custom field setting on BNL-RT to provide GOCTicket number (shown on RT side under meta-data) - under ITB testing
+         * Discussing further action items with BNL developer
+      * *FNAL Remedy* - No Change, waiting on FNAL action discussed above
+      * *VDT*, *PROD_SLAC*, *UC_CI*, *SBGrid* - No Change, waiting on GOC action discussed below
+         * GOC has promised simple instructions on how to setup RT to use GOC-TX; depending on ease and priority, these SCs may adopt use of GOC-TX
+   * *Ongoing - Top Level WLCG BDII Monitoring* 
+      * GOC is still working out details with CMS; Monitor top level WLCG BDIIs (list of IPs RR&#39;ed by DNS) for presence of recent data for all WLCG-Interop-BDII enabled OSG resources
+      * Action items upon finding a problem still not clear - being worked out with CMS and OSG management
+
+
+
+---++ Engage (Mats, John, Chris)
+
+
+---++ Integration (Suchandra)
+    * Completing testing of ITB 1.1.20/OSG 1.2.9
+        * Release on Thursday tentatively scheduled
+        * Waiting from signoffs from all test sites
+    * ITB Robot
+        * Added automated testing and reporting
+        * [[http://osg-vtb.uchicago.edu/reports/][Nightly reports]]
+        * Adding more test coverage including certificate testing for security
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and (variation from last week in parenthesis).
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.2.8
+      *       77 (3) OSG 1.2.X resources (      24 are 1.2.8)
+      *        6 (0) OSG 1.0.X resources (       1 are 1.0.6)
+      *        8 (0) OSG 1.0.0 resources
+      *        2 (0) OSG 0.8.0 resources
+
+
+
+---++ Metrics (Brian)
+
+   * Success - OSG-Display was featured in the keynote talk of Condor Week
+   * Not as great - The OSG map shown was the old Grid Cat map.
+   * Failure - OSG-Display spent the last 20 hours or so with stalled data due to Gratia DB issues.
+      * This cleared up when the backup Gratia DB was switched to the active one.
+      * I will be talking to the Gratia folks about monitoring on Wednesday
+      * I am starting to ponder about how we can get better overall &quot;health metrics&quot; for the OSG - i.e., OSG Operations Display?  No concrete ideas, but it&#39;s beginning to rumble around in my head.
+   * Lots of work with OSG-Storage to revise the dCache-transfer probe.  We&#39;ve been testing a new one out at Wisconsin.  Get a factor of 2-3 reduction in records, but it should be even larger at more active sites.
+
+---++ Virtual Organizations Group (Abhishek)
+
+   * D0
+      * MC Production average 9 M Events/week. 60,000 wall-hours/day at 76% efficiency.
+      * UTA SE access is still pending; D0 waiting to hear back from site contacts.
+      * Looking to increase efficiency at available sites. E.g., efficiency is:
+         * poor at ce.grid.unesp.br, osg-ce.sprace.org.br, umiss001.hep.olemiss.edu.
+         * not fully satisfactory at osg.rcac.purdue.edu.
+      * Additional details:   
+      * Prariefire cluster at UNL needs to be looked into. Other 4 UNL clusters are operating well.
+      * At Purdue RCAC, D0 is able to use SE, but efficiency is lower than at other sites. In addition, D0 does not get a significant number of slots.
+      * Mississippi doesn&#39;t give a lot of slots, and efficiency is low.
+      * Good batch slot availability at SPRACE and UNESP, but not yet ready to provide SE; low efficiency.    
+
+---++ Security (Mine)

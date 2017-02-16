@@ -1,0 +1,73 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+---+ Wednesday Exercise 1.6: Using python, pre-built
+
+Alternative way to handle python - still using a shell script, but instead of installing fresh, pre-build and untar
+
+---++ Interactive job for pre-building
+
+Create =build.submit= file 
+
+&lt;pre class=&quot;file&quot;&gt;
+universe = vanilla
+
+output = build.out
+error = build.err
+log = build.log
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+transfer_input_files = Python-2.7.10.tgz
+
+queue
+&lt;/pre&gt;
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;condor_submit -i build.submit&lt;/strong&gt;
+&lt;/pre&gt;
+
+Run through same installation steps as before: suggestion: install to new directory in order to make tar step easier.  
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;mkdir python&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;tar xzf Python-2.7.10.tgz&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cd Python-2.7.10&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;./configure --prefix=$(pwd)/../python&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;make&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;make install&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cd ..&lt;/strong&gt;
+&lt;/pre&gt;
+
+Now we have a good python installation in the =python= subdirectory of our working directory.  Just tar it up!
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;tar czf built_python.tar.gz python/&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;exit&lt;/strong&gt;
+&lt;/pre&gt;
+
+Pre-built tar package will return with us.  
+
+---++ Wrapper script
+
+Our wrapper script this time will much simpler.  Since we&#39;ve already done all the installation steps and tarred results, 
+just need to untar.  Access installation using the same two methods of previous exercise.  
+
+---++ Submit file
+
+Make copy of previous submit file (=python.submit=), named =python.submit=.  Which lines to change?  
+
+* executable =run_fib.sh=
+* transfer_input_files =fibonacci.py=, python source
+
+think about how much space you need!  
+
+submit job
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;condor_submit matlab.submit&lt;/strong&gt;
+&lt;/pre&gt;
+
+Check =.out= file to see if job completed.  

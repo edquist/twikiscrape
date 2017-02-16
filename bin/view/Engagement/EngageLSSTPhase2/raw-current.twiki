@@ -1,0 +1,521 @@
+&lt;strong&gt;NOTE: The LSST system described in these instructions have been modified for the actual production run. See this presentation for a description of the production activity: [[%ATTACHURL%/LSST-on-OSG-NCSA-Sep2010-v1.1.ppt][LSST-on-OSG-NCSA-Sep2010-v1.1.ppt]]&lt;/strong&gt;
+
+
+%TOC%
+
+---+!! LSST Image Simulation on OSG Phase 2
+
+---++ Introduction.
+
+The Phase 2 is starting in Jun 2010 with the goal of simulating one entire night of data taking by LSST.
+
+This is the [[EngageLSST][documentation for the phase 1 of the project]]
+
+---++ Requirements
+
+&lt;b&gt;DRAFT&lt;/b&gt;&lt;br&gt;
+These requirements need to be vetted with LSST. &lt;br&gt;
+Items marked with question marks (??) are the most uncertain.&lt;br&gt;
+
+---+++ Application requirements
+
+The LSST detector consists of 189 adjacent chips. The LSST Simulation application simulates as independent jobs the 189 chips of the LSST detector to create one simulated observation of the sky i.e. an image. The output of the 189 jobs can be optionally merged to generate the complete simulated image (does LSST want this step done on OSG for phase II ??).
+   * Workflow: 189 simulation jobs --&gt; 1 (optional) merge job
+
+There are two main modes in which to run the simulation:
+   * deep drill: simulate small region of the sky continuously imaged
+   * wide field survey: simulate as much sky as possible for 1 night of observation
+
+---+++ Platform requirements
+Direct experience in job durations, IO requirements, etc. is reported below. This experience comes from running the LSST application on common OSG platforms for Phase I of the project.
+
+The common OSG platforms considered are all combinations of {Scientific Linux sl4,sl5} and {i386,x86_64}. The LSST simluation binaries have been compiled for all these platforms and that were made available at the sites in $OSG_APP (in phase I using the OSG MM).
+
+   * Simulation job duration on common OSG platforms = 2 - 4 hours / job (average over 189 jobs = 140 minutes)
+   * Simulation job application = unix binaries
+   * Simulation job Memory requirement = 1 GB (some jobs failed w/ out-of-memory)
+   * Merging job duration = Estimate 15 minutes (uncompress 10 MB of input * 189 + concatenate the images) ??
+   * Merging job application = MatLab (is there a unix binary for this?)
+   * Memory requirement = &gt;1 GB (Measured 1044MB VSZ, 741MB RSS)
+
+---+++ I/O Data requirements
+
+   * Input to the simulation job:
+      * Galaxy files: a catalog of the objects in the sky.
+         * They are fairly static: it may change once per year.
+         * They consists of 4000 files, 46 MB overall compressed, 362 MB overall uncompressed.
+         * Each job needs access to all galaxy files
+         * In phase I, these were pre-installed in OSG_DATA
+      * CAT files: generated from the galaxy files to describe what each chip will see, including effects such as atmospheric aberrations, the direction and speed of the wind, the position of the moon, etc.
+         * Each job needs a different and specific CAT file as input. This is true for both deep drill and wide field survey simulation modes.
+         * Each file consist of 7MB compressed.
+         * In phase I, these were pre-installed in OSG_DATA
+      * One random seed per job
+
+   * Output of the simulation job:
+      * 1 FITS file per simulation job: an image in the NASA FITS format, which keeps together the image with its metadata
+         * These are 10 MB compressed, 1 per chip
+
+
+   * Input to the merging job
+      * 189 FITS files from the simulation jobs
+         * 10 MB compressed, 1 per chip
+
+   * Output of the merging job:
+      * 1 final image: this is the final output of the workflow. It is an image in FITS format.
+         * About 2 GB compressed ??
+
+
+---+++ Phase 2 specific requirements
+The goal of Phase 2 is to simulate 1 night of data collection for LSST. This consists of 500 pairs of focal plane images = 1000 images
+
+This consists of about 200,000 simulation jobs (1 chip at a time) and 1000 merging jobs.
+
+Assuming an upper limits of 4 hours per job, this consists of  800,000 CPU hours
+
+Assuming we can sustain 2000 simultaneous simulation jobs across the grid i.e. 50,000 CPU hours / day, this takes
+   * 17 days to complete the production, w/o counting failures
+   * 12,000 jobs / day , w/o counting merging jobs
+   * 84 GB / day of input CAT files (different for every job); each job also needs access to 46 MB of Galaxy files (same for every job)
+   * 120 GB / day of output for the simulation
+   * If files are kept in a Storage Element, this workflow requires about 1000 connections per hour (500 for input, 500 for output)
+   * Total number of simulation files = 400,000 (200,000 input + 200,000 output)
+   * Total output compressed from simulation jobs = 2.0 TB (10 MB per job)
+
+Requirements for the merging jobs (possibly not necessary)
+   * 1000 merging jobs
+   * 189 FITS files of input, 2 GB of total input per job
+   * 1 FITS file of output, 2 GB in size ??
+   * Amount of computation for 1 job = 15 minutes (estimate) ??
+   * Total amount of computation = 250 CPU h (estimate) ??
+   * Total output of final images: 1000 images, with total size of 2TB
+
+Lifetime and access requirements
+   * For how long should the storage elements keep the files? = ??
+   * Are the output of the simulation jobs valuable after merging? = ??
+   * Where should the output be kept? = ??
+   * Who should have access to the files ? How often per day ?
+   * How much data will be moved per day?
+
+
+---++ Project Execution Plan
+
+This link shows an [[http://home.fnal.gov/~garzogli/LSST/LSST-on-OSG-Phase-2-plan/LSST-on-OSG-Phase-2-v1.2.html][outline of the project execution plan]], with timeline and associated resources. 
+
+Older versions of the plan are maintained in [[http://home.fnal.gov/~garzogli/LSST/LSST-on-OSG-Phase-2-plan/][the same directory]]
+
+
+---++ Architecture
+
+---+++ Simple Architecture
+     &lt;img src=&quot;%ATTACHURLPATH%/LSST-Architecture-Jul22-10.jpg&quot; alt=&quot;LSST-Architecture-Jul22-10.jpg&quot; width=&#39;960&#39; height=&#39;720&#39; /&gt;    
+
+In this architectural configuration, computing resources are allocated via the GlideIn WMS system (OSG Glidein Factory) and are accessible to the user through a submission node running a condor scheduler. Input data is organized &quot;manually&quot; by the user at the submission node (Hadoop disk in the fig) and it is transferred to the worker node with the job by condor. Output is also returned to the submission node by condor. Binaries and common input file (Galaxy files) are pre-installed at all sites using the OSG Match Maker. The bookkeeping of the computational tasks (what jobs have failed, what need to be resubmitted, what percentage of the jobs have produced output, etc.) is done manually through condor.
+
+More in detail, in reference to the figure
+
+   1. The OSG Factory submit Glidein jobs to OSG clusters. When running, Glideins report the availability of computing resources (worker nodes) to the condor collector. As jobs are submitted to the user scheduler (step 3 below), the Glidein VO frontend adjusts the number of glidein submitted to OSG to respond dynamically to the demand for computing cycles. 
+   2. An LSST user logs into the Glidein submission machine (HCC at Nebraska). Using a command line user interface, she submits jobs with the granularity of a group of 189 jobs at the time (1 simulated LSST image). The user interface requires a seed, unique for the group of jobs (each job will then have its own unique seed), and a path to a directory containing the 189 input catalog files. In this model, these files can be organized in individual directories in the Hadoop file system 
+   3. In a unique local directory, the user interface generates a DAGMan description, a job description file for the 189 jobs, and a post-completion evaluation job.  The user interface then submits the DAG and the jobs to the scheduler. 
+      The DAG consist of 
+      * an initial job that creates the context for the monitoring process
+      * the 189 simulation jobs
+      * a post-completion job that gather statistics, such as the distribution of job resubmission, total job duration, job duration when successful, condor &quot;goodput&quot;, etc.&lt;/br&gt;
+      * &lt;img src=&quot;%ATTACHURLPATH%/LSST-DAG-Jul22-10.jpg&quot; alt=&quot;LSST-DAG-Jul22-10.jpg&quot; width=&#39;385&#39; height=&#39;252&#39; /&gt;    
+   4. The scheduler interacts with the condor collector to find an appropriate resource match for each job. The input file and the job are then dispatched directly from the hadoop storage to the selected worker node. As opposed to other grid submission systems (e.g. OSG MM), user jobs submitted through the glidein WMS system start immediately i.e. without waiting in any remote batch system queue. The output is then transferred back using condor mechanisms.
+   5. A periodic monitoring process publish on the web operationally-oriented characteristics of each job group, such as the number of completed output files, the link to post-completion statistics (see point 3), the related input and run directory, submission and modified time, etc. 
+
+The system is designed to be fault tolerant. If a job fails because of problems with the resource (e.g. network connection problems, job pre-emption, etc.) the job is automatically resubmitted by the system indefinitely. If the job fails because of application errors (missing binaries at the remote location, bug in the code, etc.), DAGMan resubmits the job up to 5 times. After this process, if the job did NOT succeed (exit with status 0), DAGMan creates a &quot;rescue&quot; DAG description file, which can be manually resubmitted to rerun only failed jobs. 
+
+---+++ Data Handling-enabled Architecture
+
+In parallel to the simple architecture describe above, we have considered the use of IRODS as a candidate OSG data handling solution. A data handling system would enable file cataloging, access of input and storage of output from / to multiple (redundant) storage elements, output file-oriented bookkeeping of the computation. At this time (Jul 1, 2010), it is unclear that IRODS will be deployed to OSG in time for the integration with the LSST Phase 2 project. 
+
+
+---+++ VO Workload Management (possibly useful for Phase 3 and beyond)
+Node requirements for GlideIn frontend
+
+   * Frontend:
+      * Fast Multicore CPU
+      * Webspace for monitoring
+      * 1GB memory
+
+   * User Pool + Schedd:
+      * Medium fast CPU
+      * Large Memory (16GB recommended). The memory requirement for the Schedd are 4 MB / jobs (in detail, the shadow process requires 8M Virt; 4M Res). For LSST it would be at least 4M * 2000+ = 8+GB.
+
+Examples of current production setups -
+
+   * Minos: Frontend+User Pool and WMS Collector+ User and WMS Schedd + Factory  ( 8 core server, 16 GB Memory)
+   * Samgrid: minor difference w.r.t. the Minos setup
+   * CMS Setup1: Frontend+User Pool Collector (32GB, 8CPU) ; User Schedd (32GB, 8CPU)
+   * CMS Setup2: Frontend (8GB, 8CPU); User Pool Collector + User Schedd (32GB, 8CPU)
+
+For LSST, we recommend 1 machine with Frontend + User Pool Collector + User Schedd (16GB, 8CPU)
+
+---++ Commissioning
+
+---+++ Results from 61 job groups
+
+The infrastructure has been initially tested submitting 61 job group, corresponding to 61 simulated images. Each job group consists of 189 individual jobs, each simulating a CCD chip. Considering 4 CPU hours as the CPU usage of an individual job (an over-estimate), 60 job groups (made of 189 individual jobs) can be processed in 24 hours with 2000 nodes used 100% efficiently i.e. ~ 50,000 CPU hours. For these and the following tests, the input files from the simulation of the image in Phase 1 was replicated 61 times in as many directories. 
+
+The LSST jobs were run on Jul 13 using the Glidein WMS frontend at the Holland Computing Center (HCC) in Nebrasca. 
+
+The following plot shows various quantities related to the HCC Glidein frontend vs. time. The number of idle jobs (violet line) spikes up as the 61 jobs are submitted one after the other, then slowly decreases as the jobs move to running state. The number of running jobs (green area) increases with time as more pilot jobs are dynamically submitted by the OSG factory to the OSG resources to fulfill the computational needs of the frontend; the baseline of 1000 jobs is made of Einstein@home / boinc jobs running at Nebraska and pre-empted when the LSST jobs are submitted. The bulk of the jobs were completed in 10 hours.
+
+    &lt;img src=&quot;%ATTACHURLPATH%/61jobs_on_2010-07-13.png&quot; alt=&quot;61jobs_on_2010-07-13.png&quot; height=&#39;400&#39; /&gt;    
+
+The total amount of computation used in those two days was about 30,000 CPU hours, as shown in the plot belo. Note that a small fraction of this is due to Einstein@home:
+
+     &lt;img src=&quot;%ATTACHURLPATH%/61jobs_CPUhours_on_2010-07-13.png&quot; alt=&quot;61jobs_CPUhours_on_2010-07-13.png&quot; height=&#39;500&#39; /&gt;    
+
+For the job groups that successfully completed at the first submission, the following were typical statistics from the condor system for a representative job group. The distribution considers the values associated with the individual jobs (chips simulations) in the group (overall image simulation). 
+
+The following histogram shows the distribution of the number of automatic resubmissions per job. Automatic resubmissions are typically due to failures of the infrastructure at the worker nodes (e.g. condor deamon started by the pilot has crashed, failures in the authorization mapping due to problems with gLExec, etc.). Most jobs completed with only 1 submission, some with 2, a few more with 3. A job was resubmitted automatyically 19 times (the maximum number of resubmission that I have seen is 45 times). A resubmission value of 0 indicates that condor did not save the number of resubmissions.
+
+     &lt;img src=&quot;%ATTACHURLPATH%/NumJobMatches.png&quot; alt=&quot;NumJobMatches.png&quot; width=&#39;480&#39; height=&#39;480&#39; /&gt;    
+
+The following histogram shows the distribution of the duration of the jobs, counting time from the first time they started running (i.e. resubmitted jobs have longer times) . Most jobs finish within a couple of hours, some take up to 6 hours.
+
+     &lt;img src=&quot;%ATTACHURLPATH%/JobDuration.png&quot; alt=&quot;JobDuration.png&quot; width=&#39;480&#39; height=&#39;480&#39; /&gt;    
+
+The histogram below, instead, shows the distribution of the duration of the successful jobs, counting time from the last time they started running (i.e. of the resubmitted jobs, only the last successful job time is considered). The two histograms are very similar due to the small percentage of resubmitted jobs:
+
+     &lt;img src=&quot;%ATTACHURLPATH%/SuccessfulJobDuration.png&quot; alt=&quot;SuccessfulJobDuration.png&quot; width=&#39;480&#39; height=&#39;480&#39; /&gt;    
+
+The following histogram shows the distribution of the amount of computation for the job group. It is centered around 2 CPU hours, with some input files requiring more processing:
+
+     &lt;img src=&quot;%ATTACHURLPATH%/CPUUsageHoursHist.png&quot; alt=&quot;CPUUsageHoursHist.png&quot; width=&#39;480&#39; height=&#39;480&#39; /&gt;    
+
+The histogram below shows a distribution of the condor &quot;goodput&quot;. This measurement is the percentage of allocated time used towards successful computation. In general, an application is prevented from using the allocated time when it is waiting for IO or when it must restart due to a failure. LSST jobs tend to have very good goodput (~100%) when there is no failure, because IO takes a negligible part of the job. In real-life conditions with a typical amount of failures, goodputs above 95% seem very common.
+
+     &lt;img src=&quot;%ATTACHURLPATH%/Goodput.png&quot; alt=&quot;Goodput.png&quot; width=&#39;480&#39; height=&#39;480&#39; /&gt;    
+
+At the end of the run, we found and addressed the following problems:
+
+   1. 5344 jobs had failed and were automatically resubmitted, because of a configuration problem at the CMS MIT site (lsst application could not be found on the file system). Of these, 335 had failed more than 5 times and had to be manually resubmitted, using the automatically generated rescue dag. These 355 jobs were distributed across 47 job groups, thus alsmost 80% of the images could not be completed without this resubmission. The failures were tracked to a change in the mounting point of the OSG_APP area from the time that the LSST software was installed (the application hardcodes paths). A reconfiguration of the installation addressed the problem. The lesson learned is that configuration problems at one site may cause 80% of the jobs to be incomplete. As a result, we discussed mechanisms to penalize automatically sites that fail with user-level errors. A ticket was then opened with the Condor team.
+   2. Another problem was due to 29 input files missing from one input directory. 29 /189 jobs would not be submitted by condor. Error logs were very clear and pointed immediately to the cause of the problem. 
+
+---+++ Results from 183 job groups
+
+On Jul 22, 2010, the infrastructure was tested submitting 3 times 61 job groups in 24 hours. Submissions were done at 10 am, 5 pm, and 11 pm. After 6-7 hours of a submission, about 80% of the jobs were completed and 61 new job groups were submitted. All 34587 jobs finished without the need of human intervention. The bulk of the jobs were completed within 21 hours; the last job (belonging to the batch submitted at 11 pm) completed after 29 hours of the initial submission. This test produced the equivalent of 18% of the 1000 images targeted for phase 2 in one day. 
+
+The plot below shows the status of the HCC / Nebraska Glidein WMS frontend during these 24 hours. The violet line, representing idle jobs, spikes up for the three submission times and decreses each time as jobs start running on the grid. The green area, representing running jobs, shows that the system can run continuously an average of about 2,500 jobs, with peaks of more than 6,000 jobs at the same time. As for the test above, the baseline of 1000 jobs is made of Einstein@home / boinc jobs running at Nebraska and pre-empted when the LSST jobs are submitted. 
+
+     &lt;img src=&quot;%ATTACHURLPATH%/183_Job_run-idle_2010-07-22.png&quot; alt=&quot;183_Job_run-idle_2010-07-22.png&quot; width=&#39;762&#39; height=&#39;459&#39; /&gt;    
+
+The plot below shows the location (sites) of the running jobs: USCMS at FNAL is the larger contributor, followed by Omaha, Nebraska, MIT, and UNESP.
+
+     &lt;img src=&quot;%ATTACHURLPATH%/183_Job_CPUours_2010-07-22.png&quot; alt=&quot;183_Job_CPUours_2010-07-22.png&quot; height=&#39;500&#39; /&gt;    
+
+As shown by the Gratia plot below, in these 24 hours, LSST could use about 80,000 CPU hours on the Open Science Grid (a small percentage of this was used by Einstein@home).
+
+     &lt;img src=&quot;%ATTACHURLPATH%/183_Job_Sites_2010-07-22.png&quot; alt=&quot;183_Job_Sites_2010-07-22.png&quot; width=&#39;759&#39; height=&#39;456&#39; /&gt;    
+
+We recommend to try operations with other submission strategies. For example, we could explore the submission of fewer job groups (e.g. 30) more often (e.g. every 3 hours) as a way to provide a more constant &quot;pressure&quot; of idle jobs and a more constant number of available pilots in OSG. 
+
+---++ Operational instructions
+
+The following are a set of recommended operational procedures and commands to manage the operations of the LSST production on OSG. The intended audience is the &quot;operator&quot; of the system i.e. the person that will be responsible for running jobs, checking that they succeeded, etc. For the commissioning, this user was &quot;garzoglio&quot;. We assume this as the user name of the operator in the instructions below.
+
+---+++ Locate / Install the operational software
+
+Login to the submit machine
+&lt;verbatim&gt;
+ssh garzoglio@glidein.unl.edu
+&lt;/verbatim&gt;
+
+Operational software is available at ~garzoglio/LSST/osg-lsst/ . 
+It can also be obtained from the svn repository at 
+&lt;verbatim&gt;
+svn+ssh://p-osg-lsst@cdcvs.fnal.gov/cvs/projects/osg-lsst/trunk
+&lt;/verbatim&gt;
+
+---+++ Prepare the IO disk area
+
+This area will hold input and output files for the computation. For the commissioning, it has been set up on an hadoop file system at /mnt/hadoop/user/garzoglio&lt;br&gt;
+The same area can be used for production.
+
+Create a directory for the input e.g. lsst-input/ , and one for the output e.g. lsst-output/
+&lt;verbatim&gt;
+$ mkdir -p /mnt/hadoop/user/garzoglio/lsst-input
+$ mkdir -p /mnt/hadoop/user/garzoglio/lsst-output
+&lt;/verbatim&gt;
+
+---++++ Input
+
+The input for each image (189 catalog files) is expected to be in a subdirectory of lsst-input/ e.g. lsst-input/20100121/catalog/ , lsst-input/20100121-dup1/catalog/ , etc.&lt;br&gt;
+Inside each input directory, each catalogue file is expected to be bzip2-compressed e.g.
+
+&lt;verbatim&gt;
+$ ls -1 lsst-input/20100121/catalog/
+trim0.cat.bz2
+trim100.cat.bz2
+trim101.cat.bz2
+...
+&lt;/verbatim&gt;
+
+---++++ Output
+
+The output directory will contain one subdirectory for every job group. A job group produces a simulated image consisting of 189 simulated chips.&lt;br&gt;
+The output for each chip will be bzip2-compressed e.g.
+
+&lt;verbatim&gt;
+$ ls -1 lsst-output/20100708_170335/*
+lsst-output/20100708_170335/LSSTsim_000.tar.bz2
+lsst-output/20100708_170335/LSSTsim_001.tar.bz2
+lsst-output/20100708_170335/LSSTsim_002.tar.bz2
+...
+&lt;/verbatim&gt;
+
+---+++ Start the operational monitoring
+The osg-lsst software provides a tool to monitor the content of the output directory and create a summary web page. For every subdirectory (corresponding to the output of a job group i.e. a simulated image), the tool will show how many files have been produced at that time.
+
+The tool can be run periodically as a cron job as
+&lt;verbatim&gt;
+$ crontab -e
+*/30 * * * * /home/bockelman/garzoglio/LSST/monitoring/monitorProgress.py --config=/home/bockelman/garzoglio/LSST/monitoring/monitoring.conf --template=/home/bockelman/garzoglio/LSST/monitoring/html_template.html --out-dir=/mnt/hadoop/user/garzoglio/lsst-output 1&gt; /home/bockelman/garzoglio/LSST/logs/monitorProgress.out 2&gt; /home/bockelman/garzoglio/LSST/logs/monitorProgress.err
+&lt;/verbatim&gt;
+
+The configuration file specifies an area visible by a web service. In the default configuration file (/home/bockelman/garzoglio/LSST/monitoring/monitoring.conf) this is /var/www/html/osg-lsst .
+
+The status page can be seen at
+http://glidein.unl.edu/osg-lsst/monitoring/stat_table.html
+
+See [[EngageLSSTPhase2#LSST_operations_on_OSG][Monitoring LSST Operations on OSG]] for a discussion on monitoring jobs.
+
+---+++ Submit jobs
+
+During the commissioning, it was shown that OSG can provide enough resources to simulate about 180 images in 24 hours. 60 job groups were submitted 3 times a day (10 am, 5 pm, and 11 pm) with the goal of maintaining continuous &quot;pressure&quot; of idle jobs in the queue. In turn, this maintained a &quot;high&quot; number of available resources in the system (2500 nodes DC with peaks of 6000 nodes).  At the same time, submitting 60 job groups at one time produces a number of individual jobs that does not overwhelm the frontend system. We will have to tune how often and how many jobs to submit, as we gain operational experience.
+
+To submit a batch of 60 job groups do:
+
+* The first time, create a directory to hold all job submission and log files 
+&lt;verbatim&gt;
+mkdir -p ~garzoglio/LSST/jdl
+&lt;/verbatim&gt;
+
+* In that directory, it is recommended to create a subdirectory to hold all submission and log files for the batch. This helps to contain the scope of troubleshooting activities. Go to that directory.
+&lt;verbatim&gt;
+mkdir -p ~garzoglio/LSST/jdl/runs-jul-20-05pm
+cd  ~garzoglio/LSST/jdl/runs-jul-20-05pm
+&lt;/verbatim&gt;
+
+* Submit each job group individually, executing the following command 60 times with the appropriate input
+&lt;verbatim&gt;
+~garzoglio/LSST/osg-lsst/submit/submitLSSTsim --input-dir=/mnt/hadoop/user/garzoglio/lsst-input/20100121/catalog --output-dir=/mnt/hadoop/user/garzoglio/lsst-output/ --seed $RANDOM 0 188
+sleep 1
+&lt;/verbatim&gt;
+
+This command submits 189 individual jobs to the system (&lt;i&gt;0 188&lt;/i&gt;). 
+In this example, we use the shell-provided &quot;$RANDOM&quot; number as a seed (each individual job / chip will have, in turn, a different seed, as &lt;i&gt;$RANDOM + chip_number&lt;/i&gt;). LSST should discuss internally the choice of the seed for each job group.
+
+NOTE: one can write a script to submit the 60 job groups with one command. In that case, wait at least 1 second between submissions (&quot;sleep 1&quot; command) to minimize the probability of directory naming conflicts.
+
+The system should show jobs in the queue
+&lt;verbatim&gt;
+$condor_q garzoglio
+&lt;/verbatim&gt;
+
+---+++ Monitor jobs
+
+Various information sources help with the monitoring of the jobs.
+
+---++++ LSST operations on OSG
+
+* This page is generated periodically by a monitoring program. Instructions on how to start the monitoring program are discussed at [[EngageLSSTPhase2#Start_the_operational_monitoring][Start the Operational Monitoring]]
+
+The status page can be seen at
+http://glidein.unl.edu/osg-lsst/monitoring/stat_table.html
+
+This page shows a table that contains an entry for every output subdirectory i.e. job group. One can change the sorting of the table by clicking on a column header. The table has 6 columns:
+
+   1. Creation Time: the date of the creation of the output subdirectory for the job group. This is essentially the submission time of the job group.
+   1. Modify Time: the date of the last modification of the subdirectory. This is the last time that the directory received output from a chip / single job. If the job is NOT completed AND this time is older than 24 hours, then there is likely a problem with this job group.
+   1. Output Dir: the name of the output subdirectory
+   1. Num Out Files: the number of output files in the subdirectory. When the job is finished, this number is 189.
+   1. Run Dir: the name of the directory that holds the condor control files (DAGMan file, job description files, log files, etc.). This is useful for debugging.
+   1. Input Dir: the name of the input directory used for the job group.
+
+When jobs are finished, the name of the output directory becomes a web link. This link contains statistical plots for the corresponding job group.
+See the paragraph above on the [[EngageLSSTPhase2#Results_from_61_job_groups][system commissioning with 61 job groups]] for a discussion on each plot.
+
+* From the command line, one can generate a report of the total number of individual jobs completed for a batch of job groups with the
+count-output.sh tool
+
+&lt;verbatim&gt;
+$ ~garzoglio/LSST/osg-lsst/monitoring//count-output.sh -help
+count-output.sh: usage: count-output.sh -o &lt;lsst-out-dir&gt; -r &lt;run_dir&gt;
+  -o : the global lsst output directory
+  -r : the name of the global dir containing the condor job context directories
+  -h : this help
+Example usage:
+./count-output.sh -o /mnt/hadoop/user/garzoglio/lsst-output/ -r runs-jul22-10am
+&lt;/verbatim&gt;
+
+---++++ Glidein monitoring
+
+* This page shows the status of user jobs in the queue at glidein.unl.edu and of available resource on the Grid.
+
+http://glidein.unl.edu/vofrontend/monitor/frontend_OSG_gWMSFrontend/frontendStatus.html
+
+* This page shows a summary of where the jobs are running on the OSG sites
+
+http://glidein.unl.edu/sites/
+
+---++++ Accounting 
+
+This page shows how many CPU hours have been spent by all completed jobs submitted by the frontend glidein.unl.edu.
+This number includes LSST jobs as well as jobs from other communities submitted from the frontend (e.g. Einstein@home).
+
+http://rcf-gratia.unl.edu/gratia/xml/glidein_hours_bar_smry
+
+---++++ Condor commands
+
+Display the number of resources per site that support LSST on the OSG
+&lt;verbatim&gt;
+$ condor_status -constraint &#39;LSST_VERSION_LSSTsim =!= UNDEFINED&#39;  -format &quot;%s\n&quot; GLIDEIN_Entry_Name | sort | uniq -c
+    170 CMS_T1_US_FNAL_ce3
+     64 CMS_T2_US_Nebraska_Husker
+    426 CMS_T2_US_Purdue_osg
+    108 CMS_T2_US_UCSD_gw2
+    104 CMS_T2_US_UCSD_gw4
+     46 CMS_T2_US_Wisconsin_cms01
+    236 CMS_T3_US_Omaha_ff
+    282 CMS_T3_US_Omaha_ff3
+    120 HCC_BR_UNESP
+      2 HCC_US_Clemson-Palmetto
+    124 HCC_US_Nebraska_pf
+     14 HCC_US_Nebraska_Red
+    202 HCC_US_UConn_gluskap
+&lt;/verbatim&gt;
+
+Display the number of jobs in the queue
+&lt;verbatim&gt;
+$condor_q garzoglio
+&lt;/verbatim&gt;
+
+---+++ Resubmit failed jobs
+
+There are two types of job failures
+   1. Failures caused by problems in the infrastructure (network disconnects, job preemptions, etc.)
+   2. Failures caused by problems in the user job (missing input file, corrupted input file, bug in the application, etc.)
+
+The system will resubmit automatically jobs failed because of the infrastructure indefinitely. 
+
+The system (DAGMan) will resubmit 5 times jobs failed because of problems with the user job. At that point, the system writes a &quot;rescue&quot; DAG, named master.dag.rescue001.
+The operator should investigate these failures as discussed in [[EngageLSSTPhase2#Example_of_troubleshooting][Example of troubleshooting]]. When the problem are addressed, the failed job for the job group can be resubmitted as
+
+&lt;verbatim&gt;
+cd ~garzoglio/LSST/jdl/runs-jul-20-05pm/runs/LSSTsim_20100720_165254/
+condor_submit_dag master.dag.rescue001
+&lt;/verbatim&gt;
+
+
+---+++ Example of troubleshooting
+
+The following is a list of useful commands used in a real troubleshooting session.
+It should be noted that DAGMan tries to resubmit failed jobs 5 times. At that point, the system writes a &quot;rescue&quot; DAG, named master.dag.rescue001.
+Also, when files are resubmitted, the system saves the output, error, and log files from the previous jobs appending the string &quot;checked&quot;.
+
+Find all directories with rescue dags:
+&lt;verbatim&gt;
+$ find /home/bockelman/garzoglio/LSST/jdl/runs-jul-20-05pm/runs/* -name &#39;*rescue*&#39;  -exec dirname {} \; | sort | uniq
+/home/bockelman/garzoglio/LSST/jdl/runs-jul-20-05pm/runs/LSSTsim_20100720_165254
+/home/bockelman/garzoglio/LSST/jdl/runs-jul-20-05pm/runs/LSSTsim_20100720_165322
+/home/bockelman/garzoglio/LSST/jdl/runs-jul-20-05pm/runs/LSSTsim_20100720_165340
+/home/bockelman/garzoglio/LSST/jdl/runs-jul-20-05pm/runs/LSSTsim_20100720_165341
+&lt;/verbatim&gt;
+
+Total jobs failed counting retrials
+&lt;verbatim&gt;
+$ find /home/bockelman/garzoglio/LSST/jdl/runs/LSSTsim_20100713_1* -name &#39;*.out.checked*&#39; | wc
+  13646
+&lt;/verbatim&gt;
+
+Job failed without counting the retrials
+&lt;verbatim&gt;
+$ find /home/bockelman/garzoglio/LSST/jdl/runs/LSSTsim_20100713_1* -name &#39;*.out.checked*&#39; | awk &#39;BEGIN{FS=&quot;.&quot;}{print $1}&#39; | sort | uniq -c | wc
+   5344
+&lt;/verbatim&gt;
+
+Average resubmission times of failed jobs
+&lt;verbatim&gt;
+$ find /home/bockelman/garzoglio/LSST/jdl/runs/LSSTsim_20100713_1* -name &#39;*.out.checked*&#39; | awk &#39;BEGIN{FS=&quot;.&quot;}{print $1}&#39; | sort | uniq -c | awk &#39;BEGIN{sum=0}{sum=sum+$1}END{print sum/NR}&#39;
+2.55352
+&lt;/verbatim&gt;
+
+Jobs failed too many times (saved rescue dag)
+&lt;verbatim&gt;
+$ find /home/bockelman/garzoglio/LSST/jdl/runs/LSSTsim_20100713_1* -name &#39;*.out.checked*&#39; | awk &#39;BEGIN{FS=&quot;.&quot;}{print $1}&#39; | sort | uniq -c | egrep -e &#39;^[ ]*6&#39; | wc
+    335
+&lt;/verbatim&gt;
+    
+Number of job groups with jobs permanetly failed
+&lt;verbatim&gt;
+$ find /home/bockelman/garzoglio/LSST/jdl/runs/LSSTsim_20100713_1* -name &#39;*.out.checked*&#39; | awk &#39;BEGIN{FS=&quot;.&quot;}{print $1}&#39; | sort | uniq -c | egrep -e &#39;^[ ]*6&#39; | awk &#39;BEGIN{FS=&quot;/&quot;}{print $8}&#39; | sort | uniq -c | wc
+     47
+&lt;/verbatim&gt;
+
+Number of jobs failed too many times (as above) AND Average number of jobs failed too many times per job group
+&lt;verbatim&gt;
+$ find /home/bockelman/garzoglio/LSST/jdl/runs/LSSTsim_20100713_1* -name &#39;*.out.checked*&#39; | awk &#39;BEGIN{FS=&quot;.&quot;}{print $1}&#39; | sort | uniq -c | egrep -e &#39;^[ ]*6&#39; | awk &#39;BEGIN{FS=&quot;/&quot;}{print $8}&#39; | sort | uniq -c | awk &#39;BEGIN{sum=0}{sum=sum+$1}END{print sum, sum/NR}&#39;
+335 7.12766
+&lt;/verbatim&gt;
+
+Sites responsible for the failures (13617 ... not quite 13646 as above because 29 files were missing from input directory dup31)
+&lt;verbatim&gt;
+$ find /home/bockelman/garzoglio/LSST/jdl/runs/LSSTsim_20100713_1* -name &#39;*.out.checked*&#39; | awk &#39;BEGIN{FS=&quot;.&quot;}{print $1}&#39; | sort | uniq | awk &#39;{ system(&quot;cat &quot;$0&quot;.err.checked.*&quot;) }&#39; | awk &#39;{print $4}&#39; | sort | uniq -c
+  27234 MIT_CMS
+&lt;/verbatim&gt;
+  
+Reason for failure  
+&lt;verbatim&gt;
+$ find /home/bockelman/garzoglio/LSST/jdl/runs/LSSTsim_20100713_1* -name &#39;*.out.checked*&#39; | awk &#39;BEGIN{FS=&quot;.&quot;}{print $1}&#39; | sort | uniq | awk &#39;{ system(&quot;cat &quot;$0&quot;.err.checked.*&quot;) }&#39; | awk &#39;{for (i=6;i&lt;NF+1;i++) {printf &quot;%s &quot;,$i};print &quot;&quot;}&#39; |  sort | uniq -c
+  13617 ERROR: Could not locate underlying executable, /net/t2dsk0001/d00/osg/app/engage/LSST/LSSTsim-sl5-x86_64/raytrace/bin/lsst -- either application
+  13617 ERROR: is not configured correctly or format of bootstrap has changed.
+&lt;/verbatim&gt;
+
+Full error message
+&lt;verbatim&gt;
+$ cat /home/bockelman/garzoglio/LSST/jdl/runs/LSSTsim_20100713_155555/logs/LSSTsim_158.err.checked.100713_2227
+2010-07-14 03:26:48 UTC MIT_CMS (hibat0070) ERROR: Could not locate underlying executable, /net/t2dsk0001/d00/osg/app/engage/LSST/LSSTsim-sl5-x86_64/raytrace/bin/lsst -- either application
+2010-07-14 03:26:48 UTC MIT_CMS (hibat0070) ERROR: is not configured correctly or format of bootstrap has changed.
+&lt;/verbatim&gt;
+
+
+---++ Operation Status
+---+++ Operation Period: 27Aug2010-02Sep2010
+Operations started on Friday August 27, 2010 with the initial goal to produce as many images per day as possible given the available resources, the upper limit being probably 90 pairs of images per day (i.e. 180 individual images). The target was to run a total of 450 image pairs (900 images) for this project.
+
+During the initial few days unexpected challenges resulted in lost Computation time. The problems were fixed by Monday, August 30. Since then we have been running production steadily. 
+   * Status from the Frontend: Report on number of jobs and glideins
+&lt;img src=&quot;%ATTACHURLPATH%/FrontendStatus-26Aug-03Sep.png&quot; alt=&quot;FrontendStatus-26Aug-03Sep.png&quot; width=&#39;555&#39; height=&#39;335&#39; /&gt;
+   * Site Distribution reported by the Frontend
+&lt;img src=&quot;%ATTACHURLPATH%/SitesContribution-26Aug-03Sep.png&quot; alt=&quot;SitesContribution-26Aug-03Sep.png&quot; width=&#39;555&#39; height=&#39;335&#39; /&gt;
+   * Gratia Accounting Plots
+&lt;img src=&quot;%ATTACHURLPATH%/GratiaAccounting-26Aug-03Sep.png&quot; alt=&quot;GratiaAccounting-26Aug-03Sep.png&quot; width=&#39;800&#39; height=&#39;500&#39; /&gt;    
+
+---+++ Operation Period: 03Sep2010 - 10Sep2010
+
+   * Status from the Frontend: Report on number of jobs and glideins: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/FrontendStatus-03Sep-10Sep.png&quot; alt=&quot;FrontendStatus-03Sep-10Sep.png&quot; width=&#39;561&#39; height=&#39;335&#39; /&gt;    
+
+   * Site Distribution reported by the Frontend: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/SitesContribution-03Sep-10Sep.png&quot; alt=&quot;SitesContribution-03Sep-10Sep.png&quot; width=&#39;572&#39; height=&#39;335&#39; /&gt;    
+
+   * Gratia Accounting Plots: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/GratiaAccounting-03Sep-10Sep.png&quot; alt=&quot;GratiaAccounting-03Sep-10Sep.png&quot; width=&#39;800&#39; height=&#39;500&#39; /&gt;    
+
+---+++ Operation Period: 11Sep2010 - 17Sep2010
+
+   * Status from the Frontend: Report on number of jobs and glideins:: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/FrontendStatus-11Sep-17Sep.png&quot; alt=&quot;FrontendStatus-11Sep-17Sep.png&quot; width=&#39;565&#39; height=&#39;340&#39; /&gt;    
+
+   * Site Distribution reported by the Frontend: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/SitesContribution-11Sep-17Sep.png&quot; alt=&quot;SitesContribution-11Sep-17Sep.png&quot; width=&#39;566&#39; height=&#39;338&#39; /&gt;    
+
+   * Gratia Accounting Plots: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/GratiaAccounting-11Sep-17Sep.png&quot; alt=&quot;GratiaAccounting-11Sep-17Sep.png&quot; width=&#39;800&#39; height=&#39;500&#39; /&gt;    
+
+

@@ -1,0 +1,191 @@
+
+
+---+!! Tutorial: Grid Workflow
+%TOC%
+
+%STARTINCLUDE%
+---++ A simple DAG
+
+First, we will make a simple one-node dag.
+
+First make a simple condor submission file:
+
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cat &amp;gt; myjob.submit
+executable=/bin/echo
+arguments=hello world
+output=results.output
+error=results.error
+log=results.log
+notification=never
+universe=vanilla
+queue
+&lt;em&gt;Ctrl+D&lt;/em&gt;&lt;/userinput&gt;
+&lt;/pre&gt;
+
+and a simple DAG file:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cat &amp;gt; mydag.dag
+Job HelloWorld myjob.submit
+&lt;em&gt;Ctrl+D&lt;/em&gt;&lt;/userinput&gt;
+$ &lt;userinput&gt;cat mydag.dag&lt;/userinput&gt;
+Job HelloWorld myjob.submit
+&lt;/pre&gt;
+
+This DAG file defines a single job.
+
+We can run the DAG like this:
+
+&lt;pre class=&quot;screen&quot;&gt;
+condor_submit_dag mydag.dag
+&lt;/pre&gt;
+
+and then you can watch your dag execute with:
+
+&lt;pre class=&quot;screen&quot;&gt;
+condor_q -dag
+&lt;/pre&gt;
+
+There will be one condor job for the dag, and then another condor job for the Hello World job.
+
+When the DAG has run, you should see the output file:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cat results.output&lt;/userinput&gt;
+Hello World
+&lt;/pre&gt;
+
+---++ Dependencies in a DAG
+
+A DAG file can contain many jobs and information about which order to run the jobs.
+
+Make two more submit files, job2.sub and job3.sub by copying mydag.dag and changing the &quot;hello world&quot; message and the
+output=, error= and log= files to new names.
+
+Then make a new DAG file like this:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cat &amp;gt; mydag.dag
+Job HelloWorld myjob.submit
+Job SecondJob job2.sub
+Job ThirdJob job3.sub
+PARENT HelloWorld CHILD SecondJob
+PARENT HelloWorld CHILD ThirdJob
+&lt;em&gt;Ctrl+D&lt;/em&gt;&lt;/userinput&gt;
+&lt;/pre&gt;
+
+This means that &lt;nop&gt;HelloWorld must run before &lt;nop&gt;SecondJob and &lt;nop&gt;ThirdJob. But it does not matter which order &lt;nop&gt;SecondJob and &lt;nop&gt;ThirdJob execute.
+
+Submit your dag:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt; condor_submit_dag mydag.dag &lt;/userinput&gt;
+&lt;/pre&gt;
+
+Now you can watch your jobs in the queue. HelloWorld should run first, then SecondJob and ThirdJob.
+
+---++ An FMRI application in DAGman
+
+In the following exercises, we will implement the FMRI workflow shown in the presentation.
+
+There are five applications: 
+   * align_warp
+   * reslice
+   * softmean
+   * slicer
+   * convert
+
+There are ten input data files, in pairs:
+   * anatomy1.img anatomy1.hdr
+   * anatomy2.img anatomy2.hdr
+   * anatomy3.img anatomy3.hdr
+   * anatomy4.img anatomy4.hdr
+   * reference.img reference.hdr
+
+   1. Align each anatomy pair with the reference pair, using =align_warp=.
+   1. Slice the results using =reslice=, giving two output files per pair.
+   1. Average the files  into a single data file (=atlas.l=) using =softmean= 
+
+---+++ Exercise: Process an input pair on the command line
+
+On the command line, process one pair of input files using align_warp:
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;align_warp reference.img anatomy1.img warp1.warp -m 12 -q &lt;/userinput&gt;
+&lt;/pre&gt;
+
+This will produce the output file =warp1.warp=.
+
+---+++ Exercise: Process an input pair using Condor
+
+   1. Write a condor _.sub_ file named =align_warp2.sub= that will process =anatomy2.img= and output to =warp2.warp=
+   1. Use =condor_submit= to run the job.
+   1. Check that the file =warp2.warp= was created.
+
+---+++ Exercise: Submit files for each job
+Now write _.sub_ files for:
+   * *align_warp*: to run align_warp on the four input files
+      * =align_warp1.sub=
+      * =align_warp2.sub=
+      * =align_warp3.sub=
+      * =align_warp4.sub=
+   * *reslice*: these must run reslice and generate corresponding resliced files
+      * =reslice1.sub=
+      * =reslice2.sub=
+      * =reslice3.sub=
+      * =reslice4.sub=
+
+For example:
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;reslice warp1.warp resliced1.img &lt;/userinput&gt;
+&lt;/pre&gt;
+
+This will output two files, =resliced1.hdr= and =resliced1.img=.
+
+---++++ softmean
+softmean runs only once, to combine each reslice file into a brain atlas. Write a submit file called softmean.sub to run the following
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;softmean atlas.img y null resliced1.img resliced2.img resliced3.img resliced4.img &lt;/userinput&gt;
+&lt;/pre&gt;
+
+This will generate a output files (the brain atlas) called =atlas.img= and =atlas.hdr=.
+
+---++++ slicer
+slicer will slice the brain atlas in three different ways, to give a view of the brain from three different directions. The output images will be in pgm format.
+
+Write three .sub files:
+   * =slicerx.sub=
+   * =slicery.sub=
+   * =slicerz.sub=
+
+Here is a commandline for slicerx.sub:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;slicer atlas.img -x .5 atlas-x.pgm &lt;/userinput&gt;
+&lt;/pre&gt;
+
+---++++ convert
+Finally, you need to convert the PGM images into GIF format for viewing. Make three .sub files to convert the pgm images. Here is an example command line:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;convert atlas-x.pgm atlas-x.gif &lt;/userinput&gt;
+&lt;/pre&gt;
+
+Now you should have 15 submit files.
+
+---+++ Build a .dag file
+
+Now write a DAGman .dag file that tells DAGman about each of the 15 dag files. You must make sure the jobs are executed in the correct order by specifying PARENT and CHILD relationships.
+
+---+++ Run your DAG
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;condor_submit_dag fmri.dag &lt;/userinput&gt;
+&lt;/pre&gt;
+
+You can use condor_q to see if your jobs are running. When your DAG is finished, you should see the following files in your working directory:
+   * =atlas-x.gif=
+   * =atlas-y.gif=
+   * =atlas-z.gif=

@@ -1,0 +1,104 @@
+---+ OSG Technology Area Meeting, 29 August 2016
+
+*Coordinates:* Conference: 857-216-4999, PIN: 32390; https://www.uberconference.com/osgcat
+
+*Attending:* !BrianB, !BrianL, Carl, Derek, Edgar, Marian, Mat, Suchandra, !TimC, !TimT, Xin
+&lt;!-- !BrianB, !BrianL, Carl, Derek, Edgar, Jeff, Marian, Mat, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+
+---+++ Triage Duty
+   * This week: Mat
+   * Next week: !TimT
+   * 3 (&amp;minus;2) open tickets
+
+---+++ JIRA
+   * Open: 153 (&amp;minus;5)
+   * In Progress: 26 (+1)
+   * Ready for Testing: 8 (+8)
+   * Ready for Release: 0 (0)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| September | 3.3.16 | 2016-08-29 | 2016-09-06 | 2016-09-13 | 5 week cycle |
+| October | 3.3.17 | 2016-09-26 | 2016-10-03 | 2016-10-11 | |
+| November | 3.3.18 | 2016-10-24 | 2016-10-31 | 2016-11-08 | |
+
+*Notes:* Additional “urgent” releases may be scheduled for the 4th Tuesday of each month. The *Testing* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+
+---++ OSG Software Team
+
+---+++ Discussions
+
+There are problems with the Globus Toolkit updates:
+   * &lt;p&gt;GridFTP. Writing data in ordered mode seems to be broken, and this affects !GridFTP-HDFS users at least. Brian&amp;nbsp;B. was able to reproduce the failure with the POSIX DSI, so it is not specific to HDFS. Plan&amp;nbsp;A is to get a quick response from the Globus developers to Brian’s bug report. If we do not have a fix very very soon, there is Plan&amp;nbsp;B: Currently, we ship =globus-ftp-control-6.6-1.2= and it should be safe to update to =globus-ftp-control-6.10-1.1=, the last of the version 6 series. Mat will get started on that route right away, as backup.&lt;/p&gt;
+   * &lt;p&gt;MyProxy and GSI. Basic !MyProxy operations break with latest GSI (=globus-gssapi-gsi=), but not current OSG production one. It appears that downgrading to the current OSG one allows !MyProxy to work, but that was with fairly light testing. Brian&amp;nbsp;B. noted that GSI has been getting a lot of attention lately, and so maybe it is best to stick with an older version.&lt;/p&gt;
+   * &lt;p&gt;Despite the problems, we plan to go ahead with updating most Globus Toolkit packages, and will fall back to older versions&amp;nbsp;&amp;mdash; that we ship today or that are smaller updates from what we ship today&amp;nbsp;&amp;mdash; until we get a working set of packages. This *should* be OK, but of course we are probably the first people to test this particular combination of packages, so lots of regression testing is critical.&lt;/p&gt;
+
+The CVMFS 2.3.0 update has a lot of issues: The server component has a critical bug and cannot be included, and now the client piece has a problem that requires a workaround in the configuration. Plus we would have to ship older versions of some packages than what is currently in Upcoming. Is it really ready for *production*? Brian&amp;nbsp;B. says that LIGO is waiting for this update, so delaying it will delay them. But after looking at things as a group, we decided to wait until the October release.
+
+September tickets due today:
+%TABLE{sort=&quot;off&quot;}%
+|  6 | Brian Lin - mostly HTCondor-CE |
+|  6 | Mat Selmeci - Globus Toolkit (but see above), !CREAM GAHP, osg-build |
+|  3 | Edgar Fajardo - lcas-lcmaps-gt4-interface, RSV glideinWMS tester (in Tim C.’s court), CVMFS (but see above) |
+|  3 | Carl Edquist - GUMS, !GridFTP (but see above) |
+
+---+++ Support Update
+
+   * Central collector (!BrianL/Derek/BrianB): Configuration error on the &quot;LVS&quot; machine, 9619 not open. Still broken.
+   * Utah (!DerekW): Seems to be working.  Currently have 2 clusters configured.
+
+
+---++ OSG Release Team
+   * September 13th Release - OSG 3.3.16
+      * !TimT is handling the [[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.3.16%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][September 13th Release]]
+      * Development Freeze today
+      * Hard Testing Deadline: 2:00 PM Central Time, Friday before the release
+
+%TABLE{sort=&quot;off&quot;}%
+| *3.3.16* | *Status* |
+| 5 (-10) | Open |
+| 13 (-3) | In Progress |
+| 13 (+13) | Ready for Testing |
+| 0 (+0) | Ready for Release |
+| 31 (+0) | Total |
+
+   * OSG 3.3.16
+      * Testing
+         * GUMS on RHEL7 does not scale (cannot be used in production)
+         * xrootd-dsi should treat gridftp file as %config(noreplace)
+         * Release osg-pki-tools 1.2.19
+            * Reword &#39;bad VO info&#39; error from osg-*cert-request
+            * Fix formatting of CSRs
+         * Add support for user certificates to osg-ca-generator
+         * !glideinWMS 3.2.15
+         * osg-configure: modules that use condor-python should require it
+         * Simplify Gratia !GridFTP probe / remove gums-host-cron
+         * Release blahp-1.18.24
+            * Add ability to set SGE parallel environment policy in blahp scripts
+            * Enable multi-core support for PBS Pro
+            * Fix issues with qstat() in pbs_status.py
+            * Add slurm multicore, partition, and remote_cerequirements support
+      * Ready
+         * Nothing yet
+
+
+---++ OSG Investigations Team
+
+   * Work done with USATLAS to help them replace SRM at one of their sites -- maybe OU or SLAC
+   * USATLAS looking at AGIS compatibility layer for the collector.  Still ongoing...  Collector problems at the GOC, most likely operations related, not software.
+   * !BrianB considering using a lightweight container API called Singularity as a replacement for glExec;
+     opened a ticket for testing their packaging, and writing a wrapper for Condor jobs to use
+
+---+++ Last Week
+
+   * !StashCache: Intermittent failures from !UChicago and Fermilab over the last weeks.  We need better federation monitoring.  But also, better origin server monitoring (we are currently only monitoring the caches distributed at sites).
+   * Ongoing developent of =stashcp= by !UChicago - great progress on that.
+   * GRACC development has been moving forward.  Now have summarized records, which are much, much faster than raw records for querying.  
+
+---+++ Ongoing
+   * Gratia V2: Derek will be working on this.  Jira project is starting to take shape: [[https://jira.opensciencegrid.org/browse/GRACC/][GRACC]].  Project documentation located at https://opensciencegrid.github.io/gracc.
+   * !StashCache monitoring and testing has been vastly improved.  Thanks to summer student at !UChicago.  Still ongoing!

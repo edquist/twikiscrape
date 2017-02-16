@@ -1,0 +1,127 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Jeff Dost
+   * Doug Strain
+   * Tanya Levshina
+   * Alex, Neha - apologies 
+
+---++ Status report
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* Support
+ - Support for STAR data delivery from PDSF to BNL via bestman full mode
+   Debugging transfer job failures
+   adjusted parameter recommendation for srm client in STAR workflow
+ - Follow-up with EMI SRM security unresolved issues
+ - Working on source release of the bestman2 pkg
+ - Support on srm client and srm-tester results
+&lt;/pre&gt;
+
+Doug:
+&lt;pre class=&quot;screen&quot;&gt;
+- RSV Storage Probes / Pigeon tools: Released and documented.
+- AHM Preparation: Hadoop hands on procedure finished, documentation in review, most comments fixed.
+- Public storage: Investigated Gratia queries.  Problem: no one reports storage info.
+&lt;/pre&gt;
+
+Jeff:
+&lt;pre class=&quot;screen&quot;&gt;
+- pushed the Hadoop 0.20 testing repo to VDT: http://vdt.cs.wisc.edu/hadoop/testing/2.0/rhel5
+- currently being tested at Wisconsin and Nebraska
+- Brian requested that I test at UCSD as well before he sets up a stable release
+&lt;/pre&gt;
+
+Neha:
+&lt;pre class=&quot;screen&quot;&gt;
+- More RSV Storage probe testing. Doc was missing a setting that needs to be made in configuration file. Now  released.
+- Finally got response from all OSG dCache SE admins (on plans to upgrade to 1.9.12 using vdt-dcache).  Sent summary to Tanya (3 YES/1 MAYBE/9 NO)
+- Request password reset on library.cs.wisc.edu.
+- Looked up OSG website for info on how to generate custom reports using GOC database. Called GOC. Looks like it cannot be done by normal user anymore. Request has to be sent to GOC. So looked up the number of total and dCache related tickets in 2010 (60/38)
+- Tried to build new dCache storage and transfer probe rpms for latest gratia probe release - 1.07.01a-2.src.rpm. Build failed due to dependency on python-setuptools. Sent mail to Brian/Philippe
+
+&lt;/pre&gt;
+
+Tanya
+&lt;pre class=&quot;screen&quot;&gt;
+Meetings:
+    doc telecon
+    meeting with Alain
+    xrootd OSG-ATLAS meeting
+    meeting with Neha
+    meeting with Gabriele, Chander and Ruth
+  
+   investigated LIGO problem with srm-copy -f -concurrency, found bug in srm-copy command. 
+    It was fixed in OSG 1.2.17. Britta has upgraded to a newest client.
+
+   Applied patches to xrootd sotrage and tarnsfer probes. Started testing.
+   Ran tests again BeStMan-2.0.5,2.1.3.18/hdfs installed on FermiCloud
+   Installed new xrootd 3.0.2 rpms, add a remote cluster, installed on FermiCloud, tested FRM config and xrootdfs
+   Reviewed HDFS Trash.ReleaseDocumentationHandsOn doc, made some changes, provided feedback.
+   Summarized the efforts that would be required for support of  vdt-dcache package, waiting for Alain&#39;s response
+&lt;/pre&gt;
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+!BeStMan/hdfs rpms
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Jeff has created hdfs 0.20 rpms in vdt repo test. Rpms for bestman 2.0.5 and 1.3.18 are installed and tested on !FermiCloud nodes. 
+
+to do list:
+   * continue to bug M. Thomas to add bestman rpms to production release (Jeff)
+   * provide instructions how to update yum.repo (Jeff)
+   * add bestman rpms to vdt test repo (Jeff)
+   * install new rpms on !FermiCloud (Doug)
+   * run tests (Tanya)
+   * start working on documentation for hdfs 0.20 (Jeff)
+   * provide doc of the current procedure of rpms building (Jeff)
+
+
+
+---++ Second agenda Item
+&lt;!-- DESCRIPTION --&gt;
+Public storage
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+The first task is to determine if we can use existing information about the space allocated/used for public storage. BDII does provide the information about !StorageArea but this area could be used by multiple opportunistic VOs (also, we need to check the accuracy of this information). Doug has spent some time looking at data availability (!StorageRecord) in gratia. It doesn&#39;t look that the sites are reporting to central gratia collector(e.g Brian said that usually these records are sent to the local collector). We will need to figure out if we can get the information some other way (dcache and hdfs chronicles etc). 
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+dcache status
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Neha collected information from OSG sites related to vdt-dcache usage and plans for 1.9.12 upgrade . The survey  results  are [[https://twiki.grid.iu.edu/twiki/pub/Storage/MeetingMinutes2011Feb09/dcache_serv.pdf][here]]. We are discussing with  Alain how we should proceed.
+
+dcache 1.9.5 status
+   1. vdt-dcache 3.0.4 (dcache-server 1.9.5-23) should be moved to production tomorrow
+   2. vdt-dcache 3.0.5 (dcache-server 1.9.5-24, gratia  probes1.07.01a-2 ) will be release to ITB tentatively by the end of the next week
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+xrootd status
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+xrootd rpms 3.0.2 are released. The current test setting:
+   1.  local site (3 nodes) with frm
+   1. global redirector 
+   1. two remote sites 
+   1. xrootdfs
+
+Tanya will add SI and x509 authentication to configuration and start running some basic tests. 
+
+xrootd probes have been patched by Brian/Ashu. Tanya has installed patches and running tests. The results look fine. We need to ask for to incorporate the patches in vdt release and test it with new gratia libs.
+
+---++ Fifth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Tickets
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+Neha cannot update GOC tickets right now because of issue with her DN in OIM database. Will send out as soon as GOC fixes the problem and she can actually update the tickets.
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 09 Feb 2011
+

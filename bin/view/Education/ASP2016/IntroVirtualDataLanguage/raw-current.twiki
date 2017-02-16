@@ -1,0 +1,130 @@
+%LINKCSS%
+
+---+ Introduction to Virtual Data Language 
+%STARTINCLUDE%
+%EDITTHIS%
+
+In this exercise, you will use the VDL tools to generate a very simple &#39;Hello World&#39; message. You need some setup files for VDS (vdsrc and wfrc), and then one exercise file.
+
+Set up VDS by copying in a vdsrc and a wfrc from the example provided:
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;cp /opt/vdltut/vdsrc ~/.vdsrc&lt;/span&gt;
+$ &lt;span class=&quot;in&quot;&gt;cp /opt/vdltut/wfrc ~/.wfrc&lt;/span&gt;
+&lt;/pre&gt;
+
+Now edit =~/.vdsrc= so that the =dir.storage= and =dir.exec= refer to your user number instead of =USERXX=.
+
+VDS should now be configured. You can try it by running a helloworld workflow, as follows.
+
+Copy the file into a working directory:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;cd ~&lt;/span&gt;
+$ &lt;span class=&quot;in&quot;&gt;mkdir VDLINTRO&lt;/span&gt;
+$ &lt;span class=&quot;in&quot;&gt;cd VDLINTRO&lt;/span&gt;
+$ &lt;span class=&quot;in&quot;&gt;cp /opt/vdltut/VDLINTRO/helloworld.vdl .&lt;/span&gt;
+$ &lt;span class=&quot;in&quot;&gt;ls&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;helloworld.vdl&lt;/span&gt;
+&lt;/pre&gt;
+
+=helloworld.vdl= is a &lt;span class=&quot;firstterm&quot;&gt;VDL (Virtual Data Language)&lt;/span&gt; file which defines one &lt;em&gt;transformation&lt;/em&gt; (like a function definition), and one &lt;em&gt;derivation&lt;/em&gt; (like a function call). 
+
+The transformation defined here takes a message and outputs it to a file.
+
+The derivation defined here calls this transformation, with a specific message (hello world!) and a specific output file.
+
+The first step in running helloworld is to compile the VDL file into an &lt;span class=&quot;firstterm&quot;&gt;abstract DAG (DAX)&lt;/span&gt;. Use the vdlc command for this:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;vdlc helloworld.vdl &lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;20060531T145705.890: [app] using label &quot;helloworld&quot;
+20060531T145705.891: [app] using output file &quot;helloworld.dax&quot;&lt;/span&gt;
+&lt;/pre&gt;
+
+An abstract DAG has been generated and output in XML format into =helloworld.dax=. Open =helloworld.dax= in a file viewer:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;cat helloworld.dax&lt;/span&gt;
+&lt;/pre&gt;
+
+Inside the DAX, you should see three sections.
+   1. &lt;em&gt;list of all referenced files&lt;/em&gt; &amp;endash; this shows the input and output files used by this workflow. In this case, there is only one file, the output file =greeting.txt=.
+   1. &lt;em&gt;definition of all jobs&lt;/em&gt; &amp;endash; each job in the workflow. In this exercise, there is only one. The derivation specified in the VDL file has been converted into a single =&lt;job&gt;= element in the DAX.
+   1. &lt;em&gt;list of control-flow dependencies&lt;/em&gt; &amp;endash; this section specifies a partial order in which jobs are to executed. As there is only one job in this DAX, there is nothing here. In later exercises, you will see more information here.
+
+Now that you have your abstract DAG, you can run it through the planner to generate a plan for the workflow, using the =vds-plan= command.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;vds-plan --pegasus -g QuarkCode --option pools=local --option output=local --option force helloworld.dax --base ./dags&lt;/span&gt;
+[...many lines of output...]
+&lt;span class=&quot;out&quot;&gt;
+2006.06.10 20:14:57.108 PDT: [INFO] Generating submit files for the concrete workflow (completed)
+2006.06.10 20:14:57.108 PDT: [INFO] Generating submit files for the cleanup workflow
+2006.06.10 20:14:57.114 PDT: [INFO] Generating submit files for the cleanup workflow (completed)
+2006.06.10 20:14:57.115 PDT: [INFO] Time taken to execute is 1.05 seconds
+
+I have concretized your abstract workflow. The workflow has been entered
+into the workflow database with a state of &quot;planned&quot;. The next step is 
+to start or execute your workflow. The invocation required is
+
+vds-run  /home/trainXX/VDLINTRO/dags/QuarkCode/helloworld/run0007&lt;/span&gt;
+&lt;/pre&gt;
+
+The workflow has been planned. You can start it running by typing the command shown in the above output (note that the numbers will probably be different for you).
+
+You can start it running using the =vds-run= command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;vds-run  /home/trainXX/VDLINTRO/dags/QuarkCode/helloworld/run0007&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;
+Checking all your submit files for log file names.
+This might take a while... 
+Done.
+-----------------------------------------------------------------------
+File for submitting this DAG to Condor           : helloworld-0.dag.condor.sub
+Log of DAGMan debugging messages                 : helloworld-0.dag.dagman.out
+Log of Condor library debug messages             : helloworld-0.dag.lib.out
+Log of the life of condor_dagman itself          : helloworld-0.dag.dagman.log
+
+Condor Log file for all jobs of this DAG         : /tmp/helloworld-037504.log
+Submitting job(s).
+Logging submit event(s).
+1 job(s) submitted to cluster 212.
+-----------------------------------------------------------------------&lt;/span&gt;
+&lt;/pre&gt;
+
+
+You can monitor which jobs are running using the condor_q command and by watching the jobstate log.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;cd /home/trainXX/VDLINTRO/dags/QuarkCode/helloworld/run0007&lt;/span&gt;
+$ &lt;span class=&quot;in&quot;&gt;tail -f jobstate.log&lt;/span&gt;
+[...log information appears over time...]
+&lt;span class=&quot;out&quot;&gt;1150052758 INTERNAL *** DAGMAN_FINISHED ***
+1150052762 INTERNAL *** TAILSTATD_FINISHED 0 ***&lt;/span&gt;
+&lt;/pre&gt;
+
+You will know when your job is completed when the TAILSTATD_FINISHED message appears. If something has gone wrong, you might see an error message instead.
+
+When you job has completed, you can examine the results as follows. You will need to substitute your user number in twice, and the run number that you used above. Replace 2 below with your user number and 0005 with the run number.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;cat /scratch/train&lt;replaceable&gt;02&lt;/replaceable&gt;/&lt;nop&gt;QuarkCode/train&lt;replaceable&gt;2&lt;/replaceable&gt;/helloworld/run&lt;replaceable&gt;0005&lt;/replaceable&gt;/greeting.txt&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;Hello World&lt;/span&gt;
+&lt;/pre&gt;
+
+and now you can see the greeting.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;cat greeting.txt&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;Hello World&lt;/span&gt;
+&lt;/pre&gt;
+
+Congratulations! You&#39;ve run your first VDL workflow.
+
+%STOPINCLUDE%
+
+
+%BOTTOMMATTER%
+-- Main.ForrestChristian - 27 Feb 2007
+

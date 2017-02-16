@@ -1,0 +1,191 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Ted Hesselroth
+   * Neha Sharma
+   * Andrew Baranovski
+   * Brian Bockelman
+   * report from Abhishek Rana
+   * report from Tanya Levshina
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+Status of VOs&#39; storage usage (Abhishek&#39;s report, Brian and Steve Timm comments):
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+D0:&lt;br/&gt;
++++++++&lt;br/&gt;
+All pending SE issues resolved. No new issues known at the moment.
+&lt;br/&gt;
+
+SBGrid:&lt;br/&gt;
++++++++&lt;br/&gt;
+&lt;b&gt;&lt;i&gt;From Ian:&lt;/i&gt;&lt;/b&gt;
+
+&quot;We continue to have problems with our SRM setup.  On -Exp we get the 300 second timeout, but the file is being transferred and on the actual system you can see the file. Similar problem with GridFTP and actually files are zero length files, so perhaps there *is* something wrong if data the files are supposed to have some content -- in fact, I would expect them to contain *something* so as to test the transfer of data between sites.&quot;
+
+&lt;b&gt;&lt;i&gt;Comment from Brian:&lt;/i&gt;&lt;/b&gt;&lt;br/&gt;
+I suspect something is indeed wrong.  The files are non-zero length.   
+Can someone in user support or in RSV help SBGrid run the probes by hand?  This would give Ian suitable information for debugging.
+&lt;br/&gt;
+
+CDF: &lt;br/&gt;
+++++++ &lt;br/&gt; 
+
+Opportunistic storage being evaluated successfully at UCSD site. VO Group in OSG to start provisioning procedure with CMS and ATLAS to get more sites for CDF. 
+
+&lt;b&gt;&lt;i&gt; From Manoj: &lt;/i&gt;&lt;/b&gt; &lt;br/&gt; 
+
+&quot;I tried to use the Nebraska SE.   I was not able to transfer file using 
+the Fermi SRM client (srmcp) between SRM at UCSD and Nebraska.  Hence, it is not feasible to use the  Nebraska SE in our case. Since the SAM-SRM interface is based on Fermi SRM client.  This is also some thing the OSG storage people would have to look into it.  An application being developed using a particular SRM client should be portable on all the flavors of SRM.  Otherwise, the users would have to restrict themselves for the particular flavor of SRM on which its SRM client is supported.&quot;
+
+&lt;b&gt;&lt;i&gt; comment from Brian:&lt;/i&gt;&lt;/b&gt;&lt;br/&gt;
+The SAM-SRM interface does support what Manoj is trying to do; Andrew  
+B has indicated that it&#39;s either in a later version of the SAM-SRM  
+interface or requires a more up-to-date Fermi SRM client.  I forget  
+which.
+
+&lt;b&gt;&lt;i&gt; comment from Steve:&lt;/i&gt;&lt;/b&gt;&lt;br/&gt;
+Manoj has had a horrible time in general trying to get SRM to work because he is trying to get srmcp shoehorned into a legacy CDF SAM setup which requires the use of ups/upd.  He&#39;s not getting any help from srmcp developers or from the CDF software people and he has been at this for months.  Someone needs to step up to the plate and help him out.
+&lt;br/&gt;
+
+CMS:
+++++++ &lt;br/&gt; 
+
+&lt;b&gt;&lt;i&gt;  From Malina:&lt;/i&gt;&lt;/b&gt;
+ &lt;br/&gt;
+&quot;With this level of unreliability (and I&#39;m told, unscalability), has any thought been given to making it possible to do third party transfers from dCache-&gt;BeStMan without pushmode?  I haven&#39;t a clue what the impact is of what I&#39;m asking, so if this is something that would be difficult (impossible?), certainly discard the suggestion!&quot;
+
+&lt;b&gt;&lt;i&gt; comment from Brian:&lt;/i&gt;&lt;/b&gt;&lt;br/&gt;
+It is possible to do third party transfers from dCache to BestMan  
+without pushmode.  This is how the Nebraska T2 operates, and it scales  
+sufficiently for our needs (peaks up to 10Gbps, sustains a couple Gbps).
+It cannot be done with the Fermi SRM clients (this is somewhat related  
+to Manoj&#39;s problem) because the Fermi SRM client does not support that  
+part of the protocol.  It requires either LBNL SRM client or an FTS  
+server / FTS client.
+
+&lt;br/&gt;
+---++ Second Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+Status of dcache 1.9.2 release (Ted)
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Gerd and Tigran have patches to be reviewed. Maybe ready early next week.
+
+&lt;b&gt;&lt;i&gt;comment from Tanya &lt;/i&gt;&lt;/b&gt;
+Replica Manager stopped working in 1.9 due to changes in Pool code. Alex has done some modifications and they have been back ported to all 1.9.x releases. I am in process of testing it.
+
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+Status of gPlazma testing (Tanya)
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+I have done the following testing for gPlazma (dcache 1.9.2 release candidate) vs new and old GUMS as well as SCAS server:
+
+&lt;table &gt;
+&lt;tr&gt;&lt;td&gt;Software  &lt;/td&gt;&lt;td&gt;Old GUMS	   &lt;/td&gt;&lt;td colspan=2 align=center&gt;New GUMS	 &lt;/td&gt;&lt;td&gt;	                    SCAS&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;  &lt;/td&gt;&lt;td&gt;  &lt;/td&gt;&lt;td&gt; Old endpoint  &lt;/td&gt;&lt;td&gt;	New endpoint	  &lt;/td&gt;&lt;td&gt;  &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Dcache &lt; 1.9.2&lt;/td&gt;&lt;td&gt;	                             OK&lt;/td&gt;&lt;td&gt;	    	                             OK	&lt;/td&gt;&lt;td&gt;	                NA	  &lt;/td&gt;&lt;td&gt;NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Dcache 1.9.2	&lt;/td&gt;&lt;td&gt;	                                  OK	      &lt;/td&gt;&lt;td&gt;	                    OK&lt;/td&gt;&lt;td&gt;	    	     OK	   &lt;/td&gt;&lt;td&gt;OK&lt;/td&gt; 
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Dcache 1.9.2 FQAN includes subgroup	   &lt;/td&gt;&lt;td&gt;	                 Not tested	&lt;/td&gt;&lt;td&gt;	                  Not tested &lt;/td&gt;&lt;td&gt;	      OK	  &lt;/td&gt;&lt;td&gt;	             Not tested&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Dcache 1.9.2 FQAN includes subgroup and Role	&lt;/td&gt;&lt;td&gt;	       Not tested	          &lt;/td&gt;&lt;td&gt;	            Not tested  &lt;/td&gt;&lt;td&gt;	     OK	&lt;/td&gt;&lt;td&gt;	           Not tested&lt;/td&gt;	    
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BeStMan         &lt;/td&gt;&lt;td&gt;	                                  OK	         &lt;/td&gt;&lt;td&gt;	                  OK	     &lt;/td&gt;&lt;td&gt;	     NA	&lt;/td&gt;&lt;td&gt;	           NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+status of bestman-gateway/xrootd release in VDT (Tanya)
+
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+We are waiting for ATLAS to confirm that we could release bestman-gateway/xrootd from test cache to vdt. I am working on test stand req - waiting for location &amp; networking information.
+
+I have got a new machine from CMS (cmswn086 has crashed two weeks ago), I have upgraded to a new kernel, installed bestman/xrotdfs but have to wait for a new host certificate.
+
+---++ Fifth agenda item
+&lt;!-- DESCRIPTION --&gt;
+gratia gridftp probe readiness to be included to VDT (Andrew)
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+  
+ Question to Alex: - does he want to try it out on their site?
+
+Neha has packaged in latest VDT build. Install has not yet been tested as part of a VDT deployment. 
+Brian suggested to  test it on Nebraska&#39;s site.
+
+---++ Sixth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Teckets (Neha)
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+++++++++++++++++++++++++
+New tickets 
+++++++++++++++++++++++++
+
+Follow up in progress:
+
+6088 - dc_write: mover did not FIN the data block: Neha has asked Vladimir for help.
+
+6089 - problem bringing srm server up after vdt-dcache install. 
+Suggestion to try turning off ipv6.
+
+6090 - how to remove tag from directory and repair incorrect tag. Neha will ask Vladimir.
+
+6091 - failure when trying to transfer data from dcache to bestman based SE.
+
+++++++++++++++++++++++++
+Old tickets 
+++++++++++++++++++++++++
+
+Closed:
+
+5954 - Files being marked as cached instead of precious
+
+5901 - rmdir fails to delete empty directory in PNFS
+
+6026 - Inconsistent state of PNFS
+
+Follow up in progress: 
+
+5957 - dCap stalls on read operations. Patch needs to be reviewed.
+
+6024 - srm-&gt;srm srmcp failure
+
+No update:
+
+5401 - lcg-cp not accepting service certificate for srm server
+
+5542 - Directory creation unreliable using gridftp door. Neha needs to change vdt install scripts.
+
+
+---++ Seventh agenda item
+&lt;!-- DESCRIPTION --&gt;
+AOB
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+Glue schema and WLCG. Meeting tomorrow.
+
+
+%ENDSECTION{name=&quot;ActionItemList&quot; type=&quot;section&quot;}%
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 04 Dec 2008

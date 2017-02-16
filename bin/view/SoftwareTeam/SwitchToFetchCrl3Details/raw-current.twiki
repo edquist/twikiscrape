@@ -1,0 +1,112 @@
+---+ Project 18: Fetch CRL 3 on EL 5 - Technical Details
+
+---++ Work required for OSG Software team (and others?)
+
+---+++ Package Changes
+
+Packages in our SVN that have =fetch-crl= as an explicit dependency:
+
+| *Package* | *Who* | *Status* | *Notes* |
+| =cms-xrootd= | blin | %GREEN%DONE%ENDCOLOR% | In the contrib repo |
+| =dcache-gratia-probe= | blin | %GREEN%DONE%ENDCOLOR% | |
+| =glite-ce-cream= | blin | In Progress | Never in production, do not release |
+| =osg-gridftp= | blin | %GREEN%DONE%ENDCOLOR% | Metapackage |
+| =osg-gridftp-hdfs= | blin | %GREEN%DONE%ENDCOLOR% | Metapackage |
+| =osg-gridftp-xrootd= | blin | %GREEN%DONE%ENDCOLOR% | Metapackage |
+| =osg-se-bestman= | blin | %GREEN%DONE%ENDCOLOR% | Metapackage |
+| =osg-se-bestman-xrootd= | blin | %GREEN%DONE%ENDCOLOR% | Metapackage |
+| =osg-se-hadoop= | blin | In Progress | Plus =-gridftp=, =-srm= subpackages; Never in production, do not release |
+| =osg-wn-client= | blin | %GREEN%DONE%ENDCOLOR% | Metapackage |
+| =rsv-metrics= | blin | %GREEN%DONE%ENDCOLOR% | See note below |
+| =voms-admin-server= | blin | %GREEN%DONE%ENDCOLOR% | |
+
+*Note on rsv-metrics:* =rsv-metrics= says it requires =fetch-crl= but does not run it anywhere, so that dependency can be removed. Looks like it was for an old probe that is no longer used.
+
+RPMs _outside_ of our SVN that have =fetch-crl= as an explicit dependency:
+
+   * =nordugrid-arc-ca-utils= (EPEL)
+   
+*Note on nordugrid-arc-ca-utils:* We do not use this package, but we should mention it in the announcement anyway. A (hopefully) minor problem with this package is that because we do not ship it, its dependency on =fetch-crl= will not be changed to =fetch-crl3=. Since =fetch-crl3= does not “provide” the =fetch-crl= dependency, the user will have to keep both =fetch-crl= and =fetch-crl3= installed as long as they use =nordugrid-arc-ca-utils= and one of the OSG packages mentioned above.
+
+RPMs that have =/usr/sbin/fetch-crl= as a dependency: none.
+
+---++++ Proposed change
+
+Prior to the change, a spec file that depends on Fetch CRL declares a simple dependency:
+
+&lt;pre&gt;Requires: fetch-crl&lt;/pre&gt;
+
+Following the change, each spec file must conditionally depend on the correct Fetch CRL package name:
+
+&lt;pre&gt;%if 0%{?rhel} &lt; 6
+Requires: fetch-crl3
+%else
+Requires: fetch-crl
+%endif&lt;/pre&gt;
+
+---+++ Software Changes
+
+Some of our software specifically runs the =fetch-crl= executable. These programs must be changed, ideally so that they run =fetch-crl3= if it exists, or =fetch-crl= if it does not. See the =osg-test= code for an example of how to do this carefully. Software to update:
+
+| *What To Change* | *Who* | *Status* | *Notes* |
+| =osg-configure= (=osg_configure.modules.utilities.fetch_crl()=) | Suchandra | In progress | |
+| =osg-test= (=test_06_fetch_crl.py=) | Tim | %GREEN%Done%ENDCOLOR% | |
+| =osg-ca-scripts= (=osg-ca-manage=, =osg-ca-certs-status=; checks if fetch-crl is enabled and when last run) | Tim | In progress | old Perl code |
+
+---+++ Documentation Changes
+
+!TWiki pages to update:
+
+   * Documentation.Release3.InstallBestPractices
+   * Documentation.Release3.InstallCertAuth
+   * Documentation.Release3.InstallBestmanXrootdSE (install transcript only)
+   * Documentation.Release3.InstallGratiaService (install transcript only)
+   * Documentation.Release3.InstallGridFtpXrootd (install transcript only)
+   * Documentation.Release3.InstallGums
+   * Documentation.Release3.InstallHadoopSE
+   * Documentation.Release3.InstallOSGBestmanSE (install transcript only)
+   * Documentation.Release3.InstallOSGClient
+   * Documentation.Release3.InstallRSV
+   * Documentation.Release3.InstallVoms
+   * Documentation.Release3.InstallWNClient
+   * Documentation.Release3.InstallXrootd
+   * [[Documentation.Release3.OSGServices]]
+   * Documentation.Release3.OsgCaManage
+   * &lt;s&gt;Documentation.Release3.RsvPigeonTools&lt;/s&gt; (OSG 1.2 only, don&#39;t bother)
+   * Documentation.Release3.SrmTester
+   * Documentation.Release3.UnderstandingComputeElement (note: looks a lot like [[Documentation.Release3.OSGServices]], is one of those two superfluous?)
+
+Pages marked “install transcript only” have transcripts (“screen dumps”) of the output of a full installation procedure.
+
+Pages marked as &quot;included only&quot; have references only in included fragments form other documents
+
+
+---++ Change Documents
+
+| *Document* | *Who* | *Status* | *Notes* |
+| Documentation.Release3.InstallBestPractices | Mat + Marco | done | |
+| Documentation.Release3.InstallCertAuth | Marco | done | |
+| Documentation.Release3.InstallBestmanXrootdSE (install transcript only) | | should start/stop be added? ||
+| Documentation.Release3.InstallGratiaService | ? | wip | install command updated - should the install be there? |
+| Documentation.Release3.InstallGridFtpXrootd (install transcript only) | | | should start/stop be added? |
+| Documentation.Release3.InstallGums | Marco | done ||
+| Documentation.Release3.InstallHadoopSE | Neha | check if special invocation is needed | Marco did some editing |
+| Documentation.Release3.InstallOSGBestmanSE (install transcript only) | | should start/stop be added? ||
+| Documentation.Release3.InstallOSGClient | Marco | done ||
+| Documentation.Release3.InstallRSV | Marco | done ||
+| Documentation.Release3.InstallVoms | Marco | done ||
+| Documentation.Release3.InstallWNClient | Marco | done ||
+| Documentation.Release3.InstallXrootd | Marco | done | The document seem to need some work. should start/stop be added? |
+| [[Documentation.Release3.OSGServices]] | Marco | done |  |
+| Documentation.Release3.OsgCaManage | Marco | done | no change in ca-manage UI |
+| &lt;s&gt;Documentation.Release3.RsvPigeonTools&lt;/s&gt; | Marco | done | Pointer to OSG 1.2 doc |
+| Documentation.Release3.SrmTester | Tim | ? | I did not find fetch-crl. Why is this here? Is fetch-crl needed? |
+| Documentation.Release3.UnderstandingComputeElement | Marco | done |  For Tim - UnderstandingComputeElement includes sections form OSGServices, both are needed |
+
+
+---++ Change Plan / Social Engineering
+
+   1. Need the blessing of Security (%RED%done%ENDCOLOR%), Technology, and Production
+   1. Need the upgrade instructions ([[Documentation/Release3/UpgradeFetchCrl2to3]]) reviewed and tested
+   1. Send a pre-announcement of the change a few weeks in advance; include whether or not this is something to worry about, how much effort migration will take, etc.
+   1. Do the release; highlight this change in the release notes and announcement, and link to the upgrade instructions

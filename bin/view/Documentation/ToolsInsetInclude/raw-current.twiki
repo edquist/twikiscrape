@@ -1,0 +1,106 @@
+%LINKCSS%
+---+!! %SPACEOUT{ &quot;%TOPIC%&quot; }%
+%TOC%
+
+%STARTINCLUDE%
+%EDITTHIS%
+
+This topic is for including another topic but set the included text into a textbox. It allows us to send one set of parameters without having to rewrite the div.
+
+---+++ To include a non-glossary topic in a box
+Call this topic with _section=&quot;NonGlossary&quot;_ defined. You may pass a regex pattern; however, you cannot pass certain things such as more than one space or a new line character.
+
+&lt;pre&gt;
+%&lt;nop&gt;INCLUDE{ &quot;%WEB%.%TOPIC%&quot; section=&quot;NonGlossary&quot; INCLUDETOPIC=&quot;ItsWeb.TopicName&quot; INCLUDESECTION=&quot;Section&quot; INCLUDEPATTERN=&quot;SomeRegex&quot; ParamOne=&quot;First Passed Parameter&quot; ParamTwo=&quot;Second Passed Parameter&quot; }%
+&lt;/pre&gt;
+
+Example if you are trying to include the topic !AboutStorageAreaOsgApp in the Trash/ArchivedDocumentation.ITB.ITB050 subweb, which has no defined sections and needs no passed parameters:
+&lt;pre&gt;
+&lt;nop&gt;%&lt;nop&gt;INCLUDE{ &quot;&lt;nop&gt;%WEB%.%TOPIC%&quot; section=&quot;NonGlossary&quot; INCLUDETOPIC=&quot;Integration.ITB_0_5.AboutStorageAreaOsgApp&quot; }%
+&lt;/pre&gt;
+
+---+++ To include a single glossary entry in a box
+Call this topic with INCLUDETOPIC is &quot;GlossaryX&quot; (where &quot;X&quot; is the associated starting letter for your term) and _section=&quot;GlossaryTerm&quot;_. 
+&lt;pre&gt;
+%&lt;nop&gt;INCLUDE{ &quot;%WEB%.%TOPIC%&quot; section=&quot;GlossaryTerm&quot; INCLUDETOPIC=&quot;&lt;nop&gt;Documentation.GlossaryLETTER&quot; TERM=&quot;Full Term With No Ending Space&quot; }%
+&lt;/pre&gt;
+
+Example to include the glossary entry for _Hiarchical Storage Manager_:
+&lt;pre&gt;
+%&lt;nop&gt;INCLUDE{ &quot;&lt;nop&gt;%WEB%.%TOPIC%&quot; section=&quot;GlossaryTerm&quot; INCLUDETOPIC=&quot;&lt;nop&gt;Documentation.GlossaryH&quot; TERM=&quot;Hiarchical Storage Manager&quot; }%
+&lt;/pre&gt;
+
+
+---+++ To include a single glossary entry with no box:
+This just includes a glossary term. It&#39;s easier than trying to remember that whole regex pattern every time you use it.
+&lt;pre&gt;
+%&lt;nop&gt;INCLUDE{ &quot;&lt;nop&gt;%WEB%.%TOPIC%&quot; section=&quot;GlossaryTermNoBox&quot; INCLUDETOPIC=&quot;&lt;nop&gt;Documentation.GlossaryH&quot; TERM=&quot;Hiarchical Storage Manager&quot; }%
+&lt;/pre&gt;
+
+
+---+++ To put some text into a text box:
+This method allows you to put any text into a text box. I&#39;ve placed these variables in the Documentation.WebPreferences for this web. Hopefully, we&#39;ll get to the Main web soon.
+&lt;verbatim&gt;
+%STARTInsetBox%
+Place some text that you want here.
+
+You can even %INCLUDE{ &quot;SomeTopic&quot; }% other topics.
+
+You can do anything that you want, as long as you close out all tags.
+%ENDInsetBox%
+&lt;/verbatim&gt;
+
+This renders like this:
+%STARTInsetBox%
+Place some text that you want here.
+
+You can do anything that you want, as long as you close out all tags.
+%ENDInsetBox%
+
+
+---++ Sample and Usable Sections
+   * Page variables when opened directly, rather than through an INCLUDE:
+      * Set INCLUDETOPIC = GlossaryH
+      * Set INCLUDEPATTERN =
+      * Set TERM = Hierarchical Resource Manager
+      * Set INCLUDESECTION = 
+      * Set ParamOne = 
+      * Set ParamTwo = 
+      * Set INCLUDETEXT = This is some text to include. Use this method when you don&#39;t have access to WebPreferences to create the !STARTInsetBox and !ENDInsetBox variables.
+   * INCLUDETOPIC = %INCLUDETOPIC%
+   * INCLUDEPATTERN = %INCLUDEPATTERN%
+   * INCLUDESECTION = %INCLUDESECTION%
+   * ParamOne = %ParamOne%
+   * ParamTwo = %ParamTwo%
+
+%STARTSECTION{ &quot;NonGlossary&quot;}%
+%STARTInsetBox%
+%INCLUDE{ &quot;%INCLUDETOPIC%&quot; pattern=&quot;%INCLUDEPATTERN%&quot; param1=&quot;%ParamOne%&quot; param2=&quot;%ParamTwo%&quot; }% 
+%ENDInsetBox%
+%ENDSECTION{ &quot;NonGlossary&quot;}%
+
+
+%STARTSECTION{ &quot;GlossaryTerm&quot; }%
+%STARTInsetBox%
+%INCLUDE{ &quot;%INCLUDETOPIC%&quot; pattern=&quot;^.*?(   $ %TERM%.*?\n).*&quot; param1=&quot;%_1%&quot; param2=&quot;%_2%&quot; }% 
+%ENDInsetBox%
+%ENDSECTION{ &quot;GlossaryTerm&quot; }%
+
+%STARTSECTION{ &quot;GlossaryTermNoBox&quot; }%
+%INCLUDE{ &quot;%INCLUDETOPIC%&quot; pattern=&quot;^.*?(   $ %TERM%.*?\n).*&quot; param1=&quot;%_1%&quot; param2=&quot;%_2%&quot; }% 
+%ENDSECTION{ &quot;GlossaryTermNoBox&quot; }%
+
+%STARTSECTION{ &quot;InsetSomeText&quot; }%
+%STARTInsetBox%
+%MAKETEXT{ &quot;%INCLUDETEXT%&quot; args=&quot;$n $n, $para&quot; }%
+%ENDInsetBox%
+%ENDSECTION{ &quot;InsetSomeText&quot; }%
+
+
+%STOPINCLUDE%
+
+%BOTTOMMATTER%
+ -- Main.ForrestChristian - 16 Nov 2006: Created %BR%
+  %BR%
+
+

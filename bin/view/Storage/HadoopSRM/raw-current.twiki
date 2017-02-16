@@ -1,0 +1,123 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+
+
+%RED%
+WARNING! This page is for an older version of Hadoop.
+For newer versions, please visit [[Documentation/Release3.InstallHadoopSE][Hadoop Release 3 Installation]]
+%ENDCOLOR%
+
+%TOC%
+
+---+ Installation
+
+Hadoop uses the [[https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationBestmanGateway][Bestman SRM server]] in gateway mode to provide a SRM interface to Hadoop.  Bestman will use the Hadoop FUSE interface for namespace operations, such as mkdir, rm, and ls.  Bestman will use a [[HadoopGridFTP][Gridftp]] server for reading and writing files.
+
+---++ Quick Start
+
+Quickstart for the impatient.  This assumes you already have [[HadoopInstallation][Hadoop and FUSE]] installed on the SRM server.
+
+ &lt;verbatim&gt;
+rpm -ivh http://vdt.cs.wisc.edu/hadoop/osg-hadoop-1-2.el5.noarch.rpm
+yum install bestman
+vi /opt/bestman/conf/bestman.rc # Edit appropriately (see below)
+visudo # Add specific sudo privileges for the bestman user (see below)
+service bestman start
+&lt;/verbatim&gt;
+
+---++ Prerequisites
+
+The Bestman server has the following prerequisites:
+
+   1 You must also have already [[HadoopInstallation][installed and mounted]] Hadoop using FUSE.
+   1 A [[HadoopGridFTP][GridFTP-HDFS]] server must also be installed, but this does not need to be on the same server as the BestMan server.  A larger site will prefer to have their GridFTP and BeStMan servers installed on separate hosts; see the list of [[HadoopArchitectures][deployment layouts]] for more information.
+
+Bestman is preconfigured to look for the host certificate and key in =/etc/grid-security/http/http*.pem=.
+These files must exist and be readable by the bestman user.  Using certificates in a different directory or with different names is not supported.
+
+The installation includes the latest CA Certificates package from the OSG as well as the fetch-crl CRL updater.
+
+The rpm/yum installation will create a &#39;bestman&#39; system account and group (uid,gid &lt; 500) on the host system for running the bestman SRM process. If you would like to control the uid/gid that is used, then you should create the &#39;bestman&#39; user and group manually before installing the rpms.
+
+---++ YUM Installation
+
+Remember, in order to use Bestman SRM, you must have the [[HadoopInstallation][Hadoop and the FUSE kernel module]] already installed on your system in order to use the yum installer.
+
+To configure your local installation for the yum repository, [[HadoopInstallation#Yum_install][follow the advice here]] to install the =osg-hadoop= package for your site.
+
+After installing the osg-hadoop yum configuration package, you can install the Bestman SRM server with:
+
+&lt;verbatim&gt;
+yum install bestman
+&lt;/verbatim&gt;
+
+Updates can be installed with:
+
+&lt;verbatim&gt;
+yum upgrade bestman
+&lt;/verbatim&gt;
+
+---+ Configuration
+
+For those familiar with the VDT installation of bestman, you will know about the =configure_bestman= script for configuring the bestman server.  This script is not supported in the RPM package and will be removed in future releases.  Certain operations that you would normally do with =configure_bestman=, such as changing the certificate location, are not supported.
+
+The installation of bestman and its dependencies creates several directories.  In addition to the Hadoop installation files, you will also find:
+
+| Log files | =/var/log/bestman= |
+| runtime config files | =/opt/bestman/conf/*= |
+| Bestman files | =/opt/bestman/= |
+| init.d startup script | =/etc/init.d/bestman= |
+| CA certificates | =/etc/grid-security/certificates/*= |
+
+Bestman SRM uses the Hadoop FUSE mount to perform namespace operations, such as mkdir, rm, and ls.  As per the [[HadoopInstallation][Hadoop install instructions]], edit =/etc/sysconfig/hadoop= and run =service hadoop-firstboot start=.  It is *not* necessary (or even recommended) to start any hadoop services with =service hadoop start=.
+
+The Bestman SRM configuration file is located in =/opt/bestman/conf/bestman.rc=.  There are a few settings that you need to add or change manually, depending on your site configuration:
+
+&lt;verbatim&gt;
+supportedProtocolList=gsiftp://your.gridftp.server1:2811;gsiftp://your.gridftp.server2:2811
+GUMSserviceURL=https://your.gums.host:8443/gums/services/GUMSAuthorizationServicePort
+localPathListAllowed=/mnt/hadoop;/tmp
+&lt;/verbatim&gt;
+
+Bestman uses sudo to perform changes to the filesystem namespace.  This ensures that directories get created and file get removed with the proper permissions.  You must manually add permissions.  Append the following to the end of the =/etc/sudoers= file with the =visudo= command:
+
+&lt;verbatim&gt;
+Cmnd_Alias SRM_CMD = /bin/rm, /bin/mkdir, /bin/rmdir, /bin/mv, /bin/ls 
+Runas_Alias SRM_USR = ALL, !root 
+bestman ALL=(SRM_USR) NOPASSWD:SRM_CMD
+&lt;/verbatim&gt;
+
+If you are running SL5, comment out the following line in /etc/sudoers:
+&lt;verbatim&gt;
+Defaults    requiretty
+&lt;/verbatim&gt;
+With this option enabled, !BeStMan will be unable to use sudo because it doesn&#39;t use a console.
+
+---++ Running Bestman SRM
+
+Start the Bestman SRM server with the command
+
+&lt;verbatim&gt;
+service bestman start
+&lt;/verbatim&gt;
+
+To start Bestman SRM automatically at boot time:
+
+&lt;verbatim&gt;
+chkconfig bestman on
+&lt;/verbatim&gt;
+
+---+++ JMX Monitoring
+
+This is an optional customization which will allow admins to closely monitor BeStMan activity.  This is not needed for a typical install.
+
+This allows service administrators to closely monitor memory usage
+and thread activity in a much more Java-centric manner than Ganglia
+monitoring. To enable this, add the following command-line arguments
+to the call to =java= in =$VDT_LOCATION/bestman/sbin/bestman.server=:
+
+&lt;verbatim&gt;
+-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=8004
+&lt;/verbatim&gt;
+
+Note that this allows anyone with access to port 8004 access to read
+out your JVM internal metrics.

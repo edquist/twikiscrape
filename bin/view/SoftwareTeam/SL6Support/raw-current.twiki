@@ -1,0 +1,143 @@
+&lt;!--
+   * Set NOT_STARTED = Not Started
+   * Set NOT_RELEASED = Not Released
+   * Set ON_TRACK = &lt;div style=&quot;background-color: #3366FF; color:white&quot;&gt;&amp;nbsp;On Track&amp;nbsp;&lt;/div&gt;
+   * Set BEHIND = &lt;div style=&quot;background-color: #CCFF00;&quot;&gt;&amp;nbsp;Behind&amp;nbsp;&lt;/div&gt;
+   * Set AT_RISK = &lt;div style=&quot;background-color: #CC0000; color:white&quot;&gt;&amp;nbsp;At risk&amp;nbsp;&lt;/div&gt;
+   * Set ACHIEVED = &lt;div style=&quot;background-color: #00FF66;&quot;&gt;&amp;nbsp;Achieved&amp;nbsp;&lt;/div&gt;
+   * Set RELEASED = &lt;div style=&quot;background-color: #00FF66;&quot;&gt;&amp;nbsp;Released&amp;nbsp;&lt;/div&gt;
+   * Set TWISTY_OPTS_DETAILS = mode=&quot;div&quot; showlink=&quot;Details&quot; hidelink=&quot;Hide&quot; showimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif&quot; hideimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif&quot; remember=&quot;on&quot; start=&quot;hide&quot; 
+--&gt;
+
+---+ Support for Scientific Linux
+
+---++ Requirements 
+
+USCMS has requested that the OSG Software support the OSG worker node on Scientific Linux 6 in production by the end of February. To be precise:
+
+   * OSG Software: We only need to do the worker node in February, but others portions will be needed soon after.
+   * Date: USCMS has only specified &quot;February&quot; as the deadline.
+   * Operating system: CMS has only asked for Scientific Linux 6, but we will ensure that it works on !CentOS 6 and Red Hat Enterprise Linux 6 as well. This is because we know there is broad interest in this support across all of OSG. 
+
+---++ Timeline
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Task* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| osg-build &amp; Koji SL6 support | %ACHIEVED% | Mat | - | - | 27-Jan-2011 | Mat completed this a while ago |
+| Build all needed packages | %ACHIEVED% | Alain | 24-Jan-2012 | 10-Feb-2012 | 8-Feb-2012 |  |
+| Update repository | %ACHIEVED% | GOC | 1-Feb-2012 | | | Working with GOC to settle details |
+| Update osg-build to build SL5 &amp; SL6 by default | %ACHIEVED% | Mat | 13-Feb-2012 | 17-Feb-2012 | | This will simplify our build process | 
+| Get new testing VMs at UW-Madison | %ACHIEVED% | Alain | 6-Feb-2012 | 13-Feb-2012 | | These are for daily tests |
+| Update documentation | %ACHIEVED% | Software Team | 13-Feb-2012 | 27-Feb-2012 | | |
+| Internal testing | %ACHIEVED% | Software Team | 10-Feb-2012 | 14-Feb-2012 | | |
+| Test in ITB | %ACHIEVED% | Suchandra | 14-Feb-2012 | 27-Feb-2012 | | |
+| Test in volunteer CMS sites | %ACHIEVED% | CMS | 14-Feb-2012 | 27-Feb-2012 | | Need to test glideinWMS |
+| Release | %ACHIEVED% | Alain Roy | 28-Feb-2012 | 28-Feb-2012 | | | 
+
+---++ Technical Details 
+
+---+++ Version
+
+We will version OSG Software 3.0 identically for Scientific Linux 5 and 6. To be precise:
+   * We will keep software synchronized for both OSes.
+   * If we update or add software, we will always build it on both SL5 and SL6.
+   * OSG Software 3.0.N refers to the same set of packages on SL5 and SL6. 
+
+We may make rare exceptions if needed, on a case-by-case basis. Exceptions will be carefully documented. 
+
+---+++ Globus &amp; EPEL
+
+We will rebuild all packages in the OSG worker node client on Scientific Linux 6. Specifically, this includes Globus and packages that depend on Globus. 
+
+EPEL is in the process of upgrading to Globus 5.2.0, so this could be our opportunity to drop many packages from our repository and rely on EPEL instead. We are not doing that for two reasons.
+
+   1. We don&#39;t know when EPEL will release the new Globus 5.2.0 packages. (As of February 8th they have not been released.) 
+   1. We want to make one major change at a time to limit our risk. 
+
+---+++ Repositories
+[[https://jira.opensciencegrid.org/browse/REPO-2][JIRA Ticket]]
+
+Currently our repository at the GOC does not easily support multiple operating systems. We need to change it:
+
+&lt;table&gt;
+&lt;tr&gt;&lt;td width=50%&gt; *Current layout* &lt;/td&gt;&lt;td width=50%&gt; *New layout* &lt;/td&gt;&lt;/tr&gt;
+&lt;tr valign=top&gt;
+&lt;td&gt;
+&lt;pre class=&quot;file&quot;&gt;
++---osg-release
+|   |
+|   +- i386
+|   +- x86_64
+|   +- source
+|
++---osg-contrib     (i386, x86_64, source)
++---osg-testing     (i386, x86_64, source)
++---osg-development (i386, x86_64, source)
+&lt;/pre&gt;
+&lt;/td&gt;
+&lt;td&gt;
+&lt;pre class=&quot;file&quot;&gt;
++-- 3.0
+    |
+    +--el5
+    |  |
+    |  +-osg-release     (i386, x86_64, source)
+    |  +-osg-contrib     (i386, x86_64, source)
+    |  +-osg-testing     (i386, x86_64, source)
+    |  +-osg-development (i386, x86_64, source)
+    +--el6
+    |  |
+    |  +-osg-release     (i386, x86_64, source)
+    |  +-osg-contrib     (i386, x86_64, source)
+    |  +-osg-testing     (i386, x86_64, source)
+    |  +-osg-development (i386, x86_64, source)
+&lt;/pre&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+To maintain backwards compatibility, we&#39;ll make symbolic links for the top-level directories that currently exist (osg-release, etc.) to the 3.0/el5 versions of those directories.
+
+*Important Notes:*
+   * This requires cooperation with the GOC to reorganize the repository.
+   * This requires us to have a separate osg-release binary RPM per OS (which installs the repository locations), which also requires GOC participation. (To update our symbolic links to the latest version of the =osg-release= RPM.)
+
+---+++ Compatibility between SL5 and SL6 versions
+
+To the best of our knowledge, there is nothing preventing us from keeping the SL5 and SL6 versions completely synchronized. That is, we can use a single .spec file to build RPMs for SL5 and SL6. While there are differences between SL5 and SL6, we believe they are small and can be handled with conditional statements in the spec file. That is statements that allow the RPM to be created differently for SL5 and SL6. ([[RPMDevelopmentGuide#Packaging_for_Multiple_Distro_Ve][Documented elsewhere]])
+
+---+++ Dist tags
+
+Previously, we added a &quot;dist tag&quot; to every version string for every RPM that we released, so our version can be distinguished from the same software that might exist in another repository. For example, if we rebuilt =lcg-utils-1.2.3-1= from the EPEL repository, we would change the version to =lcg-utils-1.2.1-1%RED%.osg%ENDCOLOR%=. 
+
+We will continue this practice, but we need to distinguish the builds for different OSes as well. (To reduce confusion and due to the need to have separate Name-Version-Releases within Koji.) We will have two dist tags:
+
+   * .osg.el5
+   * .osg.el6
+
+El is short for &quot;enterprise linux&quot; and is the generic term for &quot;Red Hat Enterprise Linux&quot;, &quot;Scientfic Linux&quot;, and &quot;CentOS&quot;.
+
+---+++ Build and test infrastructure
+
+We continue to use the Koji software in the UW-Madison hosted Batlab, and have extended it with an SL6 build host.
+
+We have configured Koji to allow SL6 builds. (Creating tags, etc.).
+
+We need to extend our set of test computers (also in the Batlab) to include !CentOS 6 and Red Hat Enterprise Linux 6. (We already have SL6)
+
+We need to do some development of the test infrastructure so we don&#39;t send too many emails (one per platform).
+
+---+++ Subversion repository
+
+Because the differences between SL5 and SL6 are very small, we are not developing on a branch. Should the situation change as we move forward, we will consider using a branch.
+
+---+++ osg-build
+
+osg-build has been extended to work with SL6 builds.
+
+   * =--el5=: Makes an EL5 build
+   * =--el6=: Makes an EL6 build
+
+   * =allbuild= task: Makes koji svn builds for all platforms.
+
+---+++ Other tools
+
+We need a script to check the differences between two repositories, so we can verify that the SL5 and SL6 repositories are synchronized. (Or have acceptable differences)

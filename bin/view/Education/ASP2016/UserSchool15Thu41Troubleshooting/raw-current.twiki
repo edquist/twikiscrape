@@ -1,0 +1,124 @@
+---+ Exercises 
+---++ Goal
+
+In this exercise, we&#39;ll look at a few different ways that jobs might get stuck or fail, and how to troubleshoot them. 
+
+---++ Setup
+
+First, you&#39;ll need to log in to the CHTC submit node:
+
+ &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% ssh osg-ss-submit.chtc.wisc.edu
+&lt;/pre&gt;
+
+Then, create a new directory in your home for these exercises:
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% mkdir -p ~/troubleshooting
+%UCL_PROMPT_SHORT% cd ~/troubleshooting
+&lt;/pre&gt;
+
+We&#39;ll write a job that needs access to the CHTC&#39;s Gluster filesystem. We won&#39;t actually do anything with Gluster, other than verify that it is there.
+
+Copy and paste the following as a script called =gluster.sh=: 
+&lt;pre class=&quot;file&quot;&gt;
+GLUSTER_LOCATION=/mnt/gluster
+
+echo &quot;I am a short job running on node&quot; `hostname`
+
+stat $GLUSTER_LOCATION &gt; /dev/null
+
+if [ $? -eq &#39;0&#39; ]; then
+  echo &quot;Gluster is mounted at $GLUSTER_LOCATION!&quot;
+else
+  echo &quot;Could not find Gluster :(&quot;
+fi
+&lt;/pre&gt;
+
+Make sure to =chmod +x gluster.sh=. 
+
+Create an HTCondor submit file to go with it and include the following requirements line:
+
+&lt;pre&gt;
+Requirements = (Has_Gluster =?= True)
+&lt;/pre&gt;
+
+---++ Exercise 1: Fix a stuck job
+
+Once you&#39;ve created the submit file, go ahead and submit your job. 
+
+Will this job ever run? After submitting, analyze the job with =condor_q -better-analyze [Job ID]=.
+
+%TWISTY{
+showlink=&quot;Click to see expected output&quot;
+hidelink=&quot;Hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;file&quot;&gt;
+The Requirements expression for your job reduces to these conditions:
+
+         Slots
+Step    Matched  Condition
+-----  --------  ---------
+[0]           0  Has_Gluster is true
+&lt;/pre&gt;
+%ENDTWISTY%
+
+We can also see how many nodes match our requirement with =condor_status=:
+&lt;pre class=&quot;screen&quot;&gt;
+condor_status -constraint Has_Gluster
+&lt;/pre&gt; 
+
+Does =condor_status= show any slots that match Has_Gluster? No -- I have led you astray and given you a bad requirements line :)
+
+The actual ClassAd that we want is named *HasGluster* not _Has_Gluster_. At this point, we can either remove our old job and resubmit, or we can edit the job in queue with =condor_qedit=. 
+
+&lt;pre class=&quot;screen&quot;&gt;
+condor_qedit [Job ID] Requirements &#39;HasGluster =?= True&#39;
+&lt;/pre&gt; 
+
+Once you&#39;ve edited the job in queue, use =condor_release= to re-queue it.
+
+Try to run =condor_q -better [Job ID]= again. Has the output changed?
+
+---++ Exercise 2: Investigate why a job is held
+
+Did the job in the previous exercise finish? It should have eventually started after fixing the requirements line, but you may now see it in H state (Held). Why? Try investigating with =condor_q -hold [Job ID]=
+
+%TWISTY{
+showlink=&quot;Click to see expected output&quot;
+hidelink=&quot;Hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;file&quot;&gt;
+Error from slot1@e233.chtc.wisc.edu: Failed to execute &#39;/var/lib/condor/execute/slot1/dir_27964/condor_exec.exe&#39;: (errno=8: &#39;Exec format error&#39;)
+&lt;/pre&gt;
+%ENDTWISTY%
+
+What could be wrong with this job? Go back and look at the executable again. There&#39;s something missing at the top. 
+
+%TWISTY{
+showlink=&quot;Click to see the answer&quot; 
+hidelink=&quot;Hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+The shell script is missing the interpeter line, =#!/bin/bash=. Without it, HTCondor will fail to run the job.
+%ENDTWISTY%
+
+---++ Exercise 3: Try condor_ssh_to_job
+This exercise is a bit more open-ended. Try to create a submit file that runs the &quot;sleep&quot; command. Sleep takes integer seconds as an argument, so try to have your job do something like &quot;sleep 3600&quot;.
+
+Submit the job, and once it&#39;s running, use &quot;condor_ssh_to_job [Job ID]&quot; to SSH to the remote execution host.
+
+Try to answer the following questions: 
+
+What is =condor_exec.exe=? What do =_condor_stderr= and =_condor_stdout= correspond to?
+
+
+-- Main.LincolnBryant - 29 Jul 2015
+

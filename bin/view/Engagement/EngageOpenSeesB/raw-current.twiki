@@ -1,0 +1,187 @@
+---+ Helping the Network for Earthquake Engineering Simulation (NEES) run !OpenSees on the Open Science Grid
+
+&lt;b&gt;
+This page describes the proof-of-principle phase of integration of NEES with OSG.&lt;br&gt;
+The [[EngageOpenSeesProductionDemo][production-demo phase of integration is described at this link]].&lt;br&gt;
+&lt;/b&gt;
+
+---++ Introduction
+
+%TOC%
+
+The [[http://nees.org/about][NEES project]] is experiencing limits on the
+available computational resources within their current
+!TeraGrid environment. Thus NEES is exploring the
+possibility of using OSG for some of their analyses
+that can run in an [[http://www.cs.wisc.edu/condor/htc.html][HTC]] environment. OSG staff is
+partnering with the NEES community to adapt their
+software for execution on OSG.
+
+The integration of the NEES software with the Open
+Science Grid infrastructure will be approached in
+phases. Each phase is a subproject in itself, with well
+defined goals and time line. Each new phase will either
+increase the functionality of the system, or its
+reliability, or the number of users of the system. The
+final goal of this process is to empower the NEES
+community to run their computations on OSG
+independently and with minimal support from OSG.
+
+NEES is using a program called [[http://opensees.berkeley.edu/OpenSees/home/about.php][OpenSees]] that simulates
+the response of buildings and other structures to
+earthquakes. !OpenSees can require a lot of computation
+time so it is useful to run multiple simultaneous
+instances of it.
+
+Currently, the OSG User Support team is working with
+NEES on two fronts: (1) [[#1_Direct_Job_Submission][running !OpenSees on OSG]]
+through direct job submission; (2) [[#2_Submitting_glideinWMS_jobs_to][integrating the OSG glidein workload management system]] with the NEES
+!HUBzero portal as a mechanism to run canned
+applications on OSG.
+
+---++1. Direct Job Submission
+
+The goals of this phase are to run the !OpenSees
+application on the Open Science Grid with a set of
+realistic inputs from one user, and to create scripts
+and documentation to make the workflow
+straightforward. The resulting prototype ought to be a
+good basis for other uses of !OpenSees.
+
+The !OpenSees requirements when using the chosen inputs
+are as follows:
+
+* Be able to run on the order of 60 simultaneous jobs
+   at once. Could be more sometimes.
+
+* There would typically be multiple batches of runs
+   over the course of a month followed by a time with no
+   runs.
+
+* Ideally some runs could be fairly long, 36+ hours,
+  though shorter ones, up to 1 day long, are still
+  useful.
+
+   OSG does not generally support 36+ hour runs. This
+   is because ordinary glidein pilots don&#39;t run for
+   more than 10 hours, many sites evict jobs after a
+   certain amount of run time, and many sites preempt
+   jobs if there are higher priority ones.
+
+* Does not need special dynamically-linked libraries.
+
+* Does not need to handle much input or output data. At
+   least during the current testing the input tar file
+   after compression is on the order of 4Mb, which
+   includes both the !OpenSees executable and input
+   data. The output file can be at least up to 38Mb but
+   was often smaller.
+
+* Does not need much RAM. During one test an !OpenSees
+   job needed less than 200Mb although this could be
+   checked.
+
+There are some instructions for the
+[[running_OpenSees_on_OSG_b][prototype integration with OSG]].
+
+---+++ Responsibilities, Timeline, and Status
+
+This activity started in Jan 2010 and finished in Feb 2010, with some tail on addressing long jobs in preparation for the next phase.
+
+The OSG User Support team is responsible for writing
+scripts and configuration files to enable the
+integration of !OpenSees with OSG, for testing the
+infrastructure, for writing documentation, and for
+solving problems due to the configuration of OSG. NEES
+staff is responsible for explaining how to run
+!OpenSees, for providing test cases, for doing further
+testing, and for giving feedback on the scripts and
+documentation.
+
+The initial phase of this project ran from about
+mid-January to the beginning of March. The resulting
+system satisfies all of the requirements except that
+support for jobs that run for more than 10 hours is not
+fully in place. This project is based on [[Main.OpenSeesAndCactusDocs][some work last year]]
+to remove the dependencies of !OpenSees on MPI
+libraries, which are not always installed at OSG sites.
+
+Using the results of this project, OSG computers have
+run analyses of the response of a structure called the
+_Self-Centering Steel Plate Shear Wall (SC-SPSW)_
+system. The analyses required about 300 jobs that ran
+for an estimated 2400 hours.
+
+---+++ Ongoing Work
+
+More recently, the OSG User Support group has been
+working with the glideinWMS operational teams to
+improve long job support. The changes to the OSG
+infrastructure (glideinWMS frontend and glideinWMS
+factory) to support jobs that are up to four days long
+should already be in place. We are evaluating potential
+solutions (specific sites and submit file expressions)
+that use this infrastructure, and have found that some
+are already usable.
+
+In the future, requests for support should
+preferentially be directed through the standard OSG
+support channels (GOC tickets and VO Forum), although
+directed email will still be answered at a best effort
+level.
+
+---++ 2. Submitting glideinWMS jobs to OSG through NEEShub
+
+[[http://nees.org/][NEEShub]] is a portal based on [[http://hubzero.org/][HUBzero]] which is designed
+to improve and simplify the collaborative processes
+among scientists. NEEShub already [[http://nees.org/resources/openseeslab][has the ability]] to
+run !OpenSees jobs on dedicated computers and on
+!TeraGrid. Our goal is to enable running NEES jobs,
+including !OpenSees jobs, on OSG.  The integration of
+NEEShub with OSG is relevant because for some use cases
+portal submission is considered easier to use than the
+command-line-based job submission described in the
+previous sections.
+
+The proof-of-principle phase for the integration of
+HUBzero with OSG through glideinWMS has been
+successfully closed on Mar 23, 2011. A few test
+!OpenSees jobs have been successfully run on OSG
+through nanoHUB. This was achieved by installing near
+the portal a glideinWMS front end interfaced with the
+OSG glidein Factory. The front end offers a condor
+batch system interface for job submission, an interface
+which is already supported by the portal. For this test
+the condor submission occurred in a [[http://hubzero.org/resources/workspace][HUBzero workspace]],
+an environment equivalent to a linux shell. The jobs
+were submitted under a community-based service
+certificate of the front end using the nanoHUB VO.
+
+Work is currently ongoing on a similar integration for
+NEEShub. This work can lead to a future &quot;production
+demo&quot; phase of integration of NEES with OSG.
+
+The work on supporting long jobs for direct job
+submission will also be applicable for NEEShub
+submission. If there is a large demand for those kinds
+of jobs, however, future work may include investigating
+how to enable checkpointing for !OpenSees.
+
+Other future work may include providing a GUI interface
+for !OpenSees job submission through the portal. This
+could be possibly generated semi-automatically with
+[[https://nanohub.org/infrastructure/rappture/][Rappture]], a technology often used for HUBzero programs.
+
+Steven Clark and Michael !McLennan at Purdue&#39;s [[http://www.rcac.purdue.edu/][RCAC]] have
+worked on the proof-of-principle tests and on the
+installation of a glideinWMS front end on NEEShub. OSG
+User Support is available for consulting if problems
+come up with the installation/configuration, and will
+act as a liaison to the glideinWMS experts if
+necessary.
+
+7/20/11 update:  The [[http://nees.org/topics/NEESRunningOpenSeesonOSGComputers][current NEEShub/OSG interface]]
+should be about ready for people to try.
+
+     -- OSG User Support for NEES 
+

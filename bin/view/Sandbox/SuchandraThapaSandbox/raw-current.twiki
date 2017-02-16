@@ -1,0 +1,98 @@
+---+!! *&lt;nop&gt;OSG 1.2.4 Update Instructions*
+
+%BR%
+
+---++ Release Notes for the OSG 1.2.4 upgrade
+This release is a minor upgrade to OSG 1.2 installations and is not critical except for sites using glexec or sites that run jobs that check the lcg-utils version. Release notes for the VDT packages that have been updated can be found [[http://vdt.cs.wisc.edu/releases/2.0.0/release-p10.html][here]].  
+
+---++ Update Instructions
+If you have OSG 1.2 services installed you can follow the instructions below to *update* your existing installation.  This method will work for all OSG packages including =ce=, =client=, =wn-client=, and Storage Elements.  This release can be applied to all OSG 1.2 installations, since the vdt-updater will not take any actions if glexec, java, or lcg-utils are not installed.
+
+*NOTE: If you are using packages from OSG 1.0.x or earlier, you must do a brand new installation because OSG 1.2.x uses a different Pacman cache from prior releases. There are installation guides for installing from scratch the various components available in ReleaseDocumentation.WebHome. In addition, for experienced admins, there is a ReleaseDocumentation.QuickInstallGuide available.*
+
+---++ Update Instructions from OSG 1.2.x to OSG 1.2.4
+
+---+++ Preliminaries
+Go to the directory where you installed your software (root directory of the Pacman installation, &lt;tt&gt;[software location]&lt;/tt&gt;) and source the setup script so that the following steps will work correctly.
+&lt;pre class=&quot;screen&quot;&gt;
+cd [software location]
+source setup.sh
+&lt;/pre&gt;
+
+
+---+++ Stop VDT Services
+Some packages (e.g. =client= or =wn-client=) may not be running any services, however, doing this step will not cause problems.  
+
+&lt;pre class=&quot;screen&quot;&gt;
+vdt-control --off
+&lt;/pre&gt;
+
+---+++ Backup your software
+&lt;pre class=&quot;screen&quot;&gt;
+cp -a $VDT_LOCATION [BACKUP_LOCATION]
+&lt;/pre&gt;
+
+---+++ Update the VDT updater script itself
+If you do not yet have the updater script, then fetch it:
+
+Note: If you are not sure if you have the updater, look for =$VDT_LOCATION/vdt/update/vdt-updater= 
+
+&lt;pre class=&quot;screen&quot;&gt;
+pacman -get http://vdt.cs.wisc.edu/vdt_200_cache:VDT-Updater
+&lt;/pre&gt;
+
+If you already have the updater, update it:
+&lt;pre class=&quot;screen&quot;&gt;
+pacman -update VDT-Updater
+&lt;/pre&gt;
+
+
+---+++ Backup
+
+Backup again since the vdt-updater script will request the location of your backup and verify that the backup is identical to the current contents of the install directory before updating your installation.
+&lt;pre class=&quot;screen&quot;&gt;
+cp -a $VDT_LOCATION BACKUP-LOCATION
+&lt;/pre&gt; 
+
+---+++ Get VDT Updates
+This will update VDT packages specifically.
+&lt;pre class=&quot;screen&quot;&gt;
+vdt/update/vdt-updater
+&lt;/pre&gt;
+
+---+++ Get OSG Updates
+The =osg-version= and =osg-config= packages must be updated on all OSG installations:
+&lt;pre class=&quot;screen&quot;&gt;
+pacman -update osg-version&lt;/verbatim&gt;
+cp $VDT_LOCATION/osg/etc/config.ini /tmp/config.ini-backup
+pacman -update osg-config&lt;/verbatim&gt;
+cp /tmp/config.ini-backup $VDT_LOCATION/osg/etc/config.ini
+&lt;/pre&gt;
+
+
+---+++ Post Install Configuration
+
+&lt;pre class=&quot;screen&quot;&gt;
+vdt-post-install
+&lt;/pre&gt;
+
+On a CE, you will also need to reconfigure your system
+&lt;pre class=&quot;screen&quot;&gt;
+configure-osg -c
+&lt;/pre&gt;
+
+
+---+++ Restart VDT Services
+This step can be omitted if you are not running any services.  If you are not certain, you can run it since services are disabled by default so the only services that will be started are ones that you have explicitly enabled.
+&lt;pre class=&quot;screen&quot;&gt;
+vdt-control --on
+&lt;/pre&gt;
+
+
+---++ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+
+
+%COMPLETE3% %BR%
+%RESPONSIBLE%  Main.SuchandraThapa - 23 Sep 2009 %BR%
+%REVIEW%

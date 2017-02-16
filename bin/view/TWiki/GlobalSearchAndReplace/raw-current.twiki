@@ -1,0 +1,54 @@
+---++ Global Search and Replace
+
+Welcome %WIKIUSERNAME% &lt;font size=\&quot;-1\&quot;&gt;([[%SCRIPTURL%/viewauth%SCRIPTSUFFIX%/%WEB%/%TOPIC%][not me?]])&lt;/font&gt;. You must %CALC{&quot;$IF($EXACT(%USERNAME%,guest),[[%SCRIPTURL%/viewauth%SCRIPTSUFFIX%/%WEB%/%TOPIC%][login]] and)&quot;}% be a member of the %MAINWEB%.TWikiAdminGroup to be able to save your search and replace.
+
+&lt;form name=&quot;search&quot; action=&quot;%SCRIPTURLPATH%/view%SCRIPTSUFFIX%/%WEB%/%TOPIC%&quot; method=&quot;post&quot;&gt;
+&lt;table border=&quot;0&quot; cellspacing=&quot;2&quot; cellpadding=&quot;1&quot; &gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#0c2577&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Topic Search String&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td&gt; &lt;input type=&quot;text&quot; size=&quot;64&quot; name=&quot;search&quot; value=&quot;%URLPARAM{&quot;search&quot; encode=&quot;entity&quot;}%&quot; onblur=&quot;this.form.rSearchString.value=this.value;&quot; /&gt; &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#0c2577&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Search Scope&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td&gt; &lt;select name=&quot;scope&quot; size=&quot;1&quot;&gt; &lt;option&gt;%URLPARAM{&quot;scope&quot; default=&quot;text&quot;}%&lt;/option&gt;&lt;option&gt;&lt;/option&gt;&lt;option&gt;text&lt;/option&gt;&lt;option&gt;topic&lt;/option&gt;&lt;/select&gt; &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#0c2577&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Web&lt;/b&gt;  (single name, e.g., %WEB%)&lt;/font&gt;&lt;/td&gt;&lt;td&gt; &lt;input type=&quot;text&quot; size=&quot;64&quot; name=&quot;web&quot; value=&quot;%URLPARAM{&quot;web&quot; default=&quot;Sandbox&quot;}%&quot; /&gt; &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#000000&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Replace Search String&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td&gt; &lt;input type=&quot;text&quot; size=&quot;64&quot; name=&quot;rSearchString&quot; value=&quot;%URLPARAM{&quot;rSearchString&quot; encode=&quot;entity&quot;}%&quot; /&gt; &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#000000&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Replace String&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td&gt; &lt;input type=&quot;text&quot; size=&quot;64&quot; name=&quot;rString&quot; value=&quot;%URLPARAM{&quot;rString&quot; encode=&quot;entity&quot;}%&quot; /&gt; &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#000000&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Case Sensitive Replace Search&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td&gt; &lt;select name=&quot;caseSensitive&quot; size=&quot;1&quot;&gt;&lt;option&gt;%URLPARAM{&quot;caseSensitive&quot; default=&quot;yes&quot;}%&lt;option&gt;yes&lt;/option&gt;&lt;option&gt;no&lt;/option&gt;&lt;/select&gt; &lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;input type=&quot;submit&quot; value=&quot;Search&quot; /&gt;&amp;nbsp;&amp;nbsp;[[%TOPIC%][Start over]]&amp;nbsp;&amp;nbsp;[[%TOPIC%Help][Help]]
+&lt;input type=&quot;hidden&quot; name=&quot;hideHeaderStart&quot; value=&quot;|&quot; /&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;hideHeaderEnd&quot; value=&quot;|&quot; /&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;hideButtonsStart&quot; value=&quot;  &quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;hideButtonsEnd&quot; value=&quot;  &quot;&gt;
+&lt;/form&gt;
+
+&lt;form name=&quot;replace&quot; action=&quot;%SCRIPTURLPATH%/viewauth%SCRIPTSUFFIX%/%WEB%/%TOPIC%Topics&quot; method=&quot;post&quot;&gt;
+
+%TABLE{ sort=&quot;off&quot; tableborder=&quot;0&quot; tablewidth=&quot;780&quot; columnwidth=&quot;10%, 45%, 45%&quot; databg=&quot;#F8F8F8&quot;  }%
+%URLPARAM{&quot;hideHeaderStart&quot; default=&quot;&lt;!--&quot;}% *Topic* | *Hit* | *Replace With* %URLPARAM{&quot;hideHeaderEnd&quot; default=&quot;--&gt;&quot;}%
+%SEARCH{ search=&quot;%URLPARAM{&quot;search&quot; default=&quot;do[N]othing&quot;}%&quot; scope=&quot;%URLPARAM{&quot;scope&quot;}%&quot; web=&quot;%URLPARAM{&quot;web&quot; default=&quot;%WEB%&quot;}%&quot; nosearch=&quot;on&quot; nototal=&quot;on&quot; regex=&quot;on&quot; noheader=&quot;on&quot; format=&quot;$percntGLOBALREPLACE{ func=\&quot;search\&quot; param=\&quot;$web.$topic\&quot; rSearchString=\&quot;%URLPARAM{&quot;rSearchString&quot; encode=&quot;entity&quot;}%\&quot; rString=\&quot;%URLPARAM{&quot;rString&quot; encode=&quot;entity&quot;}%\&quot; caseSensitive=\&quot;%URLPARAM{&quot;caseSensitive&quot;}%\&quot; }$percnt&quot; separator=&quot; &quot;}%
+&lt;input type=&quot;hidden&quot; name=&quot;func&quot; value=&quot;replace&quot; /&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;caseSensitive&quot; value=&quot;%URLPARAM{&quot;caseSensitive&quot;}%&quot; /&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;rSearchString&quot; value=&quot;%URLPARAM{&quot;rSearchString&quot; encode=&quot;entity&quot;}%&quot; /&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;rString&quot; value=&quot;%URLPARAM{&quot;rString&quot; encode=&quot;entity&quot;}%&quot; /&gt;
+%URLPARAM{&quot;hideButtonsStart&quot; default=&quot;&lt;!--&quot;}%
+&lt;input type=&quot;button&quot; value=&quot;Set All&quot; onClick=&quot;checkAll(true);&quot; /&gt;&amp;nbsp;&amp;nbsp;&lt;input type=&quot;button&quot; value=&quot;Clear All&quot; onClick=&quot;checkAll(false);&quot; /&gt;
+&lt;input type=&quot;submit&quot; value=&quot;Replace all Check Marked Hits&quot; /&gt;
+
+__Warning:__ Large scale changes can be done quickly; verify your selections carefully before replacing content!
+%URLPARAM{&quot;hideButtonsEnd&quot; default=&quot;--&gt;&quot;}%
+&lt;/form&gt;
+
+&lt;script language=&quot;JavaScript&quot;&gt;
+&lt;!-- HIDE and &lt;pre&gt; escape TWiki rendering
+  function checkAll( theCheck )
+  {
+    for( var i = 0; i &lt; document.replace.length; i++ ) {
+      document.replace.elements[i].checked = theCheck;
+    }
+  }
+//STOP HIDING and &lt;/pre&gt; escaping --&gt;
+&lt;/script&gt;
+
+   * Set ALLOWTOPICCHANGE = %MAINWEB%.TWikiAdminGroup
+
+__Related Topics:__ [[GlobalReplacePlugin]], [[%TOPIC%Help]], GlobalSearchAndReplaceTopics
+
+-- TWiki:Main.PaulineCheung - 12 Jan 2004
+

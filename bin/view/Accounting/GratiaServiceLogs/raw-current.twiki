@@ -1,0 +1,49 @@
+&lt;table width=&quot;100%&quot;&gt;
+&lt;tr&gt;&lt;td valign=&quot;top&quot;&gt;
+&lt;/td&gt;
+&lt;td valign=&quot;top&quot;&gt;
+---+!! Gratia Service Debugging Information
+%TOC%
+&lt;/td&gt;
+&lt;td valign=&quot;top&quot; align=&quot;right&quot; width=&quot;25%&quot;&gt;
+%TABLE{ sort=&quot;off&quot; dataalign=&quot;left&quot; tableborder=&quot;0&quot; cellpadding=&quot;1&quot; cellspacing=&quot;3&quot; headerbg=&quot;#F3EDE7&quot; databg=&quot;#F3EDE7&quot;}%
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+%STARTINCLUDE%
+
+Note: =$CATALINA_HOME= is the top directory of the tomcat installation
+
+---++Information of use for debugging issues.
+
+%STARTSECTION{&quot;Debugging&quot;}%
+In case a problem need to be investigate in detailed by the developer the following information can be of use:
+   * Content of =$CATALINA_HOME/logs=
+   * Content of =$CATALINA_HOME/gratia=: the sub-diretory $CATALINA_HOME/gratia/data contains information about the incoming data
+      * =$CATALINA_HOME/gratia/data/thread?= contains the yet to be processed incoming message
+      * =$CATALINA_HOME/gratia/data/old-*= contains a copy of all the already processed messages, including duplicates and error case
+      * =$CATALINA_HOME/gratia/data/history-*= contains a marked up copy of all the successfully processed records.
+%ENDSECTION{&quot;Debugging&quot;}%
+
+---++Log Files
+
+%STARTSECTION{&quot;LogFiles&quot;}%
+
+All the Collector and Reporting service log files are located in =$CATALINA_HOME/logs=. The main log files are as follows:
+
+   * =catalina.out=: contains tomcat messages emitted outside the auspices of log4j (before its initialization for instance) or messages sent directly to =stdout=. This file is not rotated.
+   * =messages.log=: contains all messages not otherwise directed by the log4j configuration file or Gratia&#39;s logging system (controlled by log4j config file).
+   * =hibernate.log=: contains all messages emitted by hibernate (controlled by log4j config file).
+   * =gratia.log=: Messages from the record processor code, including details of records saved,  errors found processing records any information about clean-up or replication.
+   * =glite-security-trustmanager.log=: messages from the authorization infrastructure (controlled by the log4j config file).
+   * =gratia-administration.log=: messages from the administration service.
+   * =gratia-registration.log=: messages from registration activities.
+   * =gratia-reporting.log=: All messages emitted by the Gratia reporting infrastructure (as opposed to BIRT messages, which appear in =catalina.out=).
+   * =gratia-rmi-servlet.log=: messages from the servlets receiving information from remote probes.
+   * =access/access.log=: tomcat access log (controlled by tomcat valve configuration in =conf/server.xml=).
+
+Unless otherwise specified, logs are rotated daily and are controlled by the relevant clause in =service-configuration.properties=, the main Gratia configuration file.
+%ENDSECTION{&quot;LogFiles&quot;}%
+
+-------
+
+%INCLUDE{&quot;Monitoring&quot;}%
+

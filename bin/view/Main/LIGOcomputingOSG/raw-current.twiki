@@ -1,0 +1,62 @@
+---+ LIGO onboarding to the OSG
+
+The goal of this project is to enable LIGO computing via the OSG. This will be accomplished by setting up Georgia Tech as an OSG site. LIGO jobs can thus be submitted to both Georgia Tech and to wider OSG resources (such as XSEDE sites with LIGO allocations in the future). 
+
+---++ Deliverables
+
+   * Establish a Georgia Tech OSG site for use by LIGO. 
+      * A schedd for this purpose will be established at Georgia Tech allowing for the two clusters there (one general-use and one LIGO specific) to be used as a single Condor pool
+   * Enable flocking to this and other OSG site for LIGO users via an OSG flocking pool
+      * The collector and frontend for this purpose will be operated by OSG at a site TBC (candidate UCSD)
+   * At this time, the project will encompass operations at the Georgia Tech site only. Future expansion will be to the upcoming OSG-HPC-CE (SDSC Comet) and other OSG sites
+
+---++ Milestones and Schedule
+
+&lt;!--
+   * Set PENDING =  &lt;span style=&quot;color: white; background-color: #AAA; padding-left: 1em; padding-right: 1em;&quot;&gt;Waiting&lt;/span&gt;
+   * Set ACTIVE = &lt;span style=&quot;color: white; background-color: #0A0; padding-left: 1em; padding-right: 1em;&quot;&gt;In&amp;nbsp;Progress&lt;/span&gt;
+   * Set BEHIND =   &lt;span style=&quot;color: white; background-color: #F60; padding-left: 1em; padding-right: 1em;&quot;&gt;Behind&lt;/span&gt;
+   * Set AT_RISK =  &lt;span style=&quot;color: white; background-color: #C00; padding-left: 1em; padding-right: 1em;&quot;&gt;At&amp;nbsp;Risk&lt;/span&gt;
+   * Set SKIPPED =  &lt;span style=&quot;color: white; background-color: #C00; padding-left: 1em; padding-right: 1em;&quot;&gt;Skipped&lt;/span&gt;
+   * Set COMPLETE = &lt;span style=&quot;color: white; background-color: #000; padding-left: 1em; padding-right: 1em;&quot;&gt;Done&lt;/span&gt;
+   * Set WBS1 = &lt;span style=&quot;font-size: 125%; font-weight: 900; color: #F60;&quot;&gt;
+   * Set WBS2 = &lt;span style=&quot;font-weight: bold;&quot;&gt;
+   * Set WBS = &lt;/span&gt;
+--&gt;
+
+---+++ Implementation
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Milestone* | *State* | *Who* | *Est. Start* | *Est. Finish* | *Act. Finish* | *Notes* |
+| %WBS1%1 Project set-up%WBS% |||||||
+| 1.1. Determine  VO implementation | %COMPLETE% | !PeterC, !BrianB, !MatsR, !BoJ | — | 2015-05-22 | 2015-05-22 | LIGO jobs at the Georgia Tech site and others will run as subgroup &quot;LIGO&quot; in the OSG VO. Flocking will be done via a separate frontend than the existing OSG VO frontend  |
+| 1.1.1. Add LIGO DN to new group in OSG VO and configure GUMS | %COMPLETE% | !MatsR, !BrianB, Bo | 2015-05-25 | 2015-05-27 | — | [[https://voms.opensciencegrid.org:8443/voms/osg][OSG VOMS link]]; DN is =/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=osg-ligo-1.t2.ucsd.edu=.  Sub-group is =/osg/ligo=. |
+| 1.1.2. Update the default GUMS and edg-mkgridmap templates | %COMPLETE% | Matyas | 2015-05-25 | 2015-05-27 | — |  |
+| %WBS2%1.2. Flocking setup%WBS% |||||||
+| 1.2.1. Determine/obtain hardware for collector/frontend | %COMPLETE% | !FrankW, !TerrenceM, !JeffD | 2015-05-22 | 2015-05-27 | 2015-05-27 | osg-ligo-1.t2.ucsd.edu set up (4 core VM/24GB of RAM)|
+| 1.2.2. Determine personnel and effort fractions for operations | %COMPLETE% | !FrankW, !BoJ, !JeffD | 2015-05-22 | 2015-05-27 | 2015-05-27 | Point of contact will be Jeff Dost. |
+| %WBS2%1.3. LIGO software setup%WBS% |||||||
+| 1.3.1. Convert LIGO yum repo to tarball | %COMPLETE% | !PeterC, !BrianB, !TimC, !MatS | 2015-05-22 | 2015-05-29 | — | Technical details sent to Mat. [[https://jira.opensciencegrid.org/browse/SOFTWARE-1931][JIRA Ticket]] |
+| 1.3.2. Deploy LIGO yum repos to CVMFS (oasis) | %COMPLETE% | !PeterC, !BrianB, !TimC, !MatsR | 2015-05-22 | 2015-05-29 | — | For initial deploy, we will use NFS server instead of CVMFS. |
+| 1.3.3. Deploy LIGO software from CVMFS to local NFS | %COMPLETE% | !PeterC, !BrianB, !TimC, !MatsR | 2015-05-22 | 2015-05-29 | — | For initial deploy, we will use NFS server instead of CVMFS. |
+| |||||||
+| %WBS1%2. Georgia Tech site setup%WBS% |||||||
+| %WBS2%2.1 Deploy CE for Georgia Tech%WBS% |||||||
+| 2.1.1. Deploy VMs for CE | %COMPLETE% | !PeterC, !BrianC, !TimC, !BoJ | 2015-06-01 | 2015-06-05| — | In initial meeting, we outlined what is needed at site.  No apparent issues. |
+| 2.1.2. Configure HTCondor-CE | %COMPLETE% | !PeterC, !BrianL, !TimC |  |  | — |ligo-ce1.pace.gatech.edu, VM configured and working, setup not yet complete |
+| 2.1.3. Deploy VM for squid | %COMPLETE% | !PeterC, Memo |  |  | — |  |
+| 2.1.4. Configure/install Squid | %COMPLETE% | !PeterC, Memo, !BrianB, !BrianL |  |  | — | ligo-prx.pace.gatech.edu, OSG setup not yet started |
+| 2.2. Configure LIGO data delivery at Georgia Tech | %ACTIVE% | !PeterC |  |  | — | |
+| 2.2.1. Deploy !GridFTP host | %COMPLETE% | !PeterC, Memo |  |  | — |  |
+| 2.3. Issue host certificates for Georgia Tech | %COMPLETE% | !PeterC | 2015-05-26 | 2015-05-29 | --- | [[https://ticket.opensciencegrid.org/25529][Original ticket]].  Peter now has Grid Admin permission; waiting on hostnames from site. |
+| |||||||
+| %WBS1%3. OSG Pool for LIGO%WBS% |||||||
+| %WBS2%3.1 Deploy Collector and Frontend%WBS% |||||||
+| 3.1.1 Configure collector and frontend UCSD | %COMPLETE% | !FrankW, !JeffD | 2015-06-01 | 2015-06-05| — | |
+| %WBS2%3.2 Deploy Submit Host%WBS% |||||||
+| 3.2.1 Install submit host at Georgia Tech | %COMPLETE% | Memo | 2015-06-01 | 2015-06-05| — | |
+| 3.2.2 Configure submit host at Georgia Tech | %COMPLETE% | !FrankW, !JeffD, !BrianB | 2015-06-01 | 2015-06-05| — |Verify that Gratia probe is installed and configured |
+| |||||||
+| %WBS1%4 Test LIGO jobs using final setup%WBS% |||||||
+
+-- Main.BodhithaJayatilaka - 25 May 2015

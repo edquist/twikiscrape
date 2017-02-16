@@ -1,0 +1,52 @@
+---+!! %TOPIC%
+
+The fragment below can be used in a sidebar navigation to establish a &quot;twisted&quot; subweb navigation.
+Use it by adding =%&lt;nop&gt;INCLUDE{&quot;%WEB%.%TOPIC%&quot;}%= to your WebLeftBar or TWikiWebSideBar.
+
+If you want to hide the web navigation from &lt;nop&gt;TWikiGuests then uncomment the following:
+   * #Set DENYTOPICVIEW = %MAINWEB%.TWikiGuest
+
+&lt;verbatim&gt;
+%STARTINCLUDE%%TWISTY{
+  prefix=&quot;&lt;h2 &gt;&quot;
+  suffix=&quot;&lt;/h2&gt;&quot;
+  remember=&quot;on&quot; 
+  firststart=&quot;show&quot;
+  link=&quot;Webs &quot;
+  buttonmode=&quot;span&quot;
+  mode=&quot;div&quot;
+  showimg=&quot;%ICONURLPATH{&quot;toggleclose-mini&quot;}%&quot;
+  hideimg=&quot;%ICONURLPATH{&quot;toggleopen-mini&quot;}%&quot;
+}%
+%~~ FLEXWEBLIST{
+~~~   webs=&quot;%MAINWEB%,User,People,public,%TWIKIWEB%&quot; 
+~~~   exclude=&quot;(TestCases|Trash).*&quot; 
+~~~   adminwebs=&quot;Applications.*&quot;
+~~~   header=&quot;&lt;ul&gt;&quot;
+~~~   format=&quot;&lt;li
+~~~       $percntIFDEFINED{\&quot;%BASEWEB%\&quot; as=\&quot;$web\&quot;
+~~~         then=\&quot; class=&#39;natCurrentWeb&#39;\&quot;
+~~~       }$percnt&gt;
+~~~     &lt;a href=\&quot;%SCRIPTURLPATH{&quot;view&quot;}%/$web/%HOMETOPIC%\&quot;
+~~~           $percntIFDEFINED{\&quot;%BASEWEB%\&quot; as=\&quot;$web\&quot;
+~~~             then=\&quot; class=&#39;twikiCurrentTopicLink&#39;\&quot;
+~~~           }$percnt&gt;$name&lt;/a&gt;
+~~~     $percntIFDEFINEDTHEN{\&quot;$nrsubwebs \&quot; as=\&quot;0 \&quot; glue=\&quot;off\&quot;}$percnt
+~~~     $percntELSEDEFINED$percnt
+~~~       $percntTWISTYBUTTON{
+~~~         id=\&quot;subweb_$web\&quot;
+~~~         remember=\&quot;on\&quot;
+~~~         buttonmode=\&quot;span\&quot;
+~~~         showimg=\&quot;$percntICONURLPATH{\&quot;toggleclose-mini\&quot;}$percnt\&quot;
+~~~         hideimg=\&quot;$percntICONURLPATH{\&quot;toggleopen-mini\&quot;}$percnt\&quot;
+~~~         link=\&quot;\&quot;
+~~~       }$percnt
+~~~     $percntFIDEFINED$percnt&quot;
+~~~   footer=&quot;&lt;/li&gt;&lt;/ul&gt;&quot;
+~~~   separator=&quot;&lt;/li&gt;&quot;
+~~~   subheader=&quot;$percntTWISTYTOGGLE{id=\&quot;subweb_$web\&quot; mode=\&quot;div\&quot;}$percnt&lt;ul class=\&quot;natSubWebs\&quot;&gt;&quot;
+~~~   subfooter=&quot;&lt;/li&gt;&lt;/ul&gt;$percntENDTWISTYTOGGLE$percnt&quot;
+~~~ }%
+%ENDTWISTY%%STOPINCLUDE%
+&lt;/verbatim&gt;
+

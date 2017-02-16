@@ -1,0 +1,42 @@
+---+ Wednesday Exercise 1.1: Refresher - Making a simple DAG
+
+The goal of this exercise is to map the physical locations of some worker nodes in our local cluster. To do this, you will write a simple, linear DAG that will submit many jobs into the cluster and summarizes the results into a single file.
+
+---++ Where in the World Are My Jobs?
+
+To find the physical location of the computers your jobs our running on, you will be utilizing a method called geolocation. Geolocation uses a registry to match computer&#39;s public IP address to an approximate location. The following is a Python script that geolocates the machine that it is running on, returning latitude and longitude coordinates:
+
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/env python
+
+import socket
+import urllib2
+import json
+import time
+
+hostname = socket.getfqdn()
+ipaddr = socket.gethostbyname(hostname)
+
+for i in range(1,4):
+    try:
+        response = urllib2.urlopen(&#39;http://www.freegeoip.net/json/&#39; + ipaddr).read()
+        json_response = json.loads(response)
+        print &quot;%s,%s&quot; % (json_response[&#39;latitude&#39;], json_response[&#39;longitude&#39;])
+        break
+    except urllib2.HTTPError:
+        time.sleep(3**i)
+        pass
+&lt;/pre&gt;
+
+   1. In a new folder on =osg-ss-submit=, save the above Python script as a file named =location.py=
+   1. Create a submit file that runs =location.py= ten times and uses the $(Process) macro to write different =output=, =error= and =log= files
+   1. For the &#39;summary&#39; part of your DAG, create a submit file that runs =/bin/cat= and uses each of the output files of the &#39;location&#39; jobs as its arguments
+   1. Write a DAG with the &#39;summary&#39; job as the child of the &#39;location&#39; job
+   1. Submit your DAG and wait for the results
+
+*Note:* It is also possible to set up the wide part of the DAG using VARS and a single submit file. If you would like the extra challenge, do this version instead of or in addition to the one above! 
+
+---++ Mapping Your Jobs
+
+To visualize the locations of the machines that your jobs ran on, we will be using http://www.mapcustomizer.com/. Copy and paste the results from your DAG into the bulk creation text box at the bottom of the screen. Are the results what you expected? 
+

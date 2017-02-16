@@ -1,0 +1,114 @@
+-- Main.DanFraser - 06 Nov 2012
+---++ Action/Significant Items:
+   * A resolution to the FetchCRL issue described two weeks ago by CMS (Tony) has a planned resolution. All SL5 sites will start using FetchCRL version 3 instead of version 2. SL6 sites already use FetchCRL v3.
+   * Atlas noted that the new WLCG report contains a link instead of hard numbers. There is a request from Atlas to see these numbers directly in the email. Xin and Rob are following up.
+   * For the Digicert transition users will need to have two certificates: a DOE cert and a Digicert. To facilitate this VOMS will create two UNIX accounts for each user. VOs need to be aware of this and determine how best to handle this. Mine is working on getting this information out.
+
+
+---++ Attendees:
+   * Xin, Armen, Tim, Suchandra, Tony, Marco, Rob Q., Mine, Chander, Dan
+ 
+---++ CMS (Tony)
+   * Job statistics for last week
+      * 19,371 jobs/day
+
+   * Transfer statisics for last week
+      * ~380 TB/day
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * After the machine development period, which ended Thursday, LHC was back in operation. About 0.7fb-1 delivered luminosity. Current total collected luminosity for ATLAS is ~21.5 fb-1. Dec.6-17 will be machine development and run period with completely new beam structure, to understand possible beam setup for after long shutdown run. Pause for holidays after that.
+      * US ATLAS production during the last week was quite stable, at the average level around 20-24K running jobs. Reprocessing of the main data (bulk reprocessing) is practically done. 
+   * Job statistics for last week.      
+      * Gratia report: 1.3M pilot jobs run on USATLAS sites, with CPU/walltime ratio of 90%
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 1.2 M
+   * Data Transfer statistics for last week
+      * Data transfer rate was around 400TB/day at BNL T1. 
+   * Issues
+
+---++ Grid Operations Center (Rob Q.)
+
+---+++ Operations Last Week
+   * [[http://tinyurl.com/9oh5bzh][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * No release, Thanksgiving holiday.
+   * Physical installation of OASIS vm host, storage array complete, OS install, vm builds in progress
+      * On schedule
+   * WMS Glide In Factory
+      * UCSD T2 network switch had failures on Friday (11-30), network went down twice, and was brought down a third time for maintenance to replace hardware.
+         * Factory services brought back up at 18:00 PST
+         * GOC and CERN Factories continued to serve frontends while UCSD was effectively offline
+      * Over the weekend Condor gridmanagers began crashing on all factories and caused all CMS Analysis glideins to fail.
+         * We had to completely restart condor on UCSD GOC and CERN factories, as well as clear out any left over CMS glideins on the queues
+         * We seem to have recovered and this did not affect other frontends
+         * Condor developers have been notified and we are still trying to understand exactly what the cause was
+
+---+++ Operations This Week
+   * ITB release, release note in preparation
+      * OS updates, expect reboots
+      * Installed capacity report updated
+      * Internal changes to ticket
+   * Wednesday target for OASIS Online
+   * Wednesday Meeting with !NoVA as first Beta User
+   * WMS Glide In Factory
+      * We will send out an announcement tomorrow to all our frontends that the SDSC Factory is ready and will officially be a production service on the next Production window, Dec 11
+
+
+---++ Campus Infrastructures / HTPC (Dan, Brooklin)
+
+
+---++ Software (Tim)
+   * Next release: Tuesday, December 11 or 18
+      * Add Pakiti
+      * Update !glideinWMS
+      * Update osg-configure (bug fixes)
+      * Maybe update GUMS (max size of logs = 100MB instead of 1MB; other minor changes)
+      * Update CA certificates
+      * Other bug fixes (bwctl-server, globus-gram-job-manager-condor)
+
+
+---++ Integration (Suchandra)
+   * Testing several new components:
+      * glideinwms 2.6.2
+      * osg-configure
+   * Deferring xrootd testing until 3.3.0 is ready
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 3.1.11 / 1.2.31
+      *       58 (3) OSG 3.x (      19 are 3.1.11)
+      *       43 (-5) OSG 1.2.X resources (       0 are 1.2.31)
+      *        0 (0) OSG 1.0.X resources (       0 are 1.0.6)
+      *        0 (0) OSG 1.0.0 resources
+
+
+---++ User Support (Chander, Mats)
+
+
+---++ Security (Mine)
+
+   * Vulnerabilities/Emergencies/Incidents
+      * Condor vulnerabilities. Opening tickets with the sites that are still vulnerable
+      * mysql vulnerability. Not very concerned. The exploit needs to access an authenticated user account and then compromise the mysql daemons. It does not seem to be exploitable by mysql injection or via web app. 
+
+   * Operations
+      * LIGO requested a Debian package for CIlogon CA last week. The request is completed this week. 
+      * PKI Transition. 
+         * At Fermilab, we had a lot of trouble registering and obtaining certificates for OSG RA staff. Some of the issues are resolved. One issue still outstanding is that none of the RA Agents can get certificates. therefore, the Fermilab VO is still not functional. 
+         * Account mapping at the grid sites will be a complicated subject. VOMS will create two separate accounts for each certificate. Sites will have two unix accounts for the same user. VOs should decide whether this is acceptable or not. For example, CMS decided that both unix accounts should be linked. 
+         * There is a possibility of VOMS upgrade later during the 2013 (6-8 months from now). The transition will mean that VOMS will become capable of creating a singel account for each user and link both certificates from these accounts. Since GUMS servers except for the latest version have no capability to deal with multiple accounts, we will ask VOMS admins to continue to create two separate accounts. 
+      * Testing CILogon CA certs with GOC ITB services. Our initial test with OIM failed. It may be our fault. We need a meeting with GOC staff to understand if we are testing the right services. 
+      * Pakiti software. We are almost completed with testing. We are likely to meet the software release deadline of Dec 7
+      * New IGTF release is made to ITB. 
+ 
+    
+ 
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings

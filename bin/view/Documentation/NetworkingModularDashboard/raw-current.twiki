@@ -1,0 +1,141 @@
+%LINKCSS%
+
+&lt;!-- This is the default OSG documentation template. Please modify it in --&gt;
+&lt;!-- the sections indicated to create your topic.                        --&gt; 
+
+&lt;!-- By default the title is the WikiWord used to create this topic. If  --&gt;
+&lt;!-- you want to modify it to something more meaningful, just replace    --&gt;
+&lt;!-- %TOPIC% below with i.e &quot;My Topic&quot;.                                  --&gt;
+
+---+!! %SPACEOUT{ &quot;Networking Modular Dashboard and OSG Networking Service&quot; }%
+%TOC%
+
+*NOTE:* This page  needs  updating.    Unfortunately  with  Tom  Wlodek&#39;s  departure  from  BNL  in  December  2013  the  modular  dashboard  project  has  become  orphaned.   OSG  still  curates  a version of the code for  use  in  OIM and you can  see it  at  https://myosg.grid.iu.edu/vopfmatrix/index?start_type=7daysago&amp;start_date=09%2F26%2F2013&amp;end_type=now&amp;end_date=09%2F26%2F2013&amp;vo=on&amp;vo_35=on&amp;active_value=1&amp;oasis_value=1&amp;sort_key=name   
+
+We  are  planning  to  migrate  to a  new  set  of  tools and  services  based upon  ESnet&#39;s  [[http://ps-dashboard.es.net/][MaDDash]] and  the  Open Monitoring  Distribution  (http://omdistro.org/start).
+
+
+%STARTINCLUDE%
+---++ About This Document
+%ICON{hand}% This section documents the history and current status of the *modular dashboard* work and planned OSG networking service.  It includes meeting notes and planning information.   
+
+The *modular dashboard* project is hosted in !GitHub at https://github.com/PerfModDash and intends to recreate the functionality of the original USATLAS !perfSONAR-PS Dashboard hosted at BNL (see http://perfsonar.racf.bnl.gov:8080/exda/?page=25&amp;cloudName=USATLAS ).    The original project grew out of a Nagios add-in created by Tom Wlodek/BNL to track the status and results of many perfSONAR-PS toolkit installations in USATLAS.   The original dashboard had limitations in scalabilty and modularity that limited its effectiveness.    The new project is intended to produce a more modular, scalable dashboard the replicates the original functionality achieved in the old dashboard.
+
+
+%NOTE% Everyone interested in contributing to the project is *strongly* urged to join the dashboard development mailing list.  We would like to be able to use it for all relevant communications without having to maintain a large list of emails. Go to: https://lists.bnl.gov/mailman/listinfo/ps-dashboard-devel-l  and sign up NOW!  
+
+One of our goals in OSG networking is to become a source of useful network information for OSG users, managers and VOs.   We intend to leverage the *PerfModDash* !GitHub project to allow a new *OSG Networking Service* to gather, store and use the !perfSONAR-PS network metrics for the benefit of OSG.   An initial &quot;beta&quot; version of the service has been integrated into
+the OSG information systems and should be visible in June 2013.   We will need some additional work to create appropriate visualization of the OSG results similar to what is visible on the old dashboard URL.
+
+---++ History of  the Modular Dashboard
+The *modular dashboard* development effort started out of the USATLAS Throughput group (chaired by Shawn !McKee).  This group had organized the deployment of perfSONAR-PS toolkits instances (one latency and one bandwidth) at each of the USATLAS Tier-1 and Tier-2 sites starting in 2008.   The deployment was successfully in place by the end of 2009 but it was problematic to get a quick overview of the status of the end-sites and the network metrics they were measuring.   The group discussed creating a central system to gather and display the toolkit and network metrics and initially focused on the _Nagios_ system in place at BNL.   Tom Wlodek/BNL coded a quick visualization of the the infrastructure status using _Nagios_ plugins provided by Andy Lake/ESnet.   This was the start of the *modular dashboard*.
+
+The usefulness of the dashboard quickly prompted additional requests for new features and added functionality.   The project grew from humble beginnings very quickly which exposed some shortcomings in the initial implementation.   Also, the dashboard itself was a significant selling point for sites considering network monitoring.  To be able to quickly and easily see the result of a set of coordinated tests amongst a group of end-sites was very attractive for many potential users.  In June 2011 the [[http://lhcopn.web.cern.ch/lhcopn/][LHCOPN]] voted to deploy perfSONAR-PS toolkits at all the Tier-1 sites (and the Tier-0 at CERN).   By September 2011 all sites were deployed and results were being tracked on a new [[https://perfsonar.racf.bnl.gov:8443/exda/?page=25&amp;cloudName=LHCOPN][LHCOPN dashboard]].  Shortly after that the LHCONE group decided to deploy perfSONAR-PS instances at selected LHCONE sites to track the LHCONE transition.  (Details at https://twiki.cern.ch/twiki/bin/view/LHCONE/SiteList )
+
+New LHC sites continued to join with various national scale &quot;clouds&quot; deciding to deploy !perfSONAR-PS following on after the LHCONE deployments.   Within the ATLAS collaboration numerous national clouds were deployed during 2011.   By the end of 2011 CMS started deploying instance in the US.   All these new sites significantly strained the dashboard system that was deployed at BNL.  It was not designed for the scale or set of functions it evolved into providing.   By the close of 2011, the group realized the current dashboard implementation was not sufficient and a new effort to redesign and modularize the dashboard was begun.  
+
+Tom Wlodek spearheaded the initial design, based upon his experience creating and developing the initial dashboard.  Andy Lake was working on a similar activity for ESnet and joined the effort.  Together they produced an [[https://docs.google.com/a/umich.edu/document/d/1NnVNF6TKnTIZkL9BQNyRlqX9dNXH1K-62Ax9rFnZvKE/edit][initial API document]].
+
+As noted above the project is now hosted in !GitHub at https://github.com/PerfModDash 
+
+---++ Current Status of the Development Effort
+
+Given the importance of having a central place to gather, summarize and display !perfSONAR-PS toolkit results, OSG is helping to organize the *Networking Modular Dashboard* development effort.  Tom Wlodek is tracking the development effort via a [[https://docs.google.com/spreadsheet/pub?key=0AjaxBb6jTG92dEhFcVlpM1NZUTk1eTlxQ3VfREZPR1E&amp;output=html][spreadsheet]] and new subgroups have been organized around specific focus topics (see below).
+
+The plan is to produce the modular dashboard code under a modified BSD license and this is in place now in !GitHub.
+
+To track the current status, you can browse the developers email archive at https://lists.bnl.gov/mailman/private/ps-dashboard-devel-l/ 
+
+---++ Meeting Notes
+
+We had our first *detailed technical meeting* on September 7, 2012 from 9-11 AM Eastern time using a phone bridge.  The [[%ATTACHURL%/OSG_ModDash_techMeeting.txt][meeting notes]] provide the rough overview of what was discussed.  Tom Wlodek gave a [[%ATTACHURL%/new_perfsonar_dashboard_-_bnl__2012-09-07.ppt][Powerpoint presentation]] which described the current development status.  From this meeting we identified a few focus groups that should meet (see below) to make progress on a number of different issues.
+
+
+---++ Planning and Subgroups
+
+Our first technical meeting decided we needed to create some focus-topic subgroups.  A draft version of the groups and &quot;Charge&quot; is shown below.  Please provide updated content or suggest additional people who should be involved.
+
+   * *Alarming and Subscription Services for &quot;Events&quot;* ---  _&lt;strong&gt;Michael O&#39;Hare&lt;/strong&gt; (organizer), Scott Teige, Soichi Hayashi, Philippe Laurens, Sarah Williams_
+      * This group will discuss the topic of &quot;alarming&quot; related to the perfSONAR-PS infrastructure and the network metrics it measures.  What can we alarm on and how should any alarming service be defined?   In addition, during the technical call we identified a possible new service that may be needed in the modular dashboard: a subscription service for &quot;events&quot;.   Roughly this would be a way for applications to register to be notified if certain &quot;events&quot; (to-be-defined) occur.  This would allow easier integration with existing OSG monitoring and alarming services.   This group should discuss details and recommend (or produce) code for either or both of an &#39;alarm&#39; service or &#39;event subscription service&#39; and make sure the modular dashboard API is suitably updated to reflect this work.  
+   * *[[NetworkingDashboardAuthNZGroup][User authentication and authorization]]* --- _&lt;strong&gt;Gabriele Garzoglio&lt;/strong&gt; (organizer), Tom Wlodek, Gabriele Garzoglio_ (or suggest a replacement knowledgeable about GUMS/VOMS/OSG methods)
+      * This group will discuss how to provide authentication (identifying users) and authorization (defining what users are allowed to do).   During the technical call Tom presented information about how the current dashboard authorizes people.  Is this the right way to move forward?  Should OSG methods be leveraged to provide this?  (GUMS/VOMS/X509).   How should the dashboard API be changed to accomodate whatever this group determines is the best way forward?   The topic of &quot;groups&quot; should also be addressed especially if OSG methods for authorization are selected and existing VOMS groups are not sufficient to provide the foreseen granularity required for the dashboard.
+   * *GUIs or Status Displays* --- _&lt;strong&gt;Soichi Hayashi&lt;/strong&gt; (organizer), Tom Wlodek, Andy Lake, Lucy (Liu Si), Marek Zielinski, Ian Gable_
+      * This group should decide on both a near-term solution for providing a GUI that can be used to display the new dashboard results for debugging as well as defining the longer-term goals for a GUI or GUIs to provide an effective interface to the collected data and for monitoring the overall infrastructure.  Replicating the equivalent of the old dashboard functionality should be viewed as a baseline.  This group should provide recommendations for technologies, any needed API changes or additions as well as outlining rough &quot;views&quot; of what needs to be provided for various use-cases.  Ideally this group would also provide code or identify a group or individual who could code the recommendations.
+   * *[[UserAPIUseCases][USER API and Use Cases]]* --- _&lt;strong&gt;Parag Mhashilkar&lt;/strong&gt; (organizer), Soichi Hayashi, Hiro Ito, Olivier Gutsche, Phil Demar_
+      * This group focuses on the current &quot;user&quot; API and should address whether the API is sufficient for most envisioned use-cases foreseen.    Part of the task is identifying one or more &quot;users&quot; of the modular dashboard system and documenting their likely &#39;use-cases&#39; and what they would require for accessing the dashboard system.  This group could also serve as a &quot;vision&quot; provider by identifying missing functionality in the currently planned dashboard that would address any important unmet needs.
+   * *Operations* --- _&lt;strong&gt;Scott Teige&lt;/strong&gt; (organizer), Perry Brunelle, Michael Ohare, Rob Quick_
+      * This group should define what type of infrastructure should initially be put into place to host both the development **effort and the eventual OSG service instance responsible for collecting the various perfSONAR-PS data and making it available to &quot;clients&quot;.   A related and very important task is to identify any operational issues implied but the currently planned modular dashboard API and feeding that back to the group.  In addition the group should try to provide any operations related suggestions or recommendations about current or future functionality of the dashboard infrastructure.
+
+---++ References
+
+Tom Wlodek is tracking the development effort via a [[https://docs.google.com/spreadsheet/pub?key=0AjaxBb6jTG92dEhFcVlpM1NZUTk1eTlxQ3VfREZPR1E&amp;output=html][spreadsheet]]
+
+Everyone interested in strongly encouraged to join the ps-dashboard-devel mailing list at https://lists.bnl.gov/mailman/listinfo/ps-dashboard-devel-l 
+
+
+---++ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = ShawnMcKee
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|General|Trash/Trash/Integration|Monitoring|Operations|Security|Storage|Trash/Tier3|User|VO)
+   * Local DOC_AREA       = Monitoring
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (Developer|Documenter|Scientist|Student|SysAdmin|VOManager)
+   * Local DOC_ROLE       = Documenter
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (HowTo|Installation|Knowledge|Navigation|Planning|Training|Troubleshooting)
+   * Local DOC_TYPE       = Knowledge
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = 
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = 
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+############################################################################################################
+--&gt;
+
+%STOPINCLUDE%
+
+%BOTTOMMATTER%
+
+-- Main.ShawnMcKee - 09 Sep 2012
+   * [[%ATTACHURL%/new_perfsonar_dashboard_-_bnl__2012-09-07.ppt][new_perfsonar_dashboard_-_bnl__2012-09-07.ppt]]: Tom Wlodek&#39;s overview of the dashboard devel. effort for the September 7, 2012 technical call
+
+   * [[%ATTACHURL%/OSG_ModDash_techMeeting.txt][OSG_ModDash_techMeeting.txt]]: Rough meeting notes from September 7 2012 technical call to discuss the dashboard development
+

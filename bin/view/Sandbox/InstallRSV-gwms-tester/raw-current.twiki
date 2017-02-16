@@ -1,0 +1,72 @@
+---+!! Install RSV-gwms-tester
+%TOC{depth=&quot;2&quot;}%
+%STARTINCLUDE%
+---+ About this Document
+
+This document provides instructions on setting up a host to use rsv-gwms-tester. RSV-gwms-tester is a tool designed to do end-to-end testing of different sites with GlideInWMs.
+
+---+ How to get Help?
+
+To get assistance about the OSG software please use [[HelpProcedure][this page]]. 
+
+
+---++ Requirements
+
+   1 Have a [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallGlideinWMSFrontend][GWMS Fronted installed]]
+   1 Frontend to have a group matching on *DESIRED_SITES* and *is_itb* flag
+   1 _Root_ access is required to do installations with yum
+ 
+---+++ Certificates/Proxies configuration example
+
+| *Certificate* | *User that owns certificate* | *Path to certificate* |
+| Host certificate | =root= | =/etc/grid-security/hostcert.pem= &lt;br&gt; =/etc/grid-security/hostkey.pem= |
+
+[[Trash.ReleaseDocumentationGetHostServiceCertificates][Here]] are instructions to request a host certificate.
+
+---++ Networking
+Both ports 9615 and 80 must be open.
+
+---++ Networking
+%STARTSECTION{&quot;Firewalls&quot;}%
+%INCLUDE{&quot;FirewallInformation&quot; section=&quot;FirewallTable&quot; lines=&quot;condorscheddshared,rsvin,rsvout&quot;}%
+
+%ENDSECTION{&quot;Firewalls&quot;}%
+
+---+ Installation Procedure
+
+%INCLUDE{&quot;YumRepositories&quot; section=&quot;OSGRepoBrief&quot; TOC_SHIFT=&quot;+&quot;}%
+
+%INCLUDE{&quot;InstallCertAuth&quot; section=&quot;OSGBriefCaCerts&quot; TOC_SHIFT=&quot;+&quot;}%
+
+
+%STARTSECTION{&quot;InstallRSVGWMSTester&quot;}%
+---++ Install the rsv-gwms-tester packages
+
+The RPM is available in the OSG repository:
+
+Install the RPM and dependencies (be prepared for a lot of dependencies).
+
+   &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% yum install rsv-gwms-tester&lt;/pre&gt;
+  &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% yum install glideinwms-userschedd&lt;/pre&gt;
+
+This will install the current production release verified and tested by OSG with default condor configuration.
+
+If you wish to install a different version of !GlideinWMS, add the &quot;--enablerepo&quot; argument to the command as follows:
+
+   * =yum install --enablerepo=osg-testing rsv-gwms-tester=: The most recent production release, still in testing phase.  This will usually match the current tarball version on the !GlideinWMS home page.  (The osg-release production version may lag behind the tarball release by a few weeks as it is verified and packaged by OSG).  Note that this will also take the osg-testing versions of all dependencies as well.
+
+%ENDSECTION{&quot;InstallRSVGWMSTester&quot;}%
+
+---++ Configuration
+
+   1 Modify the file &lt;verbatim&gt;/etc/rsv/metrics/org.osg.local-gfactory-site-querying-local.conf&lt;/verbatim&gt; to adjust the constraints for the entries that you are interested in testing
+   1 Add your central manager DN to the authorization list. &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT%glidecondor_addDN -allow-others -daemon &#39;Central Manager DN&#39; &#39;/the/central/manager/DN&#39; condor &lt;/pre&gt;
+   1 Copy the schedd config files to the condor-cron dir  &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% cp /etc/condor/config.d/* /etc/condor-cron/config.d/&lt;/pre&gt;
+   1 Add file  &lt;verbatim&gt;/etc/condor-cron/config.d/98_public_interface.config&lt;/verbatim&gt; with the following contents: &lt;verbatim&gt;NETWORK_INTERFACE = REPLACE_ME_WITH_HOST_IP&lt;/verbatim&gt;
+   1 Start &lt;verbatim&gt;httpd, condor-cron, rsv&lt;/verbatim&gt; services. 
+   1 Run &lt;verbatim&gt; rsv-control --enable  org.osg.local-gfactory-site-querying-local --host fermicloud053.fnal.gov &lt;/verbatim&gt; where host can be localhost or the actual name of the node where rsv-vo-gwms is installed.
+   1 Run &lt;verbatim&gt;rsv-control --on  org.osg.local-gfactory-site-querying-local  --host fermicloud053.fnal.gov &lt;/verbatim&gt; where host can be localhost or the actual name of the node where rsv-gwms-tester is installed
+%STOPINCLUDE%
+
+-- Main.EdgarMauricioFajardoHernandez - 29 Aug 2016
+

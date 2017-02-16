@@ -1,0 +1,89 @@
+-- Main.BrittaDaudert - 12 Oct 2009
+---+++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+---++ Action/Significant Items:
+   * This weekend Oct 17 is the GOC  move. Rob is making preparations to ensure a non-eventful transition. (Rob)
+   * LIGO has encountered a scaling problem in Condor (bug 19769) somewhere near the 10,000 queued jobs range. At the recommendation of Todd, they are currently planning to try the latest development version of Condor. (Britta, Chander)
+   * Mats sent out an email concerning the problem with left over Globus logs. Alain is planning to take this up with the Globus team. (Alain)
+   * CMS Physics challenge events and the Atlas throughput challenge events are being analyzed. Not sure if there will be any production issues (Xin, Armen, Burt)
+   * Updated VTB/ITB test plan is now online: http://vdt.cs.wisc.edu/internal/release-process.html
+
+---++ Attendees:
+   * Xin, Armen, Britta, Mats, Brian, Suchandra, Burt, Marco, Abhishek, Mine, Chander, Dan 
+
+---++ Atlas (Armen &amp; Xin)
+
+   * ATLAS throughput test concluded on last Friday, post mortem presented today. 
+   * job statistics for last week. 
+      * Gratia report: USATLAS ran 503K jobs, with CPU/Walltime ratio of 92.7%. 
+      * PanDA world-wide production report (real jobs): 
+         * completed successfully 405K managed MC production, validation and reprocessing jobs
+         * average 58K jobs per day
+         * failed 44K jobs
+         * average efficiency is very good:  jobs  - 90.3%,  walltime - 94.7%
+   * Site issues
+      * BNL Tier1 is under maintenance on Oct 13, dcache upgrade, and OSG upgrade to OSG 1.2.3
+
+
+---++ LIGO (Britta)
+  * Gratia reports:
+      * 6 users utilized 35 sites
+      * 43620 jobs total (36854 / 6766 = 84.5% success)
+      * 322695.2 wall clock hours total (304710.3 / 17985.0 = 94.4% success)
+   
+      * Last Week:  4 users utilized 36 sites
+      * 68864 jobs total (56689 / 12175 = 82.3% success)
+      * 528797.6 wall clock hours total (497693.4 / 31104.2 = 94.1% success)
+
+  * E@H reportsRecent Average Credit (RAC): 
+      * Recent Average Credit (RAC): 933,144.90122, Last Week: 908,209.63508
+      * E@H rank based on RAC: 2 (+0)
+      * E@H rank based on accumulated Credits: 12 (+1)
+
+---++ Integration (Suchandra)
+   * Still testing rsv gratia probes
+      * Waiting for some updates to vdt before doing another around of vtb testing and moving to itb
+   * Working on columbia workshop with sites and edu group
+   * Coordinating with Jose Caballero to work on a job submission system for itb systems 
+      * Still in initial stages 
+   * Recently had some discussions on clarifying release process 
+      * See [[http://vdt.cs.wisc.edu/internal/release-process.html][current outline]] for current proposed process
+
+---++ Site Coordination (Marco)
+
+
+---++ Engagement (Mats)
+
+11 users utilized 36 sites
+
+10073 jobs total (7893 / 2180 = 78.4% success)
+
+127746.2 wall clock hours total (113638.6 / 14107.6 = 89.0% success)
+
+One production issue: a user not specifying memory requirements correctly on his jobs. 
+
+
+---++ Metrics (Brian)
+   * Began working on consistency project - updating all the graphs so they can be aggregated by resource, resource group, or WLCG site.  Example below (hopefully) &lt;br/&gt; http://t2.unl.edu/gratia/pie_graphs/osg_facility_hours?group=wlcg
+      * The idea is that any site which is changed in Gratia can always revert back to the view they prefer (by gatekeeper instead of by site, for example)
+   * Have been rolling out Gratia-based storage probes and reports.  The first probes have been for Hadoop (Nebraska, UCSD, and Caltech participating) [DONE].  The second set will be for POSIX-based sites, the third for dCache sites.
+
+---++ Virtual Organizations Group (Abhishek)
+
+---+++ VOs with High Activity
+
+   * D0 -- MC Production average at 80,000 hours/day. Equivalent 8 Million Events/week. Efficiencies: Job 44%, Wall 80% CPU/wall 60%. Job efficiency dropped. Issues reported at UNL, UCSD, UTA; being resolved by sites; GOC tickets: https://ticket.grid.iu.edu/goc/viewer?id=7612 https://ticket.grid.iu.edu/goc/viewer?id=7613 https://ticket.grid.iu.edu/goc/viewer?id=7614
+   
+   * CDF -- (i) Kerberos CA changes are coming up. Packages to prepare for changes are being evaluated (between Fermi security and OSG security). (ii) Preparation for SL 5 migration is ongoing.
+   
+   * Fermi-VO -- (i) !ParentVO/subVO classification is now uniform across OIM and Gratia. Steve and Keith&#39;s view is that both parentVO and subVOs to be mentioned in reports, case by case.  (ii) Fermilab VO has implemented GIP configuration changes to advertise subcluster parameters e.g., memory, OS versions. Jim Weichel is in contact to include this in OSG Documentation.
+     
+---+++ VOs with Limited Activity
+
+   * !CompBioGrid -- Site is now functional. Tried Condor; settled on PBS. Being used by Trash/Engagement VO to run jobs. !CompBioGrid blog: https://twiki.grid.iu.edu/bin/view/Trash/Trash/Trash/Trash/VirtualOrganizations/CompBioGrid_OSG
+  
+   * SBGrid/NEBioGrid -- A new NMR application is being pursued. Plan is to sustain increased wall hour rate (100-250 hours/day). !NEBioGrid VO is currently supported by only 5 remote sites, as reported by !ReSS: SBGrid-Harvard-Exp, SBGrid-Harvard-East, WQCG-Harvard-OSG, RENCI-Engagement, CIT_CMS_T2. Only 2/5 are remote sites. !NEBioGrid team has asked VO Group to request peer OSG groups for support at more sites. 
+   
+   * NYSGrid -- Work starting on portal development; based on HUBzero (http://hubzero.org). Updates expected in coming weeks.
+
+   * !IceCube -- Work in progress with !IceCube simulation team (P. Desiati, J. Velez, S. Barnet), GLOW and UCSD site teams. GLOW has setup a glidein schedd, to port !IceCube jobs for glideinWMS. Short-term plan is to use Squid (not SRM) to minimize failure modes. Currently, !IceCube team is porting the jobs. Effort delayed due to !IceCube team&#39;s travel.

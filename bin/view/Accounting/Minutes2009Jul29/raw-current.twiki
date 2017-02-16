@@ -1,0 +1,138 @@
+---+!!&lt;nop&gt;%TOPIC%
+%TOC%
+
+---++Introduction
+
+Minutes of Gratia meeting
+   * Last meeting: [[Minutes2009MMMdd][Month Day]]
+   * Previous meetings: MeetingMinutes
+   * Coordinates: Wednesday at 2:00pm CST/CDT, 1-510-665-5437 and use the meeting ID: 2966. 
+
+---++Attending
+
+TBA.
+
+&lt;!--
+
+   * [[Main.PhilippeCanal][Philippe Canal]].
+   * [[Main.ChrisGreen][Chris Green]].
+   * [[Main.JohnWeigand][John Weigand]].
+   * [[Main.RuthPordes][Ruth Pordes]].
+   * [[Main.DanYocum][Dan Yocum]].
+   * [[Main.MineAltunay][Mine Altunay]]
+   * [[Main.BrianBockelman][Brian Bockelman]]
+   * [[][]]
+
+---++Apologies
+   * [[Main.PenelopeConstanta][Penelope Constanta]].
+   * [[mailto:karunach@nhn.ou.edu][Karthik Arunachalam]].
+   * Diana Bonham.
+   * [[Main.PenelopeConstanta][Penelope Constanta]].
+   * [[Main.ChrisGreen][Chris Green]].
+   * [[Main.JeffreyMack][Jeff Mack]].
+   * [[Main.StevenTimm][Steve Timm]].
+   * John Urish.
+   * Margherita Vittone.
+   * [[mailto:karunach@nhn.ou.edu][Karthik Arunachalam]].
+
+--&gt;
+
+---+ Gratia
+
+---++Action items from previous meeting:
+
+---++Release Status
+
+Philippe:  Next release will around September 21st.   Feature freeze on September 9th, 2009.
+
+---++Services Operation
+
+---+++OSG/Fermi
+
+Philippe: We realize the osg main collector was processing at less 10000 records an hour.  This was due to a missing index in one of the table plus pounding by Brian on the database due to new &#39;fake&#39; vos (that have been since moved to be &#39;Other&#39;).
+
+---+++RSV
+
+---++OSG 
+
+Brian: Nebraska has a special setup; we need to figure out how to match the 3 sets of GRAM logs with PBS logs without double-counting, forward it all to the UNL collector, and figure out how to only forward the grid jobs to OSG; we could have 4 probes, 3 sending directly to OSG.
+
+Brian: Eventhough the OSG collector is rejecting older restated number, this is okay because the data that is to be deleted is less than 2 months old anyway.
+
+Brian: Transfer graphs.  I have started to think about it (and write somethings).
+
+Brian: Boinc probe.  The required modification in Condor have been made and are about to be released and which time the probe development could start.
+
+Brian: OSG request a new user alert.
+
+Philippe: This is implemented and put it production.
+
+Brian: The BNL dcache probe is still 25 days behind
+
+Philippe: This is surprising since the queue is very low ...
+
+John: Trying to use ResourceGroup to group several sites.  What are the issue with Gratia.
+
+Philippe: The issues with Gratia are minor.  The issue are with the WLCG connections (see John Weigand).
+
+Brian: Can we have a alert when a new user appers.
+
+Philippe: yes, it is in place.
+
+  * Request from OSG to add a new summarization column (i.e. sum of active wall time)
+
+Brian: they are 3 quantities we would like to know
+  * Total Wall time
+  * Total cpu time [This one is missing]
+  * Cpu of the last execution (lead to goodput)
+
+Brian: Gratia is currently reporting goodput which is too low for site that preempt a lot.
+
+Philippe: This would be 3 stages process
+  * Have gratia team standardize where this information should be 
+  * Have the condor team update the condor probe accordingly
+  * Have gratia team update the collector to add this information to the summary table.
+
+---++Collector.
+
+John: Made some minor progress with the DN work, still working on setting up the environment. 
+
+---++Fermi/CD
+
+---++Reports
+
+---+++VO / Site reports and related OIM upgrades.
+
+---++Probes
+
+---+++BOINC probe development.
+
+---++Any Other Business
+
+---++Notes:
+
+On Jul 23, 2009, at 2:55 PM, Brian Bockelman wrote:
+
+&gt; Hey Ruth,
+&gt;
+&gt; Saw Dan&#39;s message about this yesterday - didn&#39;t write anything back because I don&#39;t particularly feel I am expert enough in Condor to really give better advice.
+&gt;
+&gt; FWIW, I believe that the &quot;beginning time&quot; is reset each time the job is preempted and restarted.  However, if the job is suspended (I think really only Wisconsin does this on the OSG), the start time isn&#39;t reset because the job isn&#39;t really reset.  These suspended jobs appeared to count for a small percentage (2% of Wisconsin&#39;s time).
+&gt;
+
+Talked with Dan again - Ruth&#39;s first characterization is closer to correct.  Condor reports the wall time of the application while it was running - so it at least doesn&#39;t &quot;bill&quot; for while the application was preempted.
+
+The options are:
+0) Keep the current.  This is fair to the user - they can see which sites they are getting better throughput from.  If it takes me 15 hours of runtime to get 1 hour of CPU time done, I want to know.
+1) Only use the wall time for the last run of the job, so the CPU / Wall becomes &quot;fair&quot; to sites that preempt.
+2) Alter condor&#39;s behavior so Gratia reports the cumulative CPU time divided by the cumulative wall time.
+
+(0) makes sites that preempt unhappy.  (1) means that you &quot;lose&quot; wall hours (i.e., if you have 10 cores 100% occupied for 10 hours, you might only have 90 total wall hours due to preemptions.).  I believe (2) is best for the OSG to report.  I talked to Dan about making the change to condor to record cumulative CPU time over all the job attempts.
+
+I count two definitions of CPU efficiency:
+1) CPU efficiency of the application.  This is the amount of CPU time the application uses per unit of wall time.
+2) CPU efficiency of the execution (which includes preemptions).  This is the amount of CPU time the application used for a successful run at the site over the amount of time it was running.  I believe Condor folks refer to this as the &quot;goodput&quot;.
+
+I think I might have once suggested that we add a column so we could measure both efficiency and goodput.
+
+Brian

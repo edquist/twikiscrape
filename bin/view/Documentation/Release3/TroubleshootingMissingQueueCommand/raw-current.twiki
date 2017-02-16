@@ -1,0 +1,29 @@
+---++Missing &#39;queue&#39; commands
+
+---+++Syntax:
+
+=ERROR: &#39;file.submit&#39; doesn&#39;t contain any &#39;queue&#39; commands -- no jobs queued=
+
+---+++Known causes:
+
+&#39;file.submit&#39; does not contain the command &#39;queue&#39;, which is required by condor_submit to add the job specified in the file to the remote queue.
+
+---+++Recommendations:
+
+Add the command &#39;queue&#39; to the bottom of the file if you want the job to be queued once.  Note that there can be multiple queue commands per file using the syntax: 
+&lt;pre class=&quot;file&quot;&gt;
+queue &amp;lt;number_of_times_to_queue&amp;gt;;
+&lt;/pre&gt;
+
+or by specifying &#39;Initialdir&#39;, a directory for each queue command, i.e.,
+
+&lt;pre class=&quot;file&quot;&gt;
+Initialdir = &amp;lt;dir_1&amp;gt;
+queue
+
+Initialdir = &amp;lt;dir_2&amp;gt;
+queue
+&lt;/pre&gt;
+
+-- Main.AnandPadmanabhan - 05 Dec 2006
+

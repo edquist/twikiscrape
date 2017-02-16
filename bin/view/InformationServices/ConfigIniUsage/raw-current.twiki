@@ -1,0 +1,73 @@
+In the next GIP release (1.1.x), we have a plugin which configures the GIP directly from the OSG&#39;s config.ini file.  This allows for users to configure the GIP without having to touch the GIP&#39;s native gip.conf file.
+
+This document lists all the sections of the config.ini file we use and what the attributes map to in the GIP
+
+In the parenthesis, we denote any type restrictions; we only show type restrictions for GIP-only attributes as the other attributes should be checked by other modules.
+
+   * Site Information
+      * host_name -&gt; ce.name
+      * host_name -&gt; ce.unique_name
+      * site_name -&gt; site.name
+      * site_name -&gt; site.unique_name
+      * sponsor -&gt; site.sponsor
+      * site_policy -&gt; site.sitepolicy
+      * contact -&gt; site.contact
+      * email -&gt; site.email
+      * city -&gt; site.city
+      * longitude -&gt; site.longitude
+      * latitude -&gt; site.latitude
+   * PBS
+      * pbs_location -&gt; pbs.pbs_path
+      * wsgram -&gt; pbs.wsgram
+      * enabled -&gt; pbs.enabled
+      * job_contact -&gt; pbs.contact_string
+   * Condor
+      * condor_location -&gt; condor.condor_location
+      * wsgram -&gt; condor.wsgram
+   * SGE
+      * sge_location -&gt; sge.sge_path
+      * sge_location -&gt; sge.sge_root
+      * wsgram -&gt; sge.wsgram
+   * Storage
+      * app_dir -&gt; osg_dirs.app
+      * data_dir -&gt; osg_dirs.data
+      * worker_node_temp -&gt; osg_dirs.wn_tmp
+   * GIP
+      * advertise_gsiftp -&gt; classic_se.advertise_se
+
+The following two entries are *types* of sections; replace XXX with a unique name.
+
+   * Subcluster XXX
+      * name -&gt; subcluster xxx.name
+      * cores_per_node -&gt; subcluster xxx.cores_per_node (positive int)
+      * node_count -&gt; subcluster xxx.node_count (positive int)
+      * cpus_per_node -&gt; subcluster xxx.cpus_per_node (positive int)
+      * cpu_speed_mhz -&gt; subcluster xxx.cpu_speed_mhz (positive float between 500 and 5000)
+      * ram_mb -&gt; subcluster xxx.ram_size (positive int between 200 and 40000)
+      * swap_mb -&gt; subcluster xxx.swap_size (optional) (positive int between 0 and 40000)
+      * cpu_vendor -&gt; subcluster xxx.cpu_vendor
+      * cpu_model -&gt; subcluster xxx.cpu_model
+      * inbound_network -&gt; subcluster xxx.inbound_network (boolean)
+      * outbound_network -&gt; subcluster xxx.outbound_network (boolean)
+      * SI00 -&gt; subcluster xxx.SI00 (optional) (positive float)
+      * SF00 -&gt; subcluster xxx.SF00 (optional) (positive float)
+
+   * SE XXX
+      * name -&gt; se xxx.name
+      * unique_name -&gt; se xxx.unique_name (optional)
+      * srm_endpoint -&gt; se xxx.srm_endpoint (SRM URL endpoint)
+      * srm_endpoint -&gt; se xxx.srm_host
+      * srm_endpoint -&gt; se xxx.srm_port
+      * srm_version -&gt; se xxx.srm_version (optional) (contains either 1 or 2)
+      * transfer_endpoints -&gt; None ? (optional)
+      * provider_implementation -&gt; se xxx.provider_implementation (enumeration)
+      * implementation -&gt; se xxx.implementation
+      * version -&gt; se xxx.version
+      * default_path -&gt; se xxx.default_path (path)
+      * vo_paths -&gt; se xxx.vo_paths (optional) (custom format; comma-separated vo:path pairs)
+      * allowed_vos -&gt; se xxx.allowed_vos (optional) (comma or space separated list)
+      * use_df -&gt; se xxx.use_df (BestMan only; optional) (boolean)
+
+
+
+-- Main.BrianBockelman - 04 Dec 2008

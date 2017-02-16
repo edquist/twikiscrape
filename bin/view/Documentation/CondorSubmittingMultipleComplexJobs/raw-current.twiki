@@ -1,0 +1,278 @@
+%DOC_STATUS_TABLE%
+
+---+!! Submitting Multiple, Complex Jobs with Condor
+%TOC%
+
+---+ About this Document
+Up until now in our Condor tutorials, the only data moved about with our jobs is the _stdout_ and _stderr_.  In this tutorial, we will cover arbitrary file movement.  The example program we will use is possibly the most complex way to do addition, ever.
+
+---+ Requirements
+In order to complete this document, you will need:
+   * A DOE Grid [[Documentation.CertificateUserGet][User Certificate]]
+   * Membership in a [[Documentation.WhatIsVO][Virtual Organization]]
+   * Access to a machine with the [[Documentation.Release3.InstallOSGClient][OSG-Client]] (or [[ReleaseDocumentation.ClientInstallationGuide][OSG-Client 1.2, Pacman version]]) installed. Remember to install also Condor-G if optional and to setup the environment if needed.
+   * Complete the previous [[CondorSubmittingMultipleJobs][tutorial about submitting multiple grid jobs]].
+   * Know the endpoint you are submitting to, as covered in the [[FindAvailableResource][finding available resources]] document.
+
+%STARTINCLUDE%
+
+---+ Creating Data to Process
+Suppose we want to add all the values between 1 and 10 against the value 5.  I.e., we will calculate:
+&lt;pre class=&quot;screen&quot;&gt;
+0 + 5 = ?
+1 + 5 = ?
+2 + 5 = ?
+3 + 5 = ?
+....
+&lt;/pre&gt;
+using Condor. We&#39;ll try to emulate a real scientific job by storing the numbers in files and transferring them to and from the remote site. Sure, it&#39;s overkill for basic addition, but it should give you the flavor of doing this for a real job.
+
+First, create a common input file that each of our jobs will use.
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% echo &quot;5&quot; &gt; common_input
+&lt;/pre&gt;
+Then, create ten files containing the numbers 0 through 9. Each job will get one of these files.
+&lt;pre class=&quot;screen&quot;&gt;
+for i in {0..9}; do
+echo &quot;$i&quot; &gt; input.$i
+done
+&lt;/pre&gt;
+Finally, we need a script which can sum up the contents of two input files, and write it into our output. Put the following text into a file named =sum_test.sh=:
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/sh
+
+# Standard grid debugging stuff
+hostname
+printenv
+voms-proxy-info -all
+
+input1=`cat $1`
+input2=`cat $2`
+echo $(($input1+$input2)) &gt;&gt; $3
+&lt;/pre&gt;
+Make this file executable:
+&lt;pre  class=&quot;screen&quot;&gt;
+%UCL_PROMPT% chmod +x sum_test.sh
+&lt;/pre&gt;
+
+As an example, run the following command:
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% sum_test.sh common_input input.0 output.0
+&lt;/pre&gt;
+
+If you look at file output.0, it should say 6. You should have also gotten lots of debugging output to your screen, perhaps something like the following. (But the details will be different because your environment will be different.) (Expand the twisty to see it--it&#39;s long.)
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show script output...&quot;
+hidelink=&quot;Hide script output...&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+tonic.cs.wisc.edu
+MANPATH=/scratch.1/roy/vdt-test/2.0.0/pegasus/man:/scratch.1/roy/vdt-test/2.0.0/globus/man:/scratch.1/roy/vdt-test/2.0.0/condor/man::/scratch.1/roy/vdt-test/2.0.0/vdt/man:/scratch.1/roy/vdt-test/2.0.0/perl/man:/scratch.1/roy/vdt-test/2.0.0/expat/man:/scratch.1/roy/vdt-test/2.0.0/logrotate/man:/scratch.1/roy/vdt-test/2.0.0/wget/man:/scratch.1/roy/vdt-test/2.0.0/jdk1.5/man:/scratch.1/roy/vdt-test/2.0.0/glite/share/man:/scratch.1/roy/vdt-test/2.0.0/curl/share/man:/scratch.1/roy/vdt-test/2.0.0/lcg/man:/scratch.1/roy/vdt-test/2.0.0/ndt/man:/scratch.1/roy/vdt-test/2.0.0/owamp/man:/scratch.1/roy/vdt-test/2.0.0/bwctl/man
+HOSTNAME=tonic
+PAC_ANCHOR=/scratch.1/roy/vdt-test/2.0.0
+SHELL=/bin/bash
+TERM=xterm-color
+HISTSIZE=1000
+VOMS_USERCONF=/scratch.1/roy/vdt-test/2.0.0/glite/etc/vomses
+SSH_CLIENT=216.128.109.13 50643 22
+KDE_NO_IPV6=1
+GLOBUS_LOCATION=/scratch.1/roy/vdt-test/2.0.0/globus
+GLOBUS_PATH=/scratch.1/roy/vdt-test/2.0.0/globus
+PERL5LIB=/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/perl:/scratch.1/roy/vdt-test/2.0.0/perl/lib/5.8.0:/scratch.1/roy/vdt-test/2.0.0/perl/lib/5.8.0/i686-linux-thread-multi:/scratch.1/roy/vdt-test/2.0.0/perl/lib/site_perl/5.8.0:/scratch.1/roy/vdt-test/2.0.0/perl/lib/site_perl/5.8.0/i686-linux-thread-multi:/scratch.1/roy/vdt-test/2.0.0/vdt/lib:
+CVSROOT=/p/condor/repository/CONDOR_SRC
+VDTSETUP_AGREE_TO_LICENSES=y
+QTDIR=/usr/lib/qt-3.3
+QTINC=/usr/lib/qt-3.3/include
+X509_CERT_DIR=/scratch.1/roy/vdt-test/2.0.0/globus/TRUSTED_CA
+SSH_TTY=/dev/pts/0
+releases=/p/vdt/public/html/releases
+VDTSETUP_GOOD_PLATFORM=1
+ANT_HOME=/scratch.1/roy/vdt-test/2.0.0/ant
+GLITE_LOCATION_LOG=/scratch.1/roy/vdt-test/2.0.0/glite/log
+USER=roy
+SRM_CONFIG=/scratch.1/roy/vdt-test/2.0.0/srm-client-fermi/etc/config-2.xml
+LS_COLORS=no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:bd=40;33;01:cd=40;33;01:or=01;05;37;41:mi=01;05;37;41:ex=01;32:*.cmd=01;32:*.exe=01;32:*.com=01;32:*.btm=01;32:*.bat=01;32:*.sh=01;32:*.csh=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.bz=01;31:*.tz=01;31:*.rpm=01;31:*.cpio=01;31:*.jpg=01;35:*.gif=01;35:*.bmp=01;35:*.xbm=01;35:*.xpm=01;35:*.png=01;35:*.tif=01;35:
+LD_LIBRARY_PATH=/scratch.1/roy/vdt-test/2.0.0/openldap/lib:/scratch.1/roy/vdt-test/2.0.0/lcg/lib64:/scratch.1/roy/vdt-test/2.0.0/lcg/lib:/scratch.1/roy/vdt-test/2.0.0/curl/lib:/scratch.1/roy/vdt-test/2.0.0/glite/lib64:/scratch.1/roy/vdt-test/2.0.0/glite/lib:/scratch.1/roy/vdt-test/2.0.0/globus/lib:/scratch.1/roy/vdt-test/2.0.0/berkeley-db/lib:/scratch.1/roy/vdt-test/2.0.0/expat/lib:
+GLOBUS_ERROR_VERBOSE=true
+GPT_LOCATION=/scratch.1/roy/vdt-test/2.0.0/gpt
+GLITE_LOCATION_TMP=/scratch.1/roy/vdt-test/2.0.0/glite/tmp
+KDEDIR=/usr
+software=/p/vdt/public/html/software
+LIBPATH=/scratch.1/roy/vdt-test/2.0.0/globus/lib:/usr/lib:/lib
+PAGER=less
+GLOBUS_OPTIONS=-Xms256M -Xmx1024M
+X509_CADIR=/scratch.1/roy/vdt-test/2.0.0/globus/TRUSTED_CA
+MAIL=/var/spool/mail/roy
+PATH=/scratch.1/roy/vdt-test/2.0.0/osg/bin:/scratch.1/roy/vdt-test/2.0.0/discovery/bin:/scratch.1/roy/vdt-test/2.0.0/bwctl/bin:/scratch.1/roy/vdt-test/2.0.0/owamp/bin:/scratch.1/roy/vdt-test/2.0.0/npad/bin:/scratch.1/roy/vdt-test/2.0.0/ndt/bin:/scratch.1/roy/vdt-test/2.0.0/lcg/bin:/scratch.1/roy/vdt-test/2.0.0/srm-client-lbnl/bin:/scratch.1/roy/vdt-test/2.0.0/srm-client-fermi/sbin:/scratch.1/roy/vdt-test/2.0.0/srm-client-fermi/bin:/scratch.1/roy/vdt-test/2.0.0/curl/bin:/scratch.1/roy/vdt-test/2.0.0/cert-scripts/bin:/scratch.1/roy/vdt-test/2.0.0/pyglobus-url-copy/bin:/scratch.1/roy/vdt-test/2.0.0/pegasus/bin:/scratch.1/roy/vdt-test/2.0.0/glite/sbin:/scratch.1/roy/vdt-test/2.0.0/glite/bin:/scratch.1/roy/vdt-test/2.0.0/ant/bin:/scratch.1/roy/vdt-test/2.0.0/gpt/sbin:/scratch.1/roy/vdt-test/2.0.0/globus/bin:/scratch.1/roy/vdt-test/2.0.0/globus/sbin:/scratch.1/roy/vdt-test/2.0.0/jdk1.5/bin:/scratch.1/roy/vdt-test/2.0.0/condor/sbin:/scratch.1/roy/vdt-test/2.0.0/condor/bin:/scratch.1/roy/vdt-test/2.0.0/wget/bin:/scratch.1/roy/vdt-test/2.0.0/logrotate/sbin:/u/r/o/roy/pacman/pacman-3.29/bin:/scratch.1/roy/vdt-test/2.0.0/vdt/sbin:/scratch.1/roy/vdt-test/2.0.0/vdt/bin:/u/r/o/roy/pacman/pacman-3.29/bin:/usr/bin:/unsup/git/bin/::/u/r/o/roy/bin:/s/std/bin:/usr/afsws/bin:/opt/SUNWspro/bin:/usr/ccs/bin:/usr/ucb:/bin:/usr/bin:/usr/stat/bin:/usr/X11R6/bin:/unsup/condor/bin:/unsup/condor/sbin:/p/condor/home/bin:/p/condor/home/rust/bin/@sys
+CPUTYPE=i686
+CONDOR_LOCATION=/scratch.1/roy/vdt-test/2.0.0/condor
+VDT_LOCATION=/scratch.1/roy/vdt-test/2.0.0
+CONDOR_CONFIG=/scratch.1/roy/vdt-test/2.0.0/condor/etc/condor_config
+PWD=/scratch/roy/doc-test
+INPUTRC=/etc/inputrc
+JAVA_HOME=/scratch.1/roy/vdt-test/2.0.0/jdk1.5
+SVN=/p/vdt/workspace/svn
+KDE_IS_PRELINKED=1
+LANG=en_US.UTF-8
+SASL_PATH=/scratch.1/roy/vdt-test/2.0.0/globus/lib/sasl
+VOMS_LOCATION=/scratch.1/roy/vdt-test/2.0.0/glite
+X509_VOMS_DIR=/scratch.1/roy/vdt-test/2.0.0/glite/vomsdir
+CATALINA_OPTS=-Dorg.globus.wsrf.container.persistence.dir=/scratch.1/roy/vdt-test/2.0.0/vdt-app-data/globus/persisted
+IMAKECPP=/p/condor/home/bin/ansi_cpp
+KRB5CCNAME=FILE:/var/adm/krb5/tmp/tkt/krb5cc_8471_yaADOh3827
+SSH_ASKPASS=/usr/libexec/openssh/gnome-ssh-askpass
+HOME=/u/r/o/roy
+SHLVL=2
+GLITE_LOCATION_VAR=/scratch.1/roy/vdt-test/2.0.0/glite/var
+OSTYPE=Linux
+VDT_INSTALL_LOG=vdt-install.log
+DYLD_LIBRARY_PATH=/scratch.1/roy/vdt-test/2.0.0/globus/lib
+LOGNAME=roy
+s=/s
+LESS=-eiMx4XR
+PYTHONPATH=/scratch.1/roy/vdt-test/2.0.0/lcg/lib/python:/scratch.1/roy/vdt-test/2.0.0/globus/lib/python:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/python
+CVS_RSH=ssh
+QTLIB=/usr/lib/qt-3.3/lib
+PRINTER=copier-4b
+SSH_CONNECTION=216.128.109.13 50643 128.105.121.53 22
+CLASSPATH=/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/xmlParserAPIs.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/log4j-1.2.8.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/java-getopt-1.0.9.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/commons-logging.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/accessors.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/puretls.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/resolver.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/preservcsl.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/postgresql-8.1dev-400.jdbc3.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/cryptix32.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/cryptix.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/junit.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/jce-jdk13-125.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/xercesImpl.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/commons-pool.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/cog-jglobus.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/mysql-connector-java-5.0.5-bin.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/xmldb.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/globus_rls_client.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/xmlrpc.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/wings.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/exist-optional.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/jakarta-oro.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/cryptix-asn1.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/exist.jar:/scratch.1/roy/vdt-test/2.0.0/pegasus/lib/pegasus.jar
+LESSOPEN=|/usr/bin/lesspipe.sh %s
+SHLIB_PATH=/scratch.1/roy/vdt-test/2.0.0/globus/lib
+VDT_POSTINSTALL_README=/scratch.1/roy/vdt-test/2.0.0/post-install/README
+GLITE_LOCATION=/scratch.1/roy/vdt-test/2.0.0/glite
+G_BROKEN_FILENAMES=1
+PACMAN_LOCATION=/u/r/o/roy/pacman/pacman-3.29
+PEGASUS_HOME=/scratch.1/roy/vdt-test/2.0.0/pegasus
+CERT_SCRIPTS_HOME=/scratch.1/roy/vdt-test/2.0.0/cert-scripts
+_=/usr/bin/printenv
+WARNING: Unable to verify signature! Server certificate possibly not installed.
+Error: Cannot verify AC signature!
+subject   : /DC=org/DC=doegrids/OU=People/CN=Alain Roy 424511/CN=proxy
+issuer    : /DC=org/DC=doegrids/OU=People/CN=Alain Roy 424511
+identity  : /DC=org/DC=doegrids/OU=People/CN=Alain Roy 424511
+type      : proxy
+strength  : 1024 bits
+path      : /tmp/x509up_u8471
+timeleft  : 11:58:59
+=== VO osgedu extension information ===
+VO        : osgedu
+subject   : /DC=org/DC=doegrids/OU=People/CN=Alain Roy 424511
+issuer    : /DC=org/DC=doegrids/OU=Services/CN=http/voms.grid.iu.edu
+attribute : /osgedu/Role=NULL/Capability=NULL
+timeleft  : 11:58:59
+uri       : voms.grid.iu.edu:15003
+&lt;/pre&gt;
+%ENDTWISTY%
+
+---+ Automate with Condor
+We&#39;ll now have Condor automate this for us.  Save the following as =condorg_test3.submit=:
+&lt;pre class=&quot;file&quot;&gt;
+universe                = grid
+grid_resource           = &lt;span style=&quot;background-color:yellow&quot;&gt;gt2 osg-gw-2.t2.ucsd.edu:/jobmanager-condor&lt;/span&gt;  %RED% Change the the endpoint! %ENDCOLOR% 
+executable              = sum_test.sh
+arguments               = input.$(Process) common_input output.$(Process)
+transfer_input_files    = input.$(Process), common_input
+transfer_output_files   = output.$(Process)
+when_to_transfer_output = ON_EXIT
+output                  = test.$(Cluster).$(Process).out
+error                   = test.$(Cluster).$(Process).err
+log                     = test.log
+queue 10
+&lt;/pre&gt;
+As before, you&#39;ll need to replace the !grid_resource above with the compute element endpoint of your choice.
+
+Go ahead and submit the jobs to the grid, and see if you get the correct answers back!
+
+---+ New Condor Parameters
+We introduced three new Condor job submission parameters.  All three revolved around file movement; you can also [[http://www.cs.wisc.edu/condor/manual/v7.5/2_5Submitting_Job.html#sec:file-transfer][read the Condor manual&#39;s section on file movement]].
+&lt;pre class=&quot;file&quot;&gt;
+transfer_input_files = input.$(Process), common_input
+&lt;/pre&gt;
+The =transfer_input_files= command specifies which files, relative to the submit directory should be copied to the job&#39;s initial working directory.  As before, the  =($Process)= macro is expanded.  Here, the files =input.$i= for some =$i= and =common_input= will be in the working directory when the executable =sum_test.sh= starts.
+
+Next,
+&lt;pre class=&quot;file&quot;&gt;
+transfer_output_files = output.$(Process)
+&lt;/pre&gt;
+This informs Condor that it should expect a file named =output.X= where X is the job&#39;s process at the end of execution.  If this file does not exist after the script executes, Condor will assume that something has gone wrong and put your job in a state named &quot;Held&quot;.
+
+Finally,
+&lt;pre class=&quot;file&quot;&gt;
+when_to_transfer_output = ON_EXIT
+&lt;/pre&gt;
+This informs Condor you will be using its file transfer mechanisms, and that it should only try transferring the output files at the end of a successful job run.  If you do not add this, Condor will never start your job, but not fail it either.
+
+---+ Conclusions
+
+In this section, we covered:
+   * The simplest form of data management - transfer of input and output files with Condor-G.
+   * Processing per-job inputs and common input for all jobs.
+
+We&#39;ve covered all the Condor basics.
+
+There&#39;s one more link to read over for those interested in more complex workflows: [[http://www.cs.wisc.edu/condor/manual/v7.6/2_10DAGMan_Applications.html][Condor DAGMan]].  DAGMan allows you to string together many Condor jobs by defining the dependencies between multiple jobs.  For example, one can have a pre-processing step to prepare input, a massive grid step to run the CPU-intensive jobs, and a post-processing step to handle all the output - a very common paradigm for high throughput computing.
+
+The remainder of the OSG User guide will cover the OSG-specific job environment and more complex data management.
+
+%STOPINCLUDE%
+
+---+ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = BrianBockelman
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = User
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = Scientist
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Training
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = AlainRoy
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = MarcoMambelli
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %YES%
+############################################################################################################
+--&gt;

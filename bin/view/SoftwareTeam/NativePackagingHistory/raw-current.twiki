@@ -1,0 +1,364 @@
+---+ Native Packaging History
+
+%RED%DRAFT DRAFT DRAFT DRAFT%ENDCOLOR%
+
+This document is being written in April of 2011. It is meant to provide input from the VDT team to Dan Fraser&#39;s root cause analysis of native packaging. 
+
+---++ 1.0 Background
+
+---+++ 1.1 Coherency principle
+A principle we had from the beginning, and for a long time was:
+
+&lt;blockquote&gt;
+Principle: Maintain coherency between the Pacman and native package versions of the VDT. Share as much as possible, both for builds and configuration.
+&lt;/blockquote&gt;
+
+This was not an optimization against saving time for future work, but was an effort to leverage our existing work. It lead to at least three decisions:
+   * Create binary RPMs out of the build process that we use for Pacman packages. These were conversions of the tarballs we were already creating.
+   * Improve our configuration system such that we can share configuration scripts between Pacman and RPM installations. 
+   * Attempt to keep the organization of packages such that we have (or nearly have) a one-to-one correspondance of Pacman packages and RPMs. 
+
+In retrospect, we do not think this was the right principle to adopt.
+
+---+++ 1.2 Community
+
+When we began this work, we did not have a good understanding of the existing communities, how they thought about packaging, and what they expected from packaging.
+
+---++ 2.0 Timelines
+
+---+++ 2.1 Pre-history
+
+September 2004: First release of RPMS for EDG. Binary RPMs, converted from the tarballs we made for our Pacman installs. The only intended customer was EDG. Periodic updates followed, and they were used by EGEE. They are still in use in gLite today. 
+
+---+++ 2.2 LIGO packaging timeline
+
+2008-03-28: LIGO Middleware Packaging Group formed with Alain as a contributing member. One question for the group: &quot;If we stick with LDG as a rebundle of the VDT ... Should we actively push for the replacement of Pacman? and if so what should we request, e.g., RPM, Solaris packages, DEB, ...&quot;
+
+2008-11-10: Alain talked to Scott Koranda and wrote up the following notes: 
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show...&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;blockquote&gt;
+
+From: Alain Roy&lt;br&gt;
+Date: November 10, 2008 4:43:32 PM CST&lt;br&gt;
+To: Scott Koranda&lt;br&gt;
+Subject: VDT Packaging for LIGO (Snapshot of board)&lt;br&gt;
+
+Hi Scott,
+
+Here are the relevant bits from the discussion we had today about VDTpackaging for LIGO.
+
+LIGO wants native packaging (RPMs for !CentOS 5.2, debs for Etch or Lenny and MacPorts for Mac OS X 10.5). It will take a while to phase
+things in, so we&#39;re thinking of something like:
+
+1) Pacman will be supported for a long time, so it will continue to work in places where we don&#39;t have sufficient support for native packaging.
+
+2) We&#39;ll do binary native packages for !CentOS/Debian within 3-6 months. Initially we&#39;ll just support the client for Globus/gsissh/MyProxy/UberFTP. (Hopefully very soon.) We&#39;ll gradually
+add Condnor, PyGlobus (if needed), Pegasus, VOMS, and TclGlobus. The VDT&#39;s packages are probably simplistic right now, but you can give us feedback on early implementations fairly soon.
+
+3) We&#39;ll do source native packages for !CentOS/Debian/MacPorts sometime after that.
+
+4) We don&#39;t fully understand what needs to be done for the Mac. Building from source is really tedious--should we support binary distribution somehow?
+
+5) Client stuff will be supported before server stuff. We don&#39;t know how long it will take to support server stuff.
+
+6) LIGO probably wants to use system RPMs where possible, particularly things like MySQL.
+
+7) The VDT&#39;s existing RPMs for Globus are finely broken down. You can get GRAM client and server RPMs, with a GRAM essentials package for
+things shared between the two. It&#39;s similar for other Globus &quot;pillars&quot;, and there is an underlying Globus Essentials RPM for things shared across the entire Globus distribution.
+&lt;/blockquote&gt;
+
+%ENDTWISTY%
+
+2009-05-12: Email from Alain
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show...&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+&lt;blockquote&gt;
+From: Alain Roy&lt;br&gt;
+Date: May 15, 2009 2:08:34 PM CDT&lt;br&gt;
+To: Condor/LIGO mailing list&lt;br&gt;
+Subject: [CondorLIGO] Worried about testing VDT&#39;s native packages; source packages&lt;br&gt;
+
+Hi Everyone,
+
+===== Binary Native Packages =====
+
+I&#39;ve sent a couple of emails about this, but I think they haven&#39;t been as clear as precise as they could be. I know some of them were in a VDT ticket, and not everyone might be on that ticket.
+
+We released VDT 1.11.0 a couple of weeks ago, and we are nearing the release of VDT 2.0.0, which we hope next Thursday, May 21. As part of the VDT 1.11.0 release, we made a bunch of binary RPMs and debs, and they are available here:
+
+http://vdt.cs.wisc.edu/releases/1.11.0/installing-rpms.html&lt;br&gt;
+http://vdt.cs.wisc.edu/vdt_rpms/1.11.0//release-1/&lt;br&gt;
+
+We know that they work, but we also strongly suspect that they won&#39;t be perfect. The sooner we get feedback from you, the sooner they will be improved. Is anyone available to test them?
+
+As a question for the future: as our native binary packages support more &quot;stuff&quot;, we might have a process that looks like this:
+
+1) Install native packages&lt;br&gt;
+2) Run &quot;vdt-postinstall&quot; to finish up more complex aspects of the installation process and configuration.
+
+Is that acceptable to you?
+
+===== Source Native Packages =====
+
+A while ago, I think we agreed that the VDT would first do binary packages (they&#39;re easier for us, given our infrastructure for building for multiple platforms), and do the source packages later. But I&#39;ve gotten the feeling that you might *really* want the source packages much more than the binary packages. I would like to be able to discuss this with you. In particular, do we need to hurry up and ship source packages sooner rather than later, or will the binary packages suffice for now? What sort of deadlines should we have?
+
+We really want very much to do a good job of providing native packages for you!
+
+-alain
+&lt;/blockquote&gt;
+%ENDTWISTY%
+
+2009-05-19: Email from Scott Koranda said &quot;Personally, I am no longer going to support software that is distributed with Pacman.&quot;
+
+2009-05-22: From Alain&#39;s notes, shared shortly thereafter with LIGO folks:
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show...&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+&lt;blockquote&gt;
+- Greg Mendell will proceed making a release of LDG Client and LDG Server packaged with Pacman and based on the 2.0 release of VDT.
+
+He will wrap grid-proxy-init from the Globus 4.0.x series to automatically add the -rfc option so that users generate RFC compliant proxies by default/transparently.
+
+- Xavier Amador will continue testing the VDT binary RPMs from the 2.0 release for !CentOS 5.x. and will report on what he finds.
+
+If the tests go well these will be rolled into the LIGO lscsoft YUM repository, first in testing, then in production.
+
+ He will also work with Scott to wrap &#39;grid-proxy-init&#39; so that it generates RFC compliant proxy certificates by default/transparently.
+
+- The Hannover team will continue testing the VDT Debian binary packages for Lenny and will dialogue with the VDT team on whether the packages are &quot;right&quot;.
+
+ If the tests go well these will be rolled into the LIGO lscsoft Debian repository.
+
+ They will also make sure to wrap &#39;grid-proxy-init&#39; so that it generates RFC compliant proxy certificates by default/transparently.
+
+- The VDT team will work to support LIGO with the following priorities:
+
+ 1) Source Debian packages for client tools like grid-proxy-init and gsissh, based on the Globus 4.0.x series.
+
+The goal is for Hannover to feel that they do not have to do this themselves. In order to meet that goal this must happen as quickly as possible, but there needs to be a dialogue so that the Debian packages are &quot;done right&quot;. The VDT team does not have as much experience with Debian and so will want to dialogue a lot with the LIGO Debian folks since they desire to get this right and done quickly.
+
+ 2) Source RPM packages for client tools like grid-proxy-init and gsissh, based on the Globus 4.0.x series.
+
+ 3) Source Debian packages and Source RPM packages for tools needed for the LIGO Auth project, both client and server, including grid-proxy-init, myproxy, GSI-enabled OpenSSH with mechglue. It is preferable that grid-proxy-init generate RFC compliant proxies by default, either because it is based on GT 4.2.x or because LIGO can take the source packages based on GT 4.0.x and tweak them as necessary and build new binary packages for the LIGO lscsoft repositories.
+
+ 4) Source Debian and RPM packages for tools normally found in the LDG server like globus-gridftp-server and globus-rls-server. Globus Java WS tools are excluded.
+
+ It is preferable that these build on GT 4.2.1 to pick up the features LIGO needs.
+&lt;/blockquote&gt;
+%ENDTWISTY%
+
+
+2009-05-26: “Today I spoke with Tim Cartwright about VDT packaging for LIGO. He&#39;s going to dig into creation of Debian source packages starting today.” — Alain to Condor-LIGO mailing list.
+
+2009-06: Tim’s status reports indicate some progress on Debian packages (mostly GPT), but many other activities including Pacman releases and hiring.
+
+2009-07-02: “I am writing the debian/rules file. Instead of being a makefile, it is in Perl, because we have a medium- to long-term goal of having a single build system for pacman, Debian, and RPM.” — Tim to Condor-LIGO mailing list; note the approach.
+
+2009-07-10: Status report from Tim to Alain — Still working on GPT with separate, unified Debian/Pacman build script. First week of significant CS 368 work.
+
+2009-07-17: First alpha of a GPT package sent to LIGO. “I used Perl in hopes of integrating our build systems for Debian, RPM, and our own internal system. I can convert my work to a makefile, but I want to have some further conversations with Alain about laying out a path for future VDT builds.” — Tim to Condor-LIGO mailing list; note the approach.
+
+2009-07-23: Email exchange about GPT package (“First draft of a GPT source package”) — generally shows Tim’s lack of understanding of Debian source packaging conventions, despite 2 months having passed. And again, the approach: “And, at the same time, finding ways to not repeat ourselves as we support multiple packaging systems; solving that problem is critical to our long-term mental health and ability to deliver quality packages in a reasonable time.”
+
+2009-08-11: Decision to put files in /opt/vdt instead of /.
+
+2009-08-21: First mention in Tim’s status reports of work on Debian packages for Globus Toolkit. “Started down one path [of, ultimately, 3] for Debianizing the Globus build”.
+
+2009-08-28: Tim’s status report mentions two more approaches to GT packaging and much time spent on discussions.
+
+2009-09-02: Second alpha of GPT + Globus Toolkit packages (essentials only) to LIGO. Many, many known quality issues, even in this limited release.
+
+2009-09-14: Third alpha of GPT and Globus Toolkit, now including all GT binaries. Many quality issues remain (e.g., a handful of post-installation commands had to be run manually). Scott Koranda asks why we are still stuck on GT 4.0.x instead of 4.2.x. Alain says that we will make 4.2.x binaries for LIGO.
+
+2009-09-18: Tim status report: Converting to 4.2.1 took a few days, mostly due to problems with the GT CVS repository.
+
+2009-09-21: Alpha release of GT 4.2.1. Many known issues. First (known) request for x86-64 binaries from Scott Koranda.
+
+2009-09-23: Alpha release of GT 4.2.1 on x86-64, including a few corrections to source packages.
+
+2009-09-24: Tim email to Jim Basney — start of work on GSI-OpenSSH?
+
+2009-09-25: “Next week, I&#39;m going to add a second VDT person to our native packaging efforts.” — Alain to Condor-LIGO mailing list.
+
+2009-09-30: Alpha release of GSI-OpenSSH.
+
+2009-10-05: Alpha release of GSI-OpenSSH (5.2p1+4.7), incorporating ideas from LIGO Hannover developers.
+
+2009-10-16: Alpha release of GT 4.2.1 and GSI-OpenSSH 5.2p1+4.7: Many quality improvements.
+
+2009-10-23: Tim status report: Mention of significant effort toward configuration infrastructure.
+
+2009-10-23: Alpha release of GT 4.2.1 RPM and new APT repository.
+
+2009-10-29: Tim status report: Significant time spent making a Debian package for CA certificates, as an extension to our existing process for packaging CA certificates.
+
+2009-11-05: Tim update on CA certificates to Chander, Mine, Rob Q., and Alain.
+
+2009-11-06: Release of CA certificates package; alpha release of GT and GSI-OpenSSH source RPMs. Mention of work starting on !MyProxy.
+
+2009-11-11: Another Tim update on CA certificates to Chander, Mine, Rob Q., and Alain — hand off to GOC for further work.
+
+2009-11-20: Tim status report: Mentions meeting with Suchandra and VDT team to discuss configuration.
+
+2009-11-20: Alpha release of !MyProxy 4.9 for Debian and RPM. Some continued pushing from, esp., Scott Koranda to make packages that meet administrator needs or else run the risk of having LIGO defect to other package providers.
+
+2009-11-23: Email from Tim to Scott Koranda, re: packaging philosophy; again, even this late, note concerns about approach: “If it were just a matter of providing LIGO with 4-5 source packages that fit (as best as possible) standard RPM and Debian conventions, it wouldn&#39;t be so bad.  But we are also trying to figure out how to move most or all of the VDT to native packaging, and that&#39;s a much bigger and more complex undertaking.  Despite its large flaws, we have had some things very easy with Pacman, and so we&#39;re now starting to find and unwind all sorts of issues that we&#39;re going to have to deal with when we support other packaging systems. What&#39;s more, we are so understaffed here, that we *must* find a way to minimize the effort required to support *all* of the packaging systems that our users want.  And that includes not just putting code into packages, but also our configuration glue, and our testing infrastructure.”.
+
+Following this point, I think we became far more aligned with community practices for native packaging.
+
+2009-12-2: Alpha release of GT on Debian with significant build improvements.
+
+2009-12-7: First mention of working (in earnest) on post-install scripts.
+
+2009-12-11: Tim status report: Spending time on joint Debian-RPM infrastructure for post-install stuff.
+
+2009-12-17: Beta release of *Condor* packages for Debian and RPM — work done (mostly) by Thawan Kooburat (graduate student).
+
+2009-12-29: Proposal for LIGO repository organization. Effectively accepted as is, over the following week or two.
+
+2010-1-8: Tim status report: Still working on infrastructure to support both Debian and RPM packages.
+
+2010-1-21: Discussions with Globus team about GT 5.2 and native packaging.
+
+2010-1-25 through 2010-2-12: More work with CA certificates and helping the GOC.
+
+2010-1-28: Major new beta release of GT packages for Debian and RPM, now in standardized APT and YUM repositories. Significant milestone release.
+
+2010-2-10: New beta release of GT 4.2.1 and !MyProxy 5.0.
+
+2010-2-15: Beta release of !UberFTP 2.5.
+
+2010-2-25: Beta release of GSI-OpenSSH 5.3p1+4.7.
+
+2010-3-5: Revised beta of GSI-OpenSSH 5.3p1+4.7 based on testing feedback.
+
+2010-3-15: Found out about new Globus patch that affected LIGO — forced rebuild of GT.
+
+2010-3-19: Beta release of GT 4.2.1r3-1 (new patch).
+
+2010-3-24: Nice email from Scott Koranda explaining how LIGO was building on top of the VDT native packages already.
+
+2010-4-16: Tim status report: Starting to ramp up on OSG Summer School.
+
+2010-4-29: *Production* release of GT 4.2.1, GSI-OpenSSH, !MyProxy, and !UberFTP.
+
+2010-8-20: Small update release to GSI-OpenSSH.
+
+2010-8-22: First formal request from LIGO for pre-WS GRAM in GT packages. This made the update more than just an update. 
+
+2010-8-23: First inquiry about upgrading to GT 5.0 — not a formal request yet.
+
+2010-10-4: First alpha of GT 5.0 Debian binaries.
+
+2010-10-20: First beta of GT 5.0.2 on Debian.
+
+2010-11-8: Second beta of GT 5.0.2 on Debian, and first beta on RPM. Included configuration of SEG in RPMs. 
+
+2011-1-13 to 2011-1-21: Security update of !MyProxy to 5.3p1.
+
+2011-2-1: Production release of GT 5.0.2 and new GSI-OpenSSH, !MyProxy, and !UberFTP.
+
+2011-2-8: Repository signing implemented.
+
+2011-2-23: Official, small change request for GT 5.0 packages.
+
+2011-3-31: Beta release of GT and !MyProxy updates on Debian.
+
+2011-4-8: Beta release of GT and !MyProxy updates on RPM.
+
+Make sure to include ramp-up time. Meeting with Miron suggesting we don&#39;t keep in sync with Pacman/OSG for LIGO?
+
+Early 2010? GT 4.2 release
+
+Request for GT 5.0?
+
+Various updates we did?
+
+---+++ 2.3 Non-LIGO packaging timeline
+
+2009-10: Some background and planning work on general native packaging tasks; looked into YAIM; looked into configuration file parsers and their APIs.
+
+2009-11: First (?) mention of actual work on the NMI-to-RPM conversion system, mostly background and planning. Repository layout planning. Initial design to replace Pacman’s setup.sh script for building VDT runtime environment.
+
+Early 2010? Discussion about improved configuration scheme, with eye on keeping it compatible between Pacman and RPM. Involved Suchandra
+
+2009-11-16: All-day meeting with VDT Team and Suchandra Thapa about native packaging.
+
+2009-12: Focus returned to LIGO work; no mention of general native packaging work.
+
+2010-03: Mat made first edition of the combo gLExec RPM (?).
+
+2010-04: Planning for and development of NMI-to-RPM work. Tiny bit of work on the configuration system.
+
+2010-05: Mat made script for testing glexec RPM, built glexec combo RPM in Batlab.
+
+2010-05: Trash/Trash/Blueprint Meeting at BNL, regarding configuration and native packaging. Development of first prototype of configuration system. Investigation of Bcfg2 and Puppet. Interesting quote of the month: “Talked to Alain about his analysis of configuration steps in the VDT gLExec configuration script. Began going over the script in detail to think about the changes required for a unified native &amp; pacman config script.”
+
+2010-06: Tim not working on native packaging at all, due to OSG-SS, hiring, and other stuff. Mat added basic glexec configuration to combo glexec RPM and simplified process for creating glexec combo RPM. Also made RPM for PRIMA, some of Globus, and VDT common package. 
+
+2010-07: Tim completely busy with OSG-SS and CS 368. Mat worked on underlying infrastructure for converting Pacman packages to RPMs. 
+
+2010-08: Tim mostly catching up on native packaging (and many other things, esp. hiring) from past two months, making plans for September – December. Mat released glexec RPM that doesn&#39;t require anything to be installed via Pacman (as of 2010-08-06), and a fetch-crl RPM. Mat also studied Fedora and EPEL packaging guidelines. 
+
+2010-09: Planning and documenting; initial guidelines for Bronze, Silver, and Gold packages; configuration system design — definitely thinking of configuration system as being for native packaging by this point. Mat working on NMI-to-RPM packages and chrpath at build time and got bronze-level GPT and Globus-Base-Essentials; Tim working on GT5 for LIGO.
+
+2010-10: Mat working on NMI-to-RPM packages, fetch-crl, VOMS, procd, and PRIMA; Tim working on GT5 for LIGO, then starting to work on configuration prototype.
+
+2010-11: Shipping gLExec; working on first xrootd RPMs; working on configuration system.
+
+2010-12: More xrootd (initial release?, plus new 3.0 release), Mat working on GT4, less configuration. Tim starting to work with Debian developer on Condor source Debian package.
+
+2011-01: More xrootd 3.0; new native packaging plans and project management approach; a little bit of Condor Debian work.
+
+2011-02: Defining tasks and effort for OSG Worker Node Client RPMs; defining tasks and effort for one possible configuration conversion. First xrootd source RPM (as a learning exercise, more than anything).
+
+2011-02-04: Provided binary xrootd 3.0.2 RPM (from Mat to ATLAS)
+
+2011-02-08: Brief feedback from Doug Benjamin on binary xrootd 3.0.2 RPM
+
+2011-02-16: Detailed feedback from Doug Benjamin on binary xrootd 3.0.2 RPM. Tim set up meeting for all-hands meeting to discuss requirements for Xrootd RPM.
+
+2011-03: xrootd again/still, turning over to Fermi folks. Planning. Made worker node RPMs.
+
+2011-03-09: Meeting at OSG all-hands meeting. Discussed what is missing from Xrootd RPM to be considered complete. Agreed to write down precise set of requirements in the couple of weeks following all-hands meeting, lead by Tanya and Tim. Agreed that Tanya and Doug Straing would take over packaging of Xrootd RPM from UW-Madison folks. 
+
+2011-03-23: Alain met with Brian, Chander, and Dan at Fermilab. Discussed ideas for pass-through packaging of native packges.
+
+2011-03-25: Chander talked to Michael Ernst, who said that people within ATLAS were dissatisfied with progress on Xrootd RPM.
+
+2011-03-30: Within OSG, wrote down our understanding of the Xrootd RPM requirements. (Happened over previous week, finished on the 30th)
+
+2011-04-05: Meet with ATLAS to discuss set of requirements. Agreed on requirements, version 12 of [[XrootdRPMPhase1Reqs ][Xrootd requirements]].
+
+---+++ 2.4 Other interesting dates
+
+June/July 2009: Tim&#39;s class
+
+July 27, 2009 (verified): Mat&#39;s start date
+
+March-July 2010: OSG Summer School
+
+2010-03-19 or so: Tim assigned to run 2010 OSG-SS
+
+July 2010: Tim&#39;s class
+

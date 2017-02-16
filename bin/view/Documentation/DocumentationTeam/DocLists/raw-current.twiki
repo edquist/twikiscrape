@@ -1,0 +1,9 @@
+---+Document Lists
+This contains document searches needed to get info for moving documentation into new process.
+%CALC{&quot;$SET( row_no, 0 )&quot;}%
+%CALC{&quot;$SET( increment, $NOEXEC($SETM(row_no, + 1)$GET(row_no)))&quot;}%
+
+---++Documents in Documentation.WebHome, ReleaseDocumentation.WebHome, and Trash/Tier3.WebHome Webs with current listed Owners
+%SEARCH{ search=&quot;RESPONSIBLE&quot; scope=&quot;text&quot; web=&quot;Documentation, ReleaseDocumentation, Tier3&quot; casesensitive=&quot;on&quot; excludetopic=&quot;*LeftBar*,*Meet*,*Web*&quot;  nosearch=&quot;on&quot; nototal=&quot;on&quot; header=&quot;| *No.* | *Topic - !$web* | *Modifier* | *Date* | *Owner* | *Reviewer* |&quot; format=&quot;| $percntCALC{\&quot;$EXEC($GET(increment))\&quot;}$nop% | [[$web.$topic]] | $wikiusername | $percntCALC{\&quot;$FORMATTIME($TIME($date), $year-$month)\&quot;}$nop% | !$pattern(.*RESPONSIBLE%.*Main.([a-zA-Z]+).*) |  !$pattern(.*REVIEW%.*Main.([a-zA-Z]+).*) |&quot; }%
+
+-- Main.JamesWeichel - 05 Jan 2010

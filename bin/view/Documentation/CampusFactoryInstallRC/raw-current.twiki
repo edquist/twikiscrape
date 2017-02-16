@@ -1,0 +1,156 @@
+---+!! *Campus Factory Install RC*
+&lt;div style=&quot;background-color:#ffa07a; padding:7px; -moz-border-radius: 5px; border-radius: 5px;&quot;&gt;
+This is a pre-release.  It is not officially supported.  The underlying technology, Trash/Trash/CampusGrids.BoSCO is still in development.  The RC&#39;s may not work with all versions of bosco.  If you find any bugs, email campusgrids@fnal.gov
+&lt;/div&gt;
+
+%DOC_STATUS_TABLE%
+%TOC{depth=&quot;2&quot;}%
+
+---++ About This Document
+This document is the instructions to install the 1.0 Release Candidate.  For the production release (0.4.X), see the CampusFactoryInstall.  
+
+Both Trash/Trash/CampusGrids.BoSCO and the Campus Factory are changing.  As Trash/Trash/CampusGrids.BoSCO changes, so will the Campus Factory.
+
+---++ Requirements
+   * A node with a public IP address.
+      * Really, the node only needs to be reachable by the cluster worker nodes.
+
+---++ Procedure
+---+++ Install Trash/Trash/CampusGrids.BoSCO
+   1. Download the [[http://glidein.unl.edu/~dweitzel/release_dir.tar.gz][Campus Factory version]] of CampusGrids.BoSCO (soon to be *THE* bosco version) &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% wget http://glidein.unl.edu/~dweitzel/release_dir.tar.gz &lt;/pre&gt;
+   1. Untar the release &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% tar xzf release_dir.tar.gz 
+%UCL_PROMPT% cd release_dir/ &lt;/pre&gt;
+   1. Install bosco: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% ./bosco_install &lt;/pre&gt;
+   1. Source the setup scripts &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% source $HOME/bosco/bosco_setenv &lt;/pre&gt;
+   1. Start bosco: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% bosco_start &lt;/pre&gt;
+   1. Add clusters to the bosco install.   %RED%cluster_type%ENDCOLOR% is either =pbs=, =lsf=, =sge=, or =condor= &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% bosco_cluster -a %RED%user@host.edu cluster_type%ENDCOLOR%  &lt;/pre&gt;
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Click here to see troubleshooting notes&quot;
+hidelink=&quot;Hide troubleshooting notes...&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+condor_config after condor instillation&lt;br&gt;
+
+
+&lt;pre class=&quot;screen&quot;&gt;
+condor_config will be automatically set to point to your condor configuration file- no additional steps need to be taken.
+&lt;/pre&gt;
+
+source to setup condor environment variables at root directory&lt;pre class=&quot;screen&quot;&gt;
+souce /home/user/bosco/bosco_setenv must be run each time you log in, or this may be placed in login scripts
+&lt;/pre&gt;
+%ENDTWISTY%
+
+
+---++ Validation of Success
+The best way to validate the success of a running Campus Factory is to submit a job to be executed.
+
+The test job, test.condor: &lt;pre class=&quot;file&quot;&gt;
+universe = vanilla
+output = out
+error = err
+executable = /bin/sleep
+arguments = 10
+log = logfile
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+queue 1
+&lt;/pre&gt;
+
+Submit the job: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% condor_submit test.condor
+&lt;/pre&gt;
+
+
+---++ Debugging
+The campus factory logs are located in the condor log directory.  Which is located at &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% condor_config_val LOG &lt;/pre&gt;
+
+The file name is =campus_factory.log=.
+
+
+---++ Multi-User BOSCO
+For multi-user BOSCO, special care must be given to enable multiple users to use the same bosco condor instance.
+
+First, you must install the BOSCO instance just as before in the above instructions.  Second, you install a system wide condor instance.  Only the BOSCO instance will run, but it will run as root.
+
+We will assume that BOSCO was installed as user =bosco= for the sake of this guide.
+
+   1. As the bosco user, stop bosco: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% bosco_stop &lt;/pre&gt;
+   1. As the bosco user, edit =$HOME/bosco/local.%RED%HOST%ENDCOLOR%/config/condor_config.factory=.  Modify the ENVIRONMENT to include bosco&#39;s home directory, and add the USERID line. &lt;pre class=&quot;file&quot;&gt;
+CAMPUSFACTORY_ENVIRONMENT = &quot;PYTHONPATH=$(LIBEXEC)/campus_factory/python-lib CAMPUSFACTORY_DIR=$(LIBEXEC)/campus_factory _campusfactory_GLIDEIN_DIRECTORY=$CAMPUSFACTORY_DIR/share/glidein_jobs %RED%HOME=/home/bosco%ENDCOLOR%&quot;
+%RED%CAMPUSFACTORY_USERID = bosco%ENDCOLOR%
+&lt;/pre&gt;
+   1. As root, change ownership of the password file and start the bosco instance of condor: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_ROOT% source ~bosco/bosco/bosco_setenv
+%UCL_PROMPT_ROOT% chown root: `condor_config_val SEC_PASSWORD_FILE`
+%UCL_PROMPT_ROOT% bosco_start&lt;/pre&gt;
+   1. As root, install Condor into a global directory.  For example, you may install the Condor RPM.  Do not start this instance of Condor.
+   1. Now, as any user, you may run the test job given in [[#Validation_of_Success][Validation of Success]]
+
+
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = DerekWeitzel
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|General|Trash/Trash/Integration|Monitoring|Operations|Security|Storage|Trash/Tier3|User|VO)
+   * Local DOC_AREA       = General
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (Developer|Documenter|Scientist|Student|SysAdmin|VOManager)
+   * Local DOC_ROLE       = Scientist
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (HowTo|Installation|Knowledge|Navigation|Planning|Training|Troubleshooting)
+   * Local DOC_TYPE       = HowTo
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %NO%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = DerekWeitzel
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %IN_PROGRESS%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = DerekWeitzel
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+############################################################################################################
+--&gt;

@@ -1,0 +1,278 @@
+%LINKCSS%
+---+!! %SPACEOUT{ &quot;Install !XRootD&quot; }%
+
+%TOC{depth=&quot;3&quot;}%
+
+---++ Install Instructions
+
+%INCLUDE{&quot;InstallVDTRepo&quot; headingoffset=&quot;1&quot;}%
+
+---+++ Installing !XRootD Server
+
+Install xrootd-server and dependent rpms:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+yum install --enablerepo=osg-development xrootd-server
+&lt;/pre&gt;
+
+---+++ Initial Setup for !XRootD Server
+
+   Run xrootd setup, which creates an appropriate directory for xrootd, creates user,group &quot;xrootd&quot; if needed and changes permissions appropriately.
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+$ service xrootd setup     
+&lt;/pre&gt;
+
+All xrootd related configuration files and directories are now belong to the user defined in ==/etc/sysconfig/xrootd== (default: user &quot;xrootd&quot;, group &quot;xrootd&quot;). All xrootd related daemons are owned by this user. These user and group are created  if they don&#39;t exist. If you want to change the user and the group modify ==/etc/sysconfig/xrootd==.  If you start daemons as one user and then decided to change a user you have to  modify ==/etc/sysconfig/xrootd== and rerun &quot;service xrootd setup&quot;.  %ICON{warning}% Note: there are still some files in ==/tmp== that should be deleted manually before daemon could start successfully. We are trying to resolve this issue with developers.
+
+---+++ Starting and Stopping !XRootD Server
+
+Start the xrootd server using the following command.
+&lt;pre class=&quot;rootscreen&quot;&gt;
+$ service xrootd start
+Starting xrootd (xrootd, default):                         %GREEN%[  OK  ]%ENDCOLOR%
+&lt;/pre&gt; 
+
+To stop xrootd server:
+&lt;pre class=&quot;rootscreen&quot;&gt;
+$ service xrootd stop
+&lt;/pre&gt;
+
+
+---+++ Initial Verification for !XRootD Server
+
+   In order to test that xrootd is working as a stand alone data server, start the server using the commands in the previous section.  You should be able now to copy files using xrdcp command in ==/tmp==. To test do:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+$ xrdcp /bin/sh root://localhost:1094//tmp/first_test
+[xrootd] Total 0.76 MB  |====================| 100.00 % [inf MB/s]
+$ ls -l /tmp/first_test 
+-rw-r--r-- 1 xrootd xrootd 801512 Apr 11 10:48 /tmp/first_test
+&lt;/pre&gt;
+
+  
+---++ Creating Xrootd Cluster
+   1. You  need at least two nodes in order to create a cluster. One node serves as a &quot;redirector&quot; node , the other is a data server. You should be able start two daemons on each node ==xrootd== and ==cmsd== after you finish with installation and configuration. 
+   1. Install rpms  on the second node (see steps 1-4 in the previous section).
+   1. Select redirector host (A) and data server host ( B). %ICON{warning}%host A,B  must be replaced with FQDN, ie output of &#39;hostname&#39;
+   1. You will be able to copy file in the /tmp area on the host B. By default cmsd daemon requires at least 11GB of free space for the storage area. Please check how much space you have available (df -h) and then put an appropriate modification in the =/etc/xrootd/xrootd-clustered.cfg=.
+   1. Modify  =/etc/xrootd/xrootd-clustered.cfg= on both nodes&lt;pre class=&quot;file&quot;&gt;
+all.export /tmp stage
+%RED%
+set xrdr = hostA
+all.manager $(xrdr):3121
+if $(xrdr)
+  all.role manager
+else
+  all.role server
+# add cms.space if you have less the 11GB
+# cms.space options http://xrootd.slac.stanford.edu/doc/dev/cms_config.htm
+  cms.space min 2g 5g
+fi
+#all.manager localhost 3121
+#all.role server
+%ENDCOLOR%
+&lt;/pre&gt;Changes in the configuration file are given in %RED%red%ENDCOLOR%. Replace %RED%hostA%ENDCOLOR% with FQAN of  redirector host
+   1. Start services:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ service xrood start
+Starting xrootd (xrootd, default):                         %GREEN%[  OK  ]%ENDCOLOR%
+$ service cmsd start
+Starting xrootd (cmsd, default):                          %GREEN% [  OK  ]%ENDCOLOR%
+&lt;/pre&gt;
+   1. Verify that you can copy file to /tmp on the server data via redirector:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ xrdcp /bin/sh  root://%RED%hostA%ENDCOLOR%:1094///tmp/second_test
+[xrootd] Total 0.76 MB  |====================| 100.00 % [inf MB/s]
+&lt;/pre&gt;Check that the ==/tmp/second_test== is located on data server host B.
+   1. Stop services:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ service cmsd stop
+Shutting down xrootd (cmsd, default):                     %GREEN% [  OK  ]%ENDCOLOR%
+$ service xrootd stop
+Shutting down xrootd (xrootd, default):                    %GREEN%[  OK  ]%ENDCOLOR%
+&lt;/pre&gt;
+
+---++ Adding Simple Server Inventory  to your cluster
+The Simple Server Inventory (SSI) provide means to have an inventory for each data server (See details in xrootd.org/doc/dev/cms_config.pdf).
+In order to configure it you will need to run a second instance of xrootd daemon as well !XrdCnsd process that should run on every data server. We will configure xrootd cluster that consists of two nodes.
+Host A is a redirector node that is running the following daemons:
+   1. xrootd redirector
+   1. cmsd 
+   1. xrootd - second instance that required for SSI
+
+Host B is a data server that is running the following daemons:
+   1. xrootd data server
+   1. cmsd
+   1. !XrdCnsd - started automatically by xrootd
+
+We will need to create a directory on the redirector node for Inventory files. 
+&lt;pre class=&quot;rootscreen&quot;&gt;
+$ mkdir -p /data/inventory
+$ chown xrootd.xrootd /data/inventory
+&lt;/pre&gt;
+
+On the data server (host B) let&#39;s create the storage cache that will be different from ==/tmp==.
+&lt;pre class=&quot;rootscreen&quot;&gt;
+$ mkdir -p  /local/xrootd
+$ chown xrootd.xrootd /local/xrootd
+&lt;/pre&gt;
+
+Now, we have to change ==/etc/sysconfig/xrootd== on  redirector node %RED%hostA%ENDCOLOR% to run multiple instances of xrootd. Second instance of xrood will be name &quot;cns&quot; and will be used for SSI&lt;pre class=&quot;file&quot;&gt;
+XROOTD_USER=xrootd
+XROOTD_GROUP=xrootd
+XROOTD_DEFAULT_OPTIONS=&quot;%RED%-k 7%ENDCOLOR% -l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg&quot;
+%RED%XROOTD_CNS_OPTIONS=&quot;-k 7 -l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg&quot;%ENDCOLOR%
+CMSD_DEFAULT_OPTIONS=&quot;%RED%-k 7%ENDCOLOR% -l /var/log/xrootd/cmsd.log -c /etc/xrootd/xrootd-clustered.cfg&quot;
+FRMD_DEFAULT_OPTIONS=&quot;%RED%-k 7%ENDCOLOR% -l /var/log/xrootd/frmd.log -c /etc/xrootd/xrootd-clustered.cfg&quot;
+%RED%XROOTD_INSTANCES=&quot;default cns&quot;%ENDCOLOR%
+CMSD_INSTANCES=&quot;default&quot;
+FRMD_INSTANCES=&quot;default&quot;
+&lt;/pre&gt;
+
+Now we have to modify ==/etc/xrootd/xrootd-clustered.cfg== on both nodes so it looks like this:&lt;pre class=&quot;file&quot;&gt;
+all.export /data/xrootdfs
+set xrdr=%RED%hostA%ENDCOLOR%
+all.manager $(xrdr):3121
+if $(xrdr) &amp;&amp; named cns
+      all.export /data/inventory
+      xrd.port 1095
+else if $(xrdr)
+      all.role manager
+      xrd.port 1094
+else
+      all.role server
+      oss.localroot /local/xrootd
+      ofs.notify closew create mkdir mv rm rmdir trunc | /usr/bin/XrdCnsd -d -D 2 -i 90 -b $(xrdr):1095:/data/inventory
+      #add cms.space if you have less the 11GB
+      # cms.space options http://xrootd.slac.stanford.edu/doc/dev/cms_config.htm
+      cms.space min 2g 5g
+fi
+&lt;/pre&gt;
+
+Now, we can start xrootd cluster executing the following commands. On redirector you will see:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ service xrootd start
+Starting xrootd (xrootd, default):                        %GREEN%[  OK  ]%ENDCOLOR%
+Starting xrootd (xrootd, cns):                             %GREEN%[  OK  ]%ENDCOLOR%
+$ service cmsd start
+Starting xrootd (cmsd, default):                          %GREEN%[  OK  ]%ENDCOLOR%
+&lt;/pre&gt;
+
+On redirector node you should see two instances of xrootd running:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ ps auxww|grep xrootd
+xrootd   29036  0.0  0.0  44008  3172 ?        Sl   Apr11   0:00 /usr/bin/xrootd -k 7 -l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg -b -s /var/run/xrootd/xrootd-default.pid -n default
+xrootd   29108  0.0  0.0  43868  3016 ?        Sl   Apr11   0:00 /usr/bin/xrootd -k 7 -l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg -b -s /var/run/xrootd/xrootd-cns.pid -n cns
+xrootd   29196  0.0  0.0  51420  3692 ?        Sl   Apr11   0:00 /usr/bin/cmsd -k 7 -l /var/log/xrootd/cmsd.log -c /etc/xrootd/xrootd-clustered.cfg -b -s /var/run/xrootd/cmsd-default.pid -n default
+&lt;/pre&gt;%ICON{warning}% the log file for second named instance of xrootd with be placed in /var/log/xrootd/cns/xrootd.log 
+
+On data server node you should that !XrdCnsd process has been started:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ ps auxww|grep xrootd
+xrootd   19156  0.0  0.0  48096  3256 ?        Sl   07:37   0:00 /usr/bin/cmsd -l /var/log/xrootd/cmsd.log -c /etc/xrootd/xrootd-clustered.cfg -b -s /var/run/xrootd/cmsd-default.pid -n default
+xrootd   19880  0.0  0.0  46124  2916 ?        Sl   08:33   0:00 /usr/bin/xrootd -l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg -b -s /var/run/xrootd/xrootd-default.pid -n default
+xrootd   19894  0.0  0.1  71164  6960 ?        Sl   08:33   0:00 /usr/bin/XrdCnsd -d -D 2 -i 90 -b fermicloud053.fnal.gov:1095:/data/inventory
+&lt;/pre&gt;
+---+++ Testing Xrootd Cluster with SSI
+   1. Copy file to redirecor node specifying storage path (/data/xrootdfs instead of /tmp): &lt;pre class=&quot;rootscreen&quot;&gt;
+$ xrdcp /bin/sh root://localhost:1094//data/xrootdfs/test1
+[xrootd] Total 0.00 MB  |====================| 100.00 % [inf MB/s]
+&lt;/pre&gt;
+   1. To verify that SSI is working execute cns_ssi command on the redirector node: &lt;pre class=&quot;rootscreen&quot;&gt;
+$ cns_ssi list /data/inventory
+fermicloud054.fnal.gov incomplete inventory as of Mon Apr 11 17:28:11 2011
+$ cns_ssi updt /data/inventory
+cns_ssi: fermicloud054.fnal.gov inventory with 1 directory and 1 file updated with 0 errors.
+$ cns_ssi list /data/inventory
+fermicloud054.fnal.gov complete inventory as of Tue Apr 12 07:38:29 2011
+/data/xrootdfs/test1
+&lt;/pre&gt;  _Note_: In this example fernilcould53.fnal.gov is a redirector node and fermicloud054.fnal.gov is a data server
+
+---++ Adding Simple (Unix) Security 
+In order to add simple security to your cluster you will need to add &quot;auth_file&quot; on the your data server node. Create ==/etc/xrootd/auth_file== :&lt;pre class=&quot;file&quot;&gt;
+# This means that all the users have read access to the datasets
+u * %RED%/data/xrootdfs%ENDCOLOR% lr
+
+# This means that all the users have full access to their private dirs
+u = %RED%/data/xrootdfs/%ENDCOLOR%@=/ a
+
+# This means that this privileged user can do everything
+# You need at least one user like that, in order to create the
+# private dir for each user willing to store his data in the facility
+u xrootd %RED%/data/xrootdfs%ENDCOLOR% a
+&lt;/pre&gt; Here we assume that your storage path is &quot;/data/xrootdfs&quot; (same as in the previous example).
+
+Change file ownership (if you have created file as root):&lt;pre class=&quot;rootscreen&quot;&gt;
+ $ chown xrootd.xrootd /etc/xrootd/auth_file
+&lt;/pre&gt;
+
+The next step is to modify  ==/etc/xrootd/xrootd-clustered.cfg== on both nodes:&lt;pre class=&quot;file&quot;&gt;
+all.export /data/xrootdfs
+set xrdr=%RED%hostA%ENDCOLOR%
+all.manager $(xrdr):3121
+if $(xrdr) &amp;&amp; named cns
+      all.export /data/inventory
+      xrd.port 1095
+else if $(xrdr)
+      all.role manager
+      xrd.port 1094
+else
+      all.role server
+      oss.localroot /local/xrootd
+      ofs.notify closew create mkdir mv rm rmdir trunc | /usr/bin/XrdCnsd -d -D 2 -i 90 -b $(xrdr):1095:/data/inventory
+%RED% 
+     # ENABLE_SECURITY_BEGIN
+        xrootd.seclib /usr/lib64/libXrdSec.so
+        # this specify that we use the &#39;unix&#39; authentication module, additional one can be specified.
+        sec.protocol /usr/lib64 unix
+        # this is the authorization file
+        acc.authdb /etc/xrootd/auth_file
+        ofs.authorize
+        # ENABLE_SECURITY_END
+%ENDCOLOR%
+fi
+%ENDCOLOR%
+&lt;/pre&gt; _Note_: change %RED%*.fnal.gov%ENDCOLOR% with appropriate domain name.
+
+After making all the changes, please, resart xrootd and cmsd daemons on all nodes.
+
+---+++ Testing Xrootd Cluster with simple security enabled
+   1. Login on redirector node as root
+   1. Check that user &quot;root&quot; still can read files: &lt;pre class=&quot;rootscreen&quot;&gt;  
+$ xrdcp  root://localhost:1094//data/xrootdfs/test1 /tmp/b
+[xrootd] Total 0.00 MB  |====================| 100.00 % [inf MB/s]
+&lt;/pre&gt;
+   1. Check that user &quot;root&quot; can not write files under /data/xrootdfs:&lt;pre class=&quot;rootscreen&quot;&gt; 
+$  xrdcp /tmp/b root://localhost:1094//data/xrootdfs/test2
+Last server error 3010 (&#39;Unable to create /data/xrootdfs/test2; Permission denied&#39;)
+Error accessing path/file for root://localhost:1094//data/xrootdfs/test3
+&lt;/pre&gt;
+   1. Check that user can copy/retrieve files to/from /data/xrootdfs/~/...&lt;pre class=&quot;rootscreen&quot;&gt;
+$ su - %RED%user%ENDCOLOR%
+-bash-3.2$   xrdcp  /tmp/a  root://localhost:1094//data/xrootdfs/%RED%user%ENDCOLOR%/test1
+[xrootd] Total 0.00 MB  |====================| 100.00 % [inf MB/s]
+-bash-3.2$  xrdcp    root://localhost:1094//data/xrootdfs/%RED%user%ENDCOLOR%/test1 /tmp/c
+[xrootd] Total 0.00 MB  |====================| 100.00 % [inf MB/s]
+&lt;/pre&gt;
+
+---++ Adding File Residency Manager (FRM) to Xrootd Cluster
+The FRM deals with two major mechanisms:
+   * local disk
+   * remote servers
+
+The description of fully functional multiple xrootd clusters is beyond the scope of this document. In order to have this fully functional system you will need a global redirector and at least one remote xrootd cluster from where files could be moved to the local cluster. 
+
+Below are the modifications you should make in order to enabled FRM on your local cluster:
+   1. Make sure that FRM is enabled in  ==/etc/sysconfig/xrootd== on your data sever:&lt;pre class=&quot;file&quot;&gt;
+ROOTD_USER=xrootd
+XROOTD_GROUP=xrootd
+XROOTD_DEFAULT_OPTIONS=&quot;-l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg&quot;
+CMSD_DEFAULT_OPTIONS=&quot;-l /var/log/xrootd/cmsd.log -c /etc/xrootd/xrootd-clustered.cfg&quot;
+FRMD_DEFAULT_OPTIONS=&quot;-l /var/log/xrootd/frmd.log -c /etc/xrootd/xrootd-clustered.cfg&quot;
+XROOTD_INSTANCES=&quot;default&quot;
+CMSD_INSTANCES=&quot;default&quot;
+FRMD_INSTANCES=&quot;default&quot;
+&lt;/pre&gt;
+   1. Modify ==/etc/xrootd/xrootd-clustered.cfg== on both nodes to specify options for frm_xfrd (File Transfer Daemon)  and frm_purged (File Purging Daemon)
+   1. Start frm daemons on data server: &lt;pre class=&quot;rootscreen&quot;&gt;
+$ service frm_xfrd start
+$ service frm_purged start
+&lt;/pre&gt;
+&lt;/pre&gt;  %ICON{warning}% Both daemons will use  /var/log/xrootd/frmd.log for logging.
+
+-- Main.DouglasStrain - 01 Sep 2011

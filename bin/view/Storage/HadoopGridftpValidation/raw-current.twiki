@@ -1,0 +1,43 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+
+%RED%
+WARNING! This page is for an older version of Hadoop.
+For newer versions, please visit [[Documentation/Release3.InstallHadoopSE][Hadoop Release 3 Installation]]
+%ENDCOLOR%
+
+%TOC%
+---++ Testing a gridftp endpoint
+Testing a gridftp endpoint is fairly straight forward.  You&#39;ll need to know the SE path endpoint on the hadoop door and you&#39;ll have to have a valid gridcert that is permitted to move files in and out of your site.
+   * generate a proxy certificate (grid-proxy-init)
+   * attempt to pull from your gridftp door.  The command will look something like:
+  &lt;verbatim&gt;
+globus-url-copy gsiftp://&lt;server&gt;:port/path/to/test/file file:////tmp/testfile.out
+&lt;/verbatim&gt;
+the port is most likely 2811.
+   * attempt to push a file to your gridftp door.  The command will look something like:
+&lt;verbatim&gt;
+globus-url-copy  file:////tmp/testfile.out gsiftp://&lt;server&gt;:port/path/to/test/file
+&lt;/verbatim&gt;
+
+---++ Monitoring the gridftp endpoint with RSV.
+You should try and monitor standalone gridftp doors via RSV.
+&lt;verbatim&gt;
+ ./configure_osg_rsv --user rsvuser --init  --gridftp-uri gridftp.domain.name --gridftp-probes --gratia --grid-type &quot;OSG&quot; --consumers --verbose --setup-for-apache --proxy /tmp/x509up_u&lt;uid&gt;
+&lt;/verbatim&gt;
+
+---++ Monitoring the gridftp endpoint with Nagios
+The gridftp endpoints can be monitored with the standard check_tcp plugin for Nagios.  This won&#39;t tell you if your gridftp server is functioning correctly like the RSV test would, but it will serve as a simple ping test to verify that the gridftp service is alive.  An incomplete nagios configuration for such a check would look like:
+
+&lt;verbatim&gt;
+define command{
+        command_name    check_gridftp
+        command_line    $USER1$/check_tcp -H $HOSTADDRESS$ -t 30 -p $ARG1$ -e &quot;GridFTP Server 2.8&quot;
+}
+
+define service{
+        use                             your-service-template
+        host_name                       gridftp01.ultralight.org,gridftp02.ultralight.org
+        service_description             GRIDFTP
+        check_command                   check_gridftp!2811
+}
+&lt;/verbatim&gt;

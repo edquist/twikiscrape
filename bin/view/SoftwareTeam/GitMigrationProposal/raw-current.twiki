@@ -1,0 +1,159 @@
+*Note: this document is outdated and has been superseded by [[SoftwareTeam.GitHubMigrationProposal]]*
+
+---+ Switching Software Area (/software) to Git
+
+---++ Objectives
+
+   * The OSG (or CHTC) must own and fully manage the operations of the authoritative Git repositories
+   * We must have dependable backups of the repositories
+   * There should be public mirrors of our repositories (on !GitHub) that are kept up to date
+   * Anyone should be able to read the repositories or their public copies (e.g., !GitHub), including histories
+   * Anyone should be able to submit a contribution
+   * The OSG Technology team must have sole write privileges on the authoritative repositories
+   * Team members must be able to easily review and approve submitted contributions
+   * The workflows for both contributors and team members must be clearly documented.\
+     Common use cases should be efficient and easy to learn
+   * The migration process must preserve existing data, should interrupt work little, and should be reversible
+
+---++ Architecture
+
+---+++ Location of/Access to the Authoritative Repos
+
+The authoritative repos will be on the UW&#39;s AFS. We&#39;ll use the UW CSL&#39;s kerberos authentication.
+External team members will clone their repos over SSH to some machine they have access to (e.g. =library=).
+This was the chosen architecture.
+
+*Advantages*
+   * No additional auths to set up -- all team members already have all the privileges they would need to use this
+   * Volumes will be backed up as-is (though care must be taken to ensure consistency)
+   * Not dependent on a single machine (any machine with AFS access is good)
+   * Precedent: HTCondor team does this
+
+*Disadvantages*
+   * Need to ensure backup/mirroring cronjobs have AFS tokens
+   * Management divided between OSG Software and CSL
+
+---+++ Public (!GitHub) Mirror
+In order to facilitate contributions from external collaborators, we will
+create one !GitHub repo for each authoritative repo. The !GitHub repos will be
+owned by the &quot;opensciencegrid&quot; organization. Team members will need to have
+!GitHub accounts and be members of the organization in order to approve
+contributions.
+
+We will have a dedicated !GitHub account for doing automated pushes to !GitHub.
+We&#39;ll have a cron job that mirrors periodically, as well as a &quot;post-receive&quot;
+hook for each repo that does a push to !GitHub after every push it receives.
+
+---+++ Backups
+
+Regardless of the other parts of the architecture, a rolling backup system like
+what we do for the SVN repos would be a good idea.
+
+Here&#39;s a simple outline. For each repository:
+   1. Lock the repo (probably via an &quot;update&quot; hook that does exit 1)
+   1. Wait for git-receive-pack processes to exit
+   1. Rsync to copy the repo (preferably to AFS)
+   1. Unlock the repo (remove the hook)
+   1. Delete the oldest backups until we have &amp;lt;=10
+
+---++ Contributions
+
+External collaborators can fork or clone our !GitHub mirror and send pull
+requests. A team member can examine the pull request, download it as a patch,
+then apply it to their own repo, and push the commit(s) to the real repos.
+
+Shouldn&#39;t take too long -- !GitHub provides copy-and-paste instructions, though
+they will have to be slightly modified since they are providing instructions on
+how to apply the change to the !GitHub repo, not your own.
+
+---++ Migration
+
+---+++ One-time Setup
+
+   1. Set up a git server
+   1. Create an authors file to map SVN user names to email addresses for Git (there is one at &quot;/p/condor/workspaces/vdt/svn-access/authors.txt&quot;)
+   1. Create a backup cronjob that reads a list of repositories to back up; should be run by cndrutil user if we care about AFS
+   1. Create a !GitHub user that will be used for auto uploads; create a passwordless ssh key for it and store it somewhere safe; also store the !GitHub password for the user somewhere safe
+   1. Create a mirror cronjob that reads a list of repositories and mirrors them all to github using the user from the previous step
+   1. Create or obtain replacement for our SVN post-commit email hook.\
+      [[http://git.kernel.org/cgit/git/git.git/tree/contrib/hooks/multimail/git_multimail.py?id=HEAD][Git-Multimail]], which was made by the Git developers, should be fine for this.
+
+---+++ Per-project Migration
+
+   1. Schedule a switchover date with the owner
+   1. Use subgit import to convert the repository (it&#39;s a lot nicer than git-svn)
+   1. Add info about the repo to the gitolite config file (if using gitolite)
+   1. Set up git hooks (copy them from another converted repository, or we may have a template)
+   1. Update the backup cronjob
+   1. Test the repo
+      1. Test viewing via web interface
+      1. Test making changes (you should test this, and then the owner should as well)
+         1. Clone the repo
+         1. Make a branch
+         1. Make a change, commit it to the branch
+         1. Push the branch
+      1. View the logs for the git repo, make sure they match the logs of the SVN repo
+      1. If anything fails, either debug, _carefully recording all steps_ or just nuke the git repo and try again
+   1. Make a file in the trunk of the SVN dir called =MOVED-TO-GIT= that contains the following text:&lt;pre&gt;
+The source code for this project is now contained in a Git repository located at:
+&lt;b&gt;repo url&lt;/b&gt;
+Changes committed to SVN will be ignored.&lt;/pre&gt;
+   1. svn lock the project in SVN
+
+---+++ Per-Project Mirroring to !GitHub
+
+   1. Create an opensciencegrid/&lt;em&gt;PROJECT&lt;/em&gt; github repo
+   1. In the local (authoritative) git repo, do &lt;code&gt;git remote add --mirror github git@github.com:opensciencegrid/&lt;em&gt;PROJECT&lt;/em&gt;.git&lt;/code&gt;
+   1. Add the repo to the list of repositories managed by the mirror cronjob
+   1. Add a &quot;post-receive&quot; hook to the local repo to push to github -- might be as simple as &lt;pre&gt;
+exec git push --quiet github &amp;
+&lt;/pre&gt;
+
+---+++ Notes
+
+We will not have information on full project renames (since each project dir will become a separate repo).
+
+We need to keep the old SVN repo around to get the full history.
+(The old repo will be locked to prevent further commits).
+
+We may wish to omit dead projects or old names of renamed projects (vdt-build for example).
+
+---+++ Alternate Architecture Options
+These were the proposed alternatives to having the Git repos hosted on
+the UW&#39;s AFS.
+
+---++++ CHTC-controlled Git server (git.chtc.wisc.edu)
+Server managed by the CHTC infrastructure team in Madison.
+Access via Gitolite. All team members will clone their repos over SSH to the
+Git server using an SSH public/private key pair.
+
+*Advantages*
+   * Git server is already set up, just need to add new repositories and public keys
+   * Web interface also already set up
+   * Precedent: CHTC infrastructure team does this
+
+*Disadvantages*
+   * OSG Software team has no login access to that machine
+   * Dependent on a single machine
+   * CHTC infrastructure team already overloaded
+
+---++++ OSG Software-controlled Git server (perhaps on osghost.chtc.wisc.edu?)
+Access via Gitolite. Users will need to use public keys and SSH.
+
+*Advantages*
+   * Full control over software, users, cronjobs, daemons, backups, everything
+
+*Disadvantages*
+   * Full responsibility for software, users, cronjobs, daemons, backups, everything
+   * Dependent on a single machine
+   * Nothing set up
+
+
+---+ Switching RPM area (/native/redhat) to Git (on hold)
+Moved to SoftwareTeam.GitMigrationProposalArchive
+
+---+ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- vim:ft=twiki:tw=72
+--&gt;

@@ -1,0 +1,133 @@
+---+Github Based VO Package Update Procedure 
+
+---++ Purpose
+
+This document will explain the step-by-step procedures for creating and releasing the VO Package. 
+
+The VO-Package files can be found here.
+https://github.com/opensciencegrid/osg-vo-config
+
+An explanation of the VO-Package contents can be found at https://twiki.grid.iu.edu/bin/view/Operations/SupportWorkArea/VOPackagePurposeUpdates.
+
+The change log for previous releases can be found at: https://twiki.grid.iu.edu/bin/view/Operations/VOPackageReleases
+
+A few things to know before outlining the update procedure. Every morning the goc@opensciencegrid.org inbox receives an automated email that outlines any new Registration tickets that were created in the last 24 hours. These tickets are automatically assigned to Rob Quick, Elizabeth Prout, and Kyle Gross for their review. If the request is for a new VO then the, requests are reviewed by the OSG council and are either approved or denied. This document assumes that all necessary parties have reviewed and approved the Registration Request(s), allowing the update to commence. 
+
+__Adding new VOs will take an addition to each of these files.__ 
+
+---++ Introduction
+
+   This process begins when a ticket comes into the NOC from a person(s) requesting to start a VO or Remove a VO. Prior to making any changes to the VO-Package it is important to document the changes that are to be made. A member of the GOC will check if a page for the VO Package Releases has been created. If it has not been created then a new page will be created. Once the page has been created the GOC staff member will make note of the ticket number any changes that need to be made.
+
+---++ Updates and Changes to the vomses file
+
+   1 The VO wishing to join or be removed should provide us with their VOMS address but, if they don&#39;t provide this information, it can be obtained by visiting OIM&#39;s Virtual Organizations section, and selecting the VO you require and then capturing the line for the &lt;verbatim&gt;Membership Services (VOMS) URL&lt;/verbatim&gt;
+   2 Go to the VOMS page of the VO. Next go to the Configuration Info Tab. Then Capture the entry for &lt;verbatim&gt;VOMSES string for this vo:&lt;/verbatim&gt;
+
+---+++ Example
+   &lt;verbatim&gt;&quot;snoplus.snolab.ca&quot; &quot;voms.gridpp.ac.uk&quot; &quot;15503&quot; &quot;/C=UK/O=eScience/OU=Manchester/L=HEP/CN=voms.gridpp.ac.uk&quot; &quot;snoplus.snolab.ca&quot;&lt;/verbatim&gt;
+
+   3 Update the the change log for the new version at https://twiki.grid.iu.edu/bin/view/Operations/VOPackageReleases.
+   4 Go to the vomses file on github. https://github.com/opensciencegrid/osg-vo-config/blob/master/vomses
+   5 Add or modify the line in question. 
+   6 Commit on github.
+
+---++ Updates and Changes to the edg-mkgridmap.conf file
+
+A breakdown of the edg-mkgridmap file:
+
+_Please note that the #------------------- is necessary for this due to the script the software team uses as the file is parsed. So don&#39;t forget to include that as it appears in the rest of the file._
+
+&lt;verbatim&gt;
+#-------------------
+#USER-VO-MAP [username] [VO’s Short name] – [Incremental Number] – [VO Contact name and email] group  [voms address and user name ]
+&lt;/verbatim&gt;
+
+   1. If information is not provided in the ticket. Visit the VOMS Address listed in OIM under the VO tab.
+   2. Select the Configuration Information Tab
+   3. Select and copy the infomation contained in the section listed below: 
+     _“Example Mkgridmap configuration for this vo:”_  
+   4. Update the change log for the new version
+   5. Go to the edg-mkgridmap.conf file on github
+   6. Add or modify the line in question
+   7.	Commit the change on GitHub
+
+_If you are removing an entry in this file please copy what is to be removed and place that in the Change Log etc..._
+
+
+---+++Example Step 3:
+_Please note that on that page there is a period, “.” That will need to be removed once copied into the file._
+
+&lt;verbatim&gt;
+Example Mkgridmap configuration for this vo:
+group vomss://voms.fnal.gov:8443/voms/cdf .cdf 
+&lt;/verbatim&gt;
+
+---+++Example Step 6:
+&lt;verbatim&gt;
+	#USER-VO-MAP xenon.biggrid.nl XENON - 62 - Alfio Rizzo (ar3081@columbia.edu)
+group vomss://voms.grid.sara.nl:8443/voms/xenon.biggrid.nl xenon.biggrid.nl
+&lt;/verbatim&gt;
+
+---++ Updates and Changes to the gums.template
+
+1. Notification of change required arrives at GOC.
+
+2. Review change request and note information in Change Log.
+
+   a. https://twiki.grid.iu.edu/bin/view/Operations/VOPackageReleases
+
+3. Go to https://github.com/opensciencegrid/osg-vo-config/blob/master/gums.template Add or modify the line in question.
+
+4. Commit the change on GitHub.
+
+---+++Example gums.template entry:
+&lt;verbatim&gt;
+&lt;!-- 62 XENON --&gt;
+&lt;groupMapping name=&quot;xenon.biggrid.nl&quot; accountingVo=&quot;xenon.biggrid.nl&quot; accountingDesc=&quot;XENON&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot;
+    url=&quot;https://voms.grid.sara.nl:8443/voms/xenon.biggrid.nl/services/VOMSAdmin&quot;
+    persistenceFactory=&quot;mysql&quot; name=&quot;xenon.biggrid.nl&quot;
+    voGroup=&quot;/xenon.biggrid.nl&quot;
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot;
+    matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&quot;true&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot;
+    groupName=&quot;xenon.biggrid.nl&quot;/&gt;
+&lt;/groupMapping&gt; 
+&lt;/verbatim&gt;
+
+More information on gums.config can be found here https://www.racf.bnl.gov/Facility/GUMS/1.1/guide_config_gums.html 
+
+---++ Rebuild vomsdir from vomses and the Cross-check script.
+
+It has not become a standard that we rebuild the vomsdir for every vo-package release. This process can be ran independent from the vo-package build. Its purpose is to help identify changes that may have been made but, it does not serve as the authoritative source of this information. 
+
+&lt;verbatim&gt;./bin/osg-make-vomsdir --vomses vomses&lt;/verbatim&gt;
+
+---++++++ Note: Need Details on How to determine which DN is the correct DN if a discrepancy is found.
+ 
+The Cross-check script is used for checking the consistency between the vomses and vomsdir lsc files. If a mismatch is discovered, the correct DN must be determined and the incorrect DN updated accordingly. 
+
+&lt;verbatim&gt;./bin/vomses-crosscheck&lt;/verbatim&gt;
+
+---++ Verification Steps
+
+---+++ gums-generate-fqan-mapfile
+
+---++ Release Steps
+
+   * Create a Jira ticket. The contents of this Jira ticket are essentially the same as what can be found on the release notes.
+   * Assign the ticket to the software group.
+   * Verify there are no other GOC tickets pertaining to changes in the VO-Package.
+   * Verify all previous steps have been completed.
+   * Go to https://github.com/opensciencegrid/osg-vo-config/releases
+   * Select &quot;Draft a new release&quot;
+   * Enter the Tag version. The format should be &quot;release-(version#)&quot; example &quot;release-56&quot;
+   * The target field after the Tag version can be left as the default. 
+   * Enter a Release Title. This can be any title you wish. I followed the format &quot;Month YY VO-Package Release&quot; 
+   * In the Description field below a brief overview of changes that were made can be entered.
+   * Optionally, this can be saved as a draft and updated fully at a later date if need be.
+   * Leave &quot;This is a pre-release&quot; Checkbox unchecked.
+   * Click &quot;Publish release&quot;
+
+

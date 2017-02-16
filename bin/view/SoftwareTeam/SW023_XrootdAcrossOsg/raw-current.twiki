@@ -1,0 +1,153 @@
+---+ Project 23: !StashCache – Distributing User Data With !XRootD
+
+The goal of this project is to support all OSG users who have common input data files, with an initial goal of handling up to 1 TB datasets. Users will upload copies of their data to predefined entry points and will set up jobs to fetch data without having to understand implementation details. Internally, !XRootD will copy files from the entry points to OSG caches that are located at or near OSG sites where user jobs run.
+
+Standing meeting coordinates (Thursdays at 1pm CDT): 1-866-740-1260 / PIN 1556201
+
+---++ The Problem
+
+The two large LHC VOs, ATLAS and CMS, own storage at many OSG sites and use them as _storage elements_, or remotely accessible file systems. The storage element concept does not work for opportunistic VOs – without a mechanism for automated eviction, files stay in the storage element forever. Without access to site storage elements, opportunistic VOs cannot efficiently deliver files to individual jobs. The CMS and ATLAS systems for moving data between storage elements are robust and efficient, but have proven impossible for any other VO to operate.
+
+Users not affiliated with ATLAS and CMS have few remaining choices for distributing data files, especially as dataset size increases. Currently, most of these users rely on HTCondor file transfer from submit to execute host, using on-site HTTP caches, or OASIS. All three mechanisms effectively limit the size of data files to less than 1&amp;nbsp;GB. In 2014, over 30% of OSG cycles went to non-HEP users, and anecdotally at least OSG knows that some of those users have common input datasets that exceed the best-practice limits for available methods.
+
+The general problem is quite complex; we choose to focus on “common input data”. We assume the user is running at least 1,000 jobs (lasting 1 hour each) across a common input dataset of at least 1&amp;nbsp;GB.
+
+---++ Deliverables
+
+   * Publish an overview document for the OSG community with clear goals, problem statement, architecture, and guiding principles
+   * Deploy Origin Servers – for end users to upload input data files
+      * Provide integrated software so that a VO can easily install, configure, and manage an Origin Server
+      * Deploy the OSG Connect Origin Server for OSG Connect users
+   * Deploy data distribution system – internal to !StashCache, largely invisible to users
+      * Provide integrated software and default configuration so that a site can easily install, configure, and manage a Cache Server
+      * Deploy about 10 Cache Servers across OSG
+      * Improve Cache Server software and operational processes to support central OSG management (service status, monitoring, and remote log viewing)
+      * Deploy a central OSG Redirector at OSG GOC
+      * Deploy tools so central operations can monitor system usage and failures
+   * Deploy client tools – for end user jobs to access file data
+      * Update and deploy OSG pilot jobs to include new environment settings and a new HTCondor file-transfer plugin
+      * Deploy new client software to OASIS
+      * Eventually, deploy client software that can provide direct POSIX access to user files without full local download
+   * Publish documentation for end users, (Cache Server) site administrators, and GOC staff
+
+---++ Scope
+
+The goal of the project is limited by the following considerations:
+   * Support will be for *input* data files, not output files
+   * Support is intended for *common* data files that are used by many jobs
+   * Files are expected to be up to 1 TB in total size and relatively few in number per job (&amp;le; 10)
+   * Files will be stored temporarily in OSG and removed as needed to make room for new demand
+   * Once in the system, files are immutable – they will never grow or change
+   * VOs are responsible for keeping their section of the distributed filesystem organized and consistent
+
+---++ Risks
+
+An initial list of possible risks to project success:
+
+   * The technical design is not complete and may yet result in tasks that are more challenging and take longer than currently expected
+   * Some technical work must be done by other groups (e.g., HTCondor, AAA) who have their own priorities and schedules
+   * The plan calls for a new OSG service to run at the GOC (!XRootD redirector); the GOC has capacity but not infinitely so
+   * The GOC must also update an existing production service (an HTCondor collector) to accept ads from !XRootD caches
+
+---++ Links
+
+   * [[https://indico.cern.ch/event/330212/session/6/contribution/23/material/slides/0.pdf][Frank Würthwein’s proposal slides]] from [[https://indico.cern.ch/event/330212/other-view?view=standard][the !XRootD Workshop at UCSD]] (29 January 2015)
+   * [[https://indico.cern.ch/event/330212/session/6/contribution/31/material/slides/0.pdf][Anna Olson’s talk on UChicago’s StashCache]] from [[https://indico.cern.ch/event/330212/other-view?view=standard][the !XRootD Workshop at UCSD]] (29 January 2015)
+   * https://confluence.grid.iu.edu/display/STAS/Installing+an+XRootD+server+for+Stash+Cache
+
+---++ Milestones and Schedule
+
+&lt;!--
+   * Set PENDING =  &lt;span style=&quot;color: white; background-color: #AAA; padding-left: 1em; padding-right: 1em;&quot;&gt;Waiting&lt;/span&gt;
+   * Set ACTIVE = &lt;span style=&quot;color: white; background-color: #0A0; padding-left: 1em; padding-right: 1em;&quot;&gt;In&amp;nbsp;Progress&lt;/span&gt;
+   * Set BEHIND =   &lt;span style=&quot;color: white; background-color: #F60; padding-left: 1em; padding-right: 1em;&quot;&gt;Behind&lt;/span&gt;
+   * Set AT_RISK =  &lt;span style=&quot;color: white; background-color: #C00; padding-left: 1em; padding-right: 1em;&quot;&gt;At&amp;nbsp;Risk&lt;/span&gt;
+   * Set SKIPPED =  &lt;span style=&quot;color: white; background-color: #C00; padding-left: 1em; padding-right: 1em;&quot;&gt;Skipped&lt;/span&gt;
+   * Set COMPLETE = &lt;span style=&quot;color: white; background-color: #000; padding-left: 1em; padding-right: 1em;&quot;&gt;Done&lt;/span&gt;
+   * Set WBS1 = &lt;span style=&quot;font-size: 125%; font-weight: 900; color: #F60;&quot;&gt;
+   * Set WBS2 = &lt;span style=&quot;font-weight: bold;&quot;&gt;
+   * Set WBS = &lt;/span&gt;
+--&gt;
+
+---+++ Production implementation
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Milestone* | *State* | *Who* | *Est. Start* | *Est. Finish* | *Act. Finish* | *Notes* |
+| %WBS1%1. Testing%WBS% |||||||
+| %WBS1%1.1 NoVA%WBS% |||||||
+| 1.1.1 Run NoVA workflow successfully using end-to-end. |||||||
+| %WBS1%1.2 OSG User Support%WBS% |||||||
+| 1.2.1 Identify new contact within user support | ||||||
+| 1.2.2 Identify and port user workflow to StashCache | ||||||
+| %WBS1%2. Software%WBS% |||||||
+| 2.1 Updated RSV probe to test caches via central collector |||||||
+| 2.2 Ship updated Xrootd to fix known caching bugs |||||||
+| 2.3 Documentation for cache and origin servers |||||||
+| %WBS1%3. Technology%WBS% |||||||
+| %WBS1%3.1 StashCache Stratum-1.%WBS% |||||||
+| 3.1.1 Export HTTP via from caches and redirector (using xrootd daemon). |||||||
+| 3.1.2 Devise strategy for handling of special cache files. |||||||
+| 3.1.3 Test client package for StashCache Stratum-1. |||||||
+| 3.1.4 Investigate usage of new !CacheManager class for using xrootd protocol from client. |||||||
+| 3.1.5 Setup CVMFS Stratum-1 on StashCache. |||||||
+| 3.1.6 Measure performance of StashCache S-1. |||||||
+| 3.2 Explore overlap between !StashCache and UC-LHC |||||||
+| %WBS1%4. Deployment%WBS% |||||||
+| 4.1 Daily user-level tests of stashcp |||||||
+| 4.2 Daily user-level tests of LD_PRELOAD plugin |||||||
+| 4.3 Update the central collector to accept Xrootd ads |||||||
+| 4.4 Verify / validate RSV probes on central collector (run by GOC) |||||||
+| 4.6 Operational documentation for central redirector |||||||
+| 4.5 Write draft SLA |||||||
+| |||||||
+
+---+++ Beta implementation (aka working prototype) - OLD WBS TABLE
+
+The objective is to have an end-to-end implementation of all components, even if those components are still in testing or beta release form. Once in place, at least one brave user (FIFE?) will test the system and provide feedback on usefulness, functionality, etc.
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Milestone* | *State* | *Who* | *Est. Start* | *Est. Finish* | *Act. Finish* | *Notes* |
+| %WBS1%1. Project set-up%WBS% |||||||
+| 1.1. Complete the technical design and initial task list | %COMPLETE% | !TimC, !BrianB | — | 2015-02-27 | n/a* | *no specific end date |
+| 1.2. Write project description whitepaper | %ACTIVE% | !BrianB | — | 2015-02-27 | | |
+| |||||||
+| %WBS1%2. Software%WBS% |||||||
+| %WBS2%2.1. Software packaging for Origin Servers%WBS% |||||||
+| 2.1.1. Create OSG metapackage for installing an origin server ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1871][SW-1871]]) | %COMPLETE% | OSG Software (Mat) | | 2015-05-12 | 2015-05-12 | |
+| %WBS2%2.2. Software for central Collector and Cache Servers%WBS% |||||||
+| 2.2.1. Create a function to gather !XRootD stats into HTCondor !ClassAd ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1793][SW-1793]]) | %COMPLETE% | OSG Software (Robert) | | | 2015-07-14 | |
+| 2.2.2. Create a shim script to manage !XRootD server under condor_master ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1794][SW-1794]]) | %COMPLETE% | OSG Software (!BrianL) | | | 2015-06-09 | |
+| 2.2.3. Add capability to upload !XRootD !ClassAds to central Collector | %COMPLETE% | OSG Software (!BrianL) | | | 2015-06-09 | |
+| 2.2.4. Central Collector should accept all CEs ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1790][SW-1790]]) | %COMPLETE% | OSG Software (Mat) | | | 2015-07-14 | |
+| 2.2.5. Central Collector should accept !XRootD cache server ads ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1804][SW-1804]]) | %COMPLETE% | OSG Software (Mat) | | | 2015-07-14 | |
+| 2.2.6. Create RSV probe to monitor health of one !XRootD cache server ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1820][SW-1820]]) | %COMPLETE% | OSG Software (Carl) | | | 2015-07-14 | |
+| 2.2.7. Create RSV probe to monitor !XRootD caches at Collector ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1947][SW-1947]]) | %PENDING% | OSG Software (Carl) | | | | |
+| 2.2.8. Create OSG metapackage for installing a cache server ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1825][SW-1825]]) | %COMPLETE% | OSG Software (Mat) | | 2015-05-12 | 2015-05-12 | |
+| %WBS2%2.3. Software for Worker Nodes and Users%WBS% |||||||
+| 2.3.1. Modify stashcp to use chirp to insert file transfer metadata into job !ClassAd ([[https://jira.opensciencegrid.org/browse/OC-66][OC-66]]) | %COMPLETE% | OSG Connect (Anna/Lincoln) | | | | |
+| 2.3.2. Create HTCondor file-transfer plugin for =stash= URI type ([[https://jira.opensciencegrid.org/browse/OC-67][OC-67]]) | %COMPLETE% | OSG Connect (Anna) | | | | Add to gWMS scripts |
+| 2.3.3. Streamline the setup scripts that establish OSG runtime environment ([[https://jira.opensciencegrid.org/browse/OC-65][OC-65]]) | %COMPLETE% | OSG Connect (Lincoln) | | | | Coordinate with OSG-XD / Mats |
+| 2.3.4. Review code of preload library | | AAA | | | | |
+| 2.3.5. Prevent cache corruption issues | %COMPLETE% ? | AAA | | | | ([[https://github.com/xrootd/xrootd/pull/199][PR 199]], [[https://github.com/xrootd/xrootd/pull/200][PR 200]], [[https://github.com/xrootd/xrootd/pull/201][PR 201]]) |
+| |||||||
+| %WBS1%3. Deployment%WBS% |||||||
+| %WBS2%3.1. Deploy Origin Servers%WBS% |||||||
+| 3.1.1. Deploy Origin Server for OSG Connect | %COMPLETE% | Lincoln | | | | |
+| 3.1.2. Deploy Origin Server for Intensity Frontier | | | | | | not for pilot stage 1 (AHM) |
+| 3.1.3. Deploy Origin Server for OSG-XD | | | | | | not for pilot stage 1 (AHM) |
+| 3.1.4. Deploy Origin Server for GLOW | | | | | | not for pilot stage 1 (AHM) |
+| %WBS2%3.2. Deploy ITB-grade !XRootD Redirector service at GOC%WBS% | %COMPLETE% | OSG Ops and Marian | | | | |
+| %WBS2%3.3. Deploy Cache Servers%WBS% | %ACTIVE% | | | | | in progress till all cache servers deployment is complete|
+| 3.3.1. Recruit more sites to host Cache Servers (BNL, UW, SLAC) | | Frank? | | | | |
+| 3.3.2. Deploy Cache Server at UChicago | %COMPLETE% | Lincoln | | | | |
+| 3.3.3. Deploy Cache Server at UCSD | %COMPLETE% | [[mailto:t2support@physics.ucsd.edu][UCSD T2 Support]] | | | | |
+| 3.3.4. Deploy Cache Server at GOC | ? | | | | | Deferred |
+| 3.3.5. Deploy Cache Server at Boston | ? | | | | | Status unknown |
+| 3.3.6. Deploy Cache Server at UNL | %COMPLETE% | Garhan Attebury | | | | |
+| 3.3.7. Deploy Cache Server at BNL | %COMPLETE% | Hiro Ito | | | | |
+| 3.3.8. Deploy Cache Server at UIUC | %COMPLETE% | Dave Lesny | | | | |
+
+---++ Project Details
+
+See the [[SW023_StashCacheDetails][details page]] for details, mostly of interest to developers.
+

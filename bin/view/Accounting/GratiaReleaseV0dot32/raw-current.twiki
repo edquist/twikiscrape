@@ -1,0 +1,588 @@
+&lt;!--
+These are general in nature and should be changed in the this template if the location changes:
+   * Set CURRENT_TOMCAT = ==gratia09==
+   * Set CURRENT_MYSQL = __gratia06__
+   * Set NEW_TOMCAT = ==gratia07==
+   * Set NEW_MYSQL = __ gratia07__
+   * Set TOMCAT_ALIAS = ==gratia.opensciencegrid.org==
+   * Set MYSQL_ALIAS = ==gratia-db01.fnal.gov==
+   * Set RELEASE_TAR_REPOSITORY = /afs/fnal.gov/files/expwww/gratia/html/Files
+
+These are specific to a release and require changing:
+   * Set RELEASE_DATE = 2/1/2008
+   * Set CURRENT_RELEASE = v0.32
+   * Set RELEASE_TAG = v0-32
+   * Set NEXT_DEVEL_VERSION = v0.33
+   * Set BUILD_DIRECTORY = /home/weigand/cdcvs/gratia-%CURRENT_RELEASE%
+--&gt;
+
+
+---+!! Gratia Release %CURRENT_RELEASE% (%RELEASE_DATE%)%BR% 
+
+
+%TOC%
+
+%STARTINCLUDE%
+---+ Overview
+This release (%CURRENT_RELEASE%) is a maintenance release.
+
+---++ Main New Features:
+   * Improve performance of startup and shutdown of servers.
+   * Improve performance of reports.
+   * Improve UI and html compliance.
+   
+---++ Additional Features:
+   * Fix parsing bug in PBS and LSF probes that lead to upload of badly corrupted record and the omission of existing record.
+   * Fix condor version detection in jobmanager patches.
+   * Update to DCache (file transfer) probe
+   * Added sparkline report.
+
+---++ Technical changes affecting some of the listed features
+   * Modified stored procedures and other queries to no longer use the &lt;nop&gt;MySql _Date_ function on date _where_  clause comparisons for _timestamp_ data types.  A simple &lt;i&gt;EndTime &amp;gt; &#39;2008-01-02 00:00:00&#39;&lt;/i&gt; comparison is more efficient. 
+   * Queries using the _VOProbeSummary_ view have been changed to use the _VOProbeSummaryData_ summary table. When the view was used a full join of all the tables involved was performed before any of the selection criteria was applied.  If the joins are performed explicitly in the query, the selection criteria (generally _EndTime_) can be applied before the tables are joined.  This makes the query more complex, but improves performance considerably.
+   * On tomcat shutdown, the _collector update_ services had to be manually performed before actually stopping the tomcat instance.  This service is now stopped in the initd script.  
+
+&lt;!--   -------------------------------------------- --&gt;
+---+ Anticipated downtime
+It is expected that this release will require the Gratia services and reporting to be unavailable beginning at:
+   * Start: %RELEASE_DATE%  17:00 CST
+   * Available: %RELEASE_DATE% 20:00 CST
+   * %GREEN%&lt;b&gt;Actual: Start - 2/1 17:56 CST  End -  2/2 10:00 CST (see the [[#Post_mortem][post-mortem section]] for the reasons for the overnight delay.&lt;/b&gt;%ENDCOLOR%
+
+The changes affecting downtime  for this release are:
+   1 Length of time to make a backup of the database to the backup area using =mysqlhotcopy=
+   1 Installation and validation on the 6 Gratia schemas
+
+
+&lt;!--   -------------------------------------------- --&gt;
+---+ Collectors and Databases Affected
+
+The following Gratia collectors and databases will be converted with this release:
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Schema*|*URL*|*Description*|&quot; format=&quot;| text, 20 | text, 20 | text, 35 | text, 15 | text, 7 | text, 12 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Schema*|*&lt;nop&gt;MySql port*|*Collector URL*|*Collector host*|*Size (bytes)*|*Size (rows)*|
+| fermi_itb | __gratia06__.fnal.gov:3320 | gratia-fermi.fnal.gov:8881 | gratia08.fnal.gov: |  1.3M |            1 |
+| fermi_osg | __gratia06__.fnal.gov:3320 | gratia-fermi.fnal.gov:8880 | gratia08.fnal.gov: |  9.2G |    4,830,618 |
+| gratia | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8880 | gratia09.fnal.gov |  62.0G  |   45,907,231 |
+| gratia_itb | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8881 | gratia09.fnal.gov 3.5 |  11.0G |    6,276,754 |
+| gratia_osg_integration | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8885 | gratia09.fnal.gov |  4.0G |    1,067,144 |
+| gratia_qcd  | __gratia06__.fnal.gov:3320 | gratia-fermi.fnal.gov:8883 | gratia08.fnal.gov: |  2.4G |      893,891 |
+
+%BR%
+The following Gratia collectors and databases will __NOT__  be converted with this release.  These repositories contained specialized reports that have not as yet been upgraded to the new Birt V2.2 software. __However__, they will be taken out-of-service while the other databases are being updated.%BR%
+
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Schema*|*URL*|*Description*|&quot; format=&quot;| text, 20 | text, 20 | text, 35 | text, 15 | text, 7 |  text, 12 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Schema*|*&lt;nop&gt;MySql port*|*Collector URL*|*Collector host*|*Size (bytes)*|*Size (rows)*|
+| gratia_psacct | __gratia06__.fnal.gov:3320 | gratia08.fnal.gov:8882 | gratia08.fnal.gov: |  8.4G |    5,158,567 |
+| gratia_osg_daily | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8884 | gratia09.fnal.gov |   .7G |       72,961      |
+
+
+
+&lt;!-- BUILD DISTRIBUTION -------------------- --&gt;
+---+ Build the %CURRENT_RELEASE% for distribution
+&lt;ol&gt;
+&lt;li&gt;Make sure your build area contains all _committed_ changes.
+&lt;ul&gt;&lt;li&gt;cvs update&lt;/li&gt;&lt;/ul&gt;
+&lt;/li&gt;
+
+&lt;li&gt;In _gratia/build-scripts/Makefile_ , change the _version_default_ to:
+&lt;ul&gt;&lt;li&gt;version_default = %NEXT_DEVEL_VERSION%&lt;/li&gt;
+       &lt;li&gt;commit the change&lt;/li&gt;
+&lt;/ul&gt;
+
+The reason for using a version number 1 more than the current release is so that all development that occurs after this release will have the odd numbered development release (%NEXT_DEVEL_VERSION%).
+
+The current release (%CURRENT_RELEASE%) __will__ get assigned  properly when the _cvs export_ is performed after the tagging occurs.
+&lt;/li&gt;
+
+&lt;li&gt;Tag the release:
+&lt;ul&gt;&lt;li&gt;cvs tag -R %RELEASE_TAG% gratia&lt;/li&gt;&lt;/ul&gt;
+       This tags everything that is in your build directory and presumably tested.
+&lt;/li&gt;
+
+&lt;li&gt; _Into a *new* area_, export the tagged release:
+&lt;ul&gt;&lt;li&gt;cvs export -d gratia-%CURRENT_RELEASE% -r %RELEASE_TAG% gratia&lt;/li&gt;&lt;/ul&gt;
+&lt;/li&gt;
+
+&lt;li&gt;Build it for the release (this insures that tar files are produced for VDT):
+&lt;ul&gt;&lt;li&gt;cd gratia-%CURRENT_RELEASE%/build-scripts&lt;/li&gt;
+&lt;li&gt;source setup-jdk15.sh&lt;/li&gt;
+&lt;li&gt;make release&lt;/li&gt;&lt;/ul&gt;
+&lt;/li&gt;
+
+&lt;li&gt;Copy the built tar files to the release area:
+&lt;ul&gt;&lt;li&gt;scp ../target/*_%CURRENT_RELEASE%.tar   flxi07.fnal.gov:%RELEASE_TAR_REPOSITORY%/&lt;/li&gt;&lt;/ul&gt; &lt;/li&gt;
+
+&lt;li&gt;Update the version number on the [[InstallationGuideVDT][services release TWiki page]]:&lt;/li&gt;
+&lt;ul&gt;&lt;li&gt;Edit and update the TWiki variable _&lt;nop&gt;ReleaseVersion_.&lt;/li&gt;&lt;/ul&gt;
+&lt;/ol&gt;
+
+%GREEN%&lt;b&gt;Started: 18:50 CST  Ended: 19:15 CST&lt;/b&gt;%ENDCOLOR%
+
+&lt;a name=&quot;build-changes&quot; /&gt;
+%BLUE%&lt;b&gt;
+Build modifications made after initial cutover:
+
+&lt;ol&gt;
+  &lt;li&gt;Changes to the Gratia source code made after the initial implementations:
+&lt;ul&gt;
+&lt;li&gt;gratia/common/configuration/update-gratia-local&lt;pre&gt;
+Modified because the gratia08 and gratia09 versions of 
+java do not have the jar command available forcing the 
+need for auto-deploy in tomcat.  I was trying to make 
+the VDT and local installs similar but this put that on hold.&lt;/pre&gt;
+
+&lt;li&gt;gratia/reporting/gratia-reporting/WebContent/staticReports/staticReports.py&lt;pre&gt;
+Resolved problems (too many leading spaces) in report 
+generation for all except the 2007 report.&lt;/pre&gt;
+
+&lt;li&gt;gratia/reporting/gratia-reports/WebContent/MenuConfig/StaticReports.xml&lt;pre&gt;
+Changed to remove the problem 2007 pdf report.&lt;/pre&gt;
+
+   &lt;/ul&gt;
+  &lt;li&gt;The 3 files where re-tagged  &lt;/li&gt;
+   &lt;li&gt;The export for v0.32 was redone.&lt;/li&gt;
+   &lt;li&gt;Gratia was re-made &lt;/li&gt;
+   &lt;li&gt;The release tar files re-copied to %RELEASE_TAR_REPOSITORY% &lt;/li&gt;
+&lt;/ol&gt;
+%ENDCOLOR%
+%GREEN%Done:4/6 10:00%ENDCOLOR%
+&lt;/b&gt;
+
+
+
+ 
+
+&lt;!-- ----------------- SHUTDOWN AND DATABASE BACKUP ------------- --&gt;
+---+ Shutdown and database backup.
+
+---++ On the tomcat/collector nodes
+&lt;ol&gt;
+&lt;li&gt; __comment__ out the __root__ user cron entry for the static reports:
+
+On __gratia08__ :
+&lt;pre class=&quot;screen&quot;&gt;
+42 0 * * * &#39;/data/tomcat-fermi_itb/gratia/staticReports.py&#39; &#39;/data/tomcat-fermi_itb&#39; &#39;http://gratia-fermi.fnal.gov:8881/gratia-reporting/&#39; 
+42 0 * * * &#39;/data/tomcat-qcd/gratia/staticReports.py&#39; &#39;/data/tomcat-qcd&#39; &#39;http://gratia-fermi.fnal.gov:8883/gratia-reporting/&#39; &gt;/dev/null 
+42 0 * * * &#39;/data/tomcat-fermi_osg/gratia/staticReports.py&#39; &#39;/data/tomcat-fermi_osg&#39; &#39;http://gratia-fermi.fnal.gov:8880/gratia-reporting/&#39; 
+&lt;/pre&gt;
+
+On __gratia09__ :
+&lt;pre class=&quot;screen&quot;&gt;
+42 0 * * * &#39;/data/tomcat-osg_integration/gratia/staticReports.py&#39; &#39;/data/tomcat-osg_integration&#39; &#39;http://gratia.opensciencegrid.org:8885/gratia-reporting/&#39; 
+42 0 * * * &#39;/data/tomcat-itb/gratia/staticReports.py&#39; &#39;/data/tomcat-itb&#39; &#39;http://gratia.opensciencegrid.org:8881/gratia-reporting/&#39; 
+42 0 * * * &#39;/data/tomcat-gratia/gratia/staticReports.py&#39; &#39;/data/tomcat-gratia&#39; &#39;http://gratia.opensciencegrid.org:8880/gratia-reporting/&#39; 
+&lt;/pre&gt;
+&lt;/li&gt;
+
+%GREEN%&lt;b&gt;Done: 17:59 CST&lt;/b&gt;%ENDCOLOR%
+
+    &lt;li&gt; Disable _init.d_ services  as __root__ user:
+
+On __gratia08__:
+   * chkconfig tomcat-ps off
+   * chkconfig tomcat-qcd   off
+   * chkconfig tomcat-fermi_osg off
+   * chkconfig tomcat-fermi_itb  off
+
+On __gratia09__ :
+   * chkconfig tomcat-gratia  off
+   * chkconfig tomcat-osg_daily   off
+   * chkconfig tomcat-osg_integration off
+   * chkconfig tomcat-itb    off
+
+%GREEN%&lt;b&gt;Done: 18:01 CST&lt;/b&gt;%ENDCOLOR%
+
+&lt;/li&gt;
+        
+
+     &lt;li&gt; __Stop__ the tomcat init.d service for __ALL__ Gratia collectors.
+
+The _update services_ threads will be stopped during the _initd_ shutdown process effective with v0.31.
+
+On __gratia08__:
+   * service tomcat-fermi_itb  stop
+   * service tomcat-fermi_osg stop
+   * service tomcat-ps  stop
+   * service tomcat-qcd stop
+
+On __gratia09__ :
+   * service tomcat-gratia  stop
+   * service tomcat-itb  stop
+   * service tomcat-osg_daily  stop
+   * service tomcat-osg_integration stop
+
+%GREEN%&lt;b&gt;Done: 18:10 CST&lt;/b&gt;%ENDCOLOR%
+
+&lt;/li&gt;
+
+&lt;li&gt;This is optional, but probably a good idea to save off the logs under each tomcat instance and empty the _log_ directory.  It will facilitate catching any errors that may occur (of course there won&#39;t be any, but a good idea anyway).
+&lt;b&gt;This can be performed while the database backups are being performed.&lt;/b&gt;
+
+On __gratia09__ :
+   * date=`date &#39;+&lt;nop&gt;%Y&lt;nop&gt;%m&lt;nop&gt;%d&#39;`
+   * cd /data/tomcat-osg_integration/logs
+   * tar zcf  /data/gratia_tomcat_logs_backups/tomcat-osg_integration.$date.tgz     * 
+   * rm -f *
+   * 
+   * cd     /data/tomcat-itb/logs/
+   * tar zcf /data/gratia_tomcat_logs_backups/tomcat-itb.$date.tgz   *
+   * rm -f *
+   * 
+   * cd  /data/tomcat-gratia/logs/
+   * tar zcf /data/gratia_tomcat_logs_backups/tomcat-gratia.$date.tgz  *
+   * rm -f *
+
+On __gratia08__ :
+   * date=`date &#39;+&lt;nop&gt;%Y&lt;nop&gt;%m&lt;nop&gt;%d&#39;`
+   * cd        /data/tomcat-fermi_itb/logs/
+   * tar zcf /data/gratia_tomcat_logs_backups/tomcat-fermi_itb.$date.tgz   *
+   * rm -f *
+   * 
+   * cd  /data/tomcat-qcd/logs/
+   * tar zcf /data/gratia_tomcat_logs_backups/tomcat-qcd.$date.tgz     *
+   * rm -f *
+   * 
+   * cd     /data/tomcat-fermi_osg/logs/
+   * tar zcf /data/gratia_tomcat_logs_backups/tomcat-fermi_osg.$date.tgz  *
+   * rm -f *
+
+%GREEN%&lt;b&gt;Done: 19:31 CST&lt;/b&gt;%ENDCOLOR%
+
+&lt;/li&gt;
+
+&lt;/ol&gt;
+
+---++ On the !MySql server node (  %CURRENT_MYSQL% )
+  &lt;ol type=&quot;1&quot;&gt;
+    &lt;li&gt; __comment__ out the cron entries for:
+
+__gratia__ user cron jobs.
+&lt;pre class=&quot;screen&quot;&gt;
+0 0 1-15 * *   dir=/home/gratia/interfaces/apel-lcg; cd $dir; ./lcg.sh --config=lcg.conf --date=previous --update
+30 01 * * *   dir=/home/gratia/interfaces/apel-lcg; cd $dir; ./lcg.sh --config=lcg.conf --date=current --update
+&lt;/pre&gt;
+%GREEN%&lt;b&gt;Done: 18:01 CST&lt;/b&gt;%ENDCOLOR%
+
+__root__ user cron entry.
+&lt;pre class=&quot;screen&quot;&gt;
+43 2 * * * /usr/local/bin/mysqlhotcopy_cron.sh &amp;gt; /var/log/mysqlhotcopy.out 2&amp;gt; &amp;1
+&lt;/pre&gt;
+%GREEN%&lt;b&gt;Done: 18:13 CST&lt;/b&gt;%ENDCOLOR%
+&lt;/li&gt;
+
+
+&lt;li&gt;On the !MySql server node ( %CURRENT_MYSQL% ):
+
+Take a back up the database instances (this will include all schema) using part of the _msqlhotcopy_cron_ script from the command line as _root_ user.
+%BR%Backup will only being done to  _/backup/mysqldb_ on %CURRENT_MYSQL% in order to reduce the downtime.
+   * PSWD=xxxx (root passwd)
+   * mysqlhotcopy -p $PSWD --addtodest fermi_itb /backup/mysqldb       
+   * mysqlhotcopy -p $PSWD --addtodest gratia_osg_daily /backup/mysqldb    
+   * mysqlhotcopy -p $PSWD --addtodest gratia_qcd /backup/mysqldb     
+   * mysqlhotcopy -p $PSWD --addtodest gratia_osg_integration /backup/mysqldb  
+   * mysqlhotcopy -p $PSWD --addtodest fermi_osg /backup/mysqldb   
+   * mysqlhotcopy -p $PSWD --addtodest gratia_psacct /backup/mysqldb   
+   * mysqlhotcopy -p $PSWD --addtodest gratia_itb /backup/mysqldb   
+   * mysqlhotcopy -p $PSWD --addtodest gratia /backup/mysqldb    
+  
+&lt;b&gt;Problem: mysqlhotcopy no longer exists in /usr/bin where it used to be.
+
+Temporary resolution: RPM for mysql server was removed on Jan 19 which had the hot copy script in it.  Chris restored it and we were able to resume the conversion. at 18:41 CST.  Problem is multiple mysql versions out there.&lt;/b&gt;
+
+Backup times:
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Schema*|*Duration - Last Release*|*Actual Duration*|&quot; format=&quot;| text, 20 | text, 20 | text, 20 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Schema*|*Duration - Last Release*|*Actual Duration*|
+| fermi_itb | 1 sec | 45 tables (142 files) in 0 seconds (0 seconds overall) |
+| gratia_osg_daily | 6 secs  | 38 tables (109 files) in 1 second (1 seconds overall)       |
+| gratia_qcd  | 64 secs | 45 tables (142 files) in 80 seconds (80 seconds overall)   |
+| gratia_osg_integration | 99 secs  | 46 tables (145 files) in 134 seconds (134 seconds overall)      |
+| fermi_osg | 132 secs | 45 tables (142 files) in 301 seconds (302 seconds overall) |
+| gratia_psacct | 179 secs  | 40 tables (115 files) in 269 seconds (269 seconds overall)     |
+| gratia_itb | 461 secs (8 min)  | 46 tables (143 files) in 338 seconds (338 seconds overall)   |
+| gratia | 2900 secs (48+ min)   | 47 tables (148 files) in 2358 seconds (2360 seconds overall) |
+
+%GREEN%&lt;b&gt;Started: 18:35 CST Done: 17:54 CST &lt;/b&gt;%ENDCOLOR%
+
+     &lt;/li&gt;
+
+
+
+&lt;/ol&gt;
+
+
+&lt;!-- ----------------- UPGRADE AND IMPLEMENTATION ------------- --&gt;
+---+ Upgrade and implementation
+The __upgrades should be single-threaded__ , that is, performed for each database schema one at a time.  
+
+We will perform these upgrades based on the size of the individual database schema, in ascending order.
+
+---++ On the tomcat/collector nodes
+&lt;ol&gt;
+  &lt;li&gt;Install the new software on a Gratia tomcat instance:
+%BR% pswd=xxx
+%BR% source=%BUILD_DIRECTORY%
+%BR% pgm=%BUILD_DIRECTORY%/common/configuration/update-gratia-local 
+%BR% On __gratia08:__
+   * $pgm  -d $pswd -S $source  fermi_itb
+   * $pgm  -d $pswd -S $source qcd
+   * $pgm  -d $pswd -S $source   fermi_osg
+%BR% On __gratia09:__
+   * $pgm  -d $pswd -S $source  osg_integration
+   * $pgm  -d $pswd -S $source  itb
+   * $pgm  -d $pswd -S $source   gratia
+
+&lt;/li&gt;
+
+
+&lt;li&gt;Start the gratia tomcat services:
+   * service &amp;lt;tomcat service&amp;gt; start
+   * When the tomcat service initializes, it will detect any schema changes have been effected and a conversion process will begin. 
+   * _tail_ the  _catalina.out_ log. When the conversion process completes the log will show the following message:%BR%
+       &quot;INFO: Server startup in _xxx_ms&quot;
+
+&lt;li&gt;Then, _start_ the Gratia _update_ services for the database schema just upgraded.%BR%
+   * In your browser, connect to the Gratia administrative services url for each of the databases.%BR%
+   * Select the _System / Administration_ menu option in the left menu%BR%
+   * Then scroll down to the _Starting/Stopping Database Update Services_ section and select the _Start Update Services_ link.
+   * As __each__ collector/tomcat host update service is started, monitor the tomcat logs files for any errors.
+   * Bring up the gratia _administration_ web interface and verify that the collectors are processing the data.
+   * Bring up the gratia _reporting_ web interface and verify that the reports look reasonable while still _tail&#39;ing_ the log files.
+
+&lt;li&gt;If all looks good, _stop_ the Gratia _update_ services for the database schema just upgraded.
+
+
+&lt;li&gt; Run the static reports cron as _root_ and verify these reports are generated:
+   * ./gratia-reports/reports-static/UsageByVOByDate-ranked.pdf
+   * ./gratia-reports/reports-static/UsageBySiteByDate-ranked.pdf
+   * ./gratia-reports/reports-static/WeeklyUsageByVO-ranked.pdf
+
+On __gratia08__ :
+&lt;pre class=&quot;screen&quot;&gt;
+42 0 * * * &#39;/data/tomcat-fermi_itb/gratia/staticReports.py&#39; &#39;/data/tomcat-fermi_itb&#39; &#39;http://gratia-fermi.fnal.gov:8881/gratia-reporting/&#39; 
+42 0 * * * &#39;/data/tomcat-qcd/gratia/staticReports.py&#39; &#39;/data/tomcat-qcd&#39; &#39;http://gratia-fermi.fnal.gov:8883/gratia-reporting/&#39; 
+42 0 * * * &#39;/data/tomcat-fermi_osg/gratia/staticReports.py&#39; &#39;/data/tomcat-fermi_osg&#39; &#39;http://gratia-fermi.fnal.gov:8880/gratia-reporting/&#39; 
+&lt;/pre&gt;
+
+On __gratia09__ :
+&lt;pre class=&quot;screen&quot;&gt;
+42 0 * * * &#39;/data/tomcat-osg_integration/gratia/staticReports.py&#39; &#39;/data/tomcat-osg_integration&#39; &#39;http://gratia.opensciencegrid.org:8885/gratia-reporting/&#39; 
+42 0 * * * &#39;/data/tomcat-itb/gratia/staticReports.py&#39; &#39;/data/tomcat-itb&#39; &#39;http://gratia.opensciencegrid.org:8881/gratia-reporting/&#39; 
+42 0 * * * &#39;/data/tomcat-gratia/gratia/staticReports.py&#39; &#39;/data/tomcat-gratia&#39; &#39;http://gratia.opensciencegrid.org:8880/gratia-reporting/&#39; 
+&lt;/pre&gt;
+&lt;/li&gt;
+
+&lt;li&gt;If satisifed, __stop__ the tomcat service for that tomcat database schema so you can proceed to the next one.
+   * service &amp;lt;tomcat service&amp;gt; stop
+&lt;/li&gt;
+&lt;/ol&gt;
+
+%GREEN%&lt;b&gt;
+gratia08:
+| fermi_itb | Done at 20:58  | problem with staticReports.py |
+| qcd        | Done at 21:04   | problem with staticReports.py |
+| fermi_osg | Done at 21:20   | problem with staticReports.py %BR%something called a HistoryReaper went nuts |
+&lt;/b&gt;%ENDCOLOR%
+
+%GREEN%&lt;b&gt;
+gratia09:
+| osg_integration    | Done at 21:27   | problem with staticReports.py %BR%something called a HistoryReaper went nuts |
+| itb         | Gave up at 21:54  | problem with staticReports.py %BR%something called a HistoryReaper went nuts |
+| gratia     | Started: 2/2 09:46 Ended: 2/2 09:54  | problem with staticReports.py %BR%sHistoryReaper did not run since it is a timed thing and all went very well. |
+&lt;/b&gt;%ENDCOLOR%
+
+
+&lt;!-- ----------------- ACTIVATING THE NEW RELEASE ------------- --&gt;
+---+ Activating the new release
+
+---++ On the tomcat/collector nodes
+  &lt;ol&gt;
+        &lt;li&gt; __start__ the tomcat service for the Gratia collectors.%BR%
+
+On __gratia08:__
+   * service tomcat-fermi_itb  start
+   * service tomcat-fermi_osg start
+   * service tomcat-ps start
+   * service tomcat-qcd start
+
+On __gratia09:__
+   * service tomcat-gratia start  
+   * service tomcat-itb start
+   * service tomcat-osg_daily start
+   * service tomcat-osg_integration start
+
+%GREEN%&lt;b&gt;Done: 2/2 10:00 CST&lt;/b&gt;%ENDCOLOR%
+&lt;/li&gt;
+
+
+
+   &lt;li&gt; As __each__ collector/tomcat host service is started, monitor the tomcat logs files for any errors.
+
+%GREEN%&lt;b&gt;Done: 2/2 10:00 CST&lt;/b&gt;%ENDCOLOR%
+
+&lt;/li&gt;
+
+   &lt;li&gt; Bring up the gratia administrative web interface and verify that the collectors are processing the data.%BR%
+     If they are not processing any data,  __verify__ the Gratia update services are active.
+&lt;ul&gt;&lt;li&gt;In your browser,  connect to the Gratia administrative services url for each of the databases.&lt;/li&gt;
+       &lt;li&gt;Select the _System / Administration_ menu option in the left menu&lt;/li&gt;
+       &lt;li&gt;Then scroll down to the _Starting/Stopping Database Update Services_ section and and view the status.&lt;/li&gt;
+&lt;/ul&gt;
+
+%GREEN%&lt;b&gt;Done: 2/2 10:00 CST&lt;/b&gt;%ENDCOLOR%
+
+      &lt;/li&gt;
+
+    &lt;li&gt; Enable _init.d_ services for all tomcats as __root__ user:
+
+On __gratia08:__
+   * chkconfig tomcat-ps on
+   * chkconfig tomcat-qcd   on
+   * chkconfig tomcat-fermi_osg on
+   * chkconfig tomcat-fermi_itb  on
+
+On __gratia09:__
+   * chkconfig tomcat-gratia  on
+   * chkconfig tomcat-osg_daily   on
+   * chkconfig tomcat-osg_integration on
+   * chkconfig tomcat-itb    on
+
+%GREEN%&lt;b&gt;Done: 2/2 10:00 CST&lt;/b&gt;%ENDCOLOR%
+&lt;/li&gt;
+
+   &lt;li&gt; __Uncomment/verify__   the __root__ user cron entry for the static reports:
+
+On __gratia08__ :
+&lt;pre class=&quot;screen&quot;&gt;
+42 0 * * * &#39;/data/tomcat-fermi_itb/gratia/staticReports.py&#39; &#39;/data/tomcat-fermi_itb&#39; &#39;http://gratia-fermi.fnal.gov:8881/gratia-reporting/&#39; 
+42 0 * * * &#39;/data/tomcat-qcd/gratia/staticReports.py&#39; &#39;/data/tomcat-qcd&#39; &#39;http://gratia-fermi.fnal.gov:8883/gratia-reporting/&#39; 
+42 0 * * * &#39;/data/tomcat-fermi_osg/gratia/staticReports.py&#39; &#39;/data/tomcat-fermi_osg&#39; &#39;http://gratia-fermi.fnal.gov:8880/gratia-reporting/&#39; 
+&lt;/pre&gt;
+%GREEN%&lt;b&gt;Done: 2/2 10:00 CST&lt;/b&gt;%ENDCOLOR%
+
+On __gratia09__ :
+&lt;pre class=&quot;screen&quot;&gt;
+42 0 * * * &#39;/data/tomcat-osg_integration/gratia/staticReports.py&#39; &#39;/data/tomcat-osg_integration&#39; &#39;http://gratia.opensciencegrid.org:8885/gratia-reporting/&#39; 
+42 0 * * * &#39;/data/tomcat-itb/gratia/staticReports.py&#39; &#39;/data/tomcat-itb&#39; &#39;http://gratia.opensciencegrid.org:8881/gratia-reporting/&#39; 
+42 0 * * * &#39;/data/tomcat-gratia/gratia/staticReports.py&#39; &#39;/data/tomcat-gratia&#39; &#39;http://gratia.opensciencegrid.org:8880/gratia-reporting/&#39; 
+&lt;/pre&gt;
+%GREEN%&lt;b&gt;Done: 2/2 10:00 CST&lt;/b&gt;%ENDCOLOR%
+&lt;/li&gt;
+&lt;/ol&gt;
+
+---++ On the !MySql server node ( %CURRENT_MYSQL% )
+&lt;ol&gt;
+&lt;li&gt; __Uncomment__   the __root__ user cron job(s) for gratia backups
+&lt;pre class=&quot;screen&quot;&gt;
+43 2 * * * /usr/local/bin/mysqlhotcopy_cron.sh &gt; /var/log/mysqlhotcopy.out 2&gt;&amp;1
+&lt;/pre&gt;
+%RED%&lt;b&gt;Not done.  Will do it on Monday 2/4&lt;/b&gt;%ENDCOLOR%
+%GREEN%&lt;b&gt;Done: 2/5 08:210&lt;/b&gt;%ENDCOLOR%
+&lt;/li&gt;
+&lt;li&gt; __Uncomment__  the __gratia__ user cron job(s).
+&lt;pre class=&quot;screen&quot;&gt;
+0 0 1-15 * *   dir=/home/gratia/interfaces/apel-lcg; cd $dir; ./lcg.sh --config=lcg.conf --date=previous --update
+30 01 * * *   dir=/home/gratia/interfaces/apel-lcg; cd $dir; ./lcg.sh --config=lcg.conf --date=current --update
+&lt;/pre&gt;
+%GREEN%&lt;b&gt;Done: 2/2 10:00 CST&lt;/b&gt;%ENDCOLOR%
+&lt;/li&gt;
+&lt;/ol&gt;
+
+
+
+&lt;!-- ----------------- POST MORTEM  ------------- --&gt;
+---+ Post-mortem
+At this time, this will appear to be random notes.  After the conversion, they may be organized.
+
+&lt;ol&gt;
+&lt;li&gt;On gratia06, the _mysqlhotcopy_ root cron process appears to not have been working for a while. The /usr/log/mysqlhotcopy.out file looks like this:
+&lt;pre&gt;
+/usr/local/bin/mysqlhotcopy_cron.sh: line 4: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 5: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 6: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 7: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 8: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 9: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 10: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 11: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 15: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 16: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 17: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 18: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 19: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 20: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 21: mysqlhotcopy: command not found
+/usr/local/bin/mysqlhotcopy_cron.sh: line 22: mysqlhotcopy: command not found
+&lt;/pre&gt;
+The /backup/mysqldb directory on gratia06 shows:
+&lt;pre&gt;
+drwxr-x---  2 gratia gratia  4096 Oct 30 03:26 fermi_itb
+drwxr-x---  2 gratia gratia  4096 Oct 30 03:26 fermi_osg
+drwxr-xr-x  4 gratia gratia  4096 Oct 30 03:15 gratia
+drwxr-x---  2 gratia gratia  4096 Jan 10 03:50 gratia_itb
+drwxr-x---  2 gratia gratia  4096 Sep 13 03:35 gratia_osg_daily
+drwxr-x---  2 gratia gratia  4096 Oct 27 04:08 gratia_osg_integration
+drwxr-x---  2 gratia gratia  4096 Aug 19 03:39 gratia_psacct
+drwxr-x---  2 gratia gratia  4096 Oct 30 03:23 gratia_qcd
+&lt;/pre&gt;
+&lt;b&gt;Temporary resolution:&lt;/b&gt; RPM for mysql server was removed on Jan 19 which had the hot copy script in it.  Chris restored it and we were able to resume the conversion. at 18:41 CST.  Problem is multiple mysql versions out there.
+
+&lt;li&gt;&lt;b&gt;crontab issue for staticReports.py:&lt;/b&gt;&lt;br&gt; It was adding new crontab entries for the staticReports even though I already had them commented out.  Baffling when I first saw it.
+   * if we don&#39;t adjust for this in the _configure-collector_ script, then the instructions need to
+      be modified to fix manually.  This will apply to all uses of _install_gratia_local_ .
+   * the VDT _configure_gratia_ script has to be changed, to create the cron service.  I do not believe this was done for v0.32.
+&lt;/li&gt;
+
+&lt;li&gt;&lt;b&gt;Cause of suspended installation&lt;/b&gt;&lt;br&gt;
+When I (Main.JohnWeigand) brought up the Gratia ITB installation, the admin and reports pages kept giving an &quot;Unable to connect&quot; error just as though the wrong url/port was specified.  I noticed the the log files however, that a &lt;nop&gt;HistoryReaper thread was running.  In turns out that the HistoryReaper is a new feature that is cleaning up and compressing the history and old directories in ./gratia/data.  At the time this occured, I was unaware of this new feature and decided something must be seriously wrong if I could not even render the admin or report menus.  
+
+Discussion with Phillipe after I (Main.JohnWeigand) got home and the fact that the ITB instance did come back up made me realize I just did not wait long enough. This &lt;nop&gt;HistoryReaper is set to go off on certain intervals and I must have  just got &quot;lucky&quot;.  The next morning when I upgraded the _gratia_ production instance, there &lt;nop&gt;HistoryReaper did not come up and the install worked in seconds.
+
+Another factor affecting the slow startup, on the ITB instance, was the number of nodes that replication was _on_ for.
+
+&lt;b&gt;Thoughts:&lt;/b&gt; There should be a means of turning all these threads off during a startup.  Something like a _chkconfig_ for the Gratia services.  
+   * Turning off the replication services before shutting down can be done manually and I just forgot.  It was not that big a factor on the v0.30 cut, but may have been on this one.
+&lt;/li&gt;
+
+&lt;li&gt;&lt;b&gt; _staticReports.py_ problems&lt;/b&gt;
+This was a failure on my (Main.JohnWeigand) part when testing this past week and should have been detected prior to cut.  Penelope corrected the problem on all but one report by Sunday morning and I installed them around 14:00 on 2/3.
+
+These are the errors encountered after the 14:00 updates:
+&lt;pre&gt;
+   * This is the only completely good one:
+        fermi_osg -  http://gratia-fermi.fnal.gov:8880/gratia-reporting/
+
+   * Problems in these with the  2007 Usage for All VOs. 
+      Fails in adobe with a &quot;File does not being with &#39;%PDF-&#39;.&quot; message
+        fermi_itb - http://gratia-fermi.fnal.gov:8881/gratia-reporting/
+        gratia_qcd - http://gratia-fermi.fnal.gov:8883/gratia-reporting/
+
+   * Problems in these with the  2007 Usage for All VOs. 
+      Fails in adobe with a &quot;The file is damaged and could not be repaired.&quot;  message
+         itb      - http://gratia.opensciencegrid.org:8881/gratia-reporting/
+         gratia - http://gratia.opensciencegrid.org:8880/gratia-reporting/
+         osg_integration - http://gratia.opensciencegrid.org:8885/gratia-reporting/ 
+&lt;/pre&gt;
+It is thought that this may be a _birt_ software issued and a bug ticket has been issued.
+&lt;/li&gt;
+
+&lt;li&gt;Post-installation code updates
+&lt;pre&gt;
+See this section for some &lt;a href=&quot;#build-changes&quot;&gt;post-installation code updates&lt;/a&gt; 
+that were required during the installations.
+&lt;/pre&gt;
+&lt;/li&gt;
+
+&lt;/ol&gt;
+
+
+%STOPINCLUDE%
+
+&lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+---++!! Major updates
+&lt;!--Future editors should add their signatures beneath yours!--&gt;
+-- Main.JohnWeigand - 24 Jan 2008%BR%
+-- Main.JohnWeigand - 04 Feb 2008 - completed documentation%BR%

@@ -1,0 +1,232 @@
+%LINKCSS%
+
+
+---+!! Using HTTP on the OSG
+%DOC_STATUS_TABLE%
+%TOC%
+%STARTINCLUDE%
+
+---++ Introduction
+
+HTTP is a relatively lightweight, fast, and extremely popular protocol.  It has excellent client tools, familiar to many Linux command-line users.
+
+One of the major concerns is the scalability of HTTP servers.  Many OSG sites use an HTTP proxy to cache commonly requested files on-site.  If you download a file once on all worker nodes, it may only be downloaded once from your web server to the site&#39;s cache, and then served from the site&#39;s cache after that.  Not every site provides this service; additionally, you should take care to verify that you are not requesting a large amount of data over HTTP.  Generally, one should stage in no more than 100MB per job using HTTP.
+
+
+
+---++ The OSG Job Environment
+
+If your site has an HTTP proxy for OSG users, the =$http_proxy= variable can be initialized with the following code
+
+&lt;pre class=&quot;screen&quot;&gt;
+source $OSG_GRID/setup.sh
+export OSG_SQUID_LOCATION=${OSG_SQUID_LOCATION:-UNAVAILABLE}
+if [ &quot;$OSG_SQUID_LOCATION&quot; != UNAVAILABLE ]; then
+  export http_proxy=$OSG_SQUID_LOCATION
+fi
+&lt;/pre&gt;
+
+After you source =$OSG_GRID=, if =$OSG_SQUID_LOCATION= is defined and not equal to =UNAVAILABLE=, then it points at a proxy you may use.
+
+Once =$http_proxy= is set, it will automatically be picked up by the HTTP clients that ship with the OSG.
+
+---++ OSG Client Tools
+
+Both =curl= and =wget= are common clients, and shipped with the OSG.  We recommend using =wget=; there is a [[http://en.wikipedia.org/wiki/Wget][decent Wikipedia reference for the tool]].  The syntax is simple:
+
+&lt;pre class=&quot;userinput&quot;&gt;
+wget &quot;&lt;i&gt;http://example.com/your/file.txt&lt;/i&gt;&quot;
+&lt;/pre&gt;
+
+Here, =wget= will download the data and write it to to disk.  
+
+An example with retries:
+&lt;pre class=&quot;userinput&quot;&gt;
+wget --retry-connrefused --waitretry=10 &quot;&lt;i&gt;http://example.com/your/file.txt&lt;/i&gt;&quot;
+&lt;/pre&gt;
+
+%NOTE% =curl= will not use squid caching by default.  You have to add the command line argument =-H &quot;Pragma:&quot;=
+
+
+---++ Examples
+
+---+++ Simple Example
+Putting the above together.  This example will get the environment variable, try downloading with squid, then fail over to direct connection.
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/sh
+website=http://google.com/
+
+source $OSG_GRID/setup.sh
+export OSG_SQUID_LOCATION=${OSG_SQUID_LOCATION:-UNAVAILABLE}
+if [ &quot;$OSG_SQUID_LOCATION&quot; != UNAVAILABLE ]; then
+  export http_proxy=$OSG_SQUID_LOCATION
+fi
+
+wget --retry-connrefused --waitretry=10 $website
+
+# Check if the download worked
+if [ $? -ne 0 ]
+then
+   unset http_proxy
+   wget --retry-connrefused --waitretry=10 $website
+   if [ $? -ne 0 ]
+   then
+      exit 1
+   fi
+fi
+&lt;/pre&gt;
+
+---+++ Secure example
+To better protect against security threats, you can checksum the files and verify after download.
+
+Suppose your input is saved locally as &quot;my_important_input&quot;.  Calculate the checksum, and copy the file to your web directory:
+&lt;pre class=&quot;screen&quot;&gt;
+[brian@osg-test4 tmp]$ sha1sum my_important_input
+606c302fb75ad67715820a6eeb860a08ed66f6ad  my_important_input
+[brian@osg-test4 tmp]$ cp my_important_input /var/www/html/
+[brian@osg-test4 tmp]$ 
+&lt;/pre&gt;
+
+Then, give your script the following arguments: &quot;606c302fb75ad67715820a6eeb860a08ed66f6ad&quot; &quot;http://osg-test4.unl.edu/my_important_input&quot;.  The following would download the file and calculate its checksum on the worker node:
+
+&lt;pre class=&quot;file&quot;&gt;
+source $OSG_GRID/setup.sh
+export OSG_SQUID_LOCATION=${OSG_SQUID_LOCATION:-UNAVAILABLE}
+if [ &quot;$OSG_SQUID_LOCATION&quot; != UNAVAILABLE ]; then
+  export http_proxy=$OSG_SQUID_LOCATION
+fi
+echo &quot;$1  my_important_input&quot; &gt; my_checksum.sha 
+url=$2
+wget --retry-connrefused --waitretry=10 &quot;&lt;i&gt;http://example.com/your/file.txt&lt;/i&gt;&quot;
+sha1sum -c my_checksum.sha || exit 1
+&lt;/pre&gt;
+
+
+---+++ Testing Squid
+
+It is often useful to test if the squid is working.  Below is an example script that VO&#39;s can use to test the functionality of squid.
+
+In this script, replace the website with a test URL at your institution.
+
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/sh 
+
+website=http://example.com/test.txt
+
+source $OSG_GRID/setup.sh
+export OSG_SQUID_LOCATION=${OSG_SQUID_LOCATION:-UNAVAILABLE}
+if [ &quot;$OSG_SQUID_LOCATION&quot; != UNAVAILABLE ]; then
+  export http_proxy=$OSG_SQUID_LOCATION
+fi
+
+wget $website 2&gt; /dev/null
+wget -S $website 2&gt; wget.err
+
+grep &quot;X-Cache: HIT&quot; wget.err
+
+if [ $? -ne 0 ]
+then
+   echo &quot;Cache not working at $OSG_HOSTNAME&quot;
+else
+   echo &quot;Cache working&quot;
+fi
+&lt;/pre&gt;
+
+%STOPINCLUDE%
+
+---++ Securing HTTP Usage
+
+Another major concern is security.  For maximum scalability, you will want your HTTP server to allow anyone to download files (in order to make caching work).  If this is not acceptable, we recommend either encrypting the file on the server or investigating the use of SRM-based downloads.  
+
+You will want to make sure your input files have not been tampered with; we will cover one mechanism for verifying HTTP downloads below.
+
+This section is oriented to an application developer; it offers broad guidelines, but no precise code.
+
+One mechanism to make sure your input has not been tampered with is to compare your downloaded input file with a known checksum.  If the two checksums match, then your file is considered secure.  To perform a checksum on a file, do:
+&lt;pre class=&quot;userinput&quot;&gt;
+sha1sum &lt;i&gt;filename&lt;/i&gt;
+&lt;/pre&gt;
+This will create output like the following:
+&lt;pre class=&quot;screen&quot;&gt;
+[brian@osg-test4 tmp]$ sha1sum my_important_input 
+606c302fb75ad67715820a6eeb860a08ed66f6ad  my_important_input
+&lt;/pre&gt;
+The number above that started with =606...= is the checksum.
+
+You will want to create a listing of all your files and checksums, and create a checksum of the listing yourself.  This way, all your jobs only need to know the checksum of the listing. Once they verify the listing checksum, then from their copy of the listing, the checksum of the downloaded input can be verifed.
+
+The recipe is as follows:
+   1 Pre-compute checksums for all your input files; record them in a single file named =input_checksums.txt=.  =input_checksums.txt= should have two columns; the first one is the checksum, the second is the file name.  If you have 1000 input files, you should have 1000 lines in =input_checksums.txt=.  Place the file on your web server.
+   1 Compute the checksum of =input_checksums.txt=.
+   1 Submit your jobs.  Each job should be given, as part of its arguments, the checksum of =input_checksums.txt=, and the names of its input files.
+   1 When the job starts up, each one should download =input_checksums.txt= and their input files.
+   1 Verify the job&#39;s downloaded copy of =input_checksums.txt= using the checksum given as the job&#39;s input.
+   1 Download the appropriate input files
+   1 Compute and compare the checksum of the input file for the job against the job&#39;s downloaded copy of =input_checksums.txt=.
+
+
+---++ Advanced Tools
+   * [[http://nd.edu/~ccl/software/parrot/][Parrot]] can make http access transparent to the application.  
+
+
+---++ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+   DEAR DOCUMENT OWNER
+   ===================
+
+   Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER          = DerekWeitzel
+
+   Please define the document area, choose one of the defined areas from the next line
+   DOC_AREA = (ComputeElement|Storage|VO|Security|EndUser|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = User
+
+   define the primary role the document serves, choose one of the defined roles from the next line
+   DOC_ROLE = (Scientist|Student|Developer|SysAdmin|VOManager|Documenter)
+   * Local DOC_ROLE       = Developer
+
+   Please define the document type, choose one of the defined types from the next line
+   DOC_TYPE = (User|Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = HowTo
+   
+   Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+   Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+   change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+   change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+   change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+   DEAR DOCUMENT REVIEWER
+   ======================
+
+   Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = AdamCaprez
+  
+   Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+   DEAR DOCUMENT TESTER
+   ====================
+
+   Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = AdamCaprez
+  
+   Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %YES%
+############################################################################################################
+--&gt;
+

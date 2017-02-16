@@ -1,0 +1,25 @@
+%TOC%
+
+---+!! LSST Image Simulation on OSG
+
+The project now consists of a phase I and a phase II. The Phase 1 of the project was successfully completed in Feb 2010, producing one full simulated image (189 chips). Documentation on the effort can be found later on this page. The Phase 2 is starting in Jun 2010 with the goal of simulating one entire night of data taking by LSST. Documentation for this effort can be found at the [[EngageLSSTPhase2][LSST simulation phase 2]] page.
+
+---+!! LSST Image Simulation on OSG Phase 1
+
+---++ Introduction.
+
+This !Twiki area is the knowledge repository for describing the infrastructure and operation of the LSST image simulation on the Open Science Grid. From here, you will be able to obtain details of the setup, how to build and distribute the LSST image simulation software, and how to run image simulations on OSG.
+
+This document is presented in several sections:
+
+   * A high-level [[#Architecture_Overview][architectural overview]] describing the system and its operation in broad-brush;
+   * A [[EngageLSSTUserGuide][user&#39;s guide]] to the current infrastructure describing how to submit and run an image simulation, including a guide to first-time setup and simple job monitoring and troubleshooting.
+   * An [[EngageLSSTInfrastructureGuide][reference for infrastructure maintainers]] describing the current implementation and how to compile and upload new software.
+
+---++ Architecture Overview.
+
+Leveraging the Open Science Grid for LSST image simulations is accomplished with the aid of the OSM Match-Maker OSGMM is an application for use in conjunction with a standard OSG client installation to handle submission of grid jobs with automatic match-making and execution across multiple sites. It is also capable of identifying which sites support the Virtual Organization and performing regular verification and maintenance tasks, such as attribute / feature discovery and software installation. 
+
+Utilities have been developed to build and package the LSST image simulation software for various architectures; to install the simulation software on a site; to submit the jobs to simulate an image; and a wrapper to find and execute the simulation on a remote node. Depending on the number and characteristics of the light sources within the purview of a particular CCD and the capabilities of the CPU, simulation of the image seen by that CCD can take between 90 minutes and about 6 hours. The resulting CFITSIO output file is compressed losslessly from 65MiB down to about 10MiB before being transferred back to the submission machine for unpacking and stitching together to produce the final composite image.
+
+-- Main.GabrieleGarzoglio - 04 Jun 2010

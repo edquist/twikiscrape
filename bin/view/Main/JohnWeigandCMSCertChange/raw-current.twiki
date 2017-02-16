@@ -1,0 +1,306 @@
+---+!!&lt;nop&gt;Notes on CMS Certificate Change
+
+&lt;!--
+
+   * Set VIEWTHISTOPIC = &lt;div class=&quot;twikiSmall&quot;&gt;&lt;a href=&quot;%TOPIC%&quot;&gt;View this section&lt;/a&gt;&lt;/div&gt; 
+ --&gt;
+
+%TOC%
+
+%STARTINCLUDE%
+
+---+ Background
+With the deprecation of the DOE CA, CMS users will be requesting new user certificates from the CERN CA.
+CMS pool accounts are used for the following proxy FQANs:
+   * /cms/Role=cmsuser
+   * /cms/uscms/Role=cmsuser
+   * /cms   (this also includes those using  grid proxies, if any)
+
+All other FQAN proxies are assigned group accounts and are not an issue at this time.
+
+In GUMS, used for initial authorizations, pool account users are assigned a unix pool account based on their DNs.
+If a user uses 2 certificate proxies, GUMS will assign a unique pool account to each.  This works fine unless the
+user uses storage. 
+
+The storage system uses unix account (not DN) for its authorization mechanism.  In order to access storage using
+either proxy (DN), a manual process is in place to re-map the second proxy DN to the same unix account as the 
+first proxy (DN).  
+
+This proposal is to automate that process.
+
+
+---+ Proposal
+The basic concept is to:
+   * retrieve a set of DNs from VOMS that for each &quot;user&quot;.
+   * bounce that against the GUMS MAPPING table to determine if a pool account has been assigned any DN%BR%
+
+
+---+ VOMRS client script
+---++ Notes from Tanya
+Install vomrs client from pacman%BR%
+For now you should be able to access vomrsdev.fnal.gov as you and do:
+
+Create your proxy and copy it in /tmp on vomrs dev..%BR%
+or 
+&lt;pre class=&quot;screen&quot;&gt;
+   export X509_USER_PROXY=your_proxy
+&lt;/pre&gt;
+Since this a pacman installed VOMRS and certificates are likely installed be RPM, you need to
+link the /opt/vomrs/globus/TRUSTED_CA to /etc/grid-security/certificates directory.
+
+
+  then  do%BR%
+      &gt; source /opt/vomrs/setup.sh%BR%
+      then %BR%
+      as a member you should be able to do:%BR%
+      /opt/vomrs/vomrs/client/bin/vomrs_soapclient lcg-voms.cern.ch 8443 vo/cms getMbrDNs%BR%
+
+The real simple way to do it  is to do the following:%BR%
+/opt/vomrs/vomrs/client/bin/vomrs_soapclient lcg-voms.cern.ch 8443 vo/cms getMembers%BR%
+      returns for each member primary cert:%BR%
+        DN%BR%
+        CA%BR%
+&lt;pre class=&quot;screen&quot;&gt;
+e.g:
+/opt/vomrs/vomrs/client/bin/vomrs_soapclient vomrsdev.fnal.gov 8443 vomrs/Test getMembers
+
+/DC=org/DC=doegrids/OU=Services/CN=vomrsdev.fnal.gov
+/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1
+/DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Tanya Levshina/CN=UID:tlevshin
+/DC=gov/DC=fnal/O=Fermilab/OU=Certificate Authorities/CN=Kerberized CA HSM
+/DC=org/DC=doegrids/OU=Services/CN=irods.fnal.gov
+/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1
+/DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Vasya Ivanov/CN=UID:ivanov
+/DC=gov/DC=fnal/O=Fermilab/OU=Certificate Authorities/CN=Kerberized CA HSM
+&lt;/pre&gt;
+
+then for each DN, CA do
+&lt;pre class=&quot;screen&quot;&gt;
+/opt/vomrs/vomrs/client/bin/vomrs_soapclient lcg-voms.cern.ch 8443 vo/cms getMbrDNs &quot;DN&quot;, &quot;CA&quot; 
+... this will returns all DN, CA for this member including the primary one ,eg:
+/opt/vomrs/vomrs/client/bin/vomrs_soapclient  lcg-voms.cern.ch  8443 vomrs/cms getMbrDNs &quot;/DC=org/DC=doegrids/OU=Services/CN=vomrsdev.fnal.gov&quot; &quot;/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1&quot;
+/DC=org/DC=doegrids/OU=Services/CN=vomrsdev.fnal.gov
+/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1
+/DC=org/DC=doegrids/OU=People/CN=Tanya Levshina 508821
+/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1
+&lt;/pre&gt;
+
+if you don&#39;t want to do it and get all the information at once and parse it later you can do :
+&lt;pre class=&quot;screen&quot;&gt;
+ /opt/vomrs/vomrs/client/bin/vomrs_soapclien 8443  lcg-voms.cern.ch  8443 vomrs/cms  getMembersInfo -1 % % % % % Member full Approved  %
+you will get back
+1st line: number of members in the list
+then for each member:
+DN
+CA
+Institution
+RepDN
+RepCA
+rights
+status
+status reason
+AUP version
+AUP exp
+Inst exp
+email
+email confirmation status
+vo roles
+groups &amp; roles
+Additional CERTs - DN1,CA1,DN2,CA@
+Personal Info
+&lt;/pre&gt;
+
+If member doesn&#39;t have additional certs it will be an empty line.
+&lt;pre class=&quot;screen&quot;&gt;
+e.g:
+4
+/DC=org/DC=doegrids/OU=People/CN=Tanya Levshina  123
+/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1
+Fermilab
+/DC=org/DC=doegrids/OU=People/CN=Tanya Levshina  123
+/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1
+full
+Approved
+Initial member registration
+v1.0
+2013-6-11
+2022-6-11
+tlevshin@fnal.gov
+Confirmed
+Member, Representative, SiteAdmin, VOAdmin
+[/Test/Role=Member STATUS:Approved REASON:Group has been assigned during registration TYPE:Active]
+/DC=org/DC=doegrids/OU=People/CN=Tanya Levshina 508821, /DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1, /DC=org/DC=doegrids/OU=Services/CN=vomrsdev.fnal.gov, /DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1
+Phone,123,First name,Tanya,Last name,Levshina
+&lt;/pre&gt;
+
+---+ Certificate Update Scenarios
+These scenarios are written with the use case where SRM is allowed to automatically create the user directory for any authenticated and authorized user.  If a site requires manual remapping (e.g. Fermilab), the site will have to do manual re-mappings for all storage users anyway.
+   * The user followed published procedures
+      * VOMS Admin queries VOMRS and publishes the global list of associations
+      * The site admin runs a script daily that reads published list and updates mappings in GUMS
+   * The user&#39;s original cert expired.  Now the user must perform an initial registration with the new cert.
+      * We will provide a script that takes the old DN and the new DN as arguments and performs the mapping
+      * This script will have to be run manually by the admin on a per user basis when this occurs
+      * The user will have to provide both DNs
+      * The only way to detect this case is when/if users squawk.
+   * The user ignored procedures completely and simply performed an initial registration with the new cert.  The user now has two valid certs.
+      * the procedure will have to be the same as the old cert expiration issue.
+
+---+ Storage remapping procedures affecting this plan
+Currently, the admins for each site&#39;s storage system use their own procedures for providing access to a user&#39;s data
+depending on the scenarios defined in the previous section.
+
+The scenario that may have the largest impact on programmatically providing a solution is:
+   1 the user gets a new certificate (regardless of capability to associate the old and new)
+   1 cert-A maps to acct-1 and has data stored under acct-1%BR%
+     cert-B maps to acct-2 and has data stored under acct-2
+   1 the user will only be using cert-B in the future.%BR%
+      * either cert-A has expired
+      * or user just no longer has a need to use that cert.
+   1 the user needs access to both sets of data 
+   1 to provide this, the site admin changes acct-1 data to be associated with acct-2%BR%
+   1 OR associates acct-2 with acct-1 AND changes the GUMS MAPPING table to map
+      cert-B to to acct-1.
+
+Under the above scenario, we have no way knowing which corrective action was taken.
+In this case, in order to programmatically, change the association in GUMS, we would have 
+to know the correct mappings in the storage system.
+
+---+ Initial SQL update (simple case)
+__Updated by Weigand 1/28/13__ %BR%
+&lt;pre class=&quot;screen&quot;&gt;
+| ID   | MAP       | DN                | ACCOUNT   | 
++------+-----------+-------------------|-----------|
+|    2 | uscmsPool | CN=weigand 002    | uscms0001 |
+|    3 | uscmsPool | CN=weigand 003    | uscms0002 |
+
+-- setting 2&#39;s account to 3&#39;s ----
+set @id_old   = (select ID from MAPPING where DN = &#39;CN=weigand 002&#39;);
+set @acct_old = (select ACCOUNT from MAPPING where DN = &#39;CN=weigand 002&#39;);
+set @id_new   = (select ID from MAPPING where DN = &#39;CN=weigand 003&#39;);
+set @acct_new = (select ACCOUNT from MAPPING where DN = &#39;CN=weigand 003&#39;);
+select @id_old,@acct_old,@id_new,@acct_new;
++---------+-----------+---------+-----------+
+| @id_old | @acct_old | @id_new | @acct_new |
++---------+-----------+---------+-----------+
+| 2       | uscms0001 | 3       | uscms0002 | 
++---------+-----------+---------+-----------+
+
+-- creating MAPPING for 2&#39;s old account --
+insert into MAPPING values (NULL,&#39;uscmsPool&#39;,NULL,@acct_old);
+-- updating 2 with 3&#39;s account --
+update MAPPING set ACCOUNT=@acct_new where ID=@id_old;
+
+| ID      | MAP          | DN            | ACCOUNT   | 
++------+---------------+----------------|----------------|
+|    2    | uscmsPool  | CN=weigand 002  | uscms0002 | 
+|    3    | uscmsPool  | CN=weigand 003  | uscms0002 | 
+| 3015    | uscmsPool  | NULL             | uscms0001 |
+
+&lt;/pre&gt;
+
+
+---+ Other Issues / concerns
+This section just documents some other issues/concerns related to pacman versus rpm GUMS/VOMS services.
+
+---++ GUMS and pool account consumption - GOOD
+__Updated by Weigand 1/28/13__ %BR%
+I had a concern as to the query that GUMS used to determine how many pool accounts were allocated
+and consumed.  It appears we are OK on this count. 
+I created 6 pool accounts in the MAPPING tables.  Populated 3 of them with different users.  GUMS showed 3 of 6 consumed.
+I then inserted a 7th row in the MAPPING table with a unique DN but the same unix account (uscms0006) as another entry.
+GUMS still showed 3 of 6 consumed.  This is good as this will be the condition we will be creating.
+
+This is true for RPM and PACMAN installations.
+
+---++ Does GUMS fill in open pool accounts (gaps) - GOOD
+__Updated by Weigand 1/28/13__ %BR%
+Related, sort of, is whether or not GUMS fills in open accounts (gaps so-to-speak) or just does a &#39;max(ACCOUNT)&#39;
+and only assigns from the &quot;end&quot;.
+We are good here too.  GUMS consumes unconsumed pool accounts using the first DN=NULL entry in the MAPPING table.
+
+This is true for RPM and PACMAN installations.
+
+---++ SQL update requires Tomcat restart
+__Updated by Weigand 1/28/13__ %BR%
+It appears that GUMS retains the current state of pool accounts in memory. So any direct SQL update to
+re-assign accounts will require a restart of tomcat to take affect.
+
+This is true for RPM and PACMAN installations.
+
+---++ SQL update will require an UPDATE and INSERT
+__Updated by Weigand 1/28/13__ %BR%
+The direct SQL update of GUMS will require:
+   * an UPDATE of the existing entry changing the ACCOUNT%BR%
+      __update MAPPING set ACCOUNT=&#39;uscms0005&#39; where ID=4;__
+   * an INSERT using the updated entry&#39;s ACCOUNT %BR%
+     __insert into MAPPING values (NULL,&#39;uscmsPool&#39;,NULL,&#39;uscms0003&#39;)__
+This keeps the number of total pool accounts the same and opens up a pool account for consumption.
+__Note:__ This can be done in any order as the only unique key is the ID field.  
+
+---++ Is DN unique in the MAPPING table? - OPEN CONCERN
+__Updated by Weigand 1/28/13__ %BR%
+It is unknown at this time if some GUMS admins have updated their GUMS databases directly to accommodate storage.
+The GUMS MAPPING table&#39;s only unique key is ID.  There is none on DN.  So, they can create a condition where DN
+is not unique (and it should be).  Our assumption is that it is.  A means of verifying this is via this query:
+&lt;pre class=&quot;screen&quot;&gt;
+select b.DN from 
+(select DN,count(*) as cnt from MAPPING 
+ where MAP=&#39;uscmsPool&#39; 
+     and DN is not NULL 
+     group by DN
+) b
+where b.cnt &gt; 1
+;
+&lt;/pre&gt;
+An empty set would indicate we are good.
+This may be something we can ask them to do.  It would make life easier.
+
+
+---++ How do I identify the CMS pool accounts - OPEN ISSUE
+__Updated by Weigand 1/28/13__ %BR%
+Can I assume the CMS pool accounts will start with &#39;uscms&#39;?%BR%
+Should it be an argument to the script identifying the pool account names?%BR%
+Does any site use more than 1 pool account name for CMS?
+
+---++ Can DOE certs in MAPPING table be deleted at some point
+__Updated by Weigand 1/28/13__ %BR%
+If we can delete (not really delete but set the DN to NULL)  the DOE cert entries in the MAPPING at some point in time, this will
+allow us to reduce the number of allocated pool accounts and corresponding unix accounts on the
+service nodes.  At some point in time, these accounts will never be used again.  Sort of like a 
+re-cycling.
+
+__However__ , we need to be very careful if we do this.  A user could have been using a DOE cert. Was inactive
+for a long period.  Then started back up again.  __This may not be a good idea.__
+
+---++ pacman GUMS and RPM VOMS for user group updates
+When using the pacman version of GUMS and user group updates are performed against an rpm VOMS server,
+and a user has multiple certificates as a single user in VOMS, only 1 of the user&#39;s certificates (DNs) is retrieved.
+The use case that pointed this out was with the DZERO RPM installed VOMS server,  
+
+I (Weigand) originally had a DOE cert defined in VOMS.  In December 2012, I added a !DigiCert certificate using 
+the new VOMS capability to add an additional certificate, for me.  VOMS handled that fine.  I could query VOMS, 
+via the UI, and see both certificates associated to me (this is a new feature in the RPM VOMS version).
+
+However, when I had a pacman GUMS do a user group update, only the !DigiCert certificate was retrieved.%BR%
+On an RPM GUMS, the user group update retrieved both certificates.
+
+An RPM GUMS and a pacman VOMS works fine.
+
+---++ VOMRS and a user&#39;s expired certificates
+VOMRS recognizes a user by the certificate used in the browser.  If a user waits until his certificate expires before requesting 
+a new one, VOMRS will think it is a new user.  We will no longer be able to associate a set of certificates as a set belonging to 
+one user.
+
+---+ To Do List
+   * Tanya L.
+      * will create a script that will query VOMRS for users and all certificates associated with them 
+      * NOTE: This script must be run by a VOMRS admin
+   * Tony
+      * Need to run Tanya&#39;s script daily and publish the results
+      * Need to ask for a public place to publish results
+   * John
+      * Write a script that merges VOMRS with GUMS data and makes appropriate changes to the GUMS DB
+
+
+-- Main.JohnWeigand - 08 Jan 2013

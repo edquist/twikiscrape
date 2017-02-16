@@ -1,0 +1,295 @@
+---+ Configure !GUMS to Implement Site Policies
+
+%DOC_STATUS_TABLE%
+
+%TOC%
+
+See [[AboutGums][About !GUMS]] for an introduction.
+
+GUMS runs at a grid site under the control of site administrators; it is a &quot;site tool&quot; as opposed to a &quot;VO tool&quot;. The users it maps may be affiliated with numerous VOs. The mappings in a site&#39;s GUMS installation are defined in a single XML policy file, =gums.config=. This file may contain multiple policies, and the administrator can assign different policies to different groups of users. The administrator can also specify different mappings on different hosts or different sets of hosts.
+
+The =gums.config= file has three parts:
+   $ persistenceFactories: defines where to store user and mapping data, such as a database or LDAP (the storage is referred to as &quot;persistence&quot; in GUMS; the interface to it is called a &quot;persistence factory&quot;). In OSG, it&#39;s always kept in mysql. Each component that needs persistence information will retrieve it from mysql.
+
+   $ groupMappings: defines groups of users and sets how they are to get mapped. A groupMapping is defined by two things: a set of users (userGroup) and a policy for account mapping (accountMapping). Optionally, the policy can be composed of multiple policies (compositeAccountMapping)
+
+   $ hostGroups: defines which groupMappings are used for the different hosts.
+
+---++ Mapping users to accounts
+
+Users can be mapped to accounts in a variety of ways:
+
+   * map groups of users to shared group accounts
+   * map users to pool accounts, one user per account
+   * map users to group accounts manually
+
+The accounts themselves are created outside of !GUMS. Particular accounts or ranges of accounts (e.g., xyz0000 to xyz9999) are then specified in the GUMS configuration file. The mapping policy as implemented in this file may take into account the grid identity of the user and his/her VO only, or it can accommodate extended attributes (implemented via voms-proxy-init) such as the user&#39;s role and group within the VO. Furthermore, different mapping policies may be implemented depending on the host chosen to process the job. 
+
+---++ Retrieving the Map
+A gatekeeper (or a generic service) can retrieve the suitable map in two ways:
+
+   * by using the =gums-host= tool to retrieve the grid-mapfile %RED%(under BNL site guide_commands.html; unavailable to me right now) %ENDCOLOR%
+   * by calling directly the GUMS service for every request
+
+---++ Policy File Structure
+
+The XML policy file has this structure:
+&lt;verbatim&gt;
+&lt;gums&gt;
+ &lt;persistenceFactories&gt;
+
+ &lt;persistenceFactory/&gt;
+
+ &lt;/persistenceFactories&gt;
+ &lt;adminUserGroup/&gt;
+ &lt;groupMappings&gt;
+ &lt;groupMapping&gt;
+ &lt;userGroup/&gt;
+
+ &lt;accountMapping/&gt;
+
+ &lt;/groupMapping&gt;
+ &lt;groupMapping&gt;
+ &lt;userGroup/&gt;
+ &lt;compositeAccountMapping&gt;
+ &lt;accountMapping/&gt;
+
+ &lt;accountMapping/&gt;
+
+ &lt;accountMapping/&gt;
+ &lt;/compositeAccountMapping&gt;
+ &lt;/groupMapping&gt;
+ ...
+ &lt;/groupMappings&gt;
+
+ &lt;hostGroups&gt;
+
+ &lt;hostGroup/&gt;
+ &lt;/hostGroups&gt;
+&lt;/gums&gt;
+&lt;/verbatim&gt;
+
+---+++ !!persistenceFactories
+
+The default file includes one persistenceFactory element; leave it as is %RED%(even the password?)%ENDCOLOR%.
+&lt;verbatim&gt;
+&lt;persistenceFactory 
+name=&#39;mysql&#39;
+className=&#39;gov.bnl.gums.MySQLPersistenceFactory&#39;
+jdbcDriver=&#39;com.mysql.jdbc.Driver&#39;
+jdbcUrl=&#39;jdbc:mysql://cd-94372.dhcp.fnal.gov/GUMS_1_0&#39; 
+user=&#39;gums&#39; 
+password=&#39;VDTXLKRBKIM&#39; 
+autoReconnect=&#39;true&#39; /&gt;
+&lt;/verbatim&gt;
+
+---+++ !!groupMappings
+
+This element contains groupMapping elements. The only essential attribute is &quot;name&quot;. This is the name for the mapping defined within this element. Each groupMapping element in the file must have a unique name.
+
+=&lt;groupMapping name=&#39;osg1&#39;&gt;=
+
+---++++ !!userGroup
+
+The userGroup element is a subelement of groupMapping.
+
+*Required, fixed-value attributes*
+
+It has two attributes which are always needed and should never be changed from the default values: className and persistenceFactory.
+&lt;verbatim&gt;
+className=&#39;gov.bnl.gums.VOMSGroup&#39;
+persistenceFactory=&#39;mysql&#39; 
+&lt;/verbatim&gt;
+
+*Required, installation-specific attributes*
+
+It has others which are required, but that you need to set for your own installation: url, name, voGroup, sslCertfile, ss1key. The default values for these last two should work as is, but check.
+Values:
+
+   * name: your VO name
+   * voGroup: a group defined in VOMS under your VO 
+   * url: URL for your VOMS admin server
+   * sslCertfile: path to the httpcert.pem file on your GUMS host 
+   * sslKey path to the httpkey.pem file on your GUMS host 
+E.g.,
+&lt;verbatim&gt;
+name=&#39;myusergroup1&#39; 
+voGroup=&quot;/myvo/group1&quot;
+url=&#39;https://my-voms-server:8443/edg-voms-admin/vos/services/VOMSAdmin&#39;
+sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39; 
+&lt;/verbatim&gt;
+
+---++++ !!Optional attributes
+
+There are two optional attributes: voRole and ingoreFQAN.
+   * voRole: Specifies which VO role(s) (defined in a VOMS) must be specified in the proxy in order to make a match. Should be used with ignoreFQAN=&quot;false&quot;.
+   * ignoreFQAN: This dictates whether to process or ignore role and group information, if any, in a proxy obtained with voms-proxy-init. False means &quot;process it&quot;; true means &quot;ignore it&quot;.
+
+We recommend that you always include ignoreFQAN with its value, either true or false. That way you don&#39;t have to remember the default value (which is &quot;false&quot;).
+&lt;verbatim&gt;
+voRole=&quot;role1&quot;
+ignoreFQAN=&quot;false&quot;
+&lt;/verbatim&gt;
+
+---+++ !!Account Mapping
+
+An accountMapping element defines the logic with which the user credentials are mapped to the local account. You can choose whether you want to implement mapping to a group account or to a pool of accounts.
+
+---++++ !!Group Account Mapping
+
+For group mapping, you just have to specify the implementing class (use the value for className shown here, below) and the name of the group account, e.g.,
+&lt;verbatim&gt;
+&lt;accountMapping 
+className=&#39;gov.bnl.gums.GroupAccountMapper&#39; 
+groupName=&#39;groupaccount1&#39; /&gt;
+&lt;/verbatim&gt;
+---++++ !!Pool Account Mapping
+
+To use a pool of accounts, you need to specify the implementing class (use the value for className shown here, below), the place to look up the pool of accounts (the persistenceFactory, always set to &quot;mysql&quot; in OSG) and the name for the pool (there may be multiple pools defined), e.g.,:
+&lt;verbatim&gt;
+&lt;accountMapping 
+className=&#39;gov.bnl.gums.AccountPoolMapper&#39;
+persistenceFactory=&#39;mysql&#39; 
+name=&#39;Pool_1&#39; /&gt;
+&lt;/verbatim&gt;
+
+---++++ !!Both (Composite)
+
+You may include both types of mapping within one groupMapping element. A typical use for this would be to map the incoming user to a pool account if available, and if not, then fallback to a group account. Use the compositeAccountMapping element as shown here to accomplish this:
+&lt;verbatim&gt;
+&lt;compositeAccountMapping&gt;
+ &lt;accountMapping className=&#39;gov.bnl.gums.AccountPoolMapper&#39;
+ persistenceFactory=&#39;mysql&#39; 
+ name=&#39;Pool_1&#39; /&gt;
+ &lt;accountMapping 
+ className=&#39;gov.bnl.gums.GroupAccountMapper&#39;
+ groupName=&#39;groupaccount1&#39; /&gt;
+&lt;/compositeAccountMapping&gt;
+&lt;/verbatim&gt;
+
+---++++ !!Host Group
+
+A hostGroup element has to define which hosts use which mappings. It has three required attributes:
+   $ className: use the value for className shown here, below
+   $ wildcard: specifies a host or set of hosts; can use a wildcard 
+   $ groups: specifies the group mapping to be used by the specified host(s) (The value must match the &quot;name&quot; attribute of one or more of the groupMapping elements).
+&lt;verbatim&gt;
+&lt;hostGroup 
+className=&#39;gov.bnl.gums.WildcardHostGroup&#39; 
+wildcard=&#39;*.fnal.gov&#39; 
+groups=&#39;osg1&#39; /&gt;
+&lt;/verbatim&gt;
+As with other elements in the =gums.config= file, GUMS maps according to the first match encountered. If you implement multiple hostGroups, make sure your wildcard value only catches the hosts it should; and put broader matches after narrower ones (e.g., myhost.fnal.gov ahead of *.fnal.gov).
+
+
+---++ A Simple Example
+
+Here we&#39;ll use group mapping to a single account, osg01. We&#39;ll assume people are coming in with a standard grid proxy so that we can ignore VO groups and roles. %RED%(We haven&#39;t talked about FQAN or the adminUserGroup...)%ENDCOLOR%
+&lt;verbatim&gt;
+&lt;gums&gt;
+
+ &lt;persistenceFactories&gt;
+
+ &lt;persistenceFactory ... (all the default values as listed above) /&gt;
+ &lt;/persistenceFactories&gt;
+ &lt;adminUserGroup 
+ className=&#39;gov.bnl.gums.ManualUserGroup&#39;
+ persistenceFactory=&#39;mysql&#39; 
+ name=&#39;admins&#39; /&gt;
+ &lt;groupMappings&gt;
+ &lt;groupMapping&gt;
+
+ name=&#39;osg01&#39;
+ &lt;userGroup 
+ className=&#39;gov.bnl.gums.VOMSGroup&#39;
+ name=&#39;usergroup1&#39;
+ url=&#39;https://your-voms-server:8443/edg-voms-admin/{VO name}/services/VOMSAdmin&#39;
+ voGroup=&quot;/myvo/group1&quot;
+ persistenceFactory=&#39;mysql&#39; 
+ sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+ sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;
+ ignoreFQAN=&quot;true&quot;/&gt;
+
+ &lt;accountMapping 
+ className=&#39;gov.bnl.gums.GroupAccountMapper&#39; 
+ groupName=&#39;osg01account&#39; /&gt;
+ &lt;/groupMapping&gt;
+ &lt;/groupMappings&gt;
+ &lt;hostGroups&gt;
+ &lt;hostGroup 
+ className=&#39;gov.bnl.gums.WildcardHostGroup&#39; 
+ wildcard=&#39;*.fnal.gov&#39; 
+ groups=&#39;osg01&#39; /&gt;
+
+ &lt;/hostGroups&gt;
+
+&lt;/gums&gt;
+&lt;/verbatim&gt;
+
+If you want Trash.ReleaseDocumentationMonALISA to be able to retrieve information for a given groupMapping, you&#39;ll need to set two other attributes in that groupMapping element:
+   $ accountingVo: its value should be similar or identical to the VO name and must be completely lowercase
+   $ accountingDesc: the same string as accountingVo but in uppercase
+
+E.g.,
+&lt;verbatim&gt;
+ &lt;groupMapping&gt;
+ name=&#39;osg01&#39;
+ accountingVo=&#39;&#39;myvo
+ accountingDesc=&#39;MYVO&#39;&gt;
+ ...
+ &lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+These values will appear in the =$VDT_LOCATION/monitoring/grid3-user-vo-map.txt= file (the inverse map file) when you run _Generate Inverse Map_ on the GUMS web UI.
+ 
+
+---+ References
+ 
+   * [[http://grid.racf.bnl.gov/GUMS/guide_introduction.html]]
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = TerrenceMartin
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = VO
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = HowTo
+
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = TerrenceMartin
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %IN_PROGRESS%
+
+
+############################################################################################################
+--&gt;
+

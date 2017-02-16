@@ -1,0 +1,61 @@
+%LINKCSS%
+
+---+!! Bigger VDL
+%STARTINCLUDE%
+%EDITTHIS%
+
+In this exercise, you will expand the VDL used in the &quot;Simple VDL&quot; exercise to include everything necessary to run the whole problem code (as seen in the PROBINTRO exercise).
+
+We introduce several more transformations, and make derivations to process the raw input data into a graph.
+
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cp -av /opt/vdltut/BIGGERVDL ~&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd ~/BIGGERVDL&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;ls&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;derivations.vdl     transformations.vdl&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;less transformations.vdl&lt;/span&gt;
+[...observe the new transformations...]
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vdlc derivations.vdl transformations.vdl&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;20060610T111452.577: [app] using label &quot;derivations&quot;
+20060610T111452.578: [app] using output file &quot;derivations.dax&quot;&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vds-plan --pegasus -g QuarkCode --option pools=local --option output=local --option force derivations.dax --base ./dags&lt;/span&gt;
+[...]
+&lt;span class=&quot;out&quot;&gt;I have concretized your abstract workflow. The workflow has been entered
+into the workflow database with a state of &quot;planned&quot;. The next step is 
+to start or execute your workflow. The invocation required is
+
+vds-run  /home/train99/BIGGERVDL/dags/QuarkCode/derivations/run0004
+&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vds-run  /home/train99/BIGGERVDL/dags/QuarkCode/derivations/run0004&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;
+I have started your workflow, committed it to DAGMan, and updated its
+state in the work database. A separate daemon was started to collect
+information about the progress of the workflow. The job state will soon
+be visible. Your workflow runs in base directory
+
+cd /home/train99/BIGGERVDL/dags/QuarkCode/derivations/run0004
+&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd /nfs/home/vdsuser-2/BIGGERVDL/dags/QuarkCode/derivations/run0004&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;tail -f tailstatd.log&lt;/span&gt;
+[...wait...]
+&lt;span class=&quot;out&quot;&gt;20060611T200900.583 [500]: DAGMan finished with exit code 0
+20060611T200900.583 [501]: processed chunk of 1095 byte
+# updated state in workman
+20060611T200900.585 [501]: skipping plots
+20060611T200900.585 [501]: finishing, exit with 0
+20060611T200900.588 [501]: copied common log to /nfs/home/vdsuser-2/BIGGERVDL/dags/QuarkCode/derivations/run0004
+
+$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd /nfs/scratch01/train02/QuarkCode/vdsuser-2/derivations/run0004&lt;/span&gt;&lt;/pre&gt;
+
+Now, on your local laptop, run:
+
+&lt;pre class=&quot;screen&quot;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;scp gridlab1:/nfs/scratch01/train02/QuarkCode/vdsuser-2/derivations/run0004/bigger.png .&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;open bigger.png&lt;/span&gt;
+&lt;/pre&gt;
+
+%STOPINCLUDE%
+
+%BOTTOMMATTER%
+-- Main.ForrestChristian - 27 Feb 2007

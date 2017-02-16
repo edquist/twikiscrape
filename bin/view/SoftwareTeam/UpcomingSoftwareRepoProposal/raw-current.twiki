@@ -1,0 +1,112 @@
+---+!! Proposal for repository of upcoming software (osg-upcoming)
+
+Underlying ticket: [[https://jira.opensciencegrid.org/browse/SOFTWARE-883][SW-883]]
+
+%TOC%
+
+---++ Overview
+
+Certain sites have requested new versions of software that would be considered &quot;disruptive&quot; or &quot;experimental&quot; -- upgrading to them would potentially require manual intervention before the site would come back up.
+We do not want sites to unwittingly upgrade to these versions.
+For the benefit of the sites that do want to upgrade, we want to provide the same assurance of quality and production-readiness that we provide to the software we currently ship now.
+
+Other distributions have typically solved this problem by creating a separate version of our distributions -- for example, Fedora 16 vs. Fedora 17.
+If we were to follow suit, we would call it &quot;OSG 3.2.&quot;
+However, we do not currently have the resources to perform and maintain a full fork of OSG 3.1.
+That does not mean that such a fork will never happen.
+But for now, we will instead create a separate set of repositories that contain only the &quot;disruptive&quot; versions of the software.
+
+These repositories will be named the =osg-upcoming= repositories.
+They will have the same structure as our standard repositories.
+For example, there will be an =el5-osg-upcoming-development= repository and an =el5-osg-upcoming-testing= repository.
+
+A full installation of our software stack will _not_ be possible using only the =osg-upcoming= repositories, since they contain a small subset of the software we ship.
+Both the main =osg= and the =osg-upcoming= repositories will need to be enabled for the installation to work.
+Because of this, interoperability must be maintained between the main =osg= and =osg-upcoming=.
+
+Depending on test results from sites, some packages in =osg-upcoming= may eventually end up in the main =osg= branch.
+The rest of the packages will eventually form the nucleus of the next fork of the software stack (e.g. &quot;OSG 3.2&quot;).
+
+---++ Process for packaging upcoming software
+
+   1. Put package files in the upcoming software svn area ( =$SVN/native/redhat/upcoming= )
+   1. osg-build the package, passing the =--upcoming= flag
+   1. Install the osg-release and osg-upcoming-release RPMs
+   1. Install and test the new build from osg-upcoming-development (which must be enabled, just as osg-development would)%BR%
+      The main osg-* repositories still need to be enabled so the package can get prerequisities.
+   1. Use osg-promote to promote the package through the same stages as normal (development &amp;rarr; testing &amp;rarr; prerelease &amp;rarr; release), but use the *-upcoming-* equivalents
+
+It hasn&#39;t been decided whether or not &quot;upcoming&quot; should be released in sync with the regular osg releases.
+
+---++ Initial list of software to be placed in upcoming
+
+   * hadoop 2.0
+   * java packages rebuilt as part of Java6MigrationDetails
+
+---++ Todo lists
+
+
+---+++ What to do in Koji
+
+The upcoming repositories will have a tag and target structure parallel to the main osg repositories.
+The new tags and targets will be documented in KojiHubSetup.
+
+| *Task* | *Priority* | *Status* | *Time Estimate* |
+| Make and document the following tags: =el[56]-osg-upcoming-{release,prerelease,testing,development,build}= | %RED%Required%ENDCOLOR% | %BLUE%DONE%ENDCOLOR% | 1&amp;mdash;2 hours |
+| Make and document the following targets: =el[56]-osg-upcoming= ( =el[56]-osg-upcoming-build -&gt; el[56]-osg-upcoming-development= ) | %RED%Required%ENDCOLOR% | %BLUE%DONE%ENDCOLOR% | 1&amp;mdash;2 hours |
+| Get GOC to use mash on the new tags | %RED%Required%ENDCOLOR% | %BLUE%DONE%ENDCOLOR% | ? |
+| Add appropriate policies (ACLs) for various actions on the upcoming tags/targets &lt;sup&gt;1&lt;/sup&gt; | %ORANGE%Recommended%ENDCOLOR% | | 2&amp;mdash;4 hours |
+   
+1. Proposed ACLs:
+   * packages in &amp;#42;-upcoming-development can be tagged &amp;#42;-upcoming-testing
+   * packages in &amp;#42;-upcoming-testing can be tagged &amp;#42;-upcoming-prerelease
+   * packages in &amp;#42;-upcoming-prerelease can be tagged &amp;#42;-upcoming-release
+   * allow tagging from &amp;#42;-upcoming-release; to &amp;#42;-osg-testing only.
+
+---+++ What to do in SVN
+
+The directory =$SVN/native/redhat/upcoming= will act as the &quot;trunk&quot; for the upcoming repos: it will not contain the trunk/branches/tags subdirectories, only package directories.
+If you wish to create a branch off of =upcoming= to work on a specific project, place it under the =$SVN/native/redhat/branches= directory.
+
+| *Task* | *Priority* | *Status* | *Time Estimate* |
+| Make =$SVN/native/redhat/upcoming= and copy or move packages that are going to be in upcoming; document this | %RED%Required%ENDCOLOR% | Needs docs | 1&amp;mdash;2 hours |
+| Update =osg-release= rpm with the new repos; document this | %RED%Required%ENDCOLOR% | Needs docs | 1&amp;mdash;2 hours |
+
+---+++ What to do in osg-build
+
+We want to be able to run =osg-build koji --upcoming $pkg= to build both distro versions of a package into the =*-osg-upcoming-development= tags.
+We also want to be able to run =osg-promote --upcoming $pkg= to promote a package from =*-osg-upcoming-development= to =*-osg-upcoming-testing=.
+If time permits, the osg build tools should prevent the developer from accidentally building an &quot;upcoming&quot; package into the main development tags.
+
+| *Task* | *Priority* | *Status* | *Time Estimate* | 
+| Add and document promotion paths to =osg-promote= | %RED%Required%ENDCOLOR% | | 1&amp;mdash;2 hours |
+| Add easy way to specify building in upcoming (for example a =--upcoming= flag); document this | %RED%Required%ENDCOLOR% | %BLUE%DONE%ENDCOLOR% | 4&amp;mdash;8 hours |
+| Add some way of making sure builds don&#39;t use the wrong target by default &lt;sup&gt;1&lt;/sup&gt; | %ORANGE%Recommended%ENDCOLOR% | %BLUE%DONE%ENDCOLOR% | 4&amp;mdash;8 hours |
+
+1. This can be done perhaps by selecting target based on SVN branch (unless otherwise specified).
+Koji can&#39;t automatically do this for us
+
+---+++ What to do in osg-test
+
+We want to be able to test &quot;upcoming&quot; packages in the same way we test normal packages.
+We also want to avoid forking =osg-test=.
+
+| *Task* | *Priority* | *Status* | *Time Estimate* | 
+| Go through each of our test cases and make sure they handle which version of the software they are testing properly. \
+  E.g. do the hadoop tests either work with both 0.20 and 2.0.0 or at least test which one is installed and make the right configs | %RED%Required%ENDCOLOR% | | 1&amp;mdash;3 days |
+| Create and document an =osg-tested-internal= equivalent for packages we test in upcoming; it may be smaller than the original =osg-tested-internal= because we shouldn&#39;t have to test components that we&#39;ve already tested in the regular nightlies and haven&#39;t been affected by anything in upcoming | %ORANGE%Recommended%ENDCOLOR% | | 2&amp;mdash;4 hours |
+| Add upcoming to our nightlies &lt;sup&gt;1&lt;/sup&gt; | %ORANGE%Recommended%ENDCOLOR% | | 4&amp;mdash;8 hours |
+
+1. This doubles the number of tests we run, but currently, our tests take under an hour to run and are given two-hour time-slots, so this is doable.
+
+---+++ What to do in documentation
+
+| *Task* | *Priority* | *Status* | *Time Estimate* | 
+| A separate SoftwareTeam.PreReleaseNotes page for packages promoted to upcoming-testing | %RED%Required%ENDCOLOR% | | 1&amp;mdash;2 hours |
+| An addition to SoftwareTeam.UpcomingReleases for upcoming changes to upcoming | %RED%Required%ENDCOLOR% | | 1&amp;mdash;2 hours |
+| Update to our development instructions, for example SoftwareTeam.RPMDevelopmentGuide, SoftwareTeam.OSGBuildTools, SoftwareTeam.ReleasePolicy, and others | %RED%Required%ENDCOLOR% | | 4&amp;mdash;8 hours |
+| Instructions on how to enable the upcoming repos that can be included in instructions for specific software much like Documentation.Release3.YumRepositories currently is | %RED%Required%ENDCOLOR% | | 1&amp;mdash;2 hours |
+| Instructions for specific software that we place in upcoming, e.g. hadoop-2.0.0; these should also contain migration instructions if possible | %RED%Required%ENDCOLOR% | | ? |
+
+&lt;!-- vim:ft=twiki
+--&gt;

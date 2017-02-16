@@ -1,0 +1,162 @@
+---+!! OSG Executive Team Meeting 26 October 2006
+%TOC%
+
+---++ Agenda
+Mike, Doug, Alain, Kent, Ruth, Frank, Rob, Miron
+
+---+++  Pending Action Items (new item to be started this week)
+|Item|Date due | Status|
+|Complete Project Plan to Agencies |Dec 1 | Draft available before the meeting | 
+
+---+++ Status of VOs planning Production Runs - report next week
+---+++ Review and status of Plans, SOWs and Subcontracts - Kent, Miron
+   * 1 signed by PI, 1 signed by ED, 2 signed by RM, 7 in preparation, 6  with PIs. (total 17)
+[[http://projects.fnal.gov/osg/WBS/mousow/][SOWs]] 
+   * Status of the project plan.
+
+---+++ OSG 0.6.0 Release status
+---++++ VDT release status - - Alain
+[[http://osg.ivdgl.org/twiki/bin/viewfile/Management/20061102AgendaMinutes?rev=1;filename=VDTWorklistforOSG1.0-v4][VDTStatus]]
+
+Highlights:
+
+1) Automatic testing of in-place upgrading was slower than expected, but Tim found and fixed a bunch of bugs related to it, so it was very worthwhile.
+
+2) We&#39;ve begun work on side-by-side installations. We&#39;re working on a subtask that might initially seem irrelevant, but is a large part of it: starting up and shutting down services properly. The process for a side-by-side install will be:
+
+  Leave old VDT running
+  Install new VDT
+  Shutdown old VDT
+  Startup new VDT
+
+This part is nearly done. We haven&#39;t yet made progress on preserving configuration, but that will happen immediately
+
+3) We&#39;ve got a new version of Globus with various bug fixes and patches. This let us rebuild lots of other components so we can support new platforms that people want. (Like EGEE and other folks want SL4.)
+
+Comments: Need to understand the gLITE interoperability tools better before any work is done. CMS unwinds the full gLITE tar ball into $OSG_APP/gLITE; look at ATLAS list from Seattle meeting
+http://osg.ivdgl.org/twiki/bin/view/Trash/Trash/Trash/Trash/Integration/TechnicalRoadmapSession   
+http://osg.ivdgl.org/twiki/bin/view/Trash/Trash/Trash/Trash/Integration/AtlasWishList060  -- Miron
+Action item: to define the next step. Ruth with call meeting of VO liaisons operating across OSG and EGEE to tell OSG what they need. VDT needs to do nothing.
+
+Miron: RPM discussion and implications. Pacman is very finicky and if you have to patch anything need to restart with Pacman. Should VDT include other ways to provide and install packages. Propose an offline discussion of this issues soon.
+
+---++++ Trash/Trash/Integration Worry List --- Rob
+ 
+1a) We do not have a clear plan for an information system
+Yes, we have BDII now, but its practical implementation is unclear:
+ - schema attributes are not well defined
+ - site-level configuration issues, interplay with CEMon
+ - no clear guidance on OSG-system-wide configuration
+ - or for VO-specific information systems, and interop with LCG, TG
+ - no best practice utilities for applications; still can&#39;t answer
+   simple questions like what is site x&#39;s policy/queue priority
+   for my VO
+ - introducing CEMon - first as an option - now required?
+
+Discussion: 
+Miron: work with Leigh on addressing the CEMON and BDII issue. Prototype in place for  sites only running CEMON and information collected by GOC and advertised towards WLCG as an OSG Service. This will alleviate need to run BDII to run on individual sites. Scalability work needed. Need to check CMS applications work. Ask Burt for details and to test the prototype. Can we organize the information to be less sensitive to temporary outages of information - requires intelligence at the aggregation point.  Leigh is the project lead of this activity.
+GIP work is expected at the UofIowa as part of their work for CMS.
+
+1b) Accounting and Privledge
+Both come from outside projects
+ - ML accounting cumbersome, incomplete, inconsistent
+ - Gratia accounting - ?
+ - GUMS support, config
+
+Discussion: No Gratia in the Trash/Trash/Integration Testbed yet. Should we have a patch to VDT 1.4.0 for installation of the RPMs for Gratia for ITB 0.5.1 to install and test. Rob and Alain will talk offline. Training for GUMS. Trash/Trash/Trash/Trash/Extensions and then BNL are picking up the support. 
+
+2) OSG dashboard-like testing
+ - site-verify.sh, gridcat, deprecated acdc-dashboard, vors:  a real mix
+  here, in transition
+ - need resources to produce a clear winner that will be suitable for
+  site admins and app developers
+
+Discussion: Lacking quality of tools for validation and well run and maintained services at a site. Need effort for this. Leigh leading this effort. Postpone to next meeting. ?0.5 FTE at Indiana, ?0.5 FTE at LBNL for Storage. Ruth/Miron talk offline on this. Write down the specs and then look for implementers.  Specs being written and gathered by Leigh. 
+
+3) Application and fabric best practices
+ - NFSlite work done as a contributed effort for condor scheduler
+for a worthy problem (removing requirement for a NFS shared
+filesystem) but no effort for PBS nor a rigorous review of this
+option.  But no alternative either.
+- Since OSG sites are quite heterogenous, not only the resources,
+behind but the site-specific deployment styles (site level differences
+not advertised) app developers have a tough go and on the flip
+side easily abuse a site&#39;s resources.
+
+Discussion: Important area to address. Needs a broader discussion for schedulers other than condor and affects performance and how facilities are constructed. especially for smaller sites. Make sure this is propagated. Never do anything that does not require careful configuration. Just in time scheduling  makes head node configuration simpler and can alleviate the problem. 
+
+4) CE Storage and OSG SEs
+- management of job and multi-job local storage:
+   &gt; differences in sites: nfs-shared vs srm-dcache only options
+   &gt; job-level protocol to use
+   &gt; staging preference
+   &gt; how are VOs allowed to use this storage
+   &gt; management of worker-node storage
+      --- local scratch abuse, debris
+
+Discussion: Squid?
+
+5) Documentation support load
+ - the ITB group is being asked to ready documentation that was once done
+by the Provisioning activity - that is, preparing deployment-quality
+documentation
+
+Discussion: Management documentation.  Not right mix of skills in ITB effort for documentation. 
+6) Process
+ - Schedule - we&#39;ve not been using a rigorous schedule with a deadline,
+  but creating ITB releases based on VDT releases with the rough
+  but indefinite goal of &quot;0.6.0&quot;.
+ - Priorities for services
+
+Discussion: more efficient to use ITB effort possibly available for work for 1 month from 15Nov-15Dec.
+
+---+++ Partnership Issues 
+   * EGEE - report from discussion with EGEE management on VOMS/VOMRS
+   * TeraGrid - top 5 OSG issues to be posted by meeting
+   * Other?
+
+---+++ AOB
+   * NERSC allocation - how to allocate VO use
+   * OISE Copenhagen meeting - any issues? 
+   * Operations Coordinator Report -- Leigh
+1) Trash/Engagement VO status:
+
+     The vo addition process includes showing up at the Monday 
+     Operations meeting to represent the new VO. This week
+     no one from the Egagement VO attended, so this will be
+     rescheduled for next week. SOP ref:
+
+[[http://osg.ivdgl.org/twiki/bin/view/Operations/SOPVoRegistration-v3][SOPVORegistration]]
+
+  2) Support Center Attendance table.
+
+    The operations meetings should be attended by Support Centers
+    esp. when they have open tickets. To give more visibility to
+    this I gathered the data since Sept 11 2006 on SC attendance for
+    review.
+
+http://osg.ivdgl.org/twiki/bin/view/Operations/AttendanceStats1006
+
+  3) Identifing technical effort to work on EGEE/WLCG/OSG interoperability. 
+
+      The bulk of the policy and procedure development work has been
+      in operations and in this management team. It seems there are
+      now several technical challenges in the softwawre development
+      area, for instanse, SFTs and accounting interoperability. Could a
+      plan for meeting these challenges be discussed?
+
+ Lastly, I would like to ask that this team decide if IU GOC is a partner 
+ or not, as Katie seems to suggest that we are not, but then she was
+ also mistaken about the Council membership for the IU GOC.
+ It is my understanding that the IU GOC became and OSG partner last 
+ year with the Council membership.  Additionally, IU has funded 50% of 
+ OSG Operations activies for the past 2 years outside of iVDGL funding. 
+
+Clarification from Ruth: I talked to Marcia and she is adding iGOC as we speak to the partners list - rather than assuming it is under IU in the members list. We talked a bit about members and partners and Marcia will be looking for some definitions from us as to the difference - from your mail below this seems like it is needed also.
+
+
+
+
+
+-- Main.RuthPordes - 02 Nov 2006
+

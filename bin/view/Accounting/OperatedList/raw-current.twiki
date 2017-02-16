@@ -1,0 +1,42 @@
+---+ List of Gratia Collectors Operated by !FermiGrid
+---
+
+%STARTINCLUDE%
+
+---+++ OSG services
+
+   * All services run on their own VM;
+   * All services listen on ports 80 (HTTP) and 443 (HTTPS);
+   * All services run out of =/data/tomcat-gratia=;
+   * All init.d service scripts are named =tomcat-gratia=;   
+   * Legacy connections are forwarded to the correct collector by gr8x5.fnal.gov which manages legacy aliases as service IPs.
+
+%STARTSECTION{name=&quot;osg-collectors&quot;}%
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;2&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot; headeralign=&quot;center, center, center, center, center, center, center, left&quot; dataalign=&quot;left, left, left, left, left, center, center, left&quot;}% 
+| *SOAPHost configuration* | *Tomcat node* | *Legacy Connections* | *Config name* | *Database* | *Status* | *Reports* | *Notes* |
+| gratia-osg-prod.opensciencegrid.org:80 | gr5x0.fnal.gov | 8880, 8845 | osg-prod | gratia | [[http://gratia-osg-prod.opensciencegrid.org/gratia-administration/][Status]] | [[http://gratia-osg-prod.opensciencegrid.org/gratia-reporting/][Reports]] | For batch records (probe types =pbs=, =sge=, =condor=, =lsf=). |
+| gratia-osg-daily.opensciencegrid.org:80 | gr5x1.fnal.gov | 8884, 8860 | osg-daily | gratia_osg_daily | [[http://gratia-osg-daily.opensciencegrid.org/gratia-administration/][Status]] | [[http://gratia-osg-daily.opensciencegrid.org/gratia-reporting/][Reports]] | For daily summary info only (if you&#39;re not sure, you don&#39;t need this). |
+| gratia-osg-transfer.opensciencegrid.org:80 | gr5x2.fnal.gov | 8886, 8840 | osg-transfer | gratia_osg_transfer | [[http://gratia-osg-transfer.opensciencegrid.org/gratia-administration/][Status]] | [[http://gratia-osg-transfer.opensciencegrid.org/gratia-reporting/][Reports]] | Storage / transfer (probe types dcache-storgage:, dcache-transfer:, gridftp-transfer). |
+| gratia-osg-itb.opensciencegrid.org:80 | gr5x3.fnal.gov | 8881, 8850 | osg-itb | gratia_itb | [[http://gratia-osg-itb.opensciencegrid.org/gratia-administration/][Status]] | [[http://gratia-osg-itb.opensciencegrid.org/gratia-reporting/][Reports]] | ITB collector (all probe types). |
+| gratia-osg-integration.opensciencegrid.org:80 | gr5x4.fnal.gov | 8885, 8870 | osg-integration | gratia_osg_integration | [[http://gratia-osg-integration.opensciencegrid.org/gratia-administration/][Status]] | [[http://gratia-osg-integration.opensciencegrid.org/gratia-reporting/][Reports]] | Selected &quot;permanent ITB&quot; probes replicated from gratia-osg-itb. Do not configure probes or non FNAL collectors to send here. |
+%ENDSECTION{name=&quot;osg-collectors&quot;}%
+
+---+++ Fermi-local services
+
+   * All services run on their own VM;
+   * All services listen on ports 80 (HTTP) and 443 (HTTPS);
+   * All services run out of =/data/tomcat-gratia=;
+   * All init.d service scripts are named =tomcat-gratia=;   
+   * Legacy connections are forwarded to the correct collector by gr5x5.fnal.gov which manages the gratia-fermi.fnal.gov service IP.
+
+%STARTSECTION{name=&quot;fermi-collectors&quot;}%
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;2&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot; headeralign=&quot;center, center, center, center, center, center, center, left&quot; dataalign=&quot;left, left, left, left, left, left, center, center, left&quot;}% 
+| *SOAPHost configuration* | *Tomcat node* | *Legacy Connections* | *Config name* | *Database* | *Status* | *Reports* | *Notes* |
+| gratia-fermi-osg.fnal.gov:80 | gr5x0.fnal.gov | 8880, 8845 | fermi-osg | fermi_osg | [[http://gratia-fermi-osg.fnal.gov/gratia-administration/][Status]] | [[http://gratia-fermi-osg.fnal.gov/gratia-reporting/][Reports]] | Should replicate to gratia-osg-prod on a per-probe basis (non-glexec only at this time) |
+| gratia-fermi-psacct.fnal.gov:80 | gr5x1.fnal.gov | 8882, 8855 | fermi-psacct | gratia_psacct | [[http://gratia-fermi-psacct.fnal.gov/gratia-administration/][Status]] | [[http://gratia-fermi-psacct.fnal.gov/gratia-reporting/][Reports]] | |
+| gratia-fermi-qcd.fnal.gov:80 | gr5x2.fnal.gov | 8883, 8865 | fermi-qcd | gratia_qcd | [[http://gratia-fermi-qcd.fnal.gov/gratia-administration/][Status]] | [[http://gratia-fermi-qcd.fnal.gov/gratia-reporting/][Reports]] | |
+| gratia-fermi-transfer.fnal.gov:80 | gr5x3.fnal.gov | 8886, 8840 | fermi-transfer | fermi_transfer | [[http://gratia-fermi-transfer.fnal.gov/gratia-administration/][Status]] | [[http://gratia-fermi-transfer.fnal.gov/gratia-reporting/][Reports]] | Should replicate to gratia-osg-transfer |
+| gratia-fermi-itb.fnal.gov:80 | gr5x4.fnal.gov | 8881, 8850 | fermi-itb | fermi_itb | [[http://gratia-fermi-itb.fnal.gov/gratia-administration/][Status]] | [[http://gratia-fermi-itb.fnal.gov/gratia-reporting/][Reports]] | Should replicate to gratia-osg-itb |
+%ENDSECTION{name=&quot;fermi-collectors&quot;}%
+
+%STOPINCLUDE%

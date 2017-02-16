@@ -1,0 +1,87 @@
+---+ OSG Software and Release Teams Meeting, 28 May 2013
+
+*Attending:* !BrianL, Carl, Marco, Mat, Neha, Suchandra, !TimT, Xin
+
+---++ Announcements
+
+*Triage Duty:* Mat this week, !BrianL next week&lt;!-- ; %RED%NN open tickets%ENDCOLOR% --&gt;.
+
+&lt;!-- *JIRA Tickets:* --&gt;
+
+*OSG Deployments:*
+| OSG 3.x | 79 (+4) sites | 18 (+17) using 3.1.18 |
+| OSG 1.2 | 28 (+0) sites | 1 (+0) using 1.2.32 |
+
+There is a nice tracking table [[http://tinyurl.com/pacmansites][available as a Google spreadsheet]].
+
+---++ OSG Software Team
+
+---+++ Accomplishments
+
+   * Completed (most) testing of OSG Software with !DigiCert SHA-2 certificates; found an old, incompatible !dCache/Fermi SRM client
+   * Added HTCondor 7.9.6 to Upcoming repository
+   * Completed (most) testing of HDFS 2 and associated packages
+   * Posted high-level design for a unified HTCondor RPM
+   * Fixed a set of related problems with =osg-ca-manage --location=
+   * Fixed a bug in osg-test that could cause false failure reports under certain circumstances
+   * Support!
+
+---+++ OSG Projects
+
+Work with Tim to make sure work is reflected in JIRA and that tickets are correct state. %RED%Be sure to mark active work as _In Progress_.%ENDCOLOR%
+
+   * HDFS 2 (Mat)
+   * Update OASIS configuration (Dave Dykstra) — status from !BrianB?
+   * Update OSG documentation to integrate OASIS (e.g., CE install) (Marco, Suchandra)
+   * Update osg-configure to support OASIS (!BrianB, Suchandra) — not needed?
+   * Simple HTCondor init script changes from Steve Timm (!BrianL)
+   * Gratia? In osg-testing yet?
+
+---+++ HTCondor Projects
+
+   * Unification of HTCondor RPMs (Carl)
+   * Take on HTCondor Debian packaging (!BrianL, essentially on hold)
+
+---+++ Coming Soon
+
+   * Automated testing: Still want more tests and improved infrastructure
+   * BOSCO? (soon-ish, comes along with HTCondor 7.9)
+
+---+++ Notes
+
+*HDFS 2:* Trouble with !BeStMan integration, !XRootD. Upgrade tests are fine, though.
+
+*OSG documentation:* Marco did survey of what documents [about what topic?] need to be changed; waiting on !BrianB for technical updates to the documentation.
+
+*Condor init script changes:* Will not be ready in time for this release. !BrianL added the condor-drain function, but there are still two other features to be added.
+
+*Gratia-Probe:* Suchandra is testing Tanya’s modifications to the Condor and PBS probes and hopes to have results today or tomorrow. !JohnW tested the Condor probes (the patch is at least 3 weeks old), and Suchandra also running them on his CE. PBS probes now have code to catch unrealistic efficiency reports. Also, there is a fix to quarantine records with unknown VOs.
+
+*Condor RPM unification:* Carl worked on getting the UW RPM features (notably standard universe) into an OSG-style RPM, but did not have much success getting a koji or mock build working. He received feedback from Tim St. Clair, Todd Tannenbaum, and !BrainB; Todd wants more design documents. !TimC encouraged Carl to work on easier features than standard universe this week, so that we have something to show for our efforts.
+
+
+---++ OSG Release Team
+
+---+++ Accomplishments
+
+   * JDK 7 out for testing
+
+---+++ Projects
+
+   * Release 3.1.19 (June 4th)
+   * Migrate from Oracle JDK 6 to !OpenJDK 7: ITB and other external testing
+   * frontier-squid bug fix
+   * HTCondor 7.9.6 Ready for Test
+   * SLURM: Scalability testing continues
+   * !DigiCert SHA-2 testing
+   * OASIS documentation
+
+---+++ Notes
+
+*Java 7 packages:* Announced and into the testing repos. Oklahoma was interested, but Horst might be unable to test due to travel. Suchandra and Xin also doing some testing. Suchandra covering GUMS and HDFS.
+
+*GIP integration with SLURM:* Will not make it into 3.1.19.
+
+*GlideInWMS 2.7.1:* Suchandra to talk to Jeff Dost at UCSD -- they will need to upgrade their factory in order to test the VO frontend (since the VO frontend is not backwards compatible). 50/50 chance of that happening before Friday.
+
+*Fermi SRM Client:* Neha updated tarball -- someone from the Software Team needs to update patches and create a new RPM from it.

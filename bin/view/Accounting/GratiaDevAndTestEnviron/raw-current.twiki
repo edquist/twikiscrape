@@ -1,0 +1,76 @@
+---+!! Gratia Development and Test Environment
+
+&lt;!--
+   * Set VIEWTHISTOPIC = &lt;div class=&quot;twikiSmall&quot;&gt;&lt;a href=&quot;%TOPIC%&quot;&gt;View this section&lt;/a&gt;&lt;/div&gt;
+--&gt; 
+%TOC% 
+%STARTINCLUDE%
+
+---++ Description
+
+The document describes the development and test environment for the Gratia accounting services.
+
+[[http://fermigrid.fnal.gov/gratia-development-organization.html][Machine allocation and usage]] is described on the [[http://fermigrid.fnal.gov][Fermigrid]] [[http://fermigrid.fnal.gov/fermigrid-systems-services.html][Systems and Services]] pages.
+
+---++ Software
+
+In order to insure consistency in the development environment across multiple real/xen nodes, the software packages that are required by Gratia have been stored in the __gratia__ user&#39;s $HOME directory which is shared file file system.
+
+   * =/home/gratia/tomcat-tarballs=: Tomcat tarballs. The latest version is automatically picked up by the =install-release= script.
+   * =mysql-gui-tools= may be installed on RHEL5-based systems under /opt as downloaded from the mysql.com site.
+   * JRE / JDK and mysql client should be installed from the base distribution.
+
+---++ Daily Builds
+
+Daily builds take place from HEAD, and the mechanism for same is described on the [[GratiaDailyBuilds][Gratia Daily Builds]] page. The locations of the build host, collector and database nodes are described on the !FermiGrid [[http://fermigrid.fnal.gov/gratia-development-organization.html][machine allocation and usage]] page.
+
+Logs from the daily build may always be found under =~gratia/gratia-builds=, along with the builds themselves.
+
+---++ Daily installs and upgrades
+
+Developers&#39; integration instances are installed from a cron entry on the [[http://fermigrid.fnal.gov/gratia-development-organization.html][nightly build host]] using the [[#Daily_Builds][daily builds]] described in the previous section.
+
+This allows developers to test committed changes on a regular basis.
+
+The daily upgrade is performed using the =install-nightly-builds= script, as found in =gratia/build-scripts=.
+
+Refer to the [[GratiaUpgradeScript][Gratia upgrade script (gratia-upgrade.sh)]] documentation for details on location of log files.  An email notification is sent upon completion (successful or failed).
+
+&lt;verbatim&gt;
+###################################################################
+#----------------------------------
+# Daily upgrade of integration collectors
+#
+25 0 * * * /home/gratia/cron-scripts/install-nightly-builds
+###################################################################
+&lt;/verbatim&gt;
+
+---++ Installing your own collector.
+
+The main flexible, does-everything-you-might-want-and-more script is the [[GratiaUpgradeScript][Gratia upgrade script (gratia-upgrade.sh)]].
+
+*However*, =gratia/build-scripts= contains a simpler wrapper, [[GratiaInstallReleaseScript][install-release]]. It handles installs on production, development and integration servers of official nightly builds, official releases or local builds; see the link for usage information.
+
+
+---++ Test Site Grid
+ In order to provide a predictable and controlled test environment, a =test= grid site has been established. It will contain all the necessary components of an OSG grid site: 
+
+   * The VOMS service has been populated with several VOs. If you are a member of the Gratia development team, you should have administrative privileges to view any data. 
+
+   * The GUMS service uses the OSG =gums.config= template at this time. So it contains all OSG VOs and memberships as defined by the OSG GOC. At some point, it will be changed to use a =gums.config= file using the =gratiax34= VOMS service. 
+
+   * Several Compute Elements (CE) nodes running the various job batch queue managers (condor and pbs at this time). The authorization modes for these CE&#39;s can be established to use all three of the OSG modes: grid3, compatibility and full privilege. All will derive their membership lists for authorizations from the Gratia VOMS and GUMS servers mentioned above. 
+
+   * at least one Worker Node (WN) with glExec. 
+
+The definitive description of the location of these services may be found on [[http://home.fnal.gov/%7Eweigand/test_nodes/test_nodes.html][John Weigand&#39;s machine usage page]].
+
+%INCLUDE{GratiaVomsTestdata}%
+
+%STOPINCLUDE% &lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+*Major updates*:%BR% &lt;!--Future editors should add their signatures beneath yours!--&gt; 
+-- Main.JohnWeigand - 29 Jun 2007%BR%
+-- Main.ChrisGreen - 27 Oct 2009%BR%
+-- Main.ChrisGreen - 27 Jul 2010%BR%
+

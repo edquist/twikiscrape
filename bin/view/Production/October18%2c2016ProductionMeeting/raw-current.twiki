@@ -1,0 +1,134 @@
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-812-856-7060, 231000# 
+   * [[https://bridge.iu.edu/webapp/#/][Video Link]]
+
+---++ Announcements:   
+
+---++ Action/Significant Items: 
+   * New record number of hours, first week over 30 Mhrs.
+   * Tim Cartwright was at IU this week to discuss the documentation project as follow up from the staff retreat. Outputs and actions will be shared soon. 
+   * Need to announce new version of CVMFS to resources
+   * Stampede being used by Minos and CMS, both have 50k SU startup allocations
+      * Scott will work to get Stampede registerer as a resource and accounted properly.
+   * New IGTF release 19/Oct. Will test automated updates on repo-itb, manual updates will be requested on production instances
+
+---++ Attendees:
+Scott, Tim T, Jeny, Xin, Tanya, Ken, Mats
+
+---++ Apologies: 
+Krista, Rob, Tim C., Shawn
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status. 
+      * USATLAS total production over the past week was quite stable, at the average level of 55-63K running job slots.      
+   * Job statistics for last week.     
+      * Gratia report: 2M pilots, 7M walltime hours, and CPU/walltime ratio of 79% (for single core jobs)
+      * 2M real Jobs reported from the Atlas dashboard.  
+
+---++ FIFE - !Fabric for Frontier Experiments (Tanya)
+   * nova 275K hours
+   * mu2e 147K hours
+   * des 3.2K hours
+   *  Stampede:
+      * Gratia probe is not running on Stampede 
+      * Stampede is not registered in OIM
+   
+---++ CMS (Tony &amp; Krista)
+   * CMS Production for the week (10-11-10/17):
+      * 10,166,037 hours
+      * 225,398 pilots
+
+---++ Grid Operations Center (Scott)
+   * [[http://tinyurl.com/pre26vw][GOC Services Availability/Reliability]]
+   * Current Status: [[http://monitor.grid.iu.edu/availability/production.html][&lt;img src=&quot;http://monitor.grid.iu.edu/availability/production_status.png&quot;&gt;]]
+   * &lt;a href=&quot;http://reports.grid.iu.edu/reports/&quot;&gt;Reports current: &lt;img src=&quot;http://steige.grid.iu.edu/steige/status_reports.png&quot;&gt;&lt;/a&gt;
+   * [[http://maddash.aglt2.org/maddash-webui/index.cgi?dashboard=OSG%20Grid%20Operations%20Center%20Test%20Mesh%20Config][PerfSonar]] service
+   * &lt;img src=&quot;http://gratiaweb1.grid.iu.edu/gratiastatic/today/osg_wall_hours.png&quot;/&gt;
+      * 30.41 Mhrs last week
+   * &lt;img src=&quot;http://osg-flock.grid.iu.edu/monitoring/condor/condor_7day.png&quot; width=&#39;630&#39; height=&#39;390&#39;  /&gt;&lt;br&gt;
+   * OSG-Connect
+      * &lt;img src=&#39;http://osgconnect.net/accounting-summary/data/osg/daily_hours_by_project.png&#39;&gt;
+      * ~600k cpu hours
+      * 37 active users / 28 active projects
+   * Grid Operations Center
+      * ITB release, release note in preparation
+      * record creation time of downtime. Retroactive downtime registrations are detectable
+      * ticket exchange with XSEDE to be enabled in production
+   * !FermiGrid Ops
+      * voms2 scheduled to reinstall on Thursday Oct 20, 09:00 - 12:00
+      * clients connecting to voms2 will fail during that time
+      * voms.fnal.gov and voms1.fnal.gov should be functional during  down time
+   * WMS Glide In Factory
+      * Plan to upgrade factory HTCondor to 8.4.9 (latest) to provide a fix for cream sites
+      * This will fix a bug relating to pilot proxy delegation to worker nodes
+      * Plan to upgrade ITB 18/Oct, then SDSC, then GOC on next production window
+      * Marty is away at Hepix, Marian and Jeff will cover his shifts
+
+---++ Networking (Shawn)
+
+---++ Production Support (Ken)
+
+   * Some success at Stampede for CMS as well as MINOS (still tuning factory settings a bit). CMS is a standard 50k SU startup allocation.
+   * Basic tests for !NOvA at JINR succeeded (Gratia probe not reporting though)
+   * Monitoring ATLAS trying to get set up at Hyak
+
+---++ Software (Mat S.)
+   * New !HTCondor-CE with internal !CEView improvements
+   * Segfault fix for !BLAHP with !GLExec (discovered by Cancer Computer)
+   * Init script fix for !GridFTP
+   * Gratia PBS probe fix for reporting on whole-node jobs
+   * Drop certificate quota check in PKI tools
+   * Generate SHA2 CSRs in PKI tools
+   * Disable !SSLv3 in Globus tools by default
+
+---++ Release (Tim T.)
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| November | 3.3.18 | 2016-10-24 | 2016-10-31 | 2016-11-08 | |
+| December | 3.3.19 | 2016-11-28 | 2016-12-05 | 2016-12-13 | 5 week cycle |
+| January | 3.3.20 | 2016-12-27 | 2017-01-03 | 2017-01-10 | |
+
+[[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.3.18%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][November 8th Release]]
+
+   * [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/Release3317][OSG 3.3.17]]: Thursday, October 13th
+      * [[https://lists.cs.wisc.edu/archive/htcondor-users/2016-September/msg00102.shtml][HTCondor 8.4.9]]: Job Router prompts schedd reschedule, other bug fixes
+      * [[https://github.com/opensciencegrid/htcondor-ce/releases][HTCondor-CE 2.0.10]]
+         * Detect and refuse to start with an invalid configuration
+         * Handle unbounded HTCondor-CE accounting directory
+         * Properly check against &#39;undefined&#39; for undefined values
+      * gratia-probe-1.17.0-2.3
+         * Update gratia probe to work with more recent versions of Slurm
+         * Add fallback default in gratia probe for HTCondor-CE history folder 
+      * [[http://frontier.cern.ch/dist/frontier-squid-releasenotes.txt][frontier-squid-2.7.STABLE9-27]] - fix unbounded growth of swap.state
+      * [[http://cvmfs.readthedocs.io/en/2.3/cpt-releasenotes.html][CVMFS 2.3.2]]: support for secured (using VOMS X.509 proxies) access to data in osgstorage.org repositories
+      * [[https://github.com/xrootd/xrootd/blob/v4.4.0/docs/ReleaseNotes.txt][XRootD 4.4.0]]
+      * Several configuration updates to better mesh with EL7 and systemd
+         * osg-control now uses systemd interfaces where appropriate
+         * systemd tmpfile mechanism employed for HTCondor, HTCondor-CE, gratia
+         * globus-gatekeeper init script now works properly with systemd
+      * Add RPM package version list to tarballs
+      * [[https://lists.cs.wisc.edu/archive/htcondor-users/2016-September/msg00103.shtml][HTCondor 8.5.7]] in Upcoming: the schedd can perform job !ClassAd transformations
+      * Updated to [[https://github.com/opensciencegrid/osg-vo-config/releases/tag/release-69][VO Package v69]]: Added: miniclean VO; Removed: LNBE, CDF INFN
+      * [[https://github.com/opensciencegrid/rsv-perfsonar/releases/tag/1.1.4][RSV-perfSONAR 1.1.4]] - Have probes look farther back into the past for information
+   * Data: Wednesday, October 19th; our first data release
+      * CA Cerficates based on IGTF 1.78
+   * 3.3.18: Tuesday, November 8th
+      * Testing
+         * edg-mkgridmap 4.0.4: fix simple omission that caused fatal errors on EL7 (worked fine on EL6)
+      * Ready
+         * Globus !GridFTP server control patch: Avoid server process hang when client immediately closes a new connection
+
+---++ Security
+   * No new vulnerabilities/incidents.
+   * HEPCloud risk assessment document has been completed.
+   * cigetcert tool has received new updates: enable support for reuse of VOMS proxies, bug fixing.
+   * CILogon Service Upgrade on Wed Oct 19, 2016 [[https://groups.google.com/a/cilogon.org/forum/#!msg/outages/vAq1sSiMqG4/NqPrxDdbEgAJ][Announcement]]
+   * OSG Risk Assessment 2016 started on Oct 17, 2016. Security surveys are being sent out to service owners.
+
+---++ Communication (Kyle)
+   * Tim Cartwright was at IU this week to discuss the documentation project as follow up from the staff retreat. Outputs and actions will be shared soon. 
+
+-- Main.ScottTeige - 17 Oct 2016
+

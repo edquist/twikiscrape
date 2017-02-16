@@ -1,0 +1,44 @@
+For WLCG sites, the SI2K value for each of your subclusters is a very delicate subject.  Because incorrect SI2K scores can lead to incorrect pledge contribution data for the WLCG, some sites want to set their own SI2K values instead of using the ones determined centrally.
+
+To do this, we will edit the following file (OSG 0.8.0):
+
+&lt;verbatim&gt;
+$VDT_LOCATION/lcg/etc/alter-attributes.conf
+&lt;/verbatim&gt;
+
+For OSG 0.9.0 and OSG 1.0.0:
+
+&lt;verbatim&gt;
+$VDT_LOCATION/gip/etc/alter-attributes.conf
+&lt;/verbatim&gt;
+
+Determine the DN of the subcluster you want to edit.  You can find your GIP data here:
+
+http://is.grid.iu.edu/cgi-bin/status.cgi
+
+For example, MWT2_UC will want to look here:
+
+http://is.grid.iu.edu/cgi-bin/show_source_data?which=MWT2_UC&amp;source=served
+
+Search through the data for the word &quot;Subcluster&quot;.  Here&#39;s a sample DN for a subcluster of MWT2_UC which we will use for the example:
+
+&lt;verbatim&gt;
+dn: GlueSubClusterUniqueID=uct2-grid6,GlueClusterUniqueID=uct2-grid6.uchicago.edu,mds-vo-name=MWT2_UC,o=grid
+&lt;/verbatim&gt;
+
+When we change this DN in the GIP, we will replace the above mds-vo-name with =mds-vo-name=local=.
+
+Now, edit the =GlueHostBenchmarkSI00= attribute.  The full entry in =alter-attributes.conf= is now:
+
+&lt;verbatim&gt;
+dn: GlueSubClusterUniqueID=uct2-grid6,GlueClusterUniqueID=uct2-grid6.uchicago.edu,mds-vo-name=local,o=grid
+GlueHostBenchmarkSI00: 1700
+&lt;/verbatim&gt;
+
+If you will blindly copy/paste the above entry, make sure you update the value for SubClusterUniqueID, ClusterUniqueID, and mds-vo-name (in addition to the new SI2K value).
+
+The SI2K value should be *per core*, not per machine.  Do a sanity check; a Pentium III has a SI2K of around 400.  The newest (May 2008) Intel Xeons score around 4000.  Your scores should be somewhere in between.
+
+The GIP data will take about 20 minutes to propagate to the GOC BDII.  [[http://t2.unl.edu/gratia/wlcg_reporting][The WLCG pledge webpage]] updates it&#39;s information 3 times a day, so make sure the new subcluster values are reflected the next day.
+
+-- Main.BrianBockelman - 29 Apr 2008

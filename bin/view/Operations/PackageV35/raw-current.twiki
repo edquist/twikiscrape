@@ -1,0 +1,107 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;VO Packages&quot; }%*
+%TOC{depth=&quot;2&quot;}%
+
+---+ v35
+
+---++ CSIU VO Added
+
+[[https://ticket.grid.iu.edu/goc/viewer?id=9981][Ticket]]
+
+---+++ vomses file Addition
+&lt;verbatim&gt;
+&quot;CSIU&quot; &quot;voms.grid.iu.edu&quot; &quot;15008&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=http/voms.grid.iu.edu&quot; &quot;CSIU&quot;
+&lt;/verbatim&gt;
+
+---+++ edg_mkgridmap.conf Addition
+&lt;verbatim&gt;
+#USER-VO-MAP csiu csiu - 45 - Rob Quick (rquick@iu.edu)
+group vomss://voms.grid.iu.edu:8443/voms/CSIU csiu
+&lt;/verbatim&gt;
+
+---+++ GUMS Config Addition
+&lt;verbatim&gt;
+&lt;!-- 45 CSIU --&gt;
+&lt;groupMapping name=&#39;csiu&#39; accountingVo=&#39;csiu&#39; accountingDesc=&#39;csiu&#39;&gt;
+     &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+     url=&#39;https://voms.grid.iu.edu:8443/voms/csiu/services/VOMSAdmin&#39;
+     persistenceFactory=&#39;mysql&#39; 
+     name=&#39;csiu&#39; 
+     voGroup=&quot;/csiu&quot;
+     sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+     sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39; 
+     matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&#39;true&#39; /&gt;
+     &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39; 
+     groupName=&#39;csiu&#39; /&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Plus added csiu to hostGroup className.
+
+---+++ UNIX Accounts
+Create:  csiu
+
+---++ CMS Update cmsphedex2 group added to gums.template
+
+[[https://ticket.grid.iu.edu/goc/viewer?id=10097][Ticket]]
+
+---+++ GUMS Config Addition
+&lt;verbatim&gt;
+&lt;groupMapping name=&quot;cmsphedex2&quot; accountingVo=&quot;cms&quot; accountingDesc=&quot;CMS&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot;
+    url=&quot;https://voms.fnal.gov:8443/voms/cms/services/VOMSAdmin&quot;
+    persistenceFactory=&quot;mysql&quot;
+    name=&quot;cmsphedex2&quot; voGroup=&quot;/cms&quot;
+    voRole=&quot;cmsphedex&quot;
+    matchFQAN=&quot;exact&quot;
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot;
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot;
+    groupName=&quot;cmsphedex&quot;/&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Plus added cmsphedex2 to hostGroup className. 
+
+---++ Engage UCSDGrid Group Added to gums.template
+
+[[https://ticket.grid.iu.edu/goc/viewer?id=9897][Ticket]]
+
+&lt;verbatim&gt;
+&lt;groupMapping name=&#39;engage-ucsdgrid&#39; accountingVo=&#39;engage&#39; accountingDesc=&#39;Engage&#39;&gt;
+   &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+   url=&#39;https://osg-engage.renci.org:8443/voms/Engage/services/VOMSAdmin&#39;
+   persistenceFactory=&#39;mysql&#39;
+   name=&#39;engage-ucsdgrid&#39;
+   voGroup=&quot;/Engage/UCSDgrid&quot;
+   sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+   sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;
+   matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&#39;true&#39;/&gt;
+ &lt;accountMapping className=&quot;gov.bnl.gums.AccountPoolMapper&quot;
+   persistenceFactory=&quot;mysql&quot;
+   name=&quot;ucsdgrid&quot;/&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Plus added engage-ucsdgrid to hostGroup className. 
+   * *NOTE: engage-ucsdgrid MUST go before engage in the hostGroup className*
+
+---+++ UNIX Accounts
+Create: At least 10 Pool Accounts for engage-ucsdgrid
+
+---++ VO Package Files Location
+
+   * For ITB VO Files see:
+
+http://software-itb.grid.iu.edu/pacman/tarballs/vo-package/
+
+   * For Production VO Files see:
+
+http://software.grid.iu.edu/pacman/tarballs/vo-package/
+
+
+
+-- Main.RobQ - 01 Feb 2011
+
+
+
+-- Main.RobQ - 21 Mar 2011

@@ -1,0 +1,119 @@
+---+ Automated Testing for OSG RPMs
+
+This is the home page for automated testing work done in the OSG Software Team.
+
+   * [[TestFestIdeas][Ideas coming out of the Test Fest]]
+   * [[TestingPlans][Plans for development of the testing infrastructure]]
+   * [[TestsFirstOnes][The initial tests to implement]]
+   * [[TestingFramework][Initial thoughts about a testing framework]]
+   * [[HowToWriteTests][How to write new tests]]
+   * [[Documentation.Release3.AutomatedTests][How to install and run the test suite]]
+   * [[Trash.SoftwareTeamVMUArchitecture][Architecture of VM universe test runs]]
+   * [[TestRunsAsVMs][How to run the VM universe test suite]]
+   * [[VMUniverseInCHTC][How to run a VM universe job in CHTC]]
+   * [[TestCoverage][Component coverage]]
+
+---++ Proposed Extensions
+
+   * [[NewTestStatusDesignDoc][Design document for new test statuses]]
+
+---++ Basic Architecture
+
+There are several parts to the overall automated testing infrastructure:
+
+   * *Tests:* Individual test files and functions written in Python
+   * *Framework:* The code that supports and runs the individual tests
+   * *Platforms:* Test platforms that run the automated tests — currently using VMs at Wisconsin
+   * *Aggregator:* Code that compiles results from test runs and reports summary statistics
+
+The tests and their framework come in three parts. The *Driver* is the main script that is invoked to find, run, and report on tests. Ideally, it knows nothing about what the tests do or how they do it; instead, it just knows how to find tests, sequence them, run them, evaluate their outcomes, and report on the results. The *Tests* are intended to be divided into many files (Python modules) and should be small, be relatively independent, and clearly state their requirements. The underlying *Support Library* contains utility functions common to a variety of tests, a means for accessing global state information across tests, and (future work) a means for accessing global test environment information.
+
+&lt;table cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; style=&quot;font-size: 150%;&quot;&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      &lt;table cellpadding=&quot;10&quot; cellspacing=&quot;0&quot; style=&quot;background-color: #BFB; border: 1px solid black; width: 100%;&quot;&gt;
+        &lt;tr&gt;
+          &lt;td colspan=&quot;3&quot; style=&quot;text-align: center; font-weight: bold;&quot;&gt;Driver&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td style=&quot;text-align: center;&quot;&gt;Find&amp;nbsp;Tests&lt;/td&gt;
+          &lt;td style=&quot;text-align: center;&quot;&gt;Run&amp;nbsp;Tests&lt;/td&gt;
+          &lt;td style=&quot;text-align: center;&quot;&gt;Reporting&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/table&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;&lt;td style=&quot;height: 10px&quot;&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      &lt;table cellpadding=&quot;10&quot; cellspacing=&quot;0&quot; style=&quot;background-color: #BFB; border: 1px solid black; width: 100%;&quot;&gt;
+        &lt;tr&gt;
+          &lt;td style=&quot;text-align: center; font-weight: bold;&quot;&gt;Tests&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/table&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;&lt;td style=&quot;height: 10px&quot;&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      &lt;table cellpadding=&quot;10&quot; cellspacing=&quot;0&quot; style=&quot;background-color: #BFB; border: 1px solid black; width: 100%;&quot;&gt;
+        &lt;tr&gt;
+          &lt;td style=&quot;text-align: center; font-weight: bold;&quot;&gt;Support Library&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/table&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+---++ Ideas for Future Work
+
+---+++ Framework
+
+   * Improve logging and test-outcome reporting
+      * Formal structure for reporting results from each test
+      * Ability to blame a component for failures
+   * Add sequence and/or dependency metadata, and make the driver sensitive to that data
+   * Expand possible test outcomes (e.g., pass, skip-ok, skip-bad, fail, error)
+   * Test categories (e.g., client vs. server, light vs. heavy)
+   * External file to define test environment (e.g., location of services, client user name and cert)
+
+---+++ Tests
+
+   * Test Fest
+   * Java (matching packages)
+   * !BeStMan
+   * RSV
+   * GUMS
+   * Whole job execution chain
+   * osg-configure
+   * Information services (GIP, CEMon)
+   * Gratia
+   * Other batch systems (Torque, SGE)
+
+---+++ Aggregate Reporting
+
+   * Transfer results from VM to AFS
+   * Collector script (to HTML)
+   * Email script
+   * Packaging / commit to Subversion?
+
+---+++ Platform Coverage
+
+%TABLE{ sort=&quot;off&quot; }%
+| *Priority* | *OS/EPEL Repo* | *OSG Repo* | *Notes* |
+|  3  | Production | Production | Sanity check |
+|  1  | Production | Testing | Doing now |
+|  2  | Testing | Production | Early warning system |
+|  4  | Testing | Testing | |
+
+   * Different top-level installed packages
+   * Test on demand (i.e., on release)
+
+---+++ Long Term
+   * Support update/upgrade tests
+   * Support tests involving multiple machines (requires test environment, test categories)
+   * Use osg-test as a post-install step
+   * Better process for turning bug fixes into permanent tests
+
+---+++ ITB
+   * Run a local ITB site at Wisconsin?

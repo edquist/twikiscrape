@@ -1,0 +1,180 @@
+&lt;style type=&quot;text/css&quot;&gt;
+code strong, pre strong { color: red; font-weight: normal; font-style: normal; }
+pre[class=&quot;rootscreen&quot;] em { background-color: #FFFF00; font-weight: normal; font-style: normal; }
+pre[class=&quot;file&quot;] em { background-color: #FFCCFF; font-weight: normal; font-style: normal; }
+&lt;/style&gt;
+
+
+---+ Installing and Using the RSV !GlideinWMS Tester
+
+%TOC{depth=&quot;3&quot;}%
+
+
+---++ About This Guide
+
+The RSV !GlideinWMS Tester (or _Tester_, in this document) is a tool that a VO front-end administrator can use to test remote sites for the ability to run the VO&amp;rsquo;s jobs. It is particularly useful when setting up a VO for the first time or when changing the sites at which a VO&amp;rsquo;s jobs can run. For a site to pass the test, it must successfully run a simple test job via the normal !GlideinWMS mechanisms, in much the same way as a real VO job.
+
+Use this page to learn how to install, configure, and use the Tester for your VO front-end.
+
+
+---++ Before Starting
+
+Before starting the installation process, consider the following points (consulting [[#ReferenceSection][the Reference section below]] as needed):
+
+   * *Software:* You must have [[InstallGlideinWMSFrontend][a GlideinWMS Front-end]] installed
+   * *Configuration:* The !GlideinWMS Front-end must be configured (a) [[InstallGlideinWMSFrontend#DesiredSites][to have at least one group that matches pilots to sites using DESIRED_SITES]], and (b) [[InstallGlideinWMSFrontend#IsItb][to support the is_itb user job attribute]]
+   * *Host choice:* The Tester should be installed on its own host; a small Virtual Machine (VM) is ideal
+   * *Service certificate:* The Tester requires a host certificate at =/etc/grid-security/hostcert.pem= and an accompanying key at =/etc/grid-security/hostkey.pem=
+   * *Network ports:* Test jobs must be able to contact the tester using the HTCondor Shared Port on port 9615 (TCP), and you must be able to contact a web server on port 80 (TCP) to view test results.
+
+%INCLUDE{&quot;Documentation/Release3.DocumentationSnippets&quot; section=&quot;OsgPreReqs&quot;}%
+
+---++ Installing the Tester
+
+The Tester software takes advantage of several other OSG software components, so the installation will also include OSG&amp;rsquo;s site validation system (RSV), HTCondor, and the !GlideinWMS pilot submission software.
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Install the software:&lt;/p&gt;
+    &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% yum install rsv-gwms-tester&lt;/pre&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+
+---++ Configuring the Tester
+
+Before you use the Tester, there are some one-time configuration steps to complete, one set on your !GlideinWMS Front-end Central Manager host and one set on the Tester host.
+
+---+++ Configuring the !GlideinWMS Front-end Central Manager
+
+Complete these steps &lt;strong&gt;on your !GlideinWMS Front-end Central Manager host&lt;/strong&gt;:
+
+   1. &lt;p&gt;Authorize the Tester host to connect to your Central Manager:&lt;/p&gt;\
+      &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% glidecondor_addDN -allow-others -daemon &lt;em&gt;COMMENT&lt;/em&gt; &lt;em&gt;TESTER_DN&lt;/em&gt; condor&lt;/pre&gt;\
+      &lt;p&gt;Where =COMMENT= is a human-readable label for the Tester host (e.g., “RSV GWMS Tester at myhost”), and =TESTER_DN= is the Distinguished Name (DN) of the host certificate of your Tester host. Most likely, you will need to quote both of these values to protect them from the shell. For example:&lt;/p&gt;\
+      &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% glidecondor_addDN -allow-others -daemon &#39;RSV GWMS Tester on Fermicloud&#39; &#39;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=fermicloud357.fnal.gov&#39; condor&lt;/pre&gt;
+   1. &lt;p&gt;Restart HTCondor to apply the changes&lt;/p&gt;\
+      &lt;p&gt;On *EL&amp;nbsp;6* systems:&lt;/p&gt;\
+      &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% service condor restart&lt;/pre&gt;\
+      &lt;p&gt;On *EL&amp;nbsp;7* systems:&lt;/p&gt;\
+      &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% systemctl restart condor&lt;/pre&gt;
+   1. &lt;p&gt;Add the new Tester to your !GlideinWMS front-end configuration&lt;/p&gt;\
+      &lt;p&gt;Edit the file =/etc/gwms-frontend/frontend.xml= and add a line as follows within the =&amp;lt;schedds&amp;gt;= element:&lt;/p&gt;\
+      &lt;pre class=&quot;file&quot;&gt;&amp;lt;schedd DN=&quot;&lt;em&gt;TESTER_DN&lt;/em&gt;&quot; fullname=&quot;&lt;em&gt;TESTER_HOSTNAME&lt;/em&gt;&quot;/&amp;gt;&lt;/pre&gt;\
+      &lt;p&gt;Where =TESTER_DN= is the Distinguished Name (DN) of the host certificate of your Tester host (as above), and =TESTER_HOSTNAME= is the fully qualified hostname of the Tester host. For example:&lt;/p&gt;\
+      &lt;pre class=&quot;file&quot;&gt;&amp;lt;schedd DN=&quot;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=fermicloud357.fnal.gov&quot; fullname=&quot;fermicloud357.fnal.gov&quot;/&amp;gt;&lt;/pre&gt;
+   1. &lt;p&gt;Reconfigure your !GlideinWMS front-end to apply the changes:&lt;/p&gt;\
+      &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% service gwms-frontend reconfig&lt;/pre&gt;
+
+---+++ Configuring the Tester host
+
+Complete the following steps &lt;strong&gt;on your Tester host&lt;/strong&gt;:
+
+   1. &lt;p&gt;Configure the Tester for the VOs that your Front-end supports&lt;/p&gt;\
+      &lt;p&gt;Edit the file &lt;code&gt;/etc/rsv/metrics/org.osg.local-gfactory-site-querying-local.conf&lt;/code&gt;. The =constraint= line is an HTCondor !ClassAd expression containing one =stringListMember= function per VO that your Front-end supports. If there is more than one VO, the function invocations are joined by the “logical or” operator, =||=. Edit the =constraint= line for your Front-end.&lt;/p&gt;\
+      &lt;p&gt;For example, for a single VO named &lt;code&gt;Foo&lt;/code&gt;, the line would be:&lt;/p&gt;\
+      &lt;pre class=&quot;file&quot;&gt;constraint = stringListMember(&quot;Foo&quot;, GLIDEIN_Supported_VOs)&lt;/pre&gt;\
+      &lt;p&gt;For two VOs named =Foo= and =Bar=, the line would be:&lt;/p&gt;\
+      &lt;pre class=&quot;file&quot;&gt;constraint = stringListMember(&quot;Foo&quot;, GLIDEIN_Supported_VOs) || stringListMember(&quot;Bar&quot;, GLIDEIN_Supported_VOs)&lt;/pre&gt;\
+      &lt;p&gt;Do not change the other settings in this file, unless you have clear and specific reasons to do so.&lt;/p&gt;
+   1. &lt;p&gt;Authorize the central manager of your Front-end to connect to the tester host:&lt;/p&gt;\
+      &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% glidecondor_addDN -allow-others -daemon &lt;em&gt;COMMENT&lt;/em&gt; &lt;em&gt;CENTRAL_MGR&lt;/em&gt; condor&lt;/pre&gt;\
+      &lt;p&gt;Where =COMMENT= is a human-readable identifier for the Central Manager, and =CENTRAL_MGR= is the Distinguished Name (DN) of the host certificate of your !GlideinWMS Front-end&amp;rsquo;s Central Manager host. Most likely, you will need to quote both of these values to protect them from the shell. For example:&lt;/p&gt;\
+      &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% glidecondor_addDN -allow-others -daemon &#39;UCSD central manager DN&#39; &#39;/DC=org/DC=opensciencegrid/O=Open Science Grid/OU=Services/CN=osg-ligo-1.t2.ucsd.edu&#39; condor&lt;/pre&gt;
+   1. &lt;p&gt;Configure the special HTCondor-RSV instance with your host IP address&lt;/p&gt;\
+      &lt;p&gt;Create the file =/etc/condor/config.d/98_public_interface.config= with this content:&lt;/p&gt;\
+      &lt;pre class=&quot;file&quot;&gt;NETWORK_INTERFACE = &lt;em&gt;ADDRESS&lt;/em&gt;
+CONDOR_HOST = &lt;em&gt;CENTRAL_MGR&lt;/em&gt;
+&lt;/pre&gt;\
+      &lt;p&gt;Where =ADDRESS= is the IP address of your Tester host, and =CENTRAL_MGR= is the hostname of your !GlideinWMS Front-end Central Manager.&lt;/p&gt;
+   1. &lt;p&gt;Enable the Tester&amp;rsquo;s RSV probe:&lt;/p&gt;\
+      &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% rsv-control --enable org.osg.local-gfactory-site-querying-local --host localhost&lt;/pre&gt;\
+
+---++ Using the Tester
+
+There are at least two aspects of using the Tester:
+
+   * Managing the services that are associated with the Tester software
+   * Viewing results from the Tester
+
+---+++ Managing Tester services
+
+Because the Tester is built on other OSG software, there are a number of services in your installation. The specific services are:
+
+%TABLE{sort=&quot;off&quot;}%
+| *Software* | *Service name* | *Notes* |
+| Apache HTTP Server | =httpd= | Web server for results |
+| HTCondor-Cron | =condor-cron= | cron-like jobs in HTCondor |
+| RSV | =rsv= | OSG site validator |
+
+%INCLUDE{&quot;Documentation/Release3.DocumentationSnippets&quot; section=&quot;ServiceManagement&quot;}%
+
+---+++ Viewing Tester results
+
+Once the Tester RSV probe is enabled and active, and the services listed above have been started, there are two kinds of RSV probes that run periodically:
+   * One probe asks the !GlideinWMS factory for the up-to-date list of sites supported by your VO(s)&amp;nbsp;&amp;mdash; runs every 30 minutes
+   * One probe submits and monitors one test job to each site supported by your VO(s)&amp;nbsp;&amp;mdash; run every 60 minutes
+
+You can view the latest results of both probe types on an RSV results web page, or you can manually run the first probe to see the full list of sites.
+
+---++++ Viewing RSV results online
+
+To see the latest results, access =https://&lt;em&gt;HOSTNAME&lt;/em&gt;/rsv/= (where =HOSTNAME= is the name of your Tester host).
+
+   * There should be one result row per site supported by your VO(s), using the “org.osg.general.dummy-vanilla-probe” probe (aka _metric_)
+   * There should be exactly one result row for the probe that fetches the list of sites, which is the “org.osg.local-gfactory-site-querying-local” probe (aka _metric_)
+   * There is a legend for the background colors at the end of the page
+
+Ideally, each site supported by your VO(s) should be shown with a green background, which indicates that a Tester job ran at that site recently and successfully. There may be transient failures but if you notice a site in the failed state over multiple days, contact OSG Factory Operations (osg-gfactory-support@physics.ucsd.edu) about the failing site, including a link to your Tester RSV results page.
+
+To see detailed information from each probe, click on the probe name in the Metric column.
+
+To see the list of sites that are supported by your VO(s) and are being tested, click the &amp;ldquo;org.osg.local-gfactory-site-querying-local&amp;rdquo; link at the bottom of the list of probes. You can also run the probe manually, as described next.
+
+---+++ Listing supported sites manually
+
+To manually run the probe that fetches the list of sites supported by your VO(s), run the following command on your Tester host:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% rsv-control --run org.osg.local-gfactory-site-querying-local --host localhost&lt;/pre&gt;
+
+The probe produces many lines of output, some of which are just about the probe execution itself. But look for lines like this:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;MSG: Updating configuration for host &lt;em&gt;UCSD&lt;/em&gt;&lt;/pre&gt;
+
+The highlighted name is the site name, and there should be one such line per site supported by your VO(s).
+
+---++ Troubleshooting RSV-GWMS-Tester
+
+You can find more information on troubleshooting in the [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallRSV#Troubleshooting_RSV][RSV troubleshooting section]]
+
+Logs and configuration:
+| *File Description* | *Location* | *Comment* |
+| Condor Cron log files | =/var/log/condor-cron= | |
+
+
+| *File Description* | *Location* | *Comment* |
+| Metric configuration | =/etc/rsv/metrics/org.osg.local-gfactory-site-querying-local.conf= | To change arguments and environment |
+
+---++ Getting Help
+
+To get assistance, please use the [[Documentation.HelpProcedure][this page]].
+
+
+---++ Reference
+
+---+++ Certificates
+
+%STARTSECTION{&quot;Certificates&quot;}%
+| *Certificate* | *User that owns certificate* | *Path to certificate* |
+| Host certificate | =root= | =/etc/grid-security/hostcert.pem= &lt;br&gt; =/etc/grid-security/hostkey.pem= |
+
+Find instructions to request a host certificate [[Documentation/Release3.GetHostServiceCertificates][here]].
+%ENDSECTION{&quot;Certificates&quot;}%
+
+---+++ Networking
+
+%STARTSECTION{&quot;Firewalls&quot;}%
+%INCLUDE{&quot;FirewallInformation&quot; section=&quot;FirewallTable&quot; lines=&quot;condorscheddshared,rsvin&quot;}%
+
+%ENDSECTION{&quot;Firewalls&quot;}%
+

@@ -1,0 +1,317 @@
+---+ Package =TWiki::Store::RcsFile=
+
+This class is PACKAGE PRIVATE to Store, and should never be
+used from anywhere else. Base class of implementations of stores
+that manipulate RCS format files.
+
+The general contract of the methods on this class and its subclasses
+calls for errors to be signalled by Error::Simple exceptions.
+
+Refer to Store.pm for models of usage.
+
+
+%TOC%
+---++ ClassMethod *new* &lt;tt&gt;($session,$web,$topic,$attachment)&lt;/tt&gt;
+Constructor. There is one object per stored file.
+
+Note that $web, $topic and $attachment must be untainted!
+
+
+
+---++ ObjectMethod *getRevisionInfo* &lt;tt&gt;($version) -&gt; ($rev,$date,$user,$comment)&lt;/tt&gt;
+   * =$version= if 0 or undef, or out of range (version number &gt; number of revs) will return info about the latest revision.
+
+Returns (rev, date, user, comment) where rev is the number of the rev for which the info was recovered, date is the date of that rev (epoch s), user is the login name of the user who saved that rev, and comment is the comment associated with the rev.
+
+Designed to be overridden by subclasses, which can call up to this method
+if file-based rev info is required.
+
+
+
+---++ ObjectMethod *getLatestRevision* &lt;tt&gt;() -&gt; $text&lt;/tt&gt;
+Get the text of the most recent revision
+
+
+
+---++ ObjectMethod *getLatestRevisionTime* &lt;tt&gt;() -&gt; $text&lt;/tt&gt;
+Get the time of the most recent revision
+
+
+
+---++ ObjectMethod *readMetaData* &lt;tt&gt;($name) -&gt; $text&lt;/tt&gt;
+Get a meta-data block for this web
+
+
+
+---++ ObjectMethod *getWorkArea* &lt;tt&gt;($key) -&gt; $directorypath&lt;/tt&gt;
+
+Gets a private directory uniquely identified by $key. The directory is
+intended as a work area for plugins.
+
+The standard is a directory named the same as &quot;key&quot; under
+$TWiki::cfg{RCS}{WorkAreaDir}
+
+
+
+---++ ObjectMethod *saveMetaData* &lt;tt&gt;($web,$name) -&gt; $text&lt;/tt&gt;
+
+Write a named meta-data string. If web is given the meta-data
+is stored alongside a web.
+
+
+
+---++ ObjectMethod *getTopicNames* &lt;tt&gt;() -&gt; @topics&lt;/tt&gt;
+
+Get list of all topics in a web
+   * =$web= - Web name, required, e.g. =&#39;Sandbox&#39;=
+Return a topic list, e.g. =( &#39;WebChanges&#39;,  &#39;WebHome&#39;, &#39;WebIndex&#39;, &#39;WebNotify&#39; )=
+
+
+
+---++ ObjectMethod *getWebNames* &lt;tt&gt;() -&gt; @webs&lt;/tt&gt;
+Gets a list of names of subwebs in the current web
+
+
+
+---++ ObjectMethod *searchInWebContent* &lt;tt&gt;($searchString,$web,\@topics,\%options) -&gt; \%map&lt;/tt&gt;
+
+Search for a string in the content of a web. The search must be over all
+content and all formatted meta-data, though the latter search type is
+deprecated (use searchMetaData instead).
+
+   * =$searchString= - the search string, in egrep format if regex
+   * =$web= - The web to search in
+   * =\@topics= - reference to a list of topics to search
+   * =\%options= - reference to an options hash
+The =\%options= hash may contain the following options:
+   * =type= - if =regex= will perform a egrep-syntax RE search (default &#39;&#39;)
+   * =casesensitive= - false to ignore case (defaulkt true)
+   * =files_without_match= - true to return files only (default false)
+
+The return value is a reference to a hash which maps each matching topic
+name to a list of the lines in that topic that matched the search,
+as would be returned by &#39;grep&#39;. If =files_without_match= is specified, it will
+return on the first match in each topic (i.e. it will return only one
+match per topic, and will not return matching lines).
+
+
+
+---++ ObjectMethod *moveWeb* &lt;tt&gt;($newWeb)&lt;/tt&gt;
+Move a web.
+
+
+
+---++ ObjectMethod *getRevision* &lt;tt&gt;($version) -&gt; $text&lt;/tt&gt;
+
+Get the text for a given revision. The version number must be an integer.
+
+*Virtual method* - must be implemented by subclasses
+
+
+
+---++ ObjectMethod *storedDataExists* &lt;tt&gt;() -&gt; $boolean&lt;/tt&gt;
+Establishes if there is stored data associated with this handler.
+
+
+
+---++ ObjectMethod *getTimestamp* &lt;tt&gt;() -&gt; $integer&lt;/tt&gt;
+
+Get the timestamp of the file
+Returns 0 if no file, otherwise epoch seconds
+
+
+
+---++ ObjectMethod *restoreLatestRevision* &lt;tt&gt;($wikiname)&lt;/tt&gt;
+
+Restore the plaintext file from the revision at the head.
+
+
+
+---++ ObjectMethod *removeWeb* &lt;tt&gt;($web)&lt;/tt&gt;
+   * =$web= - web being removed
+
+Destroy a web, utterly. Removed the data and attachments in the web.
+
+Use with great care! No backup is taken!
+
+
+
+---++ ObjectMethod *moveTopic* &lt;tt&gt;($newWeb,$newTopic)&lt;/tt&gt;
+Move/rename a topic.
+
+
+
+---++ ObjectMethod *copyTopic* &lt;tt&gt;($newWeb,$newTopic)&lt;/tt&gt;
+Copy a topic.
+
+
+
+---++ ObjectMethod *moveAttachment* &lt;tt&gt;($newWeb,$newTopic,$newAttachment)&lt;/tt&gt;
+Move an attachment from one topic to another. The name is retained.
+
+
+
+---++ ObjectMethod *copyAttachment* &lt;tt&gt;($newWeb,$newTopic)&lt;/tt&gt;
+Copy an attachment from one topic to another. The name is retained.
+
+
+
+---++ ObjectMethod *isAsciiDefault* &lt;tt&gt;() -&gt; $boolean&lt;/tt&gt;
+
+Check if this file type is known to be an ascii type file.
+
+
+
+---++ ObjectMethod *setLock* &lt;tt&gt;($lock,$user)&lt;/tt&gt;
+
+Set a lock on the topic, if $lock, otherwise clear it.
+$user is a wikiname.
+
+SMELL: there is a tremendous amount of potential for race
+conditions using this locking approach.
+
+
+
+---++ ObjectMethod *isLocked* &lt;tt&gt;() -&gt; ($user,$time)&lt;/tt&gt;
+
+See if a twiki lock exists. Return the lock user and lock time if it does.
+
+
+
+---++ ObjectMethod *setLease* &lt;tt&gt;($lease)&lt;/tt&gt;
+   * =$lease= reference to lease hash, or undef if the existing lease is to be cleared.
+
+Set an lease on the topic.
+
+
+
+---++ ObjectMethod *getLease* &lt;tt&gt;() -&gt; $lease&lt;/tt&gt;
+
+Get the current lease on the topic.
+
+
+
+---++ ObjectMethod *getStream* &lt;tt&gt;() -&gt; \*STREAM&lt;/tt&gt;
+
+Return a text stream that will supply the text stored in the topic.
+
+
+
+---++ ObjectMethod *numRevisions* &lt;tt&gt;() -&gt; $integer&lt;/tt&gt;
+
+Must be provided by subclasses.
+
+Find out how many revisions there are. If there is a problem, such
+as a nonexistent file, returns 0.
+
+*Virtual method* - must be implemented by subclasses
+
+
+
+---++ ObjectMethod *initBinary* &lt;tt&gt;()&lt;/tt&gt;
+
+Initialise a binary file.
+
+Must be provided by subclasses.
+
+*Virtual method* - must be implemented by subclasses
+
+
+
+---++ ObjectMethod *initText* &lt;tt&gt;()&lt;/tt&gt;
+
+Initialise a text file.
+
+Must be provided by subclasses.
+
+*Virtual method* - must be implemented by subclasses
+
+
+
+---++ ObjectMethod *addRevisionFromText* &lt;tt&gt;($text,$comment,$user,$date)&lt;/tt&gt;
+
+Add new revision. Replace file with text.
+   * =$text= of new revision
+   * =$comment= checkin comment
+   * =$user= is a wikiname.
+   * =$date= in epoch seconds; may be ignored
+
+*Virtual method* - must be implemented by subclasses
+
+
+
+---++ ObjectMethod *addRevisionFromStream* &lt;tt&gt;($fh,$comment,$user,$date)&lt;/tt&gt;
+
+Add new revision. Replace file with contents of stream.
+   * =$fh= filehandle for contents of new revision
+   * =$comment= checkin comment
+   * =$user= is a wikiname.
+   * =$date= in epoch seconds; may be ignored
+
+*Virtual method* - must be implemented by subclasses
+
+
+
+---++ ObjectMethod *replaceRevision* &lt;tt&gt;($text,$comment,$user,$date)&lt;/tt&gt;
+Replace the top revision.
+   * =$text= is the new revision
+   * =$date= is in epoch seconds.
+   * =$user= is a wikiname.
+   * =$comment= is a string
+
+*Virtual method* - must be implemented by subclasses
+
+
+
+---++ ObjectMethod *deleteRevision* &lt;tt&gt;()&lt;/tt&gt;
+
+Delete the last revision - do nothing if there is only one revision
+
+*Virtual method* - must be implemented by subclasses
+
+
+
+---++ ObjectMethod *revisionDiff* &lt;tt&gt;($rev1,$rev2,$contextLines) -&gt; \@diffArray&lt;/tt&gt;
+rev2 newer than rev1.
+Return reference to an array of [ diffType, $right, $left ]
+
+*Virtual method* - must be implemented by subclasses
+
+
+
+!!!getRevision!!!
+
+---++ ObjectMethod *getRevisionAtTime* &lt;tt&gt;($time) -&gt; $rev&lt;/tt&gt;
+
+Get a single-digit version number for the rev that was alive at the
+given epoch-secs time, or undef it none could be found.
+
+*Virtual method* - must be implemented by subclasses
+
+
+
+---++ ObjectMethod *getAttachmentAttributes* &lt;tt&gt;($web,$topic,$attachment)&lt;/tt&gt;
+
+returns [stat] for any given web, topic, $attachment
+SMELL - should this return a hash of arbitrary attributes so that 
+SMELL + attributes supported by the underlying filesystem are supported
+SMELL + (eg: windows directories supporting photo &quot;author&quot;, &quot;dimension&quot; fields)
+
+
+
+sub _constructAttributesForAutoAttached
+as long as stat is defined, return an emulated set of attributes for that attachment.
+
+
+---++ ObjectMethod *getAttachmentList* &lt;tt&gt;($web,$topic)&lt;/tt&gt;
+
+returns {} of filename =&gt; { key =&gt; value, key2 =&gt; value } for any given web, topic
+Ignores files starting with _ or ending with ,v
+
+
+
+---++ ObjectMethod *stringify* &lt;tt&gt;()&lt;/tt&gt;
+Generate string representation for debugging
+
+
+

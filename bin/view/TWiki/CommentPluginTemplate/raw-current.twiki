@@ -1,0 +1,192 @@
+
+Templates for CommentPlugin - See %TWIKIWEB%.CommentPlugin#Customisation for help.
+
+While this topic can be viewed as a TWiki topic, it is used by the CommentPlugin as a template file - see TWikiTemplates. The important content in here is in the verbatim blocks. The rest of the topic is just comments.
+
+*WARNING: THIS FILE WILL BE OVERWRITTEN WHEN YOU UPGRADE THE COMMENT PLUGIN*
+
+Put your local templates into %TWIKIWEB%.UserCommentsTemplate.
+*LOCAL TEMPLATES WILL OVERRIDE TEMPLATES DEFINED IN THIS FILE*
+
+%TOC%
+
+---+ Template definitions
+---++ Templates used in rest of file
+Generic prompt box used by other templates
+&lt;verbatim&gt;
+%TMPL:DEF{promptbox}%
+&lt;div class=&quot;commentPlugin commentPluginPromptBox&quot;&gt;
+&lt;table&gt;&lt;tr valign=&quot;middle&quot;&gt;&lt;td&gt;&lt;textarea %DISABLED% rows=&quot;%rows|3%&quot; cols=&quot;%cols|70%&quot; name=&quot;comment&quot; wrap=&quot;soft&quot; onfocus=&quot;if(this.value==&#39;%MESSAGE%&#39;)this.value=&#39;&#39;&quot; onblur=&quot;if(this.value==&#39;&#39;)this.value=&#39;%MESSAGE%&#39;&quot;&gt;%MESSAGE%&lt;/textarea&gt;&lt;/td&gt;&lt;td&gt;&lt;input %DISABLED% type=&quot;submit&quot; value=&quot;%button|Add comment%&quot; /&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;&lt;!--/commentPlugin--&gt;
+%TMPL:END%
+&lt;/verbatim&gt;
+Short comment, signed and dated
+&lt;verbatim&gt;
+%TMPL:DEF{outputoneliner}%   * %URLPARAM{&quot;comment&quot;}% -- %WIKIUSERNAME% - %SERVERTIME%%TMPL:END%
+&lt;/verbatim&gt;
+---------------------------------------------------------------------------
+---++ User templates
+---+++ top
+Comments, signed and dated, added at top of file
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:top}%%TMPL:P{promptbox}%%TMPL:END%
+&lt;/verbatim&gt;
+
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:top}%%TMPL:P{outputoneliner}%%POS:TOP%
+%TMPL:END%
+&lt;/verbatim&gt;
+---------------------------------------------------------------------------
+---+++ bottom
+Comments, signed and dated, added at end of file
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:bottom}%%TMPL:P{promptbox}%%TMPL:END%
+&lt;/verbatim&gt;
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:bottom}%%POS:BOTTOM%%TMPL:P{outputoneliner}%%TMPL:END%
+&lt;/verbatim&gt;
+---------------------------------------------------------------------------
+---+++ above
+Comments, signed and dated, added immediately before anchor
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:above}%%TMPL:P{promptbox}%%TMPL:END%
+&lt;/verbatim&gt;
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:above}%%POS:BEFORE%%TMPL:P{outputoneliner}%
+%TMPL:END%
+&lt;/verbatim&gt;
+---------------------------------------------------------------------------
+---+++ threadmode
+Wiki thread mode comment, signed and dated
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:threadmode}%%TMPL:P{promptbox}%%TMPL:END%
+&lt;/verbatim&gt;
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:threadmode}%%POS:BEFORE%
+
+%URLPARAM{&quot;comment&quot;}%
+
+-- %WIKIUSERNAME% - %DATE%
+%TMPL:END%
+&lt;/verbatim&gt;
+---------------------------------------------------------------------------
+---+++ below
+Comments, signed and dated, added immediately below anchor
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:below}%%TMPL:P{promptbox}%%TMPL:END%
+&lt;/verbatim&gt;
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:below}%%POS:AFTER%%TMPL:P{outputoneliner}%
+%TMPL:END%
+&lt;/verbatim&gt;
+---------------------------------------------------------------------------
+---+++ tableprepend
+Comments, signed and dated, added at top of table below the
+anchor/location/COMMENT
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:tableprepend}%%TMPL:P{promptbox}%%TMPL:END%
+&lt;/verbatim&gt;
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:tableprepend}%%POS:AFTER%| %URLPARAM{&quot;comment&quot; newline=&quot;&lt;br /&gt;&quot;}% &lt;/td&gt;&lt;td&gt; %WIKIUSERNAME% &lt;/td&gt;&lt;td&gt; %SERVERTIME% |
+%TMPL:END%
+&lt;/verbatim&gt;
+---------------------------------------------------------------------------
+---+++ tableappend
+Comments, signed and dated, added at end of table above the anchor/location/COMMENT
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:tableappend}%%TMPL:P{promptbox}%%TMPL:END%
+&lt;/verbatim&gt;
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:tableappend}%%POS:BEFORE%| %URLPARAM{&quot;comment&quot; newline=&quot;&lt;br /&gt;&quot;}% | %WIKIUSERNAME% | %SERVERTIME% |
+%TMPL:END%
+&lt;/verbatim&gt;
+---------------------------------------------------------------------------
+---+++ after: Add before the comment box, after the last comment
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:after}%%TMPL:P{promptbox}%%TMPL:END%
+&lt;/verbatim&gt;
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:after}%%NOP%
+%TMPL:P{outputoneliner}% %POS:BEFORE%%TMPL:END%
+&lt;/verbatim&gt;
+----------------------------------------------------------------------------
+---+++ action
+Action added to action table directly above comment box
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:action}%
+&lt;table&gt;
+ &lt;tr&gt;
+  &lt;td align=&quot;right&quot;&gt;Action for (%TWIKIWEB%.WikiName):&lt;/td&gt;
+  &lt;td&gt;&lt;input name=&quot;who&quot; type=&quot;text&quot; size=&quot;50&quot; value=&quot;%URLPARAM{&quot;who&quot;}%&quot; /&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+  &lt;td align=&quot;right&quot;&gt;Due date:&lt;/td&gt;
+  &lt;td&gt;
+   &lt;input name=&quot;due&quot; id=&quot;idDue&quot; type=&quot;text&quot; size=&quot;30&quot; value=&quot;%URLPARAM{&quot;due&quot;}%&quot; /&gt;
+  &lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+  &lt;td colspan=&quot;2&quot;&gt;
+   &lt;textarea %DISABLED% rows=&quot;5&quot; cols=&quot;120&quot; name=&quot;comment&quot; wrap=&quot;soft&quot;&gt;&lt;/textarea&gt;
+  &lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+  &lt;td colspan=2 align=middle&gt;&lt;input %DISABLED% type=&quot;submit&quot; value=&quot;Add action&quot; /&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+&lt;/table&gt;
+%TMPL:END%
+&lt;/verbatim&gt;
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:action}%%POS:BEFORE%%AC%NOP%TION{who=&quot;%URLPARAM{&quot;who&quot;}%&quot; due=&quot;%URLPARAM{&quot;due&quot;}%&quot;}% %URLPARAM{&quot;comment&quot; newline=&quot;&lt;br /&gt;&quot;}%&lt;br /&gt;- Created by %WIKIUSERNAME%, %SERVERTIME%
+%TMPL:END%
+&lt;/verbatim&gt;
+----------------------------------------------------------------------------
+---+++ table
+Tablerows adding on end - TWiki:Main/FranzJosefSilli
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:table}%
+&lt;hr width=&quot;60%&quot; /&gt; Date: &lt;input %DISABLED% type=&quot;text&quot; size=&quot;40&quot; name=&quot;comment_date&quot; /&gt; &lt;br /&gt; City: &lt;input %DISABLED% type=&quot;text&quot; size=&quot;40&quot; name=&quot;comment_city&quot; value=&quot;&quot; /&gt; &lt;input %DISABLED% type=&quot;submit&quot; value=&quot;%button|Add%&quot; /&gt; entry &lt;hr width=&quot;90%&quot; /&gt;
+%TMPL:END%
+&lt;/verbatim&gt;
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:table}%
+%POS:BEFORE%| %URLPARAM{&quot;comment_date&quot;}% | %WIKIUSERNAME% | %URLPARAM{&quot;comment_city&quot; }% |
+%TMPL:END%
+&lt;/verbatim&gt;
+---------------------------------------------------------------------------
+---+++ toctalk
+Talk using TOC adding on end - TWiki:Main/FranzJosefSilli
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:toctalk}%
+&lt;hr width=&quot;60%&quot; /&gt; Summary: &lt;input %DISABLED% type=&quot;text&quot; size=&quot;40&quot; name=&quot;comment_summary&quot; /&gt; &lt;br /&gt; &lt;textarea %DISABLED% rows=&quot;%rows|3%&quot; cols=&quot;%cols|50%&quot; name=&quot;comment_text&quot; wrap=&quot;soft&quot; onfocus=&quot;if(this.value==&#39;%MESSAGE%&#39;)this.value=&#39;&#39;&quot; onblur=&quot;if(this.value==&#39;&#39;)this.value=&#39;%MESSAGE%&#39;&quot;&gt;%MESSAGE%&lt;/textarea&gt; &lt;br /&gt; &lt;input %DISABLED% type=&quot;submit&quot; value=&quot;%button|Add%&quot; /&gt; &lt;hr width=&quot;90%&quot; /&gt;
+%TMPL:END%
+&lt;/verbatim&gt;
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:toctalk}%
+%POS:BEFORE%---+++ %SERVERTIME% %WIKIUSERNAME%: %URLPARAM{&quot;comment_summary&quot;}%
+%POS:BEFORE%%URLPARAM{&quot;comment_text&quot; }%
+%POS:BEFORE%
+%TMPL:END%
+&lt;/verbatim&gt;
+---------------------------------------------------------------------------
+---+++ bookmark
+Talk using TOC adding on end - TWiki:Main/FranzJosefSilli
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:bookmark}%
+&lt;hr width=&quot;60%&quot; /&gt; URL: &lt;input %DISABLED% type=&quot;text&quot; size=&quot;40&quot; name=&quot;comment_url&quot; value=&quot;http://&quot; /&gt; &lt;br /&gt; Link: &lt;input %DISABLED% type=&quot;text&quot; size=&quot;40&quot; name=&quot;comment_link&quot; /&gt; &lt;br /&gt; Text: &lt;input %DISABLED% type=&quot;text&quot; size=&quot;40&quot; name=&quot;comment_text&quot; value=&quot;%MESSAGE%&quot; /&gt; &lt;input %DISABLED% type=&quot;submit&quot; value=&quot;%button|Add%&quot; /&gt; bookmark &lt;hr width=&quot;90%&quot; /&gt;
+%TMPL:END%
+&lt;/verbatim&gt;
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:bookmark}%
+%POS:BEFORE%   * [[%URLPARAM{&quot;comment_url&quot;}%][%URLPARAM{&quot;comment_link&quot;}%]] - %URLPARAM{&quot;comment_text&quot; }%
+%TMPL:END%
+&lt;/verbatim&gt;
+
+---+ Include !UserCommentsTemplate
+
+Including UserCommentsTemplate:
+
+%TMPL:INCLUDE{&quot;UserComments&quot;}%
+
+&lt;!-- Do _not_ attempt to edit this topic; it is auto-generated. Please add comments/questions/remarks to the Dev topic instead. --&gt;
+

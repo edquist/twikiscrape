@@ -1,0 +1,271 @@
+%DOC_STATUS_TABLE%
+https://twiki.grid.iu.edu/twiki/pub/Storage/WebHome/images.jpg
+---+ *Storage Operations Toolkit* &lt;br&gt;(Detailed Documents) 
+%TOC%
+
+A community-contributed Storage Operations Toolkit is available for distribution. It is a bundle of a handful of RPM&#39;s, each RPM packaged with a few different utilities. Location for all installs is ==/opt/d-cache/toolkit== for dCache. 
+
+%TABLE{ sort=&quot;off&quot; tableborder=&quot;0&quot; cellpadding=&quot;1&quot; cellspacing=&quot;3&quot;  headeralign=&quot;left&quot; dataalign=&quot;left&quot; headerrows=&quot;1&quot; footerrows=&quot;0&quot; databg=&quot;#00FF00&quot;}%
+|&lt;font color=#000000&gt;&lt;b&gt;Please see - http://datagrid.ucsd.edu/toolkit . &lt;/b&gt;&lt;/font&gt;|
+
+%STARTINCLUDE%
+
+---++ SRM Space Reclaimer 
+
+This is a small utility to (a) reclaim, automatically or manually, or otherwise ignore each VO&#39;s quota of expired and released SRM spaces in PNFS, and to (b) preset these quotas.  This tool needs to be run on PNFS node, with database connectivity allowed from SRM node.
+
+---+++!! Installation
+ 
+On PNFS node --
+
+&lt;pre class=&quot;screen&quot;&gt;
+% &lt;userinput&gt;wget http://datagrid.ucsd.edu/toolkit/&lt;i&gt;VERSION&lt;/i&gt;/osg-storage-operations-toolkit-&lt;i&gt;VER&lt;/i&gt;.tar.gz&lt;/userinput&gt;
+% &lt;userinput&gt;tar xvzf osg-storage-operations-toolkit-&lt;i&gt;VER&lt;/i&gt;.tar.gz&lt;/userinput&gt;
+% &lt;userinput&gt;rpm -Uvh osg-dcache-tools-srm-space-reclaimer-&lt;i&gt;SUBVER&lt;/i&gt;.i386.rpm&lt;/userinput&gt;
+&lt;/pre&gt;
+
+Install will also drop a file in ==/etc/cron.weekly== for periodic runs. 
+
+&lt;pre class=&quot;screen&quot;&gt;
+% &lt;userinput&gt;ls /etc/cron.weekly/srm* &lt;/userinput&gt;
+/etc/cron.weekly/srm-space-reclaimer.cron 
+&lt;/pre&gt;
+                                                                                                                                                                      
+The ==/opt/d-cache/etc/srm-space-reclaimer.policy== file                                                                                                     
+has all the configurable parameters. 
+
+At each run, removal scripts are created in ==~/srm_space_reclaimer_logs== directory. After completing configuration, if a site chooses to run the tool in &lt;i&gt;&lt;b&gt;fully-automatic mode&lt;/b&gt;&lt;/i&gt; for all VOs, no manual action may be further needed. Otherwise, and, if any manual action is necessary, it will be pointed out in email notifications sent by the utility. In that case, the site administrators will simply need to execute a script ==take-action.sh== in a subdirectory with most recent timestamp. The full path will also be included in the email notifications. Please see an example below.
+
+---+++!! Configuration
+
+Step 1. Allow database connectivity from the SRM node. 
+
+This can be done by simply modifying 2 files in !PostgreSQL configuration, and restarting it. If firewall is being used, port 5432 on SRM node needs to be open for PNFS node.
+
+Edit ==~postgres/data/pg_hba.conf== to add:
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;userinput&gt;host all all IP.addr.of.PNFS.node/32  trust &lt;/userinput&gt;
+&lt;/pre&gt;
+
+Edit ==~postgres/data/postgresql.conf== to uncomment:
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;userinput&gt;listen_addresses = &#39;*&#39; &lt;/userinput&gt;
+&lt;/pre&gt;    
+
+Restart !PostgreSQL.
+&lt;pre class=&quot;screen&quot;&gt;
+% &lt;userinput&gt;/etc/init.d/postgresql restart &lt;/userinput&gt;
+&lt;/pre&gt;
+
+Step 2. On PNFS node, add general configuration in ==/opt/d-cache/etc/srm-space-reclaimer.policy==
+
+&lt;pre class=&quot;screen&quot;&gt;
+# Email addresses of administrators, required for receiving notifications.
+# Multiple addresses can be configured, separated by a comma.
+&lt;userinput&gt;email_address=name@ucsd.edu, name@fnal.gov, name@desy.org&lt;/userinput&gt;
+
+# Your site&#39;s valid domain. This is required for sending notifications.
+&lt;userinput&gt;site_valid_domain=ucsd.edu&lt;/userinput&gt;
+
+# SRM server&#39;s Database configuration, required for connectivity.
+# srmDbPassword is not really used currently. For VDT installs, this
+# should just work fine.
+&lt;userinput&gt;srmDatabaseHost=tsrm-1.t2.ucsd.edu&lt;/userinput&gt;
+&lt;userinput&gt;srmDbName=dcache&lt;/userinput&gt;
+&lt;userinput&gt;srmDbUser=srmdcache&lt;/userinput&gt;
+&lt;userinput&gt;srmDbPassword=srmdcache&lt;/userinput&gt;
+&lt;/pre&gt;
+
+Step 3. On PNFS node, add policies for each VO in ==/opt/d-cache/etc/srm-space-reclaimer.policy==
+
+&lt;pre class=&quot;screen&quot;&gt;
+# Policies are listed here. Syntax is as follows -- 
+# reclaim: &lt;space&gt; VO &lt;space&gt; Action &lt;space&gt; [Maximum Allowable Space in GB]
+# where Action can be one of { automatic | ask | never }
+# Note that &quot;OTHERS&quot; is for all VOs that are unlisted here or are unknown.
+&lt;userinput&gt;reclaim: ATLAS never&lt;/userinput&gt;
+&lt;userinput&gt;reclaim: CMS ask 1000&lt;/userinput&gt;
+#reclaim: DTeam ask 1&lt;/userinput&gt;
+&lt;userinput&gt;reclaim: DTeam automatic&lt;/userinput&gt;
+&lt;userinput&gt;reclaim: CDF automatic 5&lt;/userinput&gt;
+&lt;userinput&gt;reclaim: SDSS ask 500&lt;/userinput&gt;
+#reclaim: SDSS never&lt;/userinput&gt;
+&lt;userinput&gt;reclaim: LIGO never&lt;/userinput&gt;
+&lt;userinput&gt;reclaim: CompBioGrid ask&lt;/userinput&gt;
+&lt;userinput&gt;reclaim: OSG automatic 8&lt;/userinput&gt;
+&lt;userinput&gt;reclaim: OTHERS ask&lt;/userinput&gt;
+&lt;/pre&gt;
+
+---+++!! Important note 
+
+Do not use *automatic* setting for any VO unless you become comfortable after a few runs.   
+
+---+++!! Detailed description of the &lt;i&gt;policy&lt;/i&gt; configuration
+ 
+A site has flexibility in choosing 1 of 3 actions for every VO - *never*, *ask*, *automatic*.
+
+  In addition, if the action chosen is *ask* or *automatic*, there is a 
+  choice to configure *maximum allowable space*, in GB, with a default 
+  of zero GB. This means, if *maximum allowable space* is not configured, we 
+  assume it to be minimum, i.e., zero GB. For a VO, space will be reclaimed 
+  only if *total consumption* of all expired/released spaces exceeds the 
+  *maximum allowable space*.
+
+  (a) *never* -- For such a VO, do nothing, ignore expiration of spaces.
+  Suggested for site&#39;s major sponsoring VO(s) as well as for all unknown 
+  VOs, e.g., who are not using FQAN.
+ 
+  (b) *ask* -- Prepare file removal scripts, but email and wait for site 
+  administrators to manually execute. Suggested for VOs in normal operation 
+  at this site, and if the site prefers to exercise caution.
+             
+  (c) *automatic* --  Prepare file removal scripts, execute automatically. To 
+  be used if site is comfortable or if all storage by a VO can be regenerated 
+  on loss, e.g., tests, simulation data.
+
+Please note, zero GB is approximated, i.e., ==0 GB== may imply ==x B==, where ==0 Bytes &lt; x &lt; 1 GB==. This is intentional - to allow some &lt;i&gt;&lt;b&gt;lazy cleaning&lt;/b&gt;&lt;/i&gt;. Action will be taken by the utility as soon as consumption hits ==1 GB==.
+
+---+++!! Execution
+
+For a first run, try executing directly, on PNFS node:
+
+&lt;pre class=&quot;screen&quot;&gt;
+% &lt;userinput&gt;/etc/cron.weekly/srm-space-reclaimer.cron &amp; &lt;/userinput&gt; 
+&lt;/pre&gt;
+
+A suggestion is to run the tool weekly. If your site has a different preference, please move ==/etc/cron.weekly/srm-space-reclaimer.cron== accordingly. 
+
+---+++!! Email notifications
+
+If configuration is complete, and the tool is operating normally, it will send email reports to site administrators. 
+
+Example 1.
+&lt;pre class=&quot;screen&quot;&gt;
+From: SRM-space-reclaimer@ucsd.edu                                                                                                                                     
+To: name@ucsd.edu, name@fnal.gov, name@desy.org
+&lt;userinput&gt;Subject: SRM space reclaimer report | No action needed. &lt;/userinput&gt;
+                                 
+SRM Space Reclaimer Report. Utility to: (a) reclaim, automatically                                                                                                     
+or manually, or otherwise ignore each VO&#39;s quota of expired and                                                                                                        
+released SRM spaces in PNFS, and to (b) preset these quotas.                                                                                                           
+                                                                                                                                                                       
+-----                                                                                                                                                                  
+VO name: setting - used/allowed GB, num files -&gt; status                                                                                                                
+-----                                                                                                                                                                  
+ATLAS: never reclaim.                                                                                                                                                  
+CMS: ask - 15/1000 GB, 5 files -&gt; Ignored.                                                                                                                             
+DTeam: automatic - 0/0 GB, 3899 files -&gt; Ignored.                                                                                                                      
+CDF: automatic - 6/5 GB, 10 files -&gt; &lt;userinput&gt;Reclaimed. &lt;/userinput&gt;                                                                                                                          
+SDSS: ask - 42/500 GB, 43061 files -&gt; Ignored.                                                                                                                         
+LIGO: never reclaim.                                                                                                                                                   
+CompBioGrid: ask - 0/0 GB, 0 files -&gt; Ignored.                                                                                                                        
+OSG: automatic - 9/8 GB, 10 files -&gt; &lt;userinput&gt;Reclaimed. &lt;/userinput&gt;                                                                                                                          
+Other VOs: ask - 0/0 GB, 2854 files -&gt; Ignored.                                                                                                                        
+These are unlisted or unknown VOs.                                                                                                                                     
+-----                                                                                                                                                                  
+&lt;userinput&gt;No manual action needed. &lt;/userinput&gt;                                                                                                                                              
+-----                                                                                                                                                                  
+                                                                                                                                                                       
+Please do not reply to the sender address. 
+&lt;userinput&gt;&lt;/userinput&gt;
+&lt;/pre&gt;
+
+Example 2.
+&lt;pre class=&quot;screen&quot;&gt;
+From: SRM-space-reclaimer@ucsd.edu                                                                                                                                     
+To: name@ucsd.edu, name@fnal.gov, name@desy.org                                                                         
+&lt;userinput&gt;Subject: SRM space reclaimer report | Action needed!&lt;/userinput&gt;
+              
+SRM Space Reclaimer Report. Utility to: (a) reclaim, automatically                                                                                                     
+or manually, or otherwise ignore each VO&#39;s quota of expired and                                                                                                        
+released SRM spaces in PNFS, and to (b) preset these quotas.                                                                                                           
+                                                                                                                                                                       
+-----                                                                                                                                                                  
+VO name: setting - used/allowed GB, num files -&gt; status                                                                                                                
+-----                                                                                                                                                                  
+ATLAS: never reclaim.                                                                                                                                                  
+CMS: ask - 5/4 GB, 4 files -&gt; &lt;userinput&gt;Action* needed! &lt;/userinput&gt;                                                                                                                         
+DTeam: automatic - 0/0 GB, 3899 files -&gt; Ignored.                                                                                                                      
+CDF: automatic - 4/5 GB, 8 files -&gt; Ignored.                                                                                                                           
+SDSS: ask - 42/20 GB, 43061 files -&gt; &lt;userinput&gt;Action* needed! &lt;/userinput&gt;                                                                                                                  
+LIGO: never reclaim.                                                                                                                                                   
+CompBioGrid: ask - 0/0 GB, 0 files -&gt; Ignored.                                                                                                                         
+OSG: automatic - 9/8 GB, 10 files -&gt; &lt;userinput&gt;Reclaimed. &lt;/userinput&gt;                                                                                                                         
+Other VOs: ask - 0/0 GB, 2841 files -&gt; Ignored.                                                                                                                        
+These are unlisted or unknown VOs.                                                                                                                                     
+-----                                                                                                                                                                  
+&lt;userinput&gt;* Simply run /root/srm_space_reclaimer_logs/removal-scripts.2008-03-15.1648/take-action.sh &lt;/userinput&gt;                                                                           
+&lt;userinput&gt;  on host tdcadmin-1.t2.ucsd.edu to take overall action. &lt;/userinput&gt;                                                                                                             
+-----                                                                                                                                                                  
+                                                                                                                                                                       
+Please do not reply to the sender address.
+&lt;/pre&gt;
+
+---+++!! Taking action
+
+If any manual action is needed, it will be pointed out in the email notifications sent by the utility. In that case, the site administrators will simply need to execute a script ==take-action.sh== in a subdirectory with most recent timestamp. Based on &lt;i&gt;Example 2&lt;/i&gt; above: 
+
+&lt;pre class=&quot;screen&quot;&gt;
+% &lt;userinput&gt; ssh root@tdcadmin-1.t2.ucsd.edu &lt;/userinput&gt;
+% &lt;userinput&gt; /root/srm_space_reclaimer_logs/removal-scripts.2008-03-15.1648/take-action.sh &amp; &lt;/userinput&gt;
+&lt;/pre&gt;
+
+%STOPINCLUDE%
+
+Set LINKCSS = &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;%PUBURL%/Documentation/Tools/exercises.css&quot;&gt;
+
+-- Main.AbhishekSinghRana - 28 Apr 2009
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = JeffDost
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = HowTo
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %NO%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = TanyaLevshina
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %NO%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = NehaSharma
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %NO%
+############################################################################################################
+--&gt;

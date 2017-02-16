@@ -1,0 +1,138 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Alain Roy
+   * Neha Sharma
+   * Doug Strain
+   * Tanya Levshina
+
+
+---+++ Guests
+   * Marco Mambelli
+   * Suchandra Thapa
+
+---++ Status report
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* Support
+  - bestman2 2.0.8 release
+    minor update on fixed cached total space size associated with tokens in srmGetSpaceMetaData for external command
+  - preparing a new VDT packaging for bestman2
+&lt;/pre&gt;
+
+Doug:
+&lt;pre class=&quot;screen&quot;&gt;
+- xrootd: mock installed successfully and cern xrootd srpm built. (directions here: http://home.fnal.gov/~dstrain/mock.html)
+- hadoop test stand: hadoop-0.20 but problems encountered.
+- Pigeon tools: fixed Robert Engel&#39;s issues (no disk space plus crontab was modified incorrectly)
+- Gratia (Public storage): no response from repeated inquiries to the grid accounting team :(
+&lt;/pre&gt;
+
+Jeff:
+&lt;pre class=&quot;screen&quot;&gt;
+Hadoop 0.20 testing:
+- I contacted Brian about the gridFTP segfault.  He said to be able to use the
+grid-mapfile I must also move /etc/grid-security/gsi-authz.conf.  After I did that it
+used the grid-mapfile correctly and no longer segfaulted.
+- bestman2 client problems - when using srmcp the file successfully copies from hadoop
+but it hangs after gridFTP transfer.  Using it to copy from local to hadoop gives Java
+exceptions from the client side but no complaints from the bestman server side.  lcg-cp
+does not have these problems.
+- For this Brian asked I try using the same client with the unl srm.  I was unable to
+since I am not a part of any VO so I registered with engage-ucsd group.
+- once my VO registration goes through with Engage I&#39;ll try again
+- I emailed a summary to Brian on all my testing issues
+&lt;/pre&gt;
+
+Neha:
+&lt;pre class=&quot;screen&quot;&gt;
+- built vdt-dcache-3.0.6 with dcache 1.9.5-25 (contains vulnerability fix). upgraded gridworks to it and tested. 
+tested the gratia dcache storage/transfer probes aswell.
+- released vdt-dcache-3.0.6
+- worked on trying to execute sql query using sqlalchemy to see the difference in results. no luck.
+- worked on vdt-support ticket #8795
+- fielded question from tanya about gplazma support in new dcache
+- forwarded jglobus update information to dmitry
+&lt;/pre&gt;
+
+Tanya:
+&lt;pre class=&quot;screen&quot;&gt;
+meetings:
+    with Alain, Chander, Dan - xrootd packaging req
+    with Alain, Chander, Gabriele, Ruth - public storage
+
+technical work:
+     installed rpm (built from cern source rpm by Doug) and configured cluster on FermiCloud
+         started testing (https://twiki.grid.iu.edu/bin/view/SoftwareTeam/XrootdRPMTestResults)
+         contacted  Lukasz Janyst (CERN) to discuss some of the issues
+     worked with Alain on summary for xrootd packaging requirements
+     installed new bdm, ran the same tests as for globus.online
+     submitted new tickets for SE_Nebraska_T2 and UFlorida-PG
+     tested new released vdt-dcache (security patches)
+     sys admin support 
+&lt;/pre&gt;
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+!BeStMan2 client in ITB
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+The  client commands will be included in the next ITB release of OSG client (in a couple of weeks). The srm-lbnl-client commands will still be used by default, users will need to execute the additional setup command to have access to the !BeStMan2 client. If this works ok we will hope to make !BeStman2 client as default but still allow users to switch back to srm-lbnl-client.
+
+---++ Second agenda item
+&lt;!-- DESCRIPTION --&gt;
+hdfs 0.20
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Jeff was sick so we didn&#39;t discuss issues he has raised. Brian is working on some of the problems Jeff has mentioned in his status report. Doug has installed hdfs on gw nodes (all 32bit) but can not install gridftp (rpm doesn&#39;t exist). Brian is in the process of building it. Meanwhile Doug will find 64bit nodes on FermiCloud and install it there. He also had some issues with hdfs installation. We have agreed to have a meeting with Brian when he returns back from CERN (in a week).
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+dcahe status and dcache probes
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+vdt-dCache with security patches has been released in production. David Lesny has installed it and confirmed that everything looks good. 
+
+Neha is still struggling to get rid of SQLAlchemy  for the dcache gratia probes. Tanya will try to help.
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+xrootd packaging
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Doug has built CERN source rpm within mock environment. Tanya has installed xrootd on 4 Fermi nodes and is testing it (work in progress: https://twiki.grid.iu.edu/bin/view/SoftwareTeam/XrootdRPMTestResults). We hope to have a review of Atlas Tier-3 requirements early next week and see if these rpms  satisfy the requirements.
+
+---++ Fifth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Tickets
+
+++++++++++++
+New tickets
+++++++++++++
+
+Follow up in progress:
+
+38 - OSG Storage: srm-ping: returns wrong exit code on failure
+
+39 - OSG Storage: Installing a GridFTP Server
+
+10160 - OSG-Storage: Resource Specific Issue on T2_Nebraska_OSG
+
+++++++++++++
+Old tickets
+++++++++++++
+
+Closed:
+
+0122 - a user cannot download files from AGLT2_USERDISK 
+
+Follow up in progress:
+
+35 - OSG Storage: Bestman:  dynamic reporting total space for static space tokens
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 31 Mar 2011

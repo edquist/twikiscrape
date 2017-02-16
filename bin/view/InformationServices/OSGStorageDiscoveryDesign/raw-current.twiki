@@ -1,0 +1,245 @@
+*Design Specification*
+
+*OSG Storage Discovery*
+
+Version 1.0 Draft-2
+
+Document Owner: Ted Hesselroth, Open Science Grid, Fermilab
+
+*Revision History*
+&lt;table width=&quot;661&quot; cellspacing=&quot;0&quot; style=&quot;width: 495.75pt; border-collapse: collapse&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt; &lt;tbody&gt;&lt;tr&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; border-width: 1pt; border-color: windowtext; border-style: solid&quot;&gt;
+
+*Name*
+&lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt;
+
+*Change*
+&lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt;
+
+*Date*
+&lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt;
+
+*Version*
+&lt;/td&gt; &lt;/tr&gt;
+&lt;tr style=&quot;height: 0.3in&quot;&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt;
+
+Ted Hesselroth
+&lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt;
+
+Modifications based on first round of feedback.
+&lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt;
+
+June 23, 2009
+&lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt;
+
+1.0-Draft-2
+&lt;/td&gt; &lt;/tr&gt; 
+&lt;tr style=&quot;height: 0.3in&quot;&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt;
+
+Ted Hesselroth
+&lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt;
+
+Initial Draft.
+&lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt;
+
+April 16, 2009
+&lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt;
+
+1.0-Draft-1
+&lt;/td&gt; &lt;/tr&gt; &lt;tr style=&quot;height: 0.3in&quot;&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;/tr&gt; &lt;tr style=&quot;height: 0.3in&quot;&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;/tr&gt; &lt;tr style=&quot;height: 0.3in&quot;&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt; &lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt; &lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt; &lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt; &lt;/td&gt; &lt;/tr&gt; &lt;/tbody&gt;&lt;/table&gt;
+
+*Concurrence*
+&lt;table width=&quot;661&quot; cellspacing=&quot;0&quot; style=&quot;width: 495.75pt; border-collapse: collapse&quot; cellpadding=&quot;0&quot; border=&quot;0&quot;&gt; &lt;tbody&gt;&lt;tr&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; border-width: 1pt; border-color: windowtext; border-style: solid&quot;&gt;
+
+*Name*
+&lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt;
+
+*Organization*
+&lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt;
+
+*Date*
+&lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt;
+
+*Version*
+&lt;/td&gt; &lt;/tr&gt; &lt;tr style=&quot;height: 0.3in&quot;&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;/tr&gt; &lt;tr style=&quot;height: 0.3in&quot;&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;/tr&gt; &lt;tr style=&quot;height: 0.3in&quot;&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;/tr&gt; &lt;tr style=&quot;height: 0.3in&quot;&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in&quot;&gt; &lt;/td&gt; &lt;/tr&gt; &lt;tr&gt; &lt;td width=&quot;144&quot; valign=&quot;top&quot; style=&quot;width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt; &lt;/td&gt; &lt;td width=&quot;277&quot; valign=&quot;top&quot; style=&quot;width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt; &lt;/td&gt; &lt;td width=&quot;114&quot; valign=&quot;top&quot; style=&quot;width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt; &lt;/td&gt; &lt;td width=&quot;126&quot; valign=&quot;top&quot; style=&quot;width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt&quot;&gt; &lt;/td&gt; &lt;/tr&gt; &lt;/tbody&gt;&lt;/table&gt;
+
+*Introduction*
+
+This is the design specification for the OSG Storage Discovery capability. It is written to define how the requirements described in the companion requirements document (see References) shall be implemented.
+
+*System Overview*
+
+The basis for much of the required functionality for OSG Storage Discovery has already been implemented and deployed, in the sense that services which can deliver much if not all of the needed information already exist within the OSG. In particular, the BDII service aggregates storage as well as compute information from OSG sites, using recently deployed updated GIP modules. The OSG Resource Selection Service has also been deployed, aggregating information using the same schema (Glue 1.3) as BDII, through CEMon. The OSG Matchmaker software provides &lt;nop&gt;ReSS information supplemented with additional site snapshots obtained by probes. The OSG Storage Discovery project will provide an accessible means of exploiting the information provided by these services.
+
+The project will ideally not require modifications to services on which it depends, and this specification is written to that end. That being said, it is possible that some shortcomings in the existing services will be exposed by the new capability, so the door should remain open to interplay between the design of this component and those of the above services.
+
+The requirements document describes an Authorization Check feature as being optional. In this document, that feature will be considered as out of scope.
+
+*Design Considerations*
+
+The new software falls in to the Ease-of-Use category targeted at new users of the OSG. Therefore, installation and use of the software should be as simple as possible. Fortunately, most of the needed functionality can be achieved with well-known web service components, and the areas that cannot, can be packaged in such a way as to hide the complexity from the user.
+
+*Architectural Strategies*
+
+This software lies at the consumer end of the information services, providing access through interfaces that most users are already familiar with. Therefore, the architecture will serve as a bridge between those interface components and the existing services.
+
+*System Architecture*
+
+The system architecture for the Information Services domain of the Open Science Grid is described in ??????. The portions of interest to OSG Storage Discovery are the BDII and ReSS services. The new software shall interact with the BDII service through the LDAP interface. It shall interact with the ReSS service indirectly, through the test job run function acting through schedd.
+
+The eventual use of schedd causes this software to also have a dependence on the Job Submission domain, at least to the extent of the required format for job submission materials. There is, however, not effect of this dependence on the software design.
+
+*Software Architecture*
+
+To implement the features described the requirements document, the following specification shall be followed. See figure 1. for an overview of the software architecture.
+
+&lt;p align=&quot;center&quot; style=&quot;margin-top: 12pt; margin-right: 0in; margin-left: 0in; margin-bottom: 0.0001pt; text-align: center; line-height: 13.6pt&quot;&gt;
+&lt;img src=&quot;%ATTACHURLPATH%/OSGStorageDiscoveryDesign.gif&quot; alt=&quot;OSGStorageDiscoveryDesign.gif&quot; width=&#39;793&#39; height=&#39;559&#39; /&gt;&quot;  &lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;margin-top: 12pt; margin-right: 0in; margin-left: 0in; margin-bottom: 0.0001pt; text-align: center; line-height: 13.6pt&quot;&gt;Figure 1.&lt;/p&gt;
+
+Satisfying requirement 1.1, the requirements expression shall be written in XPath. This format allows easy composition of multiple parameters, allows the use of commonly-available libraries and representations, and provides for future integration capability.
+
+*The Command Line*
+
+A command line interface to BDII shall be written in Java, satisfying requirements 2.1-2. The interface shall use openldap libraries for communication with BDII. The XPath expression shall first be converted to XML using the XQueryX utility, and then to ldapsearch format via the STAX parser using custom software. Results from the BDII server shall be converted from DSML to structured XML, and the XPath expression evaluated using the Xalan library.
+
+Command line options shall be as follows.
+
+_Usage_
+&lt;verbatim&gt;
+xpathsearch [options]  &lt;xpathexpression | name1&lt;OP&gt;value1 [name2&lt;OP&gt;value2] ...&gt;
+&lt;/verbatim&gt;
+
+_Available options_
+&lt;verbatim&gt;
+ -b &lt;o=BASE&gt;                       base for LDAP search. Example (default): -b o=grid
+
+ -H &lt;PROTOCOL://HOST:PORT&gt;         host_uri for search. Example (default): -H ldap://iu.grid.ui.edu:2710
+
+ -h,--help                         Print usage and options
+
+ -v,--version                      Print the version number of xpathsearch
+
+ -u,--use_ldap_aux                 Use auxilary LDAP classes
+
+ -d,--output_ldap_dn               Output the dn of each LDAP objectclass
+
+ -a,--output_all_ldap_attributes   Output all queried attributes of each LDAP objectclass
+
+ -f,--format &lt;list|xml|job&gt;    Output format, as list, XML, or job. Default is list.
+
+ -t,--test                         Run the unit tests
+&lt;/verbatim&gt;
+
+_Explanation of Options_
+&lt;verbatim&gt;
+ -b &lt;o=BASE&gt;                       base for LDAP search. Example (default): -b o=grid
+&lt;/verbatim&gt;
+The base determines at what level in the LDAP directory the search begins. The default &quot;o=grid&quot; is the highest level of the BDII information. A lower level, such as to produce a search on the information from only one site, for example, could be specified by using the site&#39;s LDAP dn as the base. 
+
+&lt;verbatim&gt;
+ -H &lt;PROTOCOL://HOST:PORT&gt;         host_uri for search. Example (default): -H ldap://iu.grid.ui.edu:2710
+&lt;/verbatim&gt;
+URI of the information server. Only the ldap protocol is supported in the initial implmentation.
+
+&lt;verbatim&gt;
+ -h,--help                         Print usage and options
+&lt;/verbatim&gt;
+Print the above usage synopsis and option, and the supported attribute name shortcuts (see below).
+
+&lt;verbatim&gt;
+ -v,--version                      Print the version number of xpathsearch
+&lt;/verbatim&gt;
+The version is the release number for production software, and build number for test software.
+
+&lt;verbatim&gt;
+ -u,--use_ldap_aux                 Use auxilary LDAP classes
+&lt;/verbatim&gt;
+Standard LDAP searches ignore auxilary classes and utilize structural classes only. This causes inconsistency with the corresponding XML schema, which treats all classes the same. This feature allows switching between the two conventions.
+
+&lt;verbatim&gt;
+-d,--output_ldap_dn               Output the dn of each LDAP objectclass
+&lt;/verbatim&gt;
+In cases where the search is on only nodes, nothing useful would be output because all specific information is in attributes. This option specifies a default attribute on which to produce the results.
+
+&lt;verbatim&gt;
+ -a,--output_all_ldap_attributes   Output all queried attributes of each LDAP objectclass
+&lt;/verbatim&gt;
+Similar in motivation to the &quot;--output_ldap_dn&quot; option, but outputs all attributes.
+
+&lt;verbatim&gt;
+ -f,--format &lt;list|xml|job&gt;    Output format, as list, XML, or job. Default is list.
+&lt;/verbatim&gt;
+The default is to output the results in list form, with one result per line. The output format may optionally be xml, with each result being a text node of a simple generic schema. The job output does not do a search, but transforms the query to a job script, including a classad. The job script can then be used for a test job submission.
+
+&lt;verbatim&gt;
+ -t,--test                         Run the unit tests
+&lt;/verbatim&gt;
+Invokes the unit test, which contains some XPath expressions which can be run against the default host and base.
+
+_xpathexpression Format_
+
+In this format, the XPath expression is supplied by the user. It must conform to the schema of the server specified with the &quot;-H&quot; option. All XPath 1.0 expressions are supported, with the following exceptions.
+   * Lateral traversal notations, such as &quot;next-sibling&quot;, are not supported. Child and ancestor traversal notations are supported.
+   * The use of variables is not supported.
+
+_Name/Value Format_
+
+A series of attribute value comparisons may be substituted for the XPath Expression. The names on the command line must correspond to attribute names in the schema. The values are specified by the user, and will be compared to the associated values from the information service trough the &quot;OP&quot;, which must be one of &quot;&lt;&quot;, &quot;=&quot;, or &quot;&gt;&quot; The software will resolve the attribute names to their full paths and compose internally the corresponding XPath expression for the logical AND of the set of attribute value comparisons specified.
+
+Shorthand attribute names may be used as follows:
+
+   * access=GlueSEAccessProtocolType
+   * control=GlueSEControlProtocolType
+   * vo=GlueVOInfoAccessControlBaseRule
+   * lifetime=GlueSAPolicyFileLifeTime
+
+Other shorthand names may be added as the need arises. All the available shorthand names will be printed when the &quot;-help&quot; is chosen.
+
+*The Graphical Interface*
+
+The user interface shall be written in Javascript, runnable in all Firefox, Safari, and Internet Explorer browsers. Graphical components are as follows.
+
+   * Requirement 1.2 shall be satisfied with a pasteable &quot;Expression&quot; input text field and a &quot;Result&quot; output text field. The text field will take XPath expressions of the same kind as the command line tool, see above. Besides text entry, drag-and-drop from the tree view will be supported. The text field will be one line in height by default, but expandable into a larger pane for easier editing of expressions. 
+   * A tree view of the BDII information shall provide the browsing function for requirement 1.3. Selections from the tree shall be draggable into the Expression text field in order to aid in composing queries. The XPath for the element dragged shall be inserted in to the text at the point where the drop occurs.
+   * A variety of pre-written searches shall be selected via a tab panel for requirements 1.4 and 1.5. Dropdown menus and text field shall provide the forms for requirement 1.5, each being implemented with text fields and radio buttons.
+   * Requirements 1.6 and 1.7 shall be provided by text fields, reachable through the above tab panel. For 1.6, the user shall input any text into a text field. Upon pressing a &quot;Search&quot; button, an internal search on the directory schema is performed, to find node names which contain the input string. XPath expressions for those nodes are printed in a result pane. This helps the user compose XPath searches based on partial knowledge of the schema. For 1.7, the preceding schema search is done, followed by an evaluation of the found XPath expressions, and the results displayed in the GUI Result pane.
+   * A button labeled &quot;Generate job script&quot; shall be provided to satisfy requirement 1.8. The button will be effective for both pre-written and generic searches, and will generate an equivalent classad for the current search. The outputs defining a runnable test job shall be copyable for pasting into an external editor. If security constraints allow, the text shall also be saveable as a files. In all cases the above components shall either lead to internal javascript processing, or formation of requests to the proxy server, described below.
+
+The GUI mockup is shown in Figure 2 below.
+
+&lt;p align=&quot;center&quot; style=&quot;margin-top: 12pt; margin-right: 0in; margin-left: 0in; margin-bottom: 0.0001pt; text-align: center; line-height: 13.6pt&quot;&gt;
+&lt;img src=&quot;%ATTACHURLPATH%/LDAPBrowserMockup.jpg&quot; alt=&quot;LDAPBrowserMockup.jpg&quot; width=&#39;687&#39; height=&#39;653&#39; /&gt;
+&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;margin-top: 12pt; margin-right: 0in; margin-left: 0in; margin-bottom: 0.0001pt; text-align: center; line-height: 13.6pt&quot;&gt;Figure 2.&lt;/p&gt;
+
+The test job submission files shall be collected by the user submitted outside of the OSG Storage Discovery application. Therefore the test job submission files must be compatible with the job submission software the user is directed to employ.
+
+A REST proxy web service shall be run, either remotely or locally, connecting the user interface to the Java application. Messages in http format shall be sent from the javascript instance to cause the proxy to invoke methods from the Java command line interface. The proxy service shall respond to the javascript instance using XML over http. As time permits, a caching capability shall be incorporated into the proxy server with XMLDB.
+
+The user interface shall be made available through OSG&#39;s MyOSG service. The proxy server shall run in conjunction with that service. As such, it shall be deployed in a manner compatible with Apache 2. The deployment will be in the form of a Sun Grizzly application server utilizing an Apache http connector.
+
+
+*Risk*
+
+� Conversion of XPath expressions to LDAP search strings is difficult, but has been mostly accomplished in the development so far.
+
+� The degree is difficulty of the javascript code is not completely known, but is not expected to be significantly more than for java swing code, for which the above description would not cause concern.
+
+� Installation of a proxy service and optional cache is an extra step which could cause difficulties for installation and firewall issues with novice users. That could be mitigated by the deployment of a central proxy service by OSG.
+
+� Information gathered in BDII and ReSS could be inaccurate or incomplete, resulting in a failure of the test job to validate the search results.
+
+� Widespread simultaneous use of the tool without caching would cause an increased load on the BDII server.
+
+*References*
+
+[[OSGStorageDiscoveryRequirements][OSG Storage Discovery Requirements]]
+
+Project Process
+
+Document Process
+
+OSG Information Services Domain design document.
+         
+         
+

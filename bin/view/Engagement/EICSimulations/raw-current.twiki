@@ -1,0 +1,112 @@
+%TOC%
+
+---+!! Electron Ion Collider (EIC) Simulations on OSG (Proof-of-principle Phase)
+
+---++ Introduction.
+The OSG User Support group is working with Thomas Ullrich and Tobias Toll from BNL on porting event simulations for the Electron Ion Collider (EIC) project to OSG. The project attracts collaborators from the Nuclear Physics community and is currently preparing the physics case for the collider for 2012/2013.
+
+---++ Requirements
+
+---+++ Production requirements
+
+The application is one of the first implementations of an event generator for Electron / Ion collisions. There are three parts: (1) produce  a table containing the density profiles of the nucleon configurations, (2) calculate tables of moment amplitudes with the help of the density profiles, and (3) use the amplitude tables to actually simulate the event.
+
+We plan to be doing primarily Part (2) on OSG. Parts (1) and (3) are fairly quick, and don&#39;t require grid computing.
+
+---++++ Handling the Density Profile Table
+
+The table of density profiles is produced before starting to generate the amplitude table.
+
+This table can be
+   A. computed completely by every job, or
+   A. partially computed by each job, if each job could examine just a single configuration, or
+   A. pre-computed completely and shipped with every job, or
+   A. pre-computed completely and pre-staged at all sites.
+
+ (A) is inefficient as it duplicates the same computation at all worker nodes for every job, (B) requires too many code modifications, (C) requires to move ~1 GB per job, (D) is considered the least expensive: data will be deployed using the OSG Match Maker.
+
+---++++ Producing the Amplitude Table
+
+The goal is to calculate the values of four variables over a three dimensional phase space. The phase space is divided into bins, and
+each bin requires a quantum mechanical average over about 400 different nucleon configurations.
+
+To parallelize the application, we plan to partition the set of bins into small subsets.
+Then each worker node will run a single-threaded job that will calculate the variables for the bins in a single subset.
+
+The original simulation application runs about 100 event generator threads concurrently, but running a single-threaded application on 100 nodes is a more appropriate fit to the DHTC model of OSG.
+
+Generating one amplitude table for 1 nucleus requires about 50 CPU yrs -&gt; ~45 days on ~400 CPUs. This is the target computation for the proof-of-principle phase.
+
+It is possible to partition the set of bins in any way, and the complete amplitude calculation for a bin takes
+about a half hour, so we can get individual jobs that are any multiple of a half hour. We plan to
+divide up the phase space so that the total job time is not too long.
+
+---+++ Platform requirements
+
+   * Job duration on common OSG platforms = 6-12 hours / job (easily tuned)
+   * Job application = SL5 64bits binaries
+   * Job Memory requirement = 1 GB (??)
+   * Local WN disk requirements = 1 GB (??)
+
+---+++ I/O Data requirements
+
+   * Input to the simulation job:
+      * Common data: a table of the density profiles
+         * Data are fairly static
+         * 2 GB uncompressed; ~1GB compressed  -- the compression happens automatically by the application
+         * Each job needs access to the table file
+         * These are pre-installed in $OSG_DATA/engage/EIC 
+      * A small parameter file ~1KB large.
+        
+   * Output of the simulation job:
+       * A few MB per job
+       * Output data from all jobs will be aggregated offline
+
+---++ Current Solution and Program of Work
+
+At a high level, the current setup has the following
+parts:
+
+   1. The Engage OSGMM server tries to move the common
+   data to the shared file systems at many different
+   sites.
+   1. The Engage pilot jobs run a script that
+    sets a machine classad attribute if the data file is
+    at the site.
+   1. We have another script that creates a DAG input file
+   that will run the submit file from Step 3 as many
+   times as requested. We use DAGs solely for their
+   ability to automatically resubmit failed jobs.
+   1. The user then runs condor_submit_dag to start the
+   jobs going. They will only go to sites that have the required data,
+   as indicated by the attribute set in Step 2.
+
+We did some initial exploratory runs, and are now working through 24 groups
+of 3,300 runs to get the real table data. This includes six groups for
+each of four different nuclei.
+
+---++ Status
+
+9/9/11: The common data has been staged to many sites, though some have errors.
+We have run small test jobs using this data. The main program, called  tableGeneratorMain,
+now runs single-threaded. It also gets the range of bins to process from the command line,
+which makes it easier to set up the jobs.%BR%
+9/28/11: The user has run for about 8500 hours as of today.%BR%
+11/16/11: Have done about 85,000 hours of runs to date in debugging and exploratory analysis.%BR%
+11/21/11: The first group of 3,300 jobs, out of the 24 planned ones, just ran. It needed about 35,000 hours.%BR%
+12/21/11: Sent configuration data for proton to sites. Have used an additional 124,700 hours of time in three batches.%BR%
+1/17/12: Sent data for calcium to sites. Have run for about 270k more hours. To date, have finished 8 sets of 3344 jobs for gold.%BR%
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Still expect to
+   * finish 4 similar sets for calcium, which are about halfway done,
+   * to do the simulation for protons, although that should be much easier,
+   * and to continue checking that the results are alright.
+4/13/12: Have been redoing some regions of the phase space for gold with a new
+   lookup table. This new batch of runs started 4/2 and has gone for 58,000 hours
+   so far.
+
+%ATTACHURL%/EIC_runs_to_4_13.png
+
+
+
+-- OSG User Support
+

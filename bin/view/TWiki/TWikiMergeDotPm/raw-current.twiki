@@ -1,0 +1,99 @@
+---+ Package =TWiki::Merge=
+
+Support for merging strings
+
+
+%TOC%
+
+---++ StaticMethod *merge2* &lt;tt&gt;($arev,$a,$brev,$b,$sep,$session,$info)&lt;/tt&gt;
+   * =$arev= - rev for $a (string)
+   * =$a= - first (&#39;original&#39;) string
+   * =$brev= - rev for $b (string)
+   * =$b= - second (&#39;new&#39;) string
+   * =$sep= = separator, string RE e.g. &#39;.*?\n&#39; for lines
+   * =$session= - TWiki object
+   * =$info= - data block passed to plugins merge handler. Conventionally this will identify the source of the text being merged (the source form field, or undef for the body text)
+
+Perform a merge of two versions of the same text, using
+HTML tags to mark conflicts.
+
+The granularity of the merge depends on the setting of $sep.
+For example, if it is =&quot;\\n&quot;=, a line-by-line merge will be done.
+
+Where conflicts exist, they are marked using HTML &amp;lt;del&gt; and
+&amp;lt;ins&gt; tags. &amp;lt;del&gt; marks content from $a while &amp;lt;ins&gt;
+marks content from $b.
+
+Non-conflicting content (insertions from either set) are not
+marked.
+
+The plugins =mergeHandler= is called for each merge.
+
+Call it like this:
+&lt;verbatim&gt;
+$newText = TWiki::Merge::merge2(
+   $oldrev, $old, $newrev, $new, &#39;.*?\n&#39;, $session, $info );
+&lt;/verbatim&gt;
+
+
+
+---++ StaticMethod *simpleMerge* &lt;tt&gt;($a,$b,$sep) -&gt; \@arr&lt;/tt&gt;
+
+Perform a merge of two versions of the same text, returning
+an array of strings representing the blocks in the merged context
+where each string starts with one of &quot;+&quot;, &quot;-&quot; or &quot; &quot; depending on
+whether it is an insertion, a deletion, or just text. Insertions
+and deletions alway happen in pairs, as text taken in from either
+version that does not replace text in the other version will simply
+be accepted.
+
+The granularity of the merge depends on the setting of $sep.
+For example, if it is =&quot;\\n&quot;=, a line-by-line merge will be done.
+$sep characters are retained in the outout.
+
+
+
+---++ StaticMethod *merge3* &lt;tt&gt;($arev,$a,$brev,$b,$crev,$c,$sep,&lt;/tt&gt;
+                          $session, $info )
+
+   * =$arev= - rev for common ancestor (id e.g. ver no)
+   * =$a= - common ancestor
+   * =$brev= - rev no for first derivative string (id)
+   * =$b= - first derivative string
+   * =$crev= - rev no for second derivative string (id)
+   * =$c= - second derivative string
+   * =$sep= = separator, string RE e.g. &#39;.*?\n&#39; for lines
+   * =$session= - TWiki object
+   * =$info= - data block passed to plugins merge handler. Conventionally this will identify the source of the text being merged (the source form field, or undef for the body text)
+
+Perform a merge of two versions (b and c) of the same text, using
+HTML &amp;lt;div&gt; tags to mark conflicts. a is the common ancestor.
+
+The granularity of the merge depends on the setting of $sep.
+For example, if it is =&quot;.*?\\n&quot;=, a line-by-line merge will be done.
+
+Where conflicts exist, they are labeled using the provided revision
+numbers.
+
+The plugins =mergeHandler= is called for each merge.
+
+Here&#39;s a little picture of a 3-way merge:
+
+      a   &lt;- ancestor
+     / \
+    b   c &lt;- revisions
+     \ /
+      d   &lt;- merged result, returned.
+
+call it like this:
+&lt;verbatim&gt;
+    my ( $ancestorMeta, $ancestorText ) =
+        $store-&gt;readTopic( undef, $webName, $topic, $originalrev );
+    $newText = TWiki::Merge::merge3(
+        $ancestorText, $prevText, $newText,
+        $originalrev, $rev, &quot;new&quot;,
+        &#39;.*?\n&#39; );
+&lt;/verbatim&gt;
+
+
+

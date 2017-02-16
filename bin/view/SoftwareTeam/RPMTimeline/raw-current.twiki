@@ -1,0 +1,354 @@
+&lt;!--
+   * Set NOT_STARTED = Not Started
+   * Set NOT_RELEASED = Not Released
+   * Set ON_TRACK = &lt;div style=&quot;background-color: #3366FF; color:white&quot;&gt;&amp;nbsp;On Track&amp;nbsp;&lt;/div&gt;
+   * Set BEHIND = &lt;div style=&quot;background-color: #CCFF00;&quot;&gt;&amp;nbsp;Behind&amp;nbsp;&lt;/div&gt;
+   * Set AT_RISK = &lt;div style=&quot;background-color: #CC0000; color:white&quot;&gt;&amp;nbsp;At risk&amp;nbsp;&lt;/div&gt;
+   * Set ACHIEVED = &lt;div style=&quot;background-color: #00FF66;&quot;&gt;&amp;nbsp;Achieved&amp;nbsp;&lt;/div&gt;
+   * Set RELEASED = &lt;div style=&quot;background-color: #00FF66;&quot;&gt;&amp;nbsp;Released&amp;nbsp;&lt;/div&gt;
+   * Set TWISTY_OPTS_DETAILS = mode=&quot;div&quot; showlink=&quot;Details&quot; hidelink=&quot;Hide&quot; showimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif&quot; hideimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif&quot; remember=&quot;on&quot; start=&quot;hide&quot; 
+--&gt;
+
+---+ RPM Transition Plan
+
+[[#CurrentState][Jump to the current state]] (Skip the background information)
+
+---++ Goal
+
+Our goal is to provide the following _functional units_ as RPMs for Red Hat Enterprise Linux 5, Scientific Linux 5, and !CentOS 5 by December 13, 2011:
+
+   * glexec
+   * Worker Node Client
+   * Client (i.e. worker node client + end-user tools)
+   * Compute Element (CE)
+   * RSV (Earlier discussions included this in the CE, but we&#39;ve separated it.)
+   * !BeStMan, Hadoop &amp; !BeStMan, Xrootd &amp; !BeStMan (SE)
+   
+
+This does not account for everything in the existing Pacman-based VDT. Additional functional units will come in early 2012, the time to be determined:
+   * GUMS
+   * Gratia Collector
+
+In addition to the above functional units, we have two more major areas of focus that cut across all of the functional units and need attention beyond that in the developing the functional units.
+
+   * Internal testing infrastructure
+   * Documentation
+
+---++ Release Process 
+
+For each functional unit in the VDT, we will proceed through a series of steps, shown here. Steps 4a, 4b, and 4c can be performed in parallel. 
+
+&lt;img src=&quot;%ATTACHURLPATH%/rpm-package-process.png&quot; alt=&quot;rpm-package-process.png&quot;/&gt;
+
+The tables below show when we complete each step--they are milestones, not periods of time for each state. 
+
+---+++ Definition of steps
+*1. Package* &lt;br&gt;
+This is the time where we will construct the set of RPMs for the given functional unit. *Note:* We expect some very basic documentation at this point.
+
+*2. Internal Testing* &lt;br&gt;
+This is the time where we do basic, hands-on developer testing of the RPMs.
+
+*3. Fix known problems* &lt;br&gt;
+We are allocating time to fix problems. While it is hard to know what problems we will encounter, we recognize that we will make an educated guess so that when we run into the inevitable problems, fixing them fits into our schedule. 
+
+*4a. Documentation* &lt;br&gt;
+This is the time when we move the existing basic documentation to something that fits into our documentation structure and is usable by end-users.
+
+*4b. Evaluation* &lt;br&gt;
+We might do an extensive internal evaluation for scalability or readiness. For instance, evaluating the scalability of GRAM 5. Not all functional components will need this.
+
+*4c. External Beta Testing* &lt;br&gt;
+We will work with one or two selected external sites to do testing. This is outside the ITB testing: we will work closely with them to get early feedback. 
+
+*4d. Trash/Trash/Integration Testbed* &lt;br&gt;
+Testing by the integration testbed. 
+
+*5. Limited Release* &lt;br&gt;
+We release the software into production. We do not widely announce it, and our ability to provide support is limited (but available). This is a release meant for early adopters.
+
+*6. General Release* &lt;br&gt;
+We release the software into production. We announce and fully support the previously created limited release.
+
+---+++ States
+Steps can be in five different states:
+
+&lt;table&gt;
+&lt;tr&gt;&lt;td&gt;%NOT_STARTED%&lt;/td&gt;&lt;td&gt;Neither started,  nor expected to be started&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;%ON_TRACK%&lt;/td&gt;&lt;td&gt;Progress is being made, no worries about meeting deadline&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;%BEHIND%&lt;/td&gt;&lt;td&gt;Behind schedule, but may be able to catch up. Not yet at risk.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;%AT_RISK%&lt;/td&gt;&lt;td&gt;At risk, deadline may not be met&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;%ACHIEVED%&lt;/td&gt;&lt;td&gt;Goal has been achieved&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+#CurrentState
+
+---++ Summary as of 13-Dec-2011
+
+In the table below, _State_ can be one of:
+   * *Developing:* Not ready for testing, still being prepared
+   * *Stable:* Ready for testing, only essential changes will be made before release.
+   * *Mixed:* Portions are developing, portions are stable.
+   * *Released:* Has been released, limited or production.
+
+| *Functional Unit* | *State* | *Target Limited Release* | *Target General Telease* | *Summary* |
+| [[#VomsStatus][VOMS]] | %RELEASED% | 4-Oct-2011 | 1-Nov-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}%VOMS has had it&#39;s general production release.&lt;br&gt;It is deployed in production for Engage, HCC and GLOW%ENDTWISTY% |
+| [[#GlexecStatus][glexec]] | %RELEASED% | 1-Nov-2011 | 29-Nov-2011 | Glexec has had it&#39;s limited production release. |
+| [[#WorkerNodeStatus][Worker Node]] | %RELEASED% | 1-Nov-2011 | 29-Nov-2011 | The worker node has had it&#39;s limited production release. |
+| [[#ClientStatus][Client]] | %RELEASED% | 1-Nov-2011 | 29-Nov-2011 | The client has had it&#39;s limited production release. |
+| [[#CeStatus][CE]] | %RELEASED% | 29-Nov-2011 | 13-Dec-2011 | In testing in ITB and at Fermilab  Tier 1 ITB|
+| [[#RsvStatus][RSV]] | %RELEASED% | 29-Nov-2011 | 13-Dec-2011 | RSV is ready for testing and has been given to ITB. |
+| [[#SeStatus][SE]] | %RELEASED% | | | Bestman, Xrootd, and HDFS are stable and ready for testing. |
+| [[#DocumentationStatus][Documentation]] | N/A, see below | N/A, see below | Docfest was Oct 10-12. [[Documentation.Release3/][Documentation]] |
+| [[#TestingStatus][Internal Testing Framework]] | N/A | N/A | N/A | Have basic testing framework in place, Mat will write tests soon. | 
+| [[#SecurityStatus][Security]] | %RELEASED% | 4-Oct-2011 | 1-Nov-2011 | In production, limited release |
+
+---++ Weekly Highlights
+
+| *Date* | *Note* |
+| 13-Dec-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}%[[Documentation.Release3.Release305][OSG Software 3.0.5 was released]].&lt;br&gt;CE, SE, and RSV are now all in general production release %ENDTWISTY% |
+| 6-Dec-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}% Today we shipped [[Documentation.Release3.Release304][OSG Software 3.0.4]].&lt;br&gt;It updates the general release of VOMS, the clients, and glexec&lt;br&gt;It also includes the limited release of the CE, RSV, and the SE (Bestman &amp; HDFS)&lt;br&gt;CMS, ATLAS, Dzero, and DOSAR have all signed off on the release&lt;br&gt;More evaluation will continue at UCSD to test GRAM further, but GRAM is working quite well.%ENDTWISTY% |
+| 29-Nov-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}%Today was the general release of the client, worker node client, and glexec&lt;br&gt;Most GRAM bugs have been resolved, with one major bug pending. We have delayed our limited release of the CE and RSV until next week to do a thorough job of testing GRAM and fix remaining bugs.&lt;br&gt;Dzero has verified that their jobs work with the new RPM-based VDT.%ENDTWISTY% |
+| 22-Nov-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}%Today was the limited release of Xrootd%ENDTWISTY% |
+| 9-Nov-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}% Finished internal testing of Globus update, will go to ITB and testing sites later today&lt;br&gt;Nebraska is running two production CEs with the new RPM-based install.&lt;br&gt;Testing with PBS is in progress and going well&lt;br&gt;%ENDTWISTY% |
+| 2-Nov-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}% Yesterday was the general release of VOMS&lt;br&gt;Yesterday was the limited release of worker node client, client, and glexec&lt;br&gt;In the last week, we found and fixed a serious scalability problem with the CE, doing more testing. %ENDTWISTY% |
+| 25-Oct-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}% We&#39;ve updated to Xrootd 3.1 and hope to release &quot;soon&quot;--depends on external beta testing.&lt;br&gt;We&#39;ve completed the HDFS transition to the VDT repo.We found and fixed a serious problem with lcmaps (used for authorization with GUMS from the CE).&lt;br&gt;Trash/Engagement has deployed the new RPM-based VOMS server successfully %ENDTWISTY% |
+| 19-Oct-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}% Doc Fest was last week. Lots of documentation is done and in good shape, but we have quite a bit remaining.&lt;br&gt;The CE became stable last week when the GIP and CEMon became feature-complete. Testing is ramping up quickly. In particular, the Fermilab Tier-1 ITB has a CE and its worker nodes using RPMs, and it will be tested with glideinWMS soon.&lt;br&gt;Several ITB sites are actively testing and providing good feedback.%ENDTWISTY% |
+| 6-Oct-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}%We released VOMS and the CA certificate packaging on October 5!&lt;br&gt;The evaluation group is doing scalability testing with GRAM.&lt;br&gt;To finalize the CE, we need a small GIP update and some fixes to =osg-configure=.%ENDTWISTY% |
+| 28-Sep-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}%We got an update for Globus to deal with our compatibility problem.&lt;br&gt;CEMon is nearly ready, final readying should be done in a day or two.&lt;br&gt;All software is now in =osg-testing= repository.&lt;br&gt;Suchandra is gone, but Alain will bootstrap ITB testing%ENDTWISTY% |
+| 20-Sep-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}% After a couple of bumps, we are now proceeding full speed on testing. A few specifics:&lt;br&gt;Globus 5.2.&lt;i&gt;latest&lt;/i&gt; is now in the VDT.&lt;br&gt;Our evaluation team at UCSD has given its blessing to GridFTP--it is performing well and we are comfortable with it.&lt;br&gt;Condor-G linked against Globus 5.2 fails and revealed a compatibility problem. Globus is addressing it.&lt;br&gt;Our RPMs are now cryptographically signed&lt;br&gt;The CE is ready for testing, except for CEMon, but CEMon is on its way&lt;br&gt;RSV is ready for testing&lt;br&gt;We have our first testing done in our testing framework%ENDTWISTY% |
+| 31-Aug-2011 | %TWISTY{%TWISTY_OPTS_DETAILS%}% All prepped and awaiting Sep 2 release of GT 5.2 beta&lt;br&gt;Now have doc, SE, security, and testing plans from owners. %ENDTWISTY% |
+| 24-Aug-2011 | Globus 5.2 complications: %TWISTY{%TWISTY_OPTS_DETAILS%}%Globus 5.2 update is underway. As of last week thought we could do a drop-in replacement without rebuilding any packages that depend on Globus, but as of yesterday we learned this is not true. This complicates the push into EPEL. For now we are pushing all of Globus 5.2 and packages we use from EPEL that depends on Globus 5.2 into the VDT. This lets us meet our goals, but reduces full compatibility with the EPEL repository. %ENDTWISTY% |
+| 23-Aug-2011 | I&#39;m worried about documentation because I do not yet have a plan or progress from Robert or Jim. |
+| 22-Aug-2011 | glexec is ready for friendly testing. |
+| 19-Aug-2011 | Updated plan with limited and general release dates. Worker node is being tested in ITB |
+| 3-Aug-2011 | We have completed internal testing on the OSG client and the VOMS server!&lt;br&gt;We are nearly ready for the OSG site admin meeting, except for some minor glexec issues and basic docs for glexec and the OSG client |
+
+
+#VomsStatus
+---++ Functional Unit: VOMS 
+
+VOMS has been released! It is in _general release_, which means we have widely announced it. It&#39;s been deployed in production at three sites (Engage, HCC &amp; GLOW).
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+%EDITTABLE{  header=&quot;| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |&quot;  format=&quot;| text,15 | text,13 | text,15 | text,10 | text,10 | text,10 | textarea,3x30 |&quot; }%
+| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+|1. Package  | %ACHIEVED% | Brian |18-July-2011 | 25-July-2011 | %GREEN%28-July-2011%ENDCOLOR% | [[https://jira.opensciencegrid.org/browse/SOFTWARE-26][#26]]|
+|2. Internal Testing  | %ACHIEVED% | Tanya |25-July-211 | 1-Aug-2011 | %GREEN%2-Aug-2011%ENDCOLOR% | [[https://jira.opensciencegrid.org/browse/SOFTWARE-99][#99]] |
+|3. Fix known problems | %ACHIEVED% | Tanya | 1-Aug-2011 |8-Aug-2011 | %GREEN%2-Aug-2011%ENDCOLOR% | %TWISTY{%TWISTY_OPTS_DETAILS%}%No problems found during internal testing&lt;br&gt;(but lots found &amp; fixed during packaging)%ENDTWISTY% |
+|4a. Documentation  | %ACHIEVED% | Marco, Tanya | 29-Aug-2011 | 9-Sep-2011 | %RED%11-Oct-2011%ENDCOLOR% | [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallVoms][VOMS install documentation]] is usable but is still being reviewed. |
+|4b. Evaluation  | N/A | N/A | N/A | N/A  | | Relying on external beta testing |
+|4c. External Beta Testing |%ACHIEVED% | Suchandra | 15-Aug-2011 | 30-Sep-2011 | %RED%4-Oct-2011%ENDCOLOR% | Deployed in production by HCC and GLOW |
+|4d. Trash/Trash/Integration Testing | N/A | Suchandra | N/A | N/A | | Relying on external beta testing  |
+| *Milestone* | *State* || *Target Release* || *Actual Release* | *Notes* |
+|5. Limited Release |%RELEASED%|| 4-Oct-2011 || %RED%5-Oct-2011%ENDCOLOR%| Has been deployed by Engage, HCC, and GLOW  |
+|6. General Release |%RELEASED%|| 1-Nov-2011 || %GREEN%1-Nov-2011%ENDCOLOR%|  |
+
+#GlexecStatus
+---++ Functional Unit: glexec
+
+glexec has been released.
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+%EDITTABLE{  header=&quot;| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |&quot;  format=&quot;| text,15 | text,13 | text,15 | text,10 | text,10 | text,10 | textarea,3x30 |&quot; }%
+| *Milestone* | *State* | *Owner* |*Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+|1. Package  | %ACHIEVED% | Brian |7-July-2011 | 25-Jul-2011 | %GREEN%15-Jul-2011%ENDCOLOR% | [[https://jira.opensciencegrid.org/browse/SOFTWARE-17][#17]]|
+|2. Internal Testing  | %ACHIEVED% | Brian |25-July-2011 | 1-Aug-2011 | %GREEN%15-Jul-2011%ENDCOLOR% | |
+|3. Fix known problems | %ACHIEVED% | Dave Dykstra | 1-Aug-2011 | 8-Aug-2011 | %RED%22-Aug-2011%ENDCOLOR%  | Late because effort relied on limited non-OSG Software Team effort. |
+|4a. Documentation  | %ACHIEVED% | Dave Dykstra | 1-Sept-2011 | 23-Sept-2011 | %RED%11-Oct-2011%ENDCOLOR% | [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallGlexec][Glexec install documentation]] |
+|4b. Evaluation  | N/A| N/A | N/A | N/A | | Not needed right now. (May add scalability testing later on.) |
+|4c. External Beta Testing |%ACHIEVED% | Suchandra | 15-Aug-2011 | 28-Oct-2011 | %RED%31-Oct-2011%ENDCOLOR% | |
+|4d. Trash/Trash/Integration Testing |%ACHIEVED%| Suchandra | 1-Sep-2011 | 28-Oct-2011 | %GREEN%28-Oct-2011%ENDCOLOR% | |
+| *Milestone* | *State* || *Target Release* || *Actual Release* | *Notes* |
+|5. Limited Release | %RELEASED% || 1-Nov-2011 || %GREEN%1-Nov-2011%ENDCOLOR% |  |
+|6. General Release | %RELEASED% || 29-Nov-2011 || %GREEN%29-Nov-2011%ENDCOLOR%|  |
+
+#WorkerNodeStatus
+---++ Functional Unit: Worker node client
+
+The worker node client is *ready* for friendly testing and documentation. It is in testing in the ITB as well as at Nebraska and Fermilab Tier 1 ITB. We recently fixed a problem with missing software (LFC Python bindings) found in the ITB. It has been tested with glideinWMS by the evaluation team.
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+%EDITTABLE{  header=&quot;| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |&quot;  format=&quot;| text,15 | text,13 | text,15 | text,10 | text,10 | text,10 | textarea,3x30 |&quot; }%
+| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| 1. Package | %ACHIEVED% | Derek | 6-July-2011 | 25-July-2011 | %GREEN%15-July-2011%ENDCOLOR% | [[https://jira.opensciencegrid.org/browse/SOFTWARE-1][#1]] |
+| 2. Internal Testing | %ACHIEVED% | Derek | 25-July-2011 | 1-Aug-2011 | %GREEN%15-July-2011%ENDCOLOR% | |
+| 3. Fix known problems | %ACHIEVED% | Derek | 1-Aug-2011 | 8-Aug-2011 | %GREEN%15-July-2011%ENDCOLOR% | |
+| 4a. Documentation | %ACHIEVED% | Suchandra | 29-Aug-2011 | 9-Sep-2011 | %RED%11-Oct-2011%ENDCOLOR% | [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallWNClient][Worker node install documentation]]  (2 Total) |
+| 4b. Evaluation | N/A | Igor | N/A | N/A | | %TWISTY{%TWISTY_OPTS_DETAILS%}%Evaluation team is focused on CE, but has done basic testing of worker node with glideinWMS.%ENDTWISTY% |
+| 4c. External Beta Testing | %ACHIEVED% | Suchandra | 15-Aug-2011 | 24-Oct-2011 | %RED%28-Oct-2011%ENDCOLOR%| Tested by Nebraska &amp; Fermilab Tier 1 ITB |
+| 4d. Trash/Trash/Integration testing | %ACHIEVED% | Suchandra | 22-Aug-2011 | 28-Oct-2011 | %GREEN%28-Oct-2011%ENDCOLOR% | %TWISTY{%TWISTY_OPTS_DETAILS%}%Tested by BNL, FNAL, FNAL (CMS), OUHEP, TTU, and UC_ITB ITB sites&lt;br&gt;Will continue testing with workloads during CE testing&lt;br&gt;%ENDTWISTY% |
+| *Milestone* | *State* || *Target Release* || *Actual Release* | *Notes* |
+| 5. Limited Release | %RELEASED% || 1-Nov-2011 || %GREEN%1-Nov-2011%ENDCOLOR% | |
+| 6. General Release | %RELEASED% || 29-Nov-2011 || %GREEN%29-Nov-2011%ENDCOLOR% | |
+
+#ClientStatus
+---++ Functional Unit: Client
+
+The client has been released.
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+%EDITTABLE{  header=&quot;| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |&quot;  format=&quot;| text,15 | text,13 | text,15 | text,10 | text,10 | text,10 | textarea,3x30 |&quot; }%
+| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| 1. Package | %ACHIEVED% | Derek | 6-July | 25-July-2011 | %GREEN%15-July-2011%ENDCOLOR% | [[https://jira.opensciencegrid.org/browse/SOFTWARE-4][#4]] |
+| 2. Internal Testing | %ACHIEVED% | Marco | 25-July-2011 | 1-Aug-2011 | %GREEN%3-Aug-2011%ENDCOLOR% | Test ticket: [[https://jira.opensciencegrid.org/browse/SOFTWARE-98][#98]] |
+| 3. Fix known problems | %ACHIEVED% | Derek | 1-Aug-2011 | 8-Aug-2011 | %GREEN%3-Aug-2011%ENDCOLOR% | |
+| 4a. Documentation | %ACHIEVED% | Marco, Robert, Suchandra | 1-Aug-2011 | 23-Aug-2011 | %RED%10-Oct-2011%ENDCOLOR% | [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallOSGClient][Install client documentation]] |
+| 4b. Evaluation | %ACHIEVED% | Igor | 23-Aug-2011 | 9-Sep-2011 | %RED%31-Oct-2011%ENDCOLOR% | Limited testing, due to focus on CE |
+| 4c. External Beta Testing | %ACHIEVED% | Suchandra | 12-Sep-2011 | 28-Oct-2011 | | Was tested by Evaluation team, and Fermilab ITB Tier 1 |
+| 4d. Trash/Trash/Integration Testing | %ACHIEVED% | Suchandra | 12-Sep-2011 | 28-Oct-2011 | | |
+| *Milestone* | *State* || *Target Release* || *Actual Release* | *Notes* |
+| 5. Limited Release | %RELEASED% || 1-Nov-2011 || %GREEN%1-Nov-2011%ENDCOLOR%| |
+| 6. General Release | %RELEASED% || 29-Nov-2011 || %GREEN%29-Nov-2011%ENDCOLOR% | |
+
+#CeStatus
+---++ Functional Unit: CE
+
+The CE has been released.
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+%EDITTABLE{  header=&quot;| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |&quot;  format=&quot;| text,15 | text,13 | text,15 | text,10 | text,10 | text,10 | textarea,3x30 |&quot; }%
+| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| 1. Package | %ACHIEVED% | Mat (Brian) | 20-July-2011 | 29-Aug-2011 | %RED%16-Sep-2011%ENDCOLOR% | Late due to Globus 5.2 update. |
+| 2. Internal Testing | %ACHIEVED% | Mat (Brian) | 29-Aug-2011 | 12-Sep-2011 | %RED%26-Sep-2011%ENDCOLOR% | Late due to Globus 5.2 update. |
+| 3. Fix Known Problems | %ACHIEVED% | Mat (Brian) | 12-Sep-2011 | 27-Sep-2011 | %GREEN%26-Sep-2011%ENDCOLOR% | |
+| 4a. Documentation | %BEHIND% | Marco, Suchandra, Steven, Tanya | 27-Sep-2011 | 21-Oct-2011 | | %TWISTY{%TWISTY_OPTS_DETAILS%}%Have [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallComputeElement][early documentation]].&lt;br&gt;Nearly completed&lt;br&gt;See [[https://twiki.grid.iu.edu/bin/view/Documentation/DocumentationTeam/DocFind?TAG_NAME=PM2RPM_TASK+&amp;TAG_VALUE=CE][Doc List]] (25 Total) %ENDTWISTY% |
+| 4b. Evaluation | %ACHIEVED% | Igor | 19-Sep-2011 | 21-Nov-2011 | %RED%5-Dec-2011%ENDCOLOR% | %TWISTY{%TWISTY_OPTS_DETAILS%}%Currently testing recent bug fixes, which is taking longer than expected&lt;br&gt;Eval group has tested 1000 jobs with success&lt;br&gt;Working with long-running test (24 hours)%ENDTWISTY% |
+| 4c. External Beta Testing | %ACHIEVED% | Suchandra | 19-Sep-2011 | 21-Nov-2011 | %RED%5-Dec-2011%ENDCOLOR% | %TWISTY{%TWISTY_OPTS_DETAILS%}%GRAM bugs have been found, hence extending the testing period&lt;br&gt;CMS Tier 1 ITB CE has been installed (CE + WN) &amp; tested with glideinWMS&lt;br&gt;Nebraska has 4 CEs installed, has found and debugged many problems.%ENDTWISTY% |
+| 4d. Trash/Trash/Integration Testing | %ACHIEVED% | Suchandra | 19-Sep-2011 | 28-Nov-2011 | %RED%5-Dec-2011%ENDCOLOR% | %TWISTY{%TWISTY_OPTS_DETAILS%}%GRAM bugs have been found, hence extending testing&lt;br&gt;Dzero has signed off on release&lt;br&gt;glideinWMS jobs are working&lt;br&gt;ATLAS HammerCloud will be run very soon&lt;br&gt;ITB Sites testing: https://twiki.grid.iu.edu/bin/view/Trash/Trash/Trash/Trash/Integration/ITBRPMTestSite &lt;br/&gt; VO test results: https://twiki.grid.iu.edu/bin/view/Trash/Trash/Trash/Trash/Integration/RPMVoTesting%ENDTWISTY% |
+| *Milestone* | *State* || *Target Release* || *Actual Release* | *Notes* |
+| 5. Limited Release | %RELEASED% || 29-Nov-2011 || %RED%6-Dec-2011%ENDCOLOR% | |
+| 6. General Release | %RELEASED% || 13-Dec-2011 || %GREEN%13-Dec-2011%ENDCOLOR% | |
+
+#RsvStatus
+---++ Functional Unit: RSV
+
+RSV has been released.
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+%EDITTABLE{  header=&quot;| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |&quot;  format=&quot;| text,15 | text,13 | text,15 | text,10 | text,10 | text,10 | textarea,3x30 |&quot; }%
+| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| 0. Develop | %ACHIEVED% | Scot | 20-July-2011 | 9-Sep-2011 | %RED%12-Sep-2012%ENDCOLOR% | %TWISTY{mode=&quot;div&quot; showlink=&quot;Details&quot; hidelink=&quot;Hide&quot; showimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif&quot; hideimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif&quot; remember=&quot;on&quot; start=&quot;hide&quot; }% Work led by Scot, who is at 25% OSG time&lt;br&gt;Major remaining work includes:&lt;br&gt;Condor configuration for separate condor-cron&lt;br&gt;Update probes to run in RPM environment&lt;br&gt;Use Condor-G instead of globus-job-run&lt;/&gt; &lt;!--/twistyPlugin--&gt; |
+| 1. Package | %ACHIEVED% | Scot | 20-July-2011 | 9-Sep-2011 | %RED%12-Sep-2012%ENDCOLOR% | |
+| 2. Internal Testing | %ACHIEVED% | Scot | 6-Sep-2011 | 12-Sep-2011 | %GREEN%12-Sep-2012%ENDCOLOR% | Internal testing done while developing &amp; packaging. Found Condor-G problem, not an RSV issue |
+| 3. Fix Known Problems | %ACHIEVED% | Scot | 12-Sep-2011 | 19-Sep-2011 | %RED%4-Oct-2011%ENDCOLOR% | It took longer than expected to fix cacerts-expiry probe, but it&#39;s now ready. |
+| 4a. Documentation | %BEHIND% | Scot | 19-Sep-2011 | 26-Sep-2011 | | [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/RsvOverview][Documentation is usable]] but incomplete. |
+| 4b. Evaluation | N/A | N/A | | | | Not needed for RSV. |
+| 4c. External Beta Testing | %ACHIEVED% | Suchandra | 19-Sep-2011 | 28-Nov-2011 | %RED%5-Dec-2011%ENDCOLOR% | |
+| 4d. Trash/Trash/Integration Testing | %ACHIEVED% | Suchandra | 19-Sep-2011 | 28-Nov-2011 | %RED%5-Dec-2011%ENDCOLOR% | Has been given to ITB. Initially was delayed due to CE being delayed. |
+| *Milestone* | *State* || *Target Release* || *Actual Release* | *Notes* |
+| 5. Limited Release | %RELEASED% || 29-Nov-2011 || %RED%6-Dec-2011%ENDCOLOR% | |
+| 6. General Release | %RELEASED% || 13-Dec-2011 || %GREEN%13-Dec-2011%ENDCOLOR% | |
+
+#SeStatus
+---++ Functional Unit: SE
+
+The Storage Element (Bestman2, HDFS, &amp; Xrootd) has been released.
+
+%EDITTABLE{  header=&quot;| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |&quot;  format=&quot;| text,15 | text,13 | text,15 | text,10 | text,10 | text,10 | textarea,3x30 |&quot; }%
+| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| 1. Package | %ON_TRACK% | Tanya | pre-history | 16-Sep-2011 | | %TWISTY{mode=&quot;div&quot; showlink=&quot;Details&quot; hidelink=&quot;Hide&quot; showimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif&quot; hideimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif&quot; remember=&quot;on&quot; start=&quot;hide&quot; }%Xrootd was packaged in May.&lt;br&gt;!BeStMan was packaged inJuly.&lt;br&gt;HDFS is being started in late August: [[https://jira.opensciencegrid.org/browse/SOFTWARE-186][#186]]&lt;br&gt;Fix xrootd-dsi setup.sh script [[https://jira.opensciencegrid.org/browse/SOFTWARE-215][#215]] is being started in late August&lt;br&gt;Create metapackages: &lt;br&gt;gridftp/lcas: [[https://jira.opensciencegrid.org/browse/SOFTWARE-204][#204]] started in late August, due date  9/31/11&lt;br&gt; osg-se-bestman: [[https://jira.opensciencegrid.org/browse/SOFTWARE-206][#206]] depends on #204&lt;br&gt;osg-se-xrootd: [[https://jira.opensciencegrid.org/browse/SOFTWARE-210][#210]] depends on #204, #215%ENDTWISTY% |
+| 2. Internal Testing | %ON_TRACK% | Tanya | pre-history | 23-Sep-2011 | | %TWISTY{mode=&quot;div&quot; showlink=&quot;Details&quot; hidelink=&quot;Hide&quot; showimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif&quot; hideimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif&quot; remember=&quot;on&quot; start=&quot;hide&quot; }% test dCache-storage: [[https://jira.opensciencegrid.org/browse/SOFTWARE-66][#66]] started in late August, due date 9/31/11&lt;br&gt;test dCache-transfer: [[https://jira.opensciencegrid.org/browse/SOFTWARE-67][#67]]started in late August, due date 9/31/11&lt;br&gt;test gridftp/lcas/lcmaps metapackage: [[https://jira.opensciencegrid.org/browse/SOFTWARE-205][#205]] depends on #204&lt;br&gt;test osg-se-bestman-xrootd metapackage :  [[https://jira.opensciencegrid.org/browse/SOFTWARE-211][#211]] depends on #210&lt;br&gt;test xrootd-storage: [[https://jira.opensciencegrid.org/browse/SOFTWARE-72][#73]] depends on #210&lt;br&gt;test xrootd-transfer: [[https://jira.opensciencegrid.org/browse/SOFTWARE-73][#73]] depends on #210&lt;br&gt;test GridFTP gratia probe:  [[https://jira.opensciencegrid.org/browse/SOFTWARE-64][#64]]depends on #204&lt;br&gt;%ENDTWISTY% |
+| 3. Fix Known Problems | %ON_TRACK% | Tanya | 23-Sep-2011 | 30-Sep-2011 | | |
+| 4a. Documentation | %ON_TRACK% | Tanya, Doug, Jeff | pre-history | TBD | | %TWISTY{mode=&quot;div&quot; showlink=&quot;Details&quot; hidelink=&quot;Hide&quot; showimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif&quot; hideimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif&quot; remember=&quot;on&quot; start=&quot;hide&quot; }%XRootd docs were done in May&lt;br&gt;!BeStMan yet to be done.&lt;br&gt;Can build on [[https://twiki.grid.iu.edu/bin/view/Storage/Hadoop][existing HDFS docs]], &lt;br&gt;Need to document gridftp and lcas/lcmaps configuration as well as all gratia storage and transfer probe by end of September&lt;br&gt;write documentation for grdiftp-lcas metapackage installation/configuration [[https://jira.opensciencegrid.org/browse/SOFTWARE-209][#209]] %ENDTWISTY% See [[https://twiki.grid.iu.edu/bin/view/Documentation/DocumentationTeam/DocFind?TAG_NAME=PM2RPM_TASK+&amp;TAG_VALUE=SE][Doc List]] (14 Total) |
+| 4b. Evaluation | %ON_TRACK% | Igor | pre-history | 29-Nov-2011 | %GREEN%29-Nov-2011%ENDCOLOR% | %TWISTY{mode=&quot;div&quot; showlink=&quot;Details&quot; hidelink=&quot;Hide&quot; showimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif&quot; hideimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif&quot; remember=&quot;on&quot; start=&quot;hide&quot; }%Xrootd and Bestman were evaluated by ATLAS&lt;br&gt;HDFS was evaluated by CMS%ENDTWISTY% |
+| 4c. External Beta Testing | %ACHIVED% | Suchandra | 3-Oct-2011 | 29-Nov-2011 | %RED%5-Dec-2011%ENDCOLOR% | Tested by Jeff Dost, people in ATLAS (Bestman/Xrootd), and in CMS (Xrootd) |
+| 4d. Trash/Trash/Integration Testing | %NOT_STARTED% | Suchandra | 3-Oct-2011 | 29-Nov-2011 | %RED%5-Dec-2011%ENDCOLOR% | |
+| *Milestone* | *State* || *Target Release* || *Actual Release* | *Notes* |
+| 5. Limited Release | %RELEASED% || 6-Dec-2011 || %GREEN%6-Dec-2011%ENDCOLOR% | |
+| 6. General Release | %RELEASED% || 13-Dec-2011 || %GREEN%13-Dec-2011%ENDCOLOR% | |
+
+#DocumentationStatus
+---++ Documentation
+
+This doesn&#39;t match the process diagram above because it is not about packaging but documenting the packages.
+
+Docfest was October 10-12. All the documentation is good enough for our December releases, but we agree that it&#39;s still a bit rough. We are likely to have another documentation fest (one or two days long) in January 2012.
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+%EDITTABLE{  header=&quot;| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |&quot;  format=&quot;| text,15 | text,13 | text,15 | text,10 | text,10 | text,10 | textarea,3x30 |&quot; }%
+| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| Create Twiki Web | %ACHIEVED% | Robert/Kyle | 1-Aug-2011 | 8-Aug-2011 | %RED%30-Aug-2011%ENDCOLOR% | Have web and plan for future releases |
+| Prototype: Worker Node Install | %ACHIEVED% | Suchandra | 8-Aug-2011 | 30-Aug-2011 | %GREEN%30-Aug-2011%ENDCOLOR% | Suchandra created document |
+| Prototype: VOMS Install | %ACHIEVED% | Marco | 15-Aug-2011 | 30-Aug-2011 | %GREEN%30-Aug-2011%ENDCOLOR% | Marco created document, ready for review. |
+| Report: How hard is RPM documentation | %ACHIEVED% | Robert | 22-Aug-2011 | 30-Aug-2011 | %GREEN%30-Aug-2011%ENDCOLOR% | Have identified all documents and estimate typical install document will take about 3 hours - total of 90 documents with references to VDT_LOCATION |
+| Create common documents for RPM | %ACHIEVED% | Jim, Brian, Alain, Suchandra | 29-Aug-2011 | 16-Sep-2011 | %GREEN%15-Sep-2011%ENDCOLOR% | See [[https://twiki.grid.iu.edu/bin/view/Documentation/DocumentationTeam/MeetingInfo20110829#CommonDocs][4 documents]].  Brian has draft of [[Documentation.Release3.InstallBestPractices][Install Best Practices]] and we have outline of [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/YumRpmBasics][YumRpmBasics]]. |
+| Create Landing Page Instructions | %ACHIEVED% | Robert | 6-Sep-2011 | 13-Sep-2011 | %GREEN%13-Sep-2011%ENDCOLOR% | Landing pages created in Release3 web with comments on needed content and existing links that need to be referenced. |
+| Documentation Fest | %ACHIEVED% | Jim | Early Oct | 15-OCT-2011 | %GREEN%12-Oct-2011%ENDCOLOR% | Bring together about 10 people to work for 3 days updating documentation that is needed/behind and produce set of Navigation landing pages. |
+
+#TestingStatus
+---++ Automated Trash/Trash/Integration Tests
+
+---+++ State
+We have a set of tests running daily and reporting results. We are working on expanding the tests.
+
+---+++ Backround
+
+This doesn’t match the process diagram above because it is not about packaging but testing our packages.
+
+While we have done a lot of testing with Pacman, our system cannot simply be ported to work with RPMs--it is deeply intertwined with Pacman. Some of our existing problems
+   * The installation mechanism is entirely different
+   * Most of the tests to verify a Pacman installation was sane no longer apply to an RPM installation
+   * The testing framework we used does is shaky and ancient
+   * The new tests will need to be run in an entirely different way (clean VMs or fresh machine installs)
+
+We trying to balance the need to get some testing as soon as possible with the need to have a coherent system on which to build. The first few steps of this plan get some basic (manual) testing in place without building a comprehensive framework. Because we have significant uncertainty and because we will learn a lot during this time, we explicitly include a planning step at the end of September. At no point will we engineer a massive new system, but we will phase in the testing architecture appropriately.
+
+If the external dependency on the Batlab slips significantly, we will do testing temporarily in !FermiCloud.
+
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+%EDITTABLE{  header=&quot;| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |&quot;  format=&quot;| text,15 | text,13 | text,15 | text,10 | text,10 | text,10 | textarea,3x30 |&quot; }%
+| *Milestone* | *State* | *Owner* | *Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| Finish plan for Phase 1 | %ACHIEVED% | Tim |  1-Aug-2011 | 31-Aug-2011 | %GREEN%31-Aug-2011%ENDCOLOR% | Had productive discussion with Batlab and team members |
+| Batlab provides ability to run VMs | %ON_TRACK% | Batlab |  4-Aug-2011 | 3-Oct-2011 | | External dependency (Batlab), dates may change, tracking closely |
+| Manually run 1 test of 1 package on 1 platform | %ACHIEVED% | Tim |  29-Aug-2011 | 9-Sep-2011 | %RED%12-Sep-2011%ENDCOLOR%| Testing =grid-proxy-init= hits most technical issues |
+| Add [[TestsFirstOnes][a cross-section of tests]] (10-20) to manual run | %BEHIND% | Marco |   9-Sep-2011 | 23-Sep-2011 | | %TWISTY{%TWISTY_OPTS_DETAILS%}%Work delayed due to previous slip, and due to preliminary work for LIGO packaging&lt;br&gt;Tim has added tests for GridFTP.&lt;br&gt;Transitioning to Marco, but Marco was delayed due to work on RSV probe.%ENDTWISTY% |
+| Replan based on new experience | %BEHIND% | Tim | 26-Sep-2011 | 30-Sep-2011| | Not started, waiting for previous step to complete. Plan will include the items below, based on what we learn |
+| Manually submit tests of 1 package on 1 Batlab platform | %ACHIEVED% | TBD |  1 week  || | Depends on Batlab schedule |
+| Auto-submit tests of 3–5 packages on 3 Batlab platforms | %ACHIEVED% | TBD |  1 week  || | Follows 1-on-1 Batlab task |
+| Archive test results and show via _simple_ mechanism | %NOT_STARTED% | TBD |  2 weeks?  || | What web application system? |
+| Expand system to control order that tests run | %NOT_STARTED% | TBD  | | | | |
+
+#SecurityStatus
+---++ Security
+
+In collaboration with the OSG Security Team, we are doing three things:
+
+   1. Making source RPMs for the CA certificate distributions. 
+   1. Porting and updating =vdt-update-certs= and =vdt-ca-manage=
+   1. Ensuring that the Security Team can maintain the =osg-cert-scripts=. (Previously known as the =ppdg-cert-scripts= and originally maintained by Doug Olson.)
+
+These are not blocking other work because we have a hacked version of the the CA certs that is sufficient for testing purposes. However, it does block releases, so we are trying to get this through testing relatively quickly. Because the packaging was finished ahead of schedule, we have shifted the date from their originals to release earlier. See below. 
+
+The security team owns the planning for this section. 
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+%EDITTABLE{  header=&quot;| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |&quot;  format=&quot;| text,15 | text,13 | text,15 | text,10 | text,10 | text,10 | textarea,3x30 |&quot; }%
+| *Milestone* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| 1. Package | %ACHIEVED% | Scot | 22-Aug-2011 | 9-Sep-2011 | %GREEN%30-Aug-2011%ENDCOLOR% | %TWISTY{mode=&quot;div&quot; showlink=&quot;Details&quot; hidelink=&quot;Hide&quot; showimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif&quot; hideimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif&quot; remember=&quot;on&quot; start=&quot;hide&quot; }% [[https://jira.opensciencegrid.org/browse/SOFTWARE-152][#152]]&lt;br&gt;[[https://jira.opensciencegrid.org/browse/SOFTWARE-153][#153]]&lt;br&gt;[[https://jira.opensciencegrid.org/browse/SOFTWARE-154][#154]]&lt;br&gt;[[https://jira.opensciencegrid.org/browse/SOFTWARE-155][#155]]&lt;br&gt;[[https://jira.opensciencegrid.org/browse/SOFTWARE-156][#156]]&lt;br&gt; Spec files for all the three packages are in place %ENDTWISTY% |
+| 2. Internal Testing | %ACHIEVED% | Anand | 2-Sep-2011&lt;br&gt;(orig. 9-Sep-2011) | 9-Sep-2011&lt;br&gt;(orig. 16-Sep-2011) | %GREEN%12-Sep-2012%ENDCOLOR% | |
+| 3. Fix Known Problems | %ACHIEVED% | Anand | 9-Sep-2011&lt;br&gt;(orig. 16-Sep-2011) | 16-Sep-2011&lt;br&gt;(orig. 23-Sep-2011) | %GREEN%12-Sep-2012%ENDCOLOR% | |
+| 4a. Documentation | %ACHIEVED% | James, Anand, Doug | 16-Sep-2011 | 30-Sep-2011 | %GREEN%29-Sep-2011%ENDCOLOR%  | The [[Documentation.Release3.InstallCertAuth][essential documentation]] is done. |
+| 4b. Evaluation | N/A | N/A | | | | Evaluation by Igor&#39;s team not needed |
+| 4c. External Beta Testing | N/A | N/A | | | | External beta testing not needed--heavily used by other components |
+| 4d. Trash/Trash/Integration Testing | %ACHIEVED% | Suchandra | 16-Sep-2011 | 30-Sep-2011 | %RED%4-Oct-2011%ENDCOLOR% | Was a bit late in getting to ITB |
+| *Milestone* | *State* || *Target Release* || *Actual Release* | *Notes* |
+| 5. Limited Release | %RELEASED% || 4-Oct-2011 || %RED%5-Oct-2011%ENDCOLOR% | %TWISTY{%TWISTY_OPTS_DETAILS%}%The release dates were originally in December, but we need this for the VOMS release.%ENDTWISTY% |
+| 6. General Release | %RELEASED% || 1-Nov-2011 || %GREEN%1-Nov-2011%ENDCOLOR% | |
+
+---++ Functional Unit: GUMS
+&lt;b&gt;&lt;div style=&quot;background-color: #CC0000; color:white&quot;&gt;DEFERRED TO 2012&lt;/b&gt;&lt;/div&gt;&lt;br&gt;
+
+We will package GUMS before the end of the year if possible. This is a low priority goal: we will focus on the CE and exclude GUMS if necessary. For the short-term this is acceptable because GUMS can still be installed via Pacman.
+
+---++ Functional Unit: Gratia Collector
+&lt;b&gt;&lt;div style=&quot;background-color: #CC0000; color:white&quot;&gt;DEFERRED TO 2012&lt;/b&gt;&lt;/div&gt;&lt;br&gt;
+
+This is a low priority goal: we are not aiming to have progress on it during 2011 unless we have spare time.
+
+---++ Functional Unit: CREAM
+&lt;b&gt;&lt;div style=&quot;background-color: #CC0000; color:white&quot;&gt;DEFERRED TO 2012&lt;/b&gt;&lt;/div&gt;&lt;br&gt;
+
+CREAM will not be part of our RPM release in 2011. 
+

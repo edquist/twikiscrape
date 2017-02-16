@@ -1,0 +1,82 @@
+---+!!&lt;nop&gt;GUMS 1.2 userGroup attributes affecting VO membership and authorization policy
+
+%TOC%
+
+%STARTINCLUDE%
+---+ gums.config userGroup element attributes
+
+The following fields in the &lt;nop&gt;VomsUserGroup element in _gums.config_ that require a little clarification:
+&lt;verbatim&gt;
+    acceptProxyWithoutFQAN = yes | no
+    matchFQAN = ignore | vo | group | exact
+    voGroup
+    voRole
+&lt;/verbatim&gt;
+
+---++ Attributes affecting membership lists (voGroup / voRole)
+The _voGroup_ and _voRole_ attributes affect the set of members retrieved from VOMS:
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{ header=&quot;|  |  |  | &quot; format=&quot;| textarea, 1x10 | textarea, 1x10 | textarea |  &quot; changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*voGroup*|*voRole*|*Membership retrieved*|
+| not specified | not specified | all members of the VO |
+| /cms/uscms | not specified | all members of the specified group in the VO |
+| /cms/uscms | cmsprod | all members of the specified group with the specified role in the VO |
+| not specified | cmsprod | *INVALID specification* - no members retrieved |
+
+&lt;b&gt;Note: &lt;/b&gt; _acceptProxyWithoutFQAN_ and _matchFQAN_ attributes have no affect on member retrieval.
+
+---+++ Comments
+%COMMENT{ type=&quot;threadmode&quot; }%
+
+---++ Attributes defining authorization policy (acceptProxyWithoutFQAN / matchFQAN)
+The _acceptProxyWithoutFQAN_ and _matchFQAN_ attributes affect the authorization policy for that set of members (_userGroup_):
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{ header=&quot;|  |  |&quot; format=&quot;| textarea, 1x10 | textarea, 1x10|  &quot; changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|  *acceptProxyWithoutFQAN*  |*Policy description*|
+|   yes   | Allows authorization with a grid proxy (one without an FQAN).&lt;br /&gt;Therefore, the requestor (based on DN) only has to be a member of a particular _userGroup_ |
+|   no   | Only authorizes requests using a voms proxy (one with an FQAN)&lt;br /&gt;Therefore, the _matchFQAN_ attribute defines the authorization policy |
+
+
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{ header=&quot;|  |  | &quot; format=&quot;| textarea, 1x25 | textarea, 1x40 |  &quot; changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*matchFQAN*|*Policy description*|
+|  exact  | Authorizes if the user&#39;s DN *and* FQAN is found in the database |
+|  group  | Authorizes if the user&#39;s DN *and* FQAN (only the voGroup portion) portion is found in the database. |
+|  vo  | Authorizes if the user&#39;s DN *and* FQAN (only the top level of the voGroup portion - (before 1st and 2nd slash) is found in the database. |
+|  ignore  | Authorizes if the user&#39;s DN is found in database.  The user&#39;s FQAN is ignored. |
+
+---+++ Comments
+
+%COMMENT{ type=&quot;threadmode&quot; }%
+
+---++ Some Subtleties
+There may be some subtle problems with this logic.
+
+For example, it may be problematic if a _VomsUserGroup_ element is created that specifies:
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{ header=&quot;|  |  | &quot; format=&quot;| textarea, 1x25 | textarea, 1x40 |  &quot; changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|  *Attribute*  |  *Value*  |
+|  matchFQAN  |  ignore   |
+|  voGroup  |  /atlas/usatlas  |
+|  voRole  |  production  |
+
+
+An authorization request from a PEP (e.g, CE node) for a voms proxy with the following settings:
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{ header=&quot;|  |  | &quot; format=&quot;| textarea, 1x25 | textarea, 1x40 |  &quot; changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|  *DN*  |  *FQAN*  |
+|  /DC=org/DC=doegrids/OU=People/CN=John Smith 12345  |  Group=/atlas/usaltas/Role=software  |
+
+
+This users DN will never get retrieved from VOMS and will thus never be matched for membership even though you might expect him to be since _matchFQAN_ was set to ignore.  
+   * Should this be disallowed?%BR%That is, should it not be allowed to use _matchFQAN=ignore_ with setting voGroup and voRole?  
+   * Or this a valid case to allow for?
+
+---+++ Comments
+
+%COMMENT{ type=&quot;threadmode&quot; }%
+
+%STOPINCLUDE%
+
+%INCLUDE{ &quot;Documentation.ToolsBottomMatter&quot; }%
+-- Main.JohnWeigand - 16 Apr 2007

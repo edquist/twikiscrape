@@ -1,0 +1,787 @@
+---+ Guide to create a new Query in Gratia Web 
+The Gratia Web queries are defined in !XML files. These files are located at in the =OSG-Measurements-Metrics= project in this path =./src/gratia/config=. If you are working in a machine with a working installation these files will be located in the =site-packages= folder of the python installation in the machine. For example in a SL5 machine with python 2.4 the path would be =/usr/lib/python2.4/site-packages/gratia/config=, or in a SL6 machine with python 2.6 it would be =/usr/lib/python2.6/site-packages/gratia/config=.
+
+%NOTE% After modifying the XML files the server will require a restart to load the changes made to the queries.
+
+The queries are organized in different groups. Each group has a correspondent XML file that defines the queries. These groups and the related XML files are:
+
+   *  =GratiaStatusQueries --&amp;gt; gratia_status_queries.xml=
+   *  =GratiaEventsQueries --&amp;gt; gratia_events_queries.xml=
+   *  =GratiaDataQueries --&amp;gt; gratia_data_queries.xml=
+   *  =GratiaPieQueries --&amp;gt; gratia_pie_queries.xml=
+   *  =GratiaGlideinBarQueries --&amp;gt; gratia_glidein_bar_queries.xml=
+   *  =GratiaBarQueries --&amp;gt; gratia_bar_queries.xml=
+   *  =GratiaRTQueries --&amp;gt; gratia_realtime_queries.xml=
+   *  =GratiaTransferQueries --&amp;gt; gratia_transfer_queries.xml=
+   *  =GratiaCumulativeQueries --&amp;gt; gratia_cumulative_queries.xml=
+   *  =GridScanQueries --&amp;gt; gridscan_queries.xml=
+   *  =GIPQueries --&amp;gt; gip_queries.xml=
+   *  =RSVQueries --&amp;gt; rsv_queries.xml=
+   *  =RSVWLCGQueries --&amp;gt; rsv_wlcg.xml=
+   *  =RSVSummaryQueries --&amp;gt; rsv_summary.xml=
+
+This queries groups is defined in =text_queries.xml=, and can be examined on a running server on =http://ip:[port]/gratia/xml=.
+&lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;graphtool-config&amp;gt;%ENDCOLOR%  
+  ...
+  %BLUE%&amp;lt;class %PURPLE%type=%ENDCOLOR%%GREEN%&quot;XmlGenerator&quot;%ENDCOLOR% %PURPLE%name=%ENDCOLOR%%GREEN%&quot;query_xml&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;timeout&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%900%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% GratiaStatusQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% GratiaEventsQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% GratiaDataQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% GratiaPieQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% GratiaGlideinBarQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% GratiaBarQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% GratiaRTQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% GratiaTransferQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% GratiaCumulativeQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% GridScanQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% GIPQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% RSVQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% RSVWLCGQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR% RSVSummaryQueries %BLUE%&amp;lt;queryobj&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;class&amp;gt;%ENDCOLOR%
+  ...
+%BLUE%&amp;lt;/graphtool-config&amp;gt;%ENDCOLOR%
+&lt;/pre&gt;
+
+---++ Modifying/adding queries to an existing group
+
+%WARNING% Remember to escape reserved XML characters like =&#39;&amp;gt;&#39;= and =&#39;&amp;lt;&#39;= when modifying XML files.
+
+Most of the queries defined in the different groups extend from queries that are defined in =generic_queries.xml=. To add a new query to a group you must go to the XML where the group is defined, and add a new =&amp;lt;query&amp;gt;= node to the =&amp;lt;class type=&quot;SqlQueries&quot; name=&quot;GROUP_NAME&quot;&amp;gt;= node.
+&lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;graphtool-config&amp;gt;%ENDCOLOR%
+  ...
+  %BLUE%&amp;lt;class %PURPLE%type=%ENDCOLOR%%GREEN%&quot;SqlQueries&quot;%ENDCOLOR% %PURPLE%name=%ENDCOLOR%%GREEN%&quot;GROUP_NAME&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+      ...
+      %BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;NEW_QUERY_NAME&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+      ...
+      %BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+      ...
+  %BLUE%&amp;lt;class&amp;gt;%ENDCOLOR%
+  ...
+%BLUE%&amp;lt;/graphtool-config&amp;gt;%ENDCOLOR%
+&lt;/pre&gt;
+%IMPORTANT% The query name will also be the path to access the query in the URL (=http://ip:[port]/gratia/xml/&lt;b&gt;&amp;lt;query_name&amp;gt;&lt;/b&gt;=). Do not use spaces or special characters in the query name. Do not use a query name that is already in use by other query.
+
+Query can inherit all of its attributes from another query. To do this you must include the =base= attribute and reference %RED%GroupName%ENDCOLOR%.%BROWN%query_to_extend%ENDCOLOR%.
+&lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;NEW_QUERY_NAME&quot;%ENDCOLOR% %PURPLE%base=%ENDCOLOR%%GREEN%&quot;%RED%GroupName%ENDCOLOR%.%BROWN%query_to_extend%ENDCOLOR%&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+...
+...
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;user_site_quality&quot;%ENDCOLOR% %PURPLE%base=%ENDCOLOR%%GREEN%&quot;%RED%GratiaSecureStorageQuery%ENDCOLOR%.%BROWN%user_summary%ENDCOLOR%&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+&lt;/pre&gt;
+To define the inputs, the SQL, and other query metadata. The =query= node is composed of the following nodes:
+
+---+++ Query =inputs= tag
+This nodes defines all the input variables that will be included by default in the query. The =inputs= node is composed of =input= nodes. An input node can be defined using the following attributes. 
+   * *name (REQUIRED):* The name of the input parameter. Must not contain spaces nor special characters. Must be unique per each query
+   * *type (OPTIONAL):* The type of the input parameter. If not specified will default to string. The accepted values are:
+      * *int*
+      * *float*
+      * *eval:* Will try to evaluate the expression using the python buiultin =eval()= function. Will try to evaluate with the following call =eval(str(%RED%INPUT_PARAMETER%ENDCOLOR%),{&#39;__builtins__&#39;:None,&#39;time&#39;:time},{})=.
+      * *datetime:* Will try to parse the input parameter to a datetime python object. Will accept a timestamp in seconds, a date-time string with the following format =&#39;%Y-%m-%d %H:%M:%S&#39;= or and expression like =time.time()= or =time.time()-2*86400=.
+      * *timestamp:* Will try to parse the input parameter to a datetime python object, like the =datetime= type, but will get the timestam of the datetime afterwards.
+      * *bool/boolean:* Will accept either =bool= or =boolean= as type, do not use the string =&quot;bool/boolean&quot;=. The only accepted string values are =false= or =true=
+   * *kind (OPTIONAL):* The only accepted value is =&quot;sql&quot;=. If it is not specified, the input parameters will be able to be used in any python callback function, but will not be included in the SQL query parameters for the query. If specified with =kind=&quot;sql&quot;= it will be available to usage in the SQL query as =:input_parameter_name=.
+   * *partial (OPTIONAL):* Only for *datetime* parameters. Only works if there is a numeric parameter named =span=. Values accepted are:
+      * *down:* If =span= is exactly =3600= will set the datetime object minutes and seconds to 0:0. If  =span= is bigger than =3600= will set the datetime object hours, minutes and seconds to 0:0:0.
+      * *up:* If =span= is exactly =3600= will set the datetime object minutes and seconds to 59:59. If  =span= is bigger than =3600= will set the datetime object hours, minutes and seconds to 23:59:59.
+---++++ Example:
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Inputs Example&quot; hidelink=&quot;Hide Inputs example&quot;}%
+&lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;site_summary&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;span&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;int&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%3600%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;starttime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;down&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()-13*86400%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;endtime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;up&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Unknown %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% other %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;user&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    SELECT
+    ....
+ %BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+&lt;/pre&gt;
+%ENDTWISTY%
+---+++ Query =sql= tag
+If you are creating a new query that does not inherit from other queries you must specify the SQL query here. You can leave slots that can be filled by child queries. To do this you must include a =slot= tag. This tag only requires a name attribute that must not included spaces nor special characters. There can be multiple slots with the same name. 
+To fill this slots from a child query you can use a =filler= tag with the name of the slot that want to be filled. 
+%WARNING% Non filled slots will be replaced with empty strings. This could lead to a syntax error on the SQL query when executed. 
+The SQL query text can include references to the input parameters with  =:input_parameter_name=. The input parameter must specify the =kind=&quot;sql&quot;= attribute to be used.
+---++++ Example:
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Parent Query Example&quot; hidelink=&quot;Hide Parent Query example&quot;}%
+&lt;pre class=&quot;file&quot;&gt;
+ %BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;site_summary&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+      ...
+      %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    SELECT
+      %RED%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%,
+      truncate( unix_timestamp(StartTime) / %BROWN%:span%ENDCOLOR%, 0 ) * %BROWN%:span%ENDCOLOR% as time,
+      %BROWN%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    FROM
+      MasterTransferSummary R FORCE INDEX (index01)
+    JOIN
+      Probe P on R.ProbeName = P.probename
+    JOIN
+      Site S on S.siteid = P.siteid
+    JOIN
+      VONameCorrection VC ON (VC.corrid=R.VOcorrid)
+    JOIN
+      VO on (VC.void = VO.void)
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;JOIN&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    WHERE
+      StartTime &amp;amp;gt;= %BROWN%:starttime%ENDCOLOR% AND
+      StartTime &amp;amp;lt; %BROWN%:endtime%ENDCOLOR% AND 
+      S.SiteName=%BROWN%:facility%ENDCOLOR% AND
+      VO.VOName regexp %BROWN%:vo%ENDCOLOR% AND
+      (NOT (VO.VOName regexp %BROWN%:exclude-vo%ENDCOLOR%)) AND
+      CommonName regexp %BROWN%:user%ENDCOLOR%
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;where&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    GROUP BY
+      %RED%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%,
+      time
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results %PURPLE%module=%ENDCOLOR%%GREEN%&quot;graphtool.database.query_handler&quot;%ENDCOLOR% %PURPLE%function=%ENDCOLOR%%GREEN%&quot;results_parser&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  ...
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+&lt;/pre&gt;
+%ENDTWISTY%
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Child Query Example&quot; hidelink=&quot;Hide Child Query example&quot;}%
+&lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;site_user_transfer_quality&quot;%ENDCOLOR% %PURPLE%base=%ENDCOLOR%%GREEN%&quot;GratiaStorageQuery.site_summary&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  ...
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    %RED%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% DN %RED%&amp;lt;filler&amp;gt;%ENDCOLOR%
+    %BROWN%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+      sum(CASE StatusCode WHEN 0 THEN 1 ELSE 0 END) as Successes,
+      sum(CASE StatusCode WHEN 0 THEN 0 ELSE 1 END) as Failures
+    %BROWN%&amp;lt;filler&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+  ...
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+&lt;/pre&gt;
+%ENDTWISTY%
+---+++ Query =results= and =attribute=  tags
+This tag defines how results must be transformed after they are retrieved from the database. This data transformation is required by =graphtool= to generate the plots. Moreover, this allows to transform the data that come from the database to format, join data with external data sources (like OIM), or do additional calculations. =graphtool= offers a group of result parsing functions that are useful depending in the desired kind of plot. 
+The =attribute= tag defines additional METADATA to be include when executing the query and creating the plot. One of this extra parameters is =graph_type= that defines which kind of plots will be rendered. 
+---++++ Plots Examples:
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show !GratiaHorizontalBar Example&quot; hidelink=&quot;Hide !GratiaHorizontalBar example&quot;}%
+&lt;img src=&quot;%ATTACHURLPATH%/GratiaHorizontalBar.png&quot; alt=&quot;GratiaHorizontalBar.png&quot; width=&#39;800&#39; height=&#39;500&#39; /&gt;    
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Parent XML&quot; hidelink=&quot;Hide Parent XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+  %BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;simple_master_summary&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;starttime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;down&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()-13*86400%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;endtime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;up&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;includeFailed&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%true%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;includeSuccess&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%true%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%.*%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;probe&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%.*%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;user&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%.*%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%.*%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;role&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%.*%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-role&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%NONE%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%Unknown|unknown|other%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%NONE|Generic|Obsolete%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-user&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%NONE%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;resource-type&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%^Batch$%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+      SELECT
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+      ,
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+      FROM
+                MasterSummaryData R
+            JOIN
+                Probe P on R.ProbeName = P.probename
+            JOIN
+                Site S on S.siteid = P.siteid
+            JOIN
+                VONameCorrection VC ON (VC.corrid=R.VOcorrid)
+            JOIN
+                VO on (VC.void = VO.void)
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;join&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+      WHERE
+                R.EndTime &amp;amp;gt;= :starttime AND
+                R.EndTime &amp;amp;lt; :endtime AND
+                S.SiteName regexp :facility AND
+                VO.VOName regexp :vo AND
+                VC.VOName regexp :role AND
+                (NOT (VC.VOName regexp :exclude-role)) AND
+                (R.ResourceType regexp :resource-type or R.ResourceType = &#39;&#39;) AND
+                (:includeFailed=&#39;true&#39; OR ApplicationExitCode=0) AND
+                (:includeSuccess =&#39;true&#39; OR ApplicationExitCode!=0) AND
+                (NOT (S.SiteName regexp :exclude-facility)) AND
+                (NOT (VO.VOName regexp :exclude-vo)) AND
+                R.WallDuration &amp;amp;lt; 1100000000 AND
+                R.ProbeName regexp :probe AND
+                (NOT (R.CommonName regexp :exclude-user)) AND
+                R.CommonName regexp :user
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;where&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+      GROUP BY
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;having&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;results %PURPLE%module=%ENDCOLOR%%GREEN%&quot;graphtool.database.query_handler&quot;%ENDCOLOR% %PURPLE%function=%ENDCOLOR%%GREEN%&quot;simple_results_parser&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivots&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%0%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;results&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%1%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;graph_type&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%GratiaPie%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;title&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_names&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_units&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Child XML&quot; hidelink=&quot;Hide Child XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+  %BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;job_avg&quot;%ENDCOLOR% %PURPLE%base=%ENDCOLOR%%GREEN%&quot;GratiaGenericQuery.simple_master_summary&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;min_jobs&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%0%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;max_avg&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%10000%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;fixed-height&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%False%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%COALESCE(R.CommonName, VO.VOName)%BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%sum(Cores*WallDuration)/sum(Njobs)/60%BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;having&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%HAVING sum(Njobs) &amp;gt; :min_jobs and sum(Cores*WallDuration)/sum(Njobs)/60 &amp;lt; :max_avg%BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%User Name%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_transform&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%displayName%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;title&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%Average Job Runtimes%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_names&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%Avg Runtime%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_units&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%Mins%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;graph_type&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%GratiaHorizontalBar%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+%ENDTWISTY%
+
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show !GratiaStackedBar Example&quot; hidelink=&quot;Hide !GratiaStackedBar example&quot;}%
+&lt;img src=&quot;%ATTACHURLPATH%/GratiaStackedBar.png&quot; alt=&quot;GratiaStackedBar.png&quot; width=&#39;800&#39; height=&#39;500&#39; /&gt;  
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Parent XML&quot; hidelink=&quot;Hide Parent XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;master_summary&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;span&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;int&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%86400%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;starttime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;down&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()-13*86400%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;endtime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;up&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;includeFailed&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% true %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;includeSuccess&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% true %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;probe&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;user&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;role&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-role&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% NONE %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Unknown|unknown|other %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-user&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% NONE %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% NONE|Generic|Obsolete %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;resource-type&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% ^Batch$ %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    SELECT
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%,
+      truncate( unix_timestamp(EndTime) / :span, 0 ) * :span as time,
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    FROM
+      MasterSummaryData R
+    JOIN
+      Probe P on R.ProbeName = P.probename
+    JOIN
+      Site S on S.siteid = P.siteid
+    JOIN
+      VONameCorrection VC ON (VC.corrid=R.VOcorrid)
+    JOIN
+      VO on (VC.void = VO.void)
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;join&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 
+    WHERE
+      R.EndTime &amp;amp;gt;= :starttime AND
+      R.EndTime &amp;amp;lt; :endtime AND
+      S.SiteName regexp :facility AND
+      VO.VOName regexp :vo AND
+      VC.VOName regexp :role AND
+      (NOT (VC.VOName regexp :exclude-role)) AND
+      (R.ResourceType regexp :resource-type or R.ResourceType = &#39;&#39;) AND
+      R.CommonName regexp :user AND
+      (:includeFailed=&#39;true&#39; OR ApplicationExitCode=0) AND
+      (:includeSuccess =&#39;true&#39; OR ApplicationExitCode!=0) AND
+      (NOT (S.SiteName regexp :exclude-facility)) AND
+      (NOT (R.CommonName regexp :exclude-user)) AND
+      (NOT (VO.VOName regexp :exclude-vo)) AND
+      R.WallDuration &amp;amp;lt; 1100000000 AND
+      R.ProbeName regexp :probe
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;where&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    GROUP BY 
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%,
+      time
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;having&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results %PURPLE%module=%ENDCOLOR%%GREEN%&quot;graphtool.database.query_handler&quot;%ENDCOLOR% %PURPLE%function=%ENDCOLOR%%GREEN%&quot;results_parser&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivots&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 0 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 1 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;results&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 2 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;graph_type&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%GratiaStackedBar%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;title&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_names&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_units&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Child XML&quot; hidelink=&quot;Hide Child XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;vo_facility_hours_bar_smry&quot;%ENDCOLOR% %PURPLE%base=%ENDCOLOR%%GREEN%&quot;GratiaGenericQuery.master_summary&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% S.SiteName %BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% sum(Cores*WallDuration)/3600 %BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;where&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% AND WallDuration &amp;gt; 0 %BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%Facility%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;title&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%$vo CPU Hours By Facility%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;graph_type&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%GratiaStackedBar%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_transform&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%oim_resource_filter%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping_transform&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%make_int%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+%ENDTWISTY%
+
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show !GratiaStackedLine Example&quot; hidelink=&quot;Hide !GratiaStackedLine example&quot;}%
+&lt;img src=&quot;%ATTACHURLPATH%/GratiaStackedLine.png&quot; alt=&quot;GratiaStackedLine.png&quot; width=&#39;800&#39; height=&#39;500&#39; /&gt;    
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Parent XML&quot; hidelink=&quot;Hide Parent XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;ts_hourly&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;starttime&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()-2*86400%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;endtime&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%.*%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;span&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%3600%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;host&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%.*%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%.*%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;excludefacility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%ITB%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;excludehost&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%NONE%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;excludevo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%NONE%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    SELECT
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%,
+      unix_timestamp(Timestamp),
+      sum(MyColumn)
+    FROM
+      ( SELECT
+          MSS.SiteName,
+          VO.VOName,
+          MSS.CEName,
+          Cluster.Name,
+          Timestamp,
+          (CASE CNC.type WHEN 1 THEN SUM(%BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%) WHEN 2 THEN MAX(%BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%) WHEN 3 THEN SUM(%BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%) END) AS MyColumn
+        FROM
+          MasterServiceSummaryHourly MSS
+          JOIN VONameCorrection VNC on VNC.corrid=MSS.VOcorrid
+          JOIN VO on VO.void=VNC.void
+          JOIN ClusterNameCorrection CNC on CNC.corrid=MSS.Clustercorrid
+          JOIN Cluster on Cluster.clusterid=CNC.clusterid
+        WHERE
+          Timestamp &amp;gt;= :starttime
+          AND Timestamp &amp;amp;lt; :endtime
+          AND (MSS.SiteName regexp :facility)
+          AND NOT (MSS.SiteName regexp :excludefacility)
+          AND (MSS.HostName regexp :host)
+          AND NOT (MSS.HostName regexp :excludehost)
+          AND (VO.VOName regexp :vo)
+          AND NOT (VO.VOName regexp :excludevo)
+          %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;where&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+        GROUP BY
+          VO.VOName,
+          Cluster.Name,
+          MSS.CEName,
+          Timestamp
+      ) as foo
+    GROUP BY
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%,
+      Timestamp
+    %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;having&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results %PURPLE%module=%ENDCOLOR%%GREEN%&quot;gratia.database.query_handler&quot;%ENDCOLOR% %PURPLE%function=%ENDCOLOR%%GREEN%&quot;results_parser_fillin&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivots&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 0 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 1 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;results&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 2 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping_transform&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% make_int %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;graph_type&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% GratiaStackedLine %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%VO.VOName%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%Time%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_units&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Child XML&quot; hidelink=&quot;Hide Child XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;status_queue&quot;%ENDCOLOR% %PURPLE%base=%ENDCOLOR%%GREEN%&quot;GratiaStatusGeneric.ts_hourly&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%RunningJobs%BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%CEName%BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%Queue%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;title&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%Count of Running Jobs by Queue%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_names&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%Running Jobs%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+%ENDTWISTY%
+
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show !GratiaCumulative Example&quot; hidelink=&quot;Hide !GratiaCumulative example&quot;}%
+&lt;img src=&quot;%ATTACHURLPATH%/GratiaCumulative.png&quot; alt=&quot;GratiaCumulative.png&quot; width=&#39;800&#39; height=&#39;500&#39; /&gt;    
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Parent XML&quot; hidelink=&quot;Hide Parent XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;jobs_summary_query&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;span&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;int&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%86400%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;starttime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;down&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()-13*86400%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;endtime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;up&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;user&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Unknown|unknown|other %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% NONE|Generic|Obsolete %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-user&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% NONE %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;probe&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;resource-type&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% ^Batch$ %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+   SELECT
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%,
+      truncate( unix_timestamp(EndTime) / :span, 0 ) * :span as time,
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    FROM
+      MasterSummaryData R
+    JOIN
+      Probe P on R.ProbeName = P.probename
+    JOIN
+      Site S on S.siteid = P.siteid
+    JOIN
+      VONameCorrection VC ON (VC.corrid=R.VOcorrid)
+    JOIN
+      VO on (VC.void = VO.void)
+    %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;JOIN&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    WHERE
+      (R.ResourceType regexp :resource-type or R.ResourceType = &#39;&#39;) AND
+      EndTime &amp;amp;gt;= :starttime AND
+      EndTime &amp;amp;lt; :endtime AND
+      S.SiteName regexp :facility AND
+      VO.VOName regexp :vo AND
+      R.CommonName regexp :user AND
+      (NOT (S.SiteName regexp :exclude-facility)) AND
+      (NOT (R.CommonName regexp :exclude-user)) AND
+      (NOT (VO.VOName regexp :exclude-vo)) AND
+      R.ProbeName regexp :probe AND
+      WallDuration &amp;amp;lt; 1100000000
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;where&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    GROUP BY
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%,
+      time
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results %PURPLE%module=%ENDCOLOR%%GREEN%&quot;graphtool.database.query_handler&quot;%ENDCOLOR% %PURPLE%function=%ENDCOLOR%%GREEN%&quot;results_parser&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivots&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 0 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 1 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;results&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 2 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping_transform&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%make_int%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;graph_type&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%GratiaStackedBar%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%Time%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;title&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_names&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_units&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Child XML&quot; hidelink=&quot;Hide Child XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;facility_count_cumulative_smry&quot;%ENDCOLOR% %PURPLE%base=%ENDCOLOR%%GREEN%&quot;GratiaGenericQuery.jobs_summary_query&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% S.SiteName %BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% sum(Njobs) %BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;where&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% AND Njobs &amp;gt; 0 %BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results %PURPLE%module=%ENDCOLOR%%GREEN%&quot;graphtool.database.query_handler&quot;%ENDCOLOR% %PURPLE%function=%ENDCOLOR%%GREEN%&quot;cumulative_pivot_group_parser&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_transform&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%oim_resource_filter%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping_transform&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%make_int%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Facility %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;title&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Cumulative Number of Jobs By Facility %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_names&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Job Count %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_units&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;graph_type&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% GratiaCumulative %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+%ENDTWISTY%
+
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show !GratiaPie Example&quot; hidelink=&quot;Hide !GratiaPie example&quot;}%
+&lt;img src=&quot;%ATTACHURLPATH%/GratiaPie.png&quot; alt=&quot;GratiaPie.png&quot; width=&#39;800&#39; height=&#39;500&#39; /&gt;    
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Parent XML&quot; hidelink=&quot;Hide Parent XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;simple_master_summary&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;starttime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;down&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()-13*86400%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;endtime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;up&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;includeFailed&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% true %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;includeSuccess&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% true %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;probe&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;user&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;role&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-role&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% NONE %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Unknown|unknown|other %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% NONE|Generic|Obsolete %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-user&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% NONE %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;resource-type&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% ^Batch$ %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+        SELECT
+            %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%,
+            %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+        FROM
+            MasterSummaryData R
+        JOIN
+            Probe P on R.ProbeName = P.probename
+        JOIN
+            Site S on S.siteid = P.siteid
+        JOIN
+            VONameCorrection VC ON (VC.corrid=R.VOcorrid)
+        JOIN
+            VO on (VC.void = VO.void)
+        %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;join&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+        WHERE
+            R.EndTime &amp;amp;gt;= :starttime AND
+            R.EndTime &amp;amp;lt; :endtime AND
+            S.SiteName regexp :facility AND
+            VO.VOName regexp :vo AND
+            VC.VOName regexp :role AND
+            (NOT (VC.VOName regexp :exclude-role)) AND
+            (R.ResourceType regexp :resource-type or R.ResourceType = &#39;&#39;) AND
+            (:includeFailed=&#39;true&#39; OR ApplicationExitCode=0) AND
+            (:includeSuccess =&#39;true&#39; OR ApplicationExitCode!=0) AND
+            (NOT (S.SiteName regexp :exclude-facility)) AND
+            (NOT (VO.VOName regexp :exclude-vo)) AND
+            R.WallDuration &amp;amp;lt; 1100000000 AND
+            R.ProbeName regexp :probe AND
+            (NOT (R.CommonName regexp :exclude-user)) AND
+            R.CommonName regexp :user
+            %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;where&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+        GROUP BY 
+            %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;having&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;results %PURPLE%module=%ENDCOLOR%%GREEN%&quot;graphtool.database.query_handler&quot;%ENDCOLOR% %PURPLE%function=%ENDCOLOR%%GREEN%&quot;simple_results_parser&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+            %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivots&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 0 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+            %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;results&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 1 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;graph_type&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%GratiaPie%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;title&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_names&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_units&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Child XML&quot; hidelink=&quot;Hide Child XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;osg_vo_count&quot;%ENDCOLOR% %PURPLE%base=%ENDCOLOR%%GREEN%&quot;GratiaGenericQuery.simple_master_summary&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;starttime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;down&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()-14*86400%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+     %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% VO.VOName %BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% sum(R.Njobs) %BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% VO %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_names&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Jobs %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_units&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;title&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Job Count by VO %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+%ENDTWISTY%
+
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show !QualityMap Example&quot; hidelink=&quot;Hide !QualityMap example&quot;}%
+&lt;img src=&quot;%ATTACHURLPATH%/QualityMap.png&quot; alt=&quot;QualityMap.png&quot; width=&#39;800&#39; height=&#39;620&#39; /&gt;   
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Parent XML&quot; hidelink=&quot;Hide Parent XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;summary&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;span&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;int&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%86400%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;starttime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;down&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()-13*86400%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;endtime&quot;%ENDCOLOR% %PURPLE%partial=%ENDCOLOR%%GREEN%&quot;up&quot;%ENDCOLOR% %PURPLE%type=%ENDCOLOR%%GREEN%&quot;datetime&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%time.time()%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;protocol&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% .* %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-vo&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% other %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;exclude-facility&quot;%ENDCOLOR% %PURPLE%kind=%ENDCOLOR%%GREEN%&quot;sql&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% NONE|Generic|Obsolete %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+   SELECT
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%,
+      truncate( unix_timestamp(StartTime) / :span, 0 ) * :span as time,
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    FROM
+      MasterTransferSummary R FORCE INDEX (index01)
+    JOIN
+      Probe P on R.ProbeName = P.probename
+    JOIN
+      Site S on S.siteid = P.siteid
+    JOIN
+      VONameCorrection VC ON (VC.corrid=R.VOcorrid)
+    JOIN
+      VO on (VC.void = VO.void)
+    %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;JOIN&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    WHERE
+      StartTime &amp;amp;gt;= :starttime AND
+      StartTime &amp;amp;lt; :endtime AND
+      SiteName regexp :facility AND
+      R.Protocol regexp :protocol AND
+      VO.VOName regexp :vo AND
+      (NOT (S.SiteName regexp :exclude-facility)) AND
+      (NOT (VO.VOName regexp :exclude-vo))
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;where&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    GROUP BY
+      %BLUE%&amp;lt;slot %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%,
+      time
+  %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results %PURPLE%module=%ENDCOLOR%%GREEN%&quot;graphtool.database.query_handler&quot;%ENDCOLOR% %PURPLE%function=%ENDCOLOR%%GREEN%&quot;results_parser&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivots&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 0 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 1 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;results&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 2 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+      %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping_transform&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%make_int%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;graph_type&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%GratiaStackedBar%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;grouping_name&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%Time%BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;title&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_names&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+  %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_units&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+   * %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Child XML&quot; hidelink=&quot;Hide Child XML&quot;}%
+     &lt;pre class=&quot;file&quot;&gt;
+%BLUE%&amp;lt;query %PURPLE%name=%ENDCOLOR%%GREEN%&quot;user_quality&quot;%ENDCOLOR% %PURPLE%base=%ENDCOLOR%%GREEN%&quot;GratiaStorageQuery.summary&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;group&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% CommonName %BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;filler %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%
+            sum(CASE R.Status WHEN 0 THEN 1.0 ELSE 0.0 END) as Successes,
+            sum(CASE R.Status WHEN 0 THEN 0.0 ELSE 1.0 END) as Failures
+        %BLUE%&amp;lt;filler&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;sql&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+            %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;pivot_transform&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR%displayName%BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+            %BLUE%&amp;lt;input %PURPLE%name=%ENDCOLOR%%GREEN%&quot;results&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% 2, 3 %BLUE%&amp;lt;input&amp;gt;%ENDCOLOR%
+        %BLUE%&amp;lt;inputs&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;results&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;graph_type&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% QualityMap %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;fixed-height&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% False %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;title&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Transfer Quality by User %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_names&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Successful Transfers, Failed Transfers %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+    %BLUE%&amp;lt;attribute %PURPLE%name=%ENDCOLOR%%GREEN%&quot;column_units&quot;%ENDCOLOR%&amp;gt;%ENDCOLOR% Files, Files %BLUE%&amp;lt;attribute&amp;gt;%ENDCOLOR%
+%BLUE%&amp;lt;query&amp;gt;%ENDCOLOR%
+     &lt;/pre&gt;
+     %ENDTWISTY%
+%ENDTWISTY%
+
+---+++ XML Formattig for the Twiki
+To format XML files to be displayed on the Twiki without syntax checking, and line by line. The following python code could be used.
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Show Code&quot; hidelink=&quot;Hide Code&quot;}%
+&lt;pre class=&quot;file&quot;&gt;
+import re
+
+  # GROUPS                    1  2    3          4                      5    6
+pattern_open  = re.compile(r&amp;quot;(&amp;lt;)(\s*)([\w\d_-]+)(\s+[\w\d_-]+=\&amp;quot;.*?\&amp;quot;)*(\s*)(\/&amp;gt;|&amp;gt;)&amp;quot;)
+  # GROUPS                    1   2              3
+pattern_close = re.compile(r&amp;quot;(&amp;lt;/)(\s*[\w\d_-]+\s*)(&amp;gt;)&amp;quot;)
+
+open_tag      = &amp;quot;&amp;#37;BLUE&amp;#37;&amp;amp;lt;&amp;quot;
+close_tag     = &amp;quot;&amp;amp;gt;&amp;#37;ENDCOLOR&amp;#37;&amp;quot;
+att_def_open  = &amp;quot;&amp;#37;PURPLE&amp;#37;&amp;quot;
+att_text_open = &amp;quot;&amp;#37;GREEN&amp;#37;&amp;quot;
+close_color   = &amp;quot;&amp;#37;ENDCOLOR&amp;#37;&amp;quot;
+
+def format_xml_for_twiki(text,first_call=True):
+  if first_call:
+    text = text.replace(&amp;quot;&amp;amp;&amp;quot;,&amp;quot;&amp;amp;amp;&amp;quot;)
+  # Search for the next open tag
+  match_open  = pattern_open.search(text)
+  if match_open is not None:
+    pre_match = text[:match_open.start()]
+    pos_match = text[match_open.end():]
+    open = open_tag+match_open.group(3)
+    close = (&amp;quot;/&amp;quot; if match_open.group(3) == &amp;quot;/&amp;gt;&amp;quot; else &amp;quot;&amp;quot;)+close_tag
+    attributes = &amp;quot;&amp;quot;
+    attributes_txt =&amp;quot;&amp;quot;
+    if match_open.group(4) is not None:
+      attributes = text[match_open.end(3):match_open.end(4)].strip()
+      for attribute_i in attributes.split():
+        parts = attribute_i.split(&amp;quot;=&amp;quot;)
+        attributes_txt += &amp;quot; &amp;quot;+att_def_open+parts[0]+&amp;quot;=&amp;quot;+close_color+att_text_open+parts[1]+close_color
+    new_text = pre_match+open+attributes_txt+close+pos_match
+    # Recursive call to keep searching for more tags
+    return format_xml_for_twiki(new_text,False)
+  # Search for the next close tag
+  match_close = pattern_close.search(text)
+  if match_close is not None:
+    pre_match = text[:match_close.start()]
+    pos_match = text[match_close.end():]
+    new_text = pre_match+open_tag+match_close.group(2).strip()+close_tag+pos_match
+    # Recursive call to keep searching for more tags
+    return format_xml_for_twiki(new_text,False)
+  return text.replace(&amp;quot;&amp;lt;&amp;quot;, &amp;quot;&amp;amp;lt;&amp;quot;).replace(&amp;quot;&amp;gt;&amp;quot;, &amp;quot;&amp;amp;gt;&amp;quot;).replace(&amp;quot;\t&amp;quot;,&amp;quot;  &amp;quot;)
+
+if __name__ == &amp;quot;__main__&amp;quot;:
+  with open(&#39;./in.xml&#39;,&#39;r&#39;) as f:
+    lines = f.readlines()
+  if lines is not None:
+    with open(&amp;quot;./out.txt&amp;quot;, &#39;w+&#39;) as f:
+      for line in lines:
+        f.write(format_xml_for_twiki(line))
+  else:
+    print &amp;quot;No lines read from ./in.xml&amp;quot;
+&lt;/pre&gt;
+%ENDTWISTY%
+
+-- Main.JuanFelipeMosqueraMorales - 25 Feb 2015
+

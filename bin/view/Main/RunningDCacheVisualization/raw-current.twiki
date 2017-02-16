@@ -1,0 +1,56 @@
+---+!! Running the !dCache visualization in the ROC.
+%TOC%
+
+---++ Installing
+dCache Visualization requires [[http://developer.apple.com/technologies/tools/xcode.html][Xcode]] and [[http://www.libsdl.org/][SDL]].  Xcode is free, but requires sign up.  Xcode has an Mac automated installer.  SDL is an open source library for cross platform rendering that is best built from source.
+
+---+++ Install SDL (Need administrator access)
+   1. Download the SDL source code tarball (ends with .tar.gz) from [[http://www.libsdl.org/download-1.2.php][SDL 1.2 Download]].  
+   1. Open a terminal on the Mac, and change to the directory with the SDL that you just downloaded.  If using Firefox, it will be in =~/Downloads=.
+   &lt;pre class=&quot;screen&quot;&gt;
+cd ~/Downloads &lt;/pre&gt;
+   1. Untar the SDL tarball, replace %RED%version%ENDCOLOR% with the version number you downloaded.  If you are unsure on the version, type =SDL-= and begin pressing the tab button; the terminal should autocomplete the rest of the filename.
+   &lt;pre class=&quot;screen&quot;&gt;
+tar xzf SDL-1.2.%RED%version%ENDCOLOR%.tar.gz &lt;/pre&gt;
+   1. Move into the SDL directory
+   &lt;pre class=&quot;screen&quot;&gt;
+cd SDL-1.2.%RED%version%ENDCOLOR% &lt;/pre&gt;
+   1. Configure and make the SDL library.  You will be prompted for your password when it begins to install the library.
+   &lt;pre class=&quot;screen&quot;&gt;
+./configure &amp;&amp; make &amp;&amp; sudo make install &lt;/pre&gt;
+
+
+---+++ Download !dCache Visualization (Do not need administrator)
+   1. Open a terminal.
+   1. Check out the ROC !dCache Visualization
+   &lt;pre class=&quot;screen&quot;&gt;
+svn co svn://t2.unl.edu/brian/HadoopViz/branches/ROC-Release-1.0.0 dCacheViz&lt;/pre&gt;
+   1. Move into the directory
+   &lt;pre class=&quot;screen&quot;&gt;
+cd dCacheViz &lt;/pre&gt;
+   1. Configure and make the visualization.
+   &lt;pre class=&quot;screen&quot;&gt;
+./configure &amp;&amp; make &lt;/pre&gt;
+
+
+---++ Running the visualization
+   1. Open a terminal.
+   1. Change directory into the visualization
+   &lt;pre class=&quot;screen&quot;&gt;
+cd dCacheViz &lt;/pre&gt;
+   1. Start the visualization
+   &lt;pre class=&quot;screen&quot;&gt;
+./hadoopviz
+&lt;/pre&gt;
+   1. Drag the window over to the second monitor
+   1. Maximize the window by pressing the green button in the upper left
+   1. Again, drag the window over to the second monitor.
+
+---++ Quick Reference
+   * The default server and port are defined in defaults.h
+   * If the visualization crashes, try increasing the surface area.  The surface area is a function of the variables =AREA_SIZE= and =SPACE_BETWEEN=.  The total nodes that the visualization can handle is defined as (=AREA_SIZE= / =SPACE_BETWEEN=) ^ 2.
+   * The labels in the corners of the visualization are created inside !HadoopDropper/UI.cpp.  To change what they say, edit the lines that have the current text quoted.  The color of the text is handled by the function call glColor4f just before the text is printed, where the arguments are 0.0-1.0 values in the order Red, Green, Blue, Transparency.
+   * Developer email is dweitzel@cse.unl.edu
+
+-- Main.DerekWeitzel - 04 Aug 2010
+

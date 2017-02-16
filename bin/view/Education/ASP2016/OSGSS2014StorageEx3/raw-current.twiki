@@ -1,0 +1,460 @@
+---+ Introduction
+
+%TOC%
+In Exercise set 3, we improved the scalability of our BLAST runs by first staging the data to an OSG SE.  This achieved our goals, but required substantial manual work to move the data across the grid.
+
+In this set of exercises, we will try a different approach: caching.  We will stage the data to one HTTP server, and rely on the site&#39;s HTTP caches to bring the data closer to the running job, and provide scalability.
+
+---+ Customize this document
+
+&lt;!-- OSG Summer School 2011 Defaults
+   * Local VO= %URLPARAM{&quot;INPUT_VO&quot; encode=&quot;quote&quot; default=&quot;osgedu&quot;}%
+   * Local UCL_HOST = %URLPARAM{&quot;INPUT_HOST&quot; encode=&quot;quote&quot; default=&quot;osg-ss-submit&quot;}%
+   * Local UCL_USER = %URLPARAM{&quot;INPUT_USER&quot; encode=&quot;quote&quot; default=&quot;user&quot;}%
+   * Local UCL_DOMAIN = %URLPARAM{&quot;INPUT_DOMAIN&quot; encode=&quot;quote&quot; default=&quot;chtc.wisc.edu&quot;}%
+   * Local UCL_CWD= %URLPARAM{&quot;INPUT_CWD&quot; encode=&quot;quote&quot; default=&quot;/home/%UCL_USER%/dm_part_3&quot;}%
+   * Local UCL_CWD2= %URLPARAM{&quot;INPUT_CWD&quot; encode=&quot;quote&quot; default=&quot;dm_part_3&quot;}%
+   * Local EXPORT_DIR=%URLPARAM{&quot;INPUT_EXPORT_DIR&quot; encode=&quot;quote&quot; default=&quot;~/public_html&quot;}%
+   * Local SOURCE_HOST=%URLPARAM{&quot;INPUT_SOURCE_HOST&quot; encode=&quot;quote&quot; default=&quot;osg-ss-submit.chtc.wisc.edu&quot;}%
+   * Local SOURCE_ROOT=~%UCL_USER%
+   * Local SOURCE_URL=http://%SOURCE_HOST%/%SOURCE_ROOT%
+   * Local PROXY_HOST=%URLPARAM{&quot;INPUT_PROXY_ENDPOINT&quot; encode=&quot;quote&quot; default=&quot;osg-ss-se.chtc.wisc.edu&quot;}%
+   * Local PROXY_PORT=%URLPARAM{&quot;INPUT_PROXY_ENDPOINT&quot; encode=&quot;quote&quot; default=&quot;3128&quot;}%
+   * Local PROXY_ENDPOINT=%PROXY_HOST%:%PROXY_PORT%
+   * Local VDT_LOCATION=/opt/osg-client
+--&gt;
+
+%ICON{&quot;warning&quot;}% %RED% Please change your Login Name and click on the Customize button!%ENDCOLOR%
+&lt;form action=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%WEB%/%TOPIC%&quot;&gt;
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      %RED%Login Name%ENDCOLOR%
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_USER&quot; value=&quot;%UCL_USER%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      VO
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_VO&quot; value=&quot;%VO%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Host Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_HOST&quot; value=&quot;%UCL_HOST%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Domain Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_DOMAIN&quot; value=&quot;%UCL_DOMAIN%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;!--  &lt;tr&gt;
+    &lt;td&gt;
+      Exercise Path
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_CWD&quot; value=&quot;%UCL_CWD%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+ --&gt;
+ &lt;tr&gt;
+    &lt;td&gt;
+      Source HTTP Server hostname
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_SOURCE_HOST&quot; value=&quot;%SOURCE_HOST%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;!--  &lt;tr&gt;
+    &lt;td&gt;
+      Source HTTP Server URL prefix
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_SOURCE_ROOT&quot; value=&quot;%SOURCE_ROOT%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt; --&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Test HTTP Proxy Hostname
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_PROXY_HOST&quot; value=&quot;%PROXY_HOST%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+     &amp;nbsp;
+     &lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;Customize&quot; /&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/form&gt;
+
+---+ Exercises
+
+---++ Prerequisite 
+
+   * Login on submission node &lt;pre class=&quot;screen&quot;&gt;
+ssh %UCL_USER%@%UCL_HOST%.%UCL_DOMAIN%
+&lt;/pre&gt;
+&lt;!--   * Initialize the OSG client environment &lt;pre class=&quot;screen&quot;&gt;
+source %VDT_LOCATION%/setup.sh
+&lt;/pre&gt;
+--&gt;
+   * Obtain proxy certificate, if you have not done so already &lt;pre class=&quot;screen&quot;&gt;
+voms-proxy-init -voms %VO%:/%VO%
+&lt;/pre&gt;
+   * Make a working directory for this exercise&lt;pre class=&quot;screen&quot;&gt;
+mkdir -p %UCL_CWD%
+cd %UCL_CWD%
+&lt;/pre&gt;
+
+---++ Using an HTTP Proxy
+
+To successfully use a HTTP cache, three things need to be done:
+   1 A file must be uploaded to a source HTTP site (this is known as &quot;staging&quot;).
+   1 The location of the cache must be known.
+   1 The file must be downloaded by an HTTP client using cache-friendly headers.
+
+We will do these in this exercise, then we will return to the previous BLAST example.
+
+---+++ Staging Files
+
+In the simplest setup, a web server can export a directory on the file system.  To make a file accessible, you simply need to know the directory name and copy the file into it.
+
+For this tutorial, we run the Apache web server and have the directory ==%EXPORT_DIR%== exported to the URL ==%SOURCE_URL%==.  The HTTP proxy software is called Squid and is running on %PROXY_ENDPOINT%.  First, create your ==%EXPORT_DIR%== in your home directory:
+&lt;pre class=&quot;screen&quot;&gt;
+mkdir -p %EXPORT_DIR%
+&lt;/pre&gt;
+
+Then, write a simple file into this directory:
+&lt;pre class=&quot;screen&quot;&gt;
+echo &#39;Hello world!&#39; &gt; %EXPORT_DIR%/hello_world.txt
+&lt;/pre&gt;
+
+Now, redirect your browser to [[%SOURCE_URL%/hello_world.txt][%SOURCE_URL%/hello_world.txt]]; you should see the text =Hello world!=.
+
+---+++ Finding an HTTP Proxy
+
+There are three ways to determine an HTTP proxy:
+   1 (Linux standard) Look into the value of ==$http_proxy== in the running environment.
+   1 (OSG-specific) On a worker node, the HTTP proxy will be set in ==$OSG_SQUID_LOCATION==.  If there is no proxy available, ==$OSG_SQUID_LOCATION== will be unset or set to ==UNAVAILABLE==.
+   1 Manually hard-code the location of a proxy in application code.
+
+All HTTP clients packaged with the OSG will look at the value of ==$http_proxy==.
+
+From the login node %UCL_HOST%.%UCL_DOMAIN%, the correct value of ==http_proxy== is:
+
+&lt;pre class=&quot;screen&quot;&gt;
+export http_proxy=%PROXY_ENDPOINT%
+&lt;/pre&gt;
+
+Set this in your environment now.
+
+!GlideinWMS automatically exports the =OSG_SQUID_LOCATION= to the =http_proxy= environment variable.  The logic is as below.  You do not need to execute the following:
+
+&lt;pre class=&quot;file&quot;&gt;
+export OSG_SQUID_LOCATION=${OSG_SQUID_LOCATION:-UNAVAILABLE}
+if [ &quot;$OSG_SQUID_LOCATION&quot; != UNAVAILABLE ]; then
+  export http_proxy=$OSG_SQUID_LOCATION
+fi
+&lt;/pre&gt;
+
+---+++ Using an HTTP Proxy
+
+Copy the =yeast.aa.psq= database file into ==%EXPORT_DIR%==.  First, verify ==$http_proxy== is set:
+&lt;pre class=&quot;screen&quot;&gt;
+[%UCL_USER%@%UCL_HOST% %UCL_CWD2%]$ echo $http_proxy
+%PROXY_ENDPOINT%
+&lt;/pre&gt;
+
+Now, download the file using =wget=.  We&#39;ll add the =-d= flag to get extra debug information:
+&lt;pre class=&quot;screen&quot;&gt;
+wget &quot;%SOURCE_URL%/yeast.aa.psq&quot; -d
+&lt;/pre&gt;
+%TWISTY{
+showlink=&quot;Show output&quot;
+hidelink=&quot;Hide output&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+[%UCL_USER%@%UCL_HOST% %UCL_CWD2%]$ wget &quot;%SOURCE_URL%/yeast.aa.psq&quot; -d
+DEBUG output created by Wget 1.11.4 Red Hat modified on linux-gnu.
+
+--2011-06-24 17:43:53--  %SOURCE_URL%/yeast.aa.psq
+Resolving %PROXY_HOST%... 198.51.254.111
+Caching %PROXY_HOST% =&gt; 198.51.254.111
+Connecting to %PROXY_HOST%|198.51.254.111|:%PROXY_PORT%... connected.
+Created socket 3.
+Releasing 0x000000001efd1d10 (new refcount 1).
+
+---request begin---
+GET %SOURCE_URL%/yeast.aa.psq HTTP/1.0
+User-Agent: Wget/1.11.4 Red Hat modified
+Accept: */*
+Host: %SOURCE_HOST%
+
+---request end---
+Proxy request sent, awaiting response... 
+---response begin---
+HTTP/1.0 200 OK
+Date: Fri, 24 Jun 2011 22:43:53 GMT
+Server: Apache/2.2.3 (Scientific Linux)
+Last-Modified: Fri, 24 Jun 2011 22:43:10 GMT
+ETag: &quot;2f89a4-2d79f1-4a67ced0c3b80&quot;
+Accept-Ranges: bytes
+Content-Length: 2980337
+Content-Type: text/plain; charset=UTF-8
+X-Cache: MISS from %PROXY_HOST%
+Via: 1.0 %PROXY_ENDPOINT% (squid/2.6.STABLE23)
+Proxy-Connection: close
+
+---response end---
+200 OK
+Length: 2980337 (2.8M) [text/plain]
+Saving to: `yeast.aa.psq&#39;
+
+100%[=====================================================================&gt;] 2,980,337   8.92M/s   in 0.3s    
+
+Closed fd 3
+2011-06-24 17:43:54 (8.92 MB/s) - `yeast.aa.psq&#39; saved [2980337/2980337]
+
+&lt;/pre&gt;
+%ENDTWISTY%
+
+In the output, note the response headers from the proxy server:
+
+&lt;pre class=&quot;screen&quot;&gt;
+---response begin---
+HTTP/1.0 200 OK
+Date: Fri, 24 Jun 2011 22:43:53 GMT
+Server: Apache/2.2.3 (Scientific Linux)
+Last-Modified: Fri, 24 Jun 2011 22:43:10 GMT
+ETag: &quot;2f89a4-2d79f1-4a67ced0c3b80&quot;
+Accept-Ranges: bytes
+Content-Length: 2980337
+Content-Type: text/plain; charset=UTF-8
+X-Cache: MISS from %PROXY_HOST%
+Via: 1.0 %PROXY_ENDPOINT% (squid/2.6.STABLE23)
+Proxy-Connection: close
+
+---response end---
+&lt;/pre&gt;
+
+Specifically, the line =X-Cache: MISS from %PROXY_HOST%= indicates that this was a cache miss: the file was not in the cache and hence the proxy had to talk to the upstream server ==%SOURCE_HOST%== to retrieve the file.  However, the file should be accessible directly from the cache in the next attempt:
+
+&lt;pre class=&quot;screen&quot;&gt;
+wget &quot;%SOURCE_URL%/yeast.aa.psq&quot; -d
+&lt;/pre&gt;
+%TWISTY{
+showlink=&quot;Show output&quot;
+hidelink=&quot;Hide output&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+[%UCL_USER%@%UCL_HOST% %UCL_CWD2%]$ wget &quot;%SOURCE_URL%/yeast.aa.psq&quot; -d
+DEBUG output created by Wget 1.11.4 Red Hat modified on linux-gnu.
+
+--2011-06-24 17:43:59--  %SOURCE_URL%/yeast.aa.psq
+Resolving %PROXY_HOST%... 198.51.254.111
+Caching %PROXY_HOST% =&gt; 198.51.254.111
+Connecting to %PROXY_HOST%|198.51.254.111|:%PROXY_PORT%... connected.
+Created socket 3.
+Releasing 0x00000000094e1d10 (new refcount 1).
+
+---request begin---
+GET %SOURCE_URL%/yeast.aa.psq HTTP/1.0
+User-Agent: Wget/1.11.4 Red Hat modified
+Accept: */*
+Host: %SOURCE_HOST%
+
+---request end---
+Proxy request sent, awaiting response... 
+---response begin---
+HTTP/1.0 200 OK
+Date: Fri, 24 Jun 2011 22:43:53 GMT
+Server: Apache/2.2.3 (Scientific Linux)
+Last-Modified: Fri, 24 Jun 2011 22:43:10 GMT
+ETag: &quot;2f89a4-2d79f1-4a67ced0c3b80&quot;
+Accept-Ranges: bytes
+Content-Length: 2980337
+Content-Type: text/plain; charset=UTF-8
+Age: 7
+X-Cache: HIT from %PROXY_HOST%
+Via: 1.0 %PROXY_ENDPOINT% (squid/2.6.STABLE23)
+Proxy-Connection: close
+
+---response end---
+200 OK
+Length: 2980337 (2.8M) [text/plain]
+Saving to: `yeast.aa.psq.1&#39;
+
+100%[=====================================================================&gt;] 2,980,337   11.2M/s   in 0.3s    
+
+Closed fd 3
+2011-06-24 17:43:59 (11.2 MB/s) - `yeast.aa.psq.1&#39; saved [2980337/2980337]
+
+&lt;/pre&gt;
+%ENDTWISTY%
+
+The pertinent header this time was =X-Cache: HIT from %PROXY_HOST%=.  This indicates the file was served from the %PROXY_HOST% proxy, not the source server.
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; background-color: #ffff66; border: 1px solid black; padding: 0.5em;&quot;&gt;
+Food for thought: Why is it important to always verify =X-Cache: HIT= appears in most of your log files?
+%TWISTY{
+showlink=&quot;Show the answer!&quot;
+hidelink=&quot;Ok, move on...&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+If the proxy at a remote site stops working (or if, due to misconfiguration, none of your files are *ever* cached!), the transparency of caching can cause many issues.  The load of all transfers for running jobs:
+   1 Goes over the wide-area-network.  WAN bandwidth is scarce, expensive, and must be shared amongst all VOs.
+   1 Goes to your source server.  It is likely your source server can&#39;t support the load of all your running jobs.
+If you run in this manner, at best your jobs will run inefficiently.  At worst, your VO may be temporarily banned from a site if it consumes too many scarce resources!
+%ENDTWISTY%
+&lt;/div&gt; 
+
+&lt;!--
+---+++ Stage a whole database
+
+Copy all the BLAST database files into ==%EXPORT_DIR%==.  Access a few random ones with =wget= as demonstrated previously.  Compare the difference of the access times with and without ==$http_proxy== set.
+
+&lt;!-- &lt;div style=&quot;margin-left: 1em; margin-right: 1em; background-color: #ffff66; border: 1px solid black; padding: 0.5em;&quot;&gt; --&gt;
+Food for thought: Do you notice any speed differences from using the proxy?  What about for the largest files?  What about the smallest?
+%TWISTY{
+showlink=&quot;Show the answer!&quot;
+hidelink=&quot;Ok, move on...&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+In the tutorial, we are accessing files from a single proxy (%PROXY_HOST%) that is hardware similar to the source server (%SOURCE_HOST%).  As they are similar hardware and on the same local network as the submit server, it is unlikely there is significant difference in speeds between the two (unless one is overloaded due to the activities of your classmates!).
+
+However, you can expect a more significant difference at large grid sites for two reasons:
+   1 The hardware is either more powerful or the proxy service is load-balanced between multiple hosts.
+   1 The source is &quot;far away&quot; in terms of networking (and hence slow to access) while the proxy is &quot;close to&quot; the worker node (and faster to access).
+
+%ENDTWISTY%
+ &lt;!-- &lt;/div&gt; --&gt;
+--&gt;
+How much easier was it to stage files with HTTP versus SRM?
+
+---+++ Using HTTP Securely
+
+Unlike SRM, HTTP does not have any safeguards to check if the file has been altered in transit.  Therefore, it&#39;s unsafe to transfer executables via HTTP without further safeguard: an attacker might change your code to do something nasty!  To better protect against security threats, you can checksum the files prior to transfer and verify the checksum after download.  If the two values match, the file has not been tampered with.
+
+The =blastp= executable is actually quite large - larger than the =yeast= database we&#39;ve been using!  Instead of transferring it with Condor, let&#39;s transfer it with HTTP.  Because it is an executable file, we&#39;ll want to perform the checksumming procedure.
+
+Copy the =blastp= executable to your working directory, =%UCL_CWD%=.  Calculate the checksum, and then copy the file to your export directory:
+&lt;pre class=&quot;screen&quot;&gt;
+[%UCL_USER%@%UCL_HOST% %UCL_CWD2%]$ sha1sum blastp
+15bcc93b0fc6f78e604a1ee95f78ab05f1b6c17e  blastp
+[%UCL_USER%@%UCL_HOST% %UCL_CWD2%]$ sha1sum blastp &gt; my_checksum.sha
+[%UCL_USER%@%UCL_HOST% %UCL_CWD2%]$ cp blastp %EXPORT_DIR%
+&lt;/pre&gt;
+
+We&#39;ll just transfer the small file with the checksum, =my_checksum.sha=, with Condor, then download and verify the actual executable on the worker node.  To verify, we&#39;ll need a shell snippet like the following (assume that the base URL is given as the first argument and stored in ==$1==):
+
+&lt;pre class=&quot;file&quot;&gt;
+export http_proxy=%PROXY_ENDPOINT%
+BASE_URL=$1
+wget -d --retry-connrefused --waitretry=10 &quot;$BASE_URL/blastp&quot; || exit $?
+sha1sum -c my_checksum.sha || exit 1
+chmod +x blastp
+&lt;/pre&gt;
+
+Previously, we had the following lines in the Condor submit file ==test.submit==:
+&lt;pre class=&quot;file&quot;&gt;
+transfer_input_files = blastp,$(query_input_name)
+Arguments =  srm://red-srm1.unl.edu:8443/srm/v2/server?SFN=/mnt/hadoop/user/osgedu/bbockelm yeast $(query_input_name) blast_results.$(Cluster).$(Process)
+&lt;/pre&gt;
+
+This would be changed to:
+&lt;pre class=&quot;file&quot;&gt;
+transfer_input_files = my_checksum.sha,$(query_input_name)
+Arguments =  %SOURCE_URL% yeast $(query_input_name) blast_results.$(Cluster).$(Process)
+&lt;/pre&gt;
+
+---++ Caching and BLAST
+Write a script to download BLAST and your BLAST database from HTTP
+
+Using the following script as a template:
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/sh
+
+export HTTP_PROXY=osg-ss-se.chtc.wisc.edu:3128
+
+wget http://osg-ss-submit.chtc.wisc.edu/~user/blast/bin/blastp
+wget http://osg-ss-submit.chtc.wisc.edu/~user/blast/data/yeast.aa
+wget http://osg-ss-submit.chtc.wisc.edu/~user/blast/data/yeast.aa.phr
+wget http://osg-ss-submit.chtc.wisc.edu/~user/blast/data/yeast.aa.pin
+wget http://osg-ss-submit.chtc.wisc.edu/~user/blast/data/yeast.aa.pnd
+wget http://osg-ss-submit.chtc.wisc.edu/~user/blast/data/yeast.aa.phi
+wget http://osg-ss-submit.chtc.wisc.edu/~user/blast/data/yeast.aa.psd
+wget http://osg-ss-submit.chtc.wisc.edu/~user/blast/data/yeast.aa.psi
+wget http://osg-ss-submit.chtc.wisc.edu/~user/blast/data/yeast.aa.psq
+
+# Run the query
+blastp -db yeast.aa -query $1  &gt; $2
+&lt;/pre&gt; 
+
+
+Note one difference with HTTP caching compared to SRM is that SRM provides a mechanism for listing the contents of the directory, which we used to download all the database files in the original ==blast_wrapper.sh==.  A successful solution of the above problem will have to come up with an alternate method for downloading all the necessary input.
+
+
+---++ Remote I/O
+
+Remote I/O is left as an on your own exercise.  Here are a few pages that will be very useful:
+   * [[https://condor-wiki.cs.wisc.edu/index.cgi/wiki?p=HowToChirpRemoteIo][Using Parrot with Condor]] (Very useful!)
+   * [[http://www.cse.nd.edu/~ccl/software/files/cctools-3.5.0-x86_64-redhat5.tar.gz][Parrot Download]] (Use wget to pull to your home directory)
+   * [[http://www.nd.edu/~ccl/software/manuals/parrot.html][Parrot User Manual]] (may not need)
+
+Create the following script:
+
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/sh
+
+if [ $# -ne 3 ]; then
+    echo &quot;Usage: run-blast &lt;db&gt; &lt;query&gt; &lt;output&gt;&quot;
+    exit 1
+fi
+
+appdir=/chirp/stash-dev.mwt2.org:9094/bin
+dbdir=/chirp/stash-dev.mwt2.org:9094/data
+
+# Run the query
+$appdir/blastp -db $dbdir/$1 -query $2  &gt; $3
+&lt;/pre&gt; 
+
+In the submit file, you will have to add: =+WantIOProxy = True=.  Also, add a new wrapper script ==wrapper.sh==: &lt;pre class=&quot;file&quot;&gt;
+#!/bin/sh
+######## wrapper.sh ################
+# This script directly passes all
+# its arguments into &#39;parrot_run&#39;
+####################################
+
+./parrot_run &quot;$@&quot;
+&lt;/pre&gt;
+
+The ==wrapper.sh== will be the new ==executable==.  You will need parrot_run from the cctools distribution.  Copy it from ==/usr/bin/parrot_run==.  It will need to be specified in the ==transfer_input_files== in the submit file.
+
+This is largely a on your own exercise.  If you need help, please ask.  Looking at the error output of the condor job is always the first place to look.
+
+
+
+-- Main.LincolnBryant - 07 Jul 2014
+

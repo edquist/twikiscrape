@@ -1,0 +1,85 @@
+---+ v61
+
+---++ Added DUNE to vomses file.
+
+[[https://ticket.grid.iu.edu/26316][Ticket 26316]]
+
+---+++ vomses Addition
+
+&lt;verbatim&gt;
+&quot;dune&quot; &quot;voms1.fnal.gov&quot; &quot;15042&quot; &quot;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=voms1.fnal.gov&quot; &quot;dune&quot;
+&quot;dune&quot; &quot;voms2.fnal.gov&quot; &quot;15042&quot; &quot;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=voms2.fnal.gov&quot; &quot;dune&quot;
+&lt;/verbatim&gt;
+
+---+++ edg-mkgridmap.conf Addition
+
+&lt;verbatim&gt;
+#USER-VO-MAP dune DUNE -- 65 -- Thomas Robert Junk (trj@fnal.gov)
+group vomss://voms.fnal.gov:8443/voms/dune dune
+#-------------------
+&lt;/verbatim&gt;
+
+---+++ gums.template Addition
+&lt;verbatim&gt;
++&lt;!-- 65 DUNE --&gt;
++
++&lt;groupMapping name=“dune” accountingVo=“dune” accountingDesc=“DUNE”&gt;
++    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot;
++    url=&quot;https://voms.fnal.gov:8443/voms/dune/services/VOMSAdmin&quot;;
++    persistenceFactory=&quot;mysql&quot;
++    name=&quot;dune&quot;
++    voGroup=&quot;/dune&quot;
++    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot;
++    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot;
++    matchFQAN=&quot;exact&quot;/&gt;
++    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;dune&quot;/&gt;
++&lt;/groupMapping&gt;
++
++&lt;groupMapping name=&quot;dune-production&quot; accountingVo=&quot;dune&quot; accountingDesc=&quot;DUNE&quot;&gt;
++    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot;
++    url=&quot;https://voms.fnal.gov:8443/voms/dune/services/VOMSAdmin&quot;;
++    persistenceFactory=&quot;mysql&quot;
++    name=&quot;dune-production&quot;
++    voGroup=&quot;/dune&quot;
++    voRole=&quot;Production&quot;
++    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot;
++    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot;
++    matchFQAN=&quot;exact&quot;/&gt;
++    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;dunepro&quot;/&gt;
++&lt;/groupMapping&gt;
++
++&lt;groupMapping name=&quot;duneana&quot; accountingVo=&quot;dune&quot; accountingDesc=&quot;DUNE&quot;&gt;
++    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot;
++    url=&quot;https://voms.fnal.gov:8443/voms/dune/services/VOMSAdmin&quot;;
++    persistenceFactory=&quot;mysql&quot;
++    name=&quot;duneana&quot;
++    voGroup=&quot;/dune&quot;
++    voRole=&quot;Analysis&quot;
++    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot;
++    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot;
++    matchFQAN=&quot;exact&quot;/&gt;
++    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;duneana&quot;/&gt;
++&lt;/groupMapping&gt;
++
++&lt;groupMapping name=&quot;dunegli&quot; accountingVo=&quot;dune&quot; accountingDesc=&quot;DUNE&quot;&gt;
++    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot;
++    url=&quot;https://voms.fnal.gov:8443/voms/dune/services/VOMSAdmin&quot;;
++    persistenceFactory=&quot;mysql&quot;
++    name=&quot;dunegli&quot;
++    voGroup=&quot;/dune&quot;
++    voRole=&quot;pilot&quot;
++    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot;
++    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot;
++    matchFQAN=&quot;exact&quot;/&gt;
++    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;dunegli&quot;/&gt;
++&lt;/groupMapping&gt;
++
+ &lt;/groupMappings&gt;
+ 
+ &lt;hostGroups&gt;
+-&lt;hostGroup className=&quot;gov.bnl.gums.CertificateHostGroup&quot; cn=&quot;*/?*.@DOMAINNAME@&quot; groups=&quot;cdf-fnal,cdfdev-fnal,cdffgrid-fnal,cdfnam-fnal,cdftestcaf-fnal,cdf-cnaf,cdfdev-cnaf,cdffgrid-cnaf,cdfnam-cnaf,cdftestcaf-cnaf,cdf-pd,cdfdev-pd,cdffgrid-pd,cdfnam-pd,cdftestcaf-pd,fermilab,mis,star,uscmsuser,cmsuser,uscmst2admin,uscmssoft,cmssoft,uscmsprod,uscmsphedex,cmsphedex2,uscmsfrontier,cmsuser-null,cmsproduction,LIGO,dzerouser,dzeroana,dzeroservice,dosar,des,glow,nanohub,geant4,geant4-lcgadmin,osg,osg-goc,newUsatlasProd,newUsatlasSoft,newUsatlas,newAtlas,osgedu,ops,des-production,compbiogrid,ilc,nysgrid,sbgrid,cigi,icecube,alice,gluex,gridunesp,hcc,belle,bellepro,csiu,suragrid,nees,gcvo,gcedu,dream,lbne,lbne-production,lbneana,lbnegli,lsst,uc3,mcdrd,lqcd,auger,glast.org,enmr.eu,osgcrossce,vo.cta.in2p3.fr,xenon.biggrid.nl,snoplus.snolab.ca,LZ&quot;/&gt;
++&lt;hostGroup className=&quot;gov.bnl.gums.CertificateHostGroup&quot; cn=&quot;*/?*.@DOMAINNAME@&quot; groups=&quot;cdf-fnal,cdfdev-fnal,cdffgrid-fnal,cdfnam-fnal,cdftestcaf-fnal,cdf-cnaf,cdfdev-cnaf,cdffgrid-cnaf,cdfnam-cnaf,cdftestcaf-cnaf,cdf-pd,cdfdev-pd,cdffgrid-pd,cdfnam-pd,cdftestcaf-pd,fermilab,mis,star,uscmsuser,cmsuser,uscmst2admin,uscmssoft,cmssoft,uscmsprod,uscmsphedex,cmsphedex2,uscmsfrontier,cmsuser-null,cmsproduction,LIGO,dzerouser,dzeroana,dzeroservice,dosar,des,glow,nanohub,geant4,geant4-lcgadmin,osg,osg-goc,newUsatlasProd,newUsatlasSoft,newUsatlas,newAtlas,osgedu,ops,des-production,compbiogrid,ilc,nysgrid,sbgrid,cigi,icecube,alice,gluex,gridunesp,hcc,belle,bellepro,csiu,suragrid,nees,gcvo,gcedu,dream,lbne,lbne-production,lbneana,lbnegli,lsst,uc3,mcdrd,lqcd,auger,glast.org,enmr.eu,osgcrossce,vo.cta.in2p3.fr,xenon.biggrid.nl,snoplus.snolab.ca,LZ,dune,dune-production,duneana,dunegli&quot;/&gt;
+ &lt;/hostGroups&gt;
+ &lt;/gums&gt;
+&lt;/verbatim&gt;
+-- Main.VinceNeal - 06 Aug 2015

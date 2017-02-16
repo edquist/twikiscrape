@@ -1,0 +1,27 @@
+---+ Acceptance testing for: !GUMS
+
+Check out the following links for more information on this component.
+
+   * Documentation.Release3.InstallGums
+   * https://www.racf.bnl.gov/Facility/GUMS/1.3/
+
+If you&#39;re testing on a fermicloud VM, be sure to set the owner/group of your httpcert/httpkey to tomcat:tomcat, then restart tomcat:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% chown -R tomcat:tomcat /etc/grid-security/http
+%UCL_PROMPT_ROOT% chown -R tomcat:tomcat /etc/cloud-security/http
+%UCL_PROMPT_ROOT% service tomcat6 restart %RED%# If on EL6%ENDCOLOR%
+%UCL_PROMPT_ROOT% service tomcat5 restart %RED%# If on EL5%ENDCOLOR%&lt;/pre&gt;
+
+---++ How to test a fresh install 
+
+---+++ Web Interface
+
+The web interface should be accessible via https://%RED%hostname%ENDCOLOR%:8443/gums, where %RED%hostname%ENDCOLOR% is the hostname of the machine you installed GUMS on. 
+
+---++++ Updating VO Members
+
+First check to make sure that your VOMS Servers list is populated (&#39;VOMS Servers&#39; link in the sidebar). There should be about 50 VOMS servers listed.
+
+To add VO members to the GUMS database, click on the &quot;Update VO Members&quot; link in the sidebar and then click the &quot;update VO members button&quot;. You&#39;re bound to get a few Timeout and SSL errors; these are often VOMS server-side issues and can be ignored. 
+ 
+---+++ Command-Line Interface

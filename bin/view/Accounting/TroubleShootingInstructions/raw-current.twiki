@@ -1,0 +1,111 @@
+---++OSG Accounting Services - Gratia - Troubleshooting notes
+%ICON{&quot;warning&quot;}% %RED% This page is obsolete! We are working on new troubleshooting guide%ENDCOLOR%
+---+++ Why are you here?
+
+You are either having problems with your site&#39;s Gratia probes; or you have been sent here by an email or GOC ticket that said something like ...
+
+&lt;hr /&gt;
+&lt;verbatim&gt;
+Dear %%%SITE%%% site manager,
+
+Your site has been determined to be at OSG version 0.6.0 or
+higher, but according to our checks on %%%CHECK_DATE%%% does not appear
+to be reporting properly to the official OSG Gratia accounting server,
+http://gratia.opensciencegrid.org:8880/gratia-reporting/.
+
+Having a Gratia probe associated with the batch systems you have running
+properly installed and reporting is required for OSG gatekeepers of
+version 0.6.0 or greater.
+
+Any probes we have seen in recent months associated with %%%SITE%%% are
+listed below along with their last-seen date from the point of view of
+the Gratia accounting collector:
+
+### Begin probe list
+%%%PROBE_LIST%%%
+### End probe list
+
+If this list contains entries that are no longer relevant, please let us
+know and we will mark that probe inactive in our system.
+
+If probes in this list are intended to be reporting, please follow the
+trouble-shooting instructions at:
+
+https://twiki.grid.iu.edu/twiki/bin/view/Accounting/TroubleShootingInstructions
+
+If the probe list is empty or does not include a probe for every batch
+system (Condor, SGE, PBS or LSF) you run on your gatekeeper, please
+install the appropriate package:
+
+### Begin commands
+. $VDT_LOCATION/setup.sh
+pacman -get Gratia-&lt;probe&gt;-Probe
+$VDT_LOCATION/vdt/setup/configure_gratia --probe &lt;probe-type&gt; \
+ --probe-cron --report-to gratia.opensciencegrid.org:8880
+vdt-control --on gratia-&lt;probe-type&gt;
+### End commands
+
+... where &quot;&lt;probe&gt;&quot; is &quot;Condor&quot;, &quot;SGE&quot;, &quot;PBS&quot; or &quot;LSF&quot; and
+&quot;&lt;probe-type&gt;&quot; is the lower case version of &quot;&lt;probe&gt;&quot;
+
+Then, check your configuration with the gratia-site-test script
+available from the trouble-shooting page linked above.
+
+A final note: your probes may be working correctly but not reporting a
+site name consistent with the GOC-registered site name: we have been
+able to catch some instances but probably not all. If %%%SITE%%% is the
+GOC-registered name and you are reporting under a different name, please
+let us know so that we may resolve the discrepancy.
+
+Thank you for your time and help,
+
+The OSG Gratia Team.
+&lt;/verbatim&gt;
+&lt;hr /&gt;
+
+---+++ What should I do now?
+
+If you received an email like the above, please act on it and follow its instructions. 
+
+To diagnose and fix any remaining problems, please run this [[#gratia_site_diag][diagnostics script]] (system privilege not necessary) and follow its instructions to fix your reporting problem (system privilege is required to execute fix commands); you may also need to execute this [[#gratia_repair_tmpfiles][filename repair script]] (as root) to enable backlogged XML files to be detected and sent to the correct collector. Of course, please verify the &lt;em&gt;bona fides&lt;/em&gt; of either script to your own satisfaction prior to running it on your system. The [[#Script_instructions][instructions]] below go into more detail about each script and how to run it.
+
+If you encounter problems or need more information, please correspond by replying to the email you were sent to ensure correct record-keeping with any open tickets.
+
+In order to verify that your site is now reporting correctly, please wait until the relevant probe is no longer running (some probes may churn through a large local backlog before uploading records) before visiting the status page for your site: http://gratia.opensciencegrid.org:8880/gratia-administration/monitor-status.html?sitename=my%20site%20name.
+
+Please notify us if we may close the issue or if further work is warranted. If you have feedback on the troubleshooting instructions either generally or as they may (or may not) have applied to your particular case, please let us know either as part of the ticket or to [[mailto:gratia-operation@fnal.gov][gratia-operation@fnal.gov]].
+
+---+++ Script instructions
+
+To obtain and run either script:
+
+&lt;ol&gt;
+  &lt;li&gt;download the appropriate script from this topic&#39;s attachments;&lt;/li&gt;
+  &lt;li&gt;examine the script to assure yourself of its good intentions;&lt;/li&gt;
+  &lt;li&gt;mark the script as executable.&lt;/li&gt;
+&lt;/ol&gt;
+
+Also, obtain short usage information from either script by invoking with the =-h= option; or detailed &lt;tt&gt;man&lt;/tt&gt;-style information by invoking with the &lt;tt&gt;-m&lt;/tt&gt; option.
+
+&lt;dl&gt;
+  &lt;dt id=&quot;gratia_site_diag&quot;&gt;&lt;tt&gt;gratia-site-diag&lt;/tt&gt; (&lt;a href=&quot;%ATTACHURL%/gratia-site-diag&quot;&gt;download&lt;/a&gt;)&lt;/dt&gt;
+  &lt;dd&gt;This script may be invoked locally on the gatekeeper in question; or it may be invoked from elsewhere and retrieve information and log files by means of =globus-job-run= and =globus-url-copy= based on a valid grid or VOMS proxy. As the site manager of the site at issue though; it is expected that you would invoke it locally from the gatekeeper:
+
+&lt;pre&gt;gratia-site-diag [-q]&lt;/pre&gt;
+
+Follow on-screen instructions for further troubleshooting actions.
+
+  &lt;/dd&gt;
+  &lt;dt id=&quot;gratia_repair_tmpfiles&quot;&gt;&lt;tt&gt;gratia-repair-tmpfiles&lt;/tt&gt; (&lt;a href=&quot;%ATTACHURL%/gratia-repair-tmpfiles&quot;&gt;download&lt;/a&gt;)&lt;/dt&gt;
+  &lt;dd&gt;The XML files representing records to be sent to the collector remain in =gratia/var/tmp/gratiaflies= if they cannot be uploaded successfully. To avoid problems with multiple probes, each file is labeled with the =MeterName= (found in the probe&#39;s =ProbeConfig= file) and the host and port of the destination collector. Therefore if a probe has been mis-configured and (eg) was attempting to send records to a nonexistent collector for some time, old records may be retrieved and uploaded to the correct collector by renaming the backlogged XML files. This script does exactly that:
+
+&lt;pre&gt;gratia-repair-tmpfiles -m &amp;lt;match_regex&amp;gt;&lt;/pre&gt;
+
+If the =-m &amp;lt;match_regex&amp;gt;= option is omitted, the repair script will look for and fix files whose name contains &quot;localhost_8843&quot;; if the correct destination collector is not =opensciencegrid.org:8880=, please add the correct location as a non-option argument replacing the &quot;:&quot; by a &quot;_&quot;:
+
+&lt;pre&gt;gratia-repair-tmpfiles -m &amp;lt;match_regex&amp;gt; chost.cdomain_cport&lt;/pre&gt;
+  &lt;/dd&gt;
+&lt;/dl&gt;
+
+-- Main.ChrisGreen - 20 Jul 2007
+

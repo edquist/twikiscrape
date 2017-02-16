@@ -1,0 +1,137 @@
+---+ OSG Technology Area Meeting, 26 January 2015
+
+*Coordinates:* Conference: 857-216-4999, PIN: 32390; https://www.uberconference.com/osgcat
+
+*Attending:* !BrianL, Carl, Edgar, Jeff, !JohnH, Jose, Mat, Suchandra, !TimC
+&lt;!-- !BrianB, !BrianL, Carl, Edgar, Jeff, !JohnH, Jose, Marian, Mat, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+   * !BrianB in UCSD Monday – Thursday, traveling Friday (?)
+   * !TimC traveling Tuesday, in UCSD Wednesday – Friday
+   * !TimT in Arizona Monday – Thursday
+
+---+++ Triage Duty
+   * This week: Carl
+   * Next week: !TimC (new cycle)
+   * &lt;span style=&quot;color: #F60;&quot;&gt;15 (+3) open tickets&lt;/span&gt;
+
+---+++ JIRA
+   * Open: 135 (–3)
+   * In Progress: 29 (+1)
+   * Ready for Testing: 15 (+13)
+   * Ready for Release: 0 (0)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| February | 3.2.20 | 2015-01-26 | 2015-02-02 | 2015-02-10 | |
+| March | 3.2.21 | 2015-02-23 | 2015-03-02 | 2014-03-10 | |
+| April | 3.2.22 | 2015-03-30 | 2015-04-06 | 2015-04-14 | Last possible regular release of 3.1 |
+
+*Notes:* Additional “urgent” releases may be scheduled for the 4th Tuesday of each month. The *Development Freeze* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+
+---++ OSG Software Team
+
+---+++ Work Completed
+   * External
+      * Investigated edg-mkgridmap failures in OSG 3.1; due to Java 7u75 update disabling SSL by default
+      * Updated to edg-mkgridmap 4.0.1+ in OSG 3.1 to add TLS support ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1757][SW-1757]])
+      * Changed name of the CE job router diagnostic tool to match the upstream name change in HTCondor 8.3.x ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1741][SW-1741]])
+      * Improved error handling in condor_ce_trace ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1740][SW-1740]])
+      * Tested and promoted new build of Gratia probes ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1758][SW-1758]])
+      * Discussed how best to install Java packages and improved documentation as a result ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1757][SW-1757]])
+      * Applied additional GUMS fixes suggested by Mischa ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1749][SW-1749]])
+      * Improved GUMS logging ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1683][SW-1683]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1685][SW-1685]])
+      * Added basic GIP/BDII support for HTCondor CE
+      * Built, tested, and promoted RSV
+      * Built, tested, and promoted osg-system-profiler
+      * Made several small enhancements to osg-configure ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1735][SW-1735]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1759][SW-1759]])
+      * Built, tested, and promoted osg-configure
+      * Fixed URL used for certificate lists in RSV CA certificate probes ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1737][SW-1737]])
+      * Fixed a bug in RSV perfSONAR when uploading summaries
+      * Updated RSV Gratia configuration probe to give user instructions when things need to be checked as root ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1674][SW-1674]])
+      * Test EPEL’s slf4j* packages integrated with OSG software
+      * Helped Horst troubleshoot Gratia LSF probe ([[https://ticket.grid.iu.edu/23636][GOC-23636]])
+      * Helped Bockjoo with a condor_ce_q issue
+
+   * Internal
+      * Provided support to CHTC Infrastructure team for Gratia issues on ([[https://jira.opensciencegrid.org/browse/submit-3][submit-3]])
+      * Sketched design for new automated test feature to simplify required developer testing ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1733][SW-1733]])
+      * Investigated behavior of repository updater when Koji is down (for upcoming Koji upgrade) ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1442][SW-1442]])
+      * Drafted [[https://twiki.opensciencegrid.org/bin/view/Sandbox/InstallRSV-vo-gwms][documentation for RSV glideinWMS VO probe]] for Mats to try
+      * Revised table of OSG components to test for IPv6
+      * Obtained IPv6 VMs in Fermicloud for testing and updated TWiki to list them
+      * Set up IPv6 machines at UCSD for FNAL-UCSD tests
+      * Updated OSG gLExec RPMs on BNL ITB site for testing ATLAS gLExec jobs
+      * Began coding tool to collect and cache site information from all sources (OSG BDII, CERN BDII, OSG Collector)
+      * Add support for getpass() in osg-test ([[https://jira.opensciencegrid.org/browse/SOFTWARE-644][SW-644]])
+      * Implemented Java install recommendations in osg-test ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1720][SW-1720]])
+      * Help Bill with CA and certificate generation
+
+---+++ Work In Progress
+   * External
+      * Fix missing VOMS binaries in OSG tarball clients (missing from 3.2.19) (Mat)
+      * Revise HTCondor CE overview (!BrianL)
+      * Monitor and support HTCondor CE sites, especially LSF and SGE (!BrianL)
+      * Tweak GIP output for HTCondor CE (John)
+      * Finish revising Java install guide and make osg-test match (!BrianL)
+      * GRAM and !MyProxy transition to TLS-only (due 1 April 2015): Draft simple page with minimum versions (Carl)
+      * GUMS: finish changes and make build (Carl)
+      * RSV !perfSONAR probe: Small improvements? (Edgar)
+      * EL 7: working on components for full client and CE (except !BeStMan and GUMS) (Mat)
+      * IPv6: Edgar has VMs ready to try out, !BrianL will test instructions and set-up (Edgar)
+      * !XRootD backup of HDFS accesses: discuss in person? (Jeff, !TimC, !BrianB)
+      * Finish 3 prototype documents as exemplars of document types (!TimC)
+      * Continue working on simple documentation tracking mechanism (!TimC)
+      * Continue drafting site installation overview as a draft for organizing home page (!TimC)
+      * OASIS 2: complete draft packaging (Jose)
+      * !PanDA: can we get the server running here and submit one job? (Carl)
+      * Start planning OSG 3.3 (!TimC, !BrianB)
+
+   * Internal
+      * Koji upgrade to EL6: &lt;span style=&quot;color: #F60;&quot;&gt;perform upgrade on Wednesday&lt;/span&gt; (Mat)
+      * Continue designing new test scheduling subsystem (!TimC, !BrianL)
+      * Koji software upgrade: harder because of database migration (Mat)
+      * UW ITB site: build machines with Puppet! (all)
+      * Offsite backups: add some monitoring? (Mat)
+      * !HTCondor CE and PBS: setting up about 700 cores with PBS and an !HTCondor CE front-end (Edgar)
+      * Checking local backups with Nagios: waiting for help from Aaron (Mat)
+      * Move OSG software source code (not packaging) to git(hub): discuss plan and timing (Mat, !TimC)
+
+---+++ Work Upcoming
+   * Update to Globus Toolkit 6 and !MyProxy 6 (Mat, probably)
+   * Add RSV probe to test batch system submission (Carl)
+
+
+---++ OSG Release Team
+
+---+++ Projects
+
+   * Tim Theisen will handle the February Release
+   * Development Freeze today!
+   * [[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.2.20%2C%203.1.44%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][February 10th Release]]
+   * Nothing in OSG 3.1 without prior approval
+   * VO package updates and IGTF CA certificate updates pre-approved for OSG 3.1
+
+%TABLE{sort=&quot;off&quot;}%
+| *3.1.44* | *Both* | *3.2.20* | *Total* | *Status* |
+| 0 (+0) | 0 (+0) | 2 (+0) | 2 (+0) | Open |
+| 0 (+0) | 0 (+0) | 10 (-1) | 10 (-1) | In Progress |
+| 1 (+1) | 0 (+0) | 13 (+12) | 14 (+13) | Ready for Testing |
+| 0 (+0) | 0 (+0) | 0 (+0) | 0 (+0) | Ready for Release |
+| 1 (+1) | 0 (+0) | 25 (+11) | 26 (+12) | Totals |
+
+   * OSG 3.2
+      * !GlideinWMS 3.2.8+
+      * gratia-probe 1.13.31+
+      * RSV 3.7.22+
+      * osg-system-profiler 1.2.0
+      * htcondor-ce 1.9-3+
+   * OSG 3.1
+      * edg-mkgridmap 4.0.1+
+
+
+---++ OSG Investigations Team
+
+No report this week.

@@ -1,0 +1,74 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+----+  Using HTCondor to get job output
+
+%TOC%
+
+---++ Goals
+
+   * After running jobs, ideally you&#39;d like to get the results back; this tutorial will cover how to do this using HTCondor.
+   * In this tutorial we will learn how to specify output files to HTCondor and have HTCondor transfer files for each job.
+
+---++ Transferring output  using HTCondor
+You&#39;ve seen HTCondor&#39;s file transfer mechanisms being used to transfer input data in the previous exercises, we&#39;ll now look at using the HTCondor file transfer mechanism to get output back from your jobs.  By default, if you set =should_transfer_files= to  =YES= in your HTCondor submit file, HTCondor will transfer all the files in the job sandbox back to the submit node.  However, you may not want to transfer all the files back, or to rename files as they get transferred back.  This exercise will go through how to specify files that HTCondor should transfer back.  
+
+Before, we start, there&#39;s a little background that needs to be covered.  As the lecture mentioned, jobs running on OSG have a variable called =OSG_WN_TMP= defined in the environment.  This variable points to the location of a scratch directory that your jobs can use as a working area.  This area is usually on a storage system with higher I/O performance although it&#39;s typical local to just the compute node and frequently gets wiped after jobs finish.  Typically, it&#39;s advantageous to have your job use this space to store temporary files, intermediate results, and to generate final outputs before copying the outputs back to the submit node.
+
+Finally, let&#39;s move on to the exercise:
+   1. First log in to the OSG Connect submit node (=login.osgconnect.net=)
+   2. Create a directory for this tutorial : \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% mkdir output_tutorial
+%UCL_PROMPT_SHORT% cd output_tutorial
+&lt;/pre&gt;
+   3. Create a file called =job.sh= with the following: \
+\
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash
+mkdir -p $OSG_WN_TMP/$1/output_directory1
+mkdir -p $OSG_WN_TMP/$1/output_directory2
+echo &quot;output1&quot; &gt;  $OSG_WN_TMP/$1/output_directory1/output_file1
+echo &quot;dummy&quot; &gt;  $OSG_WN_TMP/$1/output_directory1/intermediate_output
+echo &quot;output2&quot; &gt;  $OSG_WN_TMP/$1/output_directory2/output_file2
+echo &quot;dummy&quot; &gt;  $OSG_WN_TMP/$1/output_directory2/intermediate_output_test
+sleep 60
+cp -a $OSG_WN_TMP/$1/ .
+&lt;/pre&gt;
+    4. Make the file executable: \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% chmod 755 job.sh
+&lt;/pre&gt;
+   5. Create a submit file (=output.submit=) with the following: \
+\
+&lt;pre class=&quot;file&quot;&gt;
+output        = job.out.$(Process)
+error         = job.error.$(Process)
+log           = job.log.$(Process)
+
+universe = vanilla
+executable = job.sh
+transfer_output_files = $(Cluster)/output_directory1/output_file1, $(Cluster)/output_directory2/output_file2
+arguments = $(Cluster)
+queue 1
+&lt;/pre&gt;
+   5. Submit the job: \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% condor_submit output.submit
+&lt;/pre&gt;
+   6. When the job is done, you should see =output_file1= and =output_files2= in your submit directory containing the strings =output1= or =output2=
+   7.  One thing to note is that when you specify files use transfer_output_file, HTCondor will only transfer the files that you specify instead of transferring all the files in the job sandbox by default. Also the files are copied directly to the submit directory and the directory structure from the job sandbox is not preserved. 
+
+As an exercise, try modifying the submit file to also transfer the intermediate outputs (=intermediate_output= and =intermediate_output_test=) as well.
+
+
+---++ Further information
+   * [[http://research.cs.wisc.edu/htcondor/manual/v8.2/2_5Submitting_Job.html#SECTION00354200000000000000][Specifying files to transfer]]
+
+
+-- Main.BalamuruganDesinghu - 24 Jul 2015

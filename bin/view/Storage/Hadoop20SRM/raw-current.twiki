@@ -1,0 +1,231 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+
+
+%RED%
+WARNING! This page is for an older version of Hadoop.
+For newer versions, please visit [[Documentation/Release3.InstallHadoopSE][Hadoop Release 3 Installation]]
+%ENDCOLOR%
+
+
+%DOC_STATUS_TABLE%
+%TOC%
+
+---+ Installation
+
+Hadoop uses the [[https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationBestmanGateway][BeStMan2 SRM server]] in gateway mode to provide a SRM interface to Hadoop.  !BeStMan2 will use the Hadoop FUSE interface for namespace operations, such as mkdir, rm, and ls.  !BeStMan2 will use a [[Hadoop20GridFTP][Gridftp]] server for reading and writing files.  The version of !BeStMan2 covered in this guide is compatible with Hadoop 0.20.2.
+
+%INCLUDE{&quot;Documentation/DocumentationTeam/DocConventions&quot; section=&quot;Header&quot;}%
+%INCLUDE{&quot;Documentation/DocumentationTeam/DocConventions&quot; section=&quot;CommandLine&quot;}%
+
+---++ Quick Start
+
+Quickstart for the impatient.  This assumes you already have [[Hadoop20Installation][Hadoop and FUSE]] installed on the SRM server.
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+rpm -ivh http://vdt.cs.wisc.edu/hadoop/osg-hadoop-20-3.el5.noarch.rpm
+yum install bestman2-server
+vi /etc/bestman2/conf/bestman2.rc # Edit appropriately (see below)
+visudo # Add specific sudo privileges for the bestman user (see below)
+service bestman2 start
+&lt;/pre&gt;
+
+---++ Prerequisites
+
+The !BeStMan2 server has the following prerequisites:
+
+   1 You must also have already [[Hadoop20Installation][installed and mounted]] Hadoop using FUSE.
+   1 A [[Hadoop20GridFTP][GridFTP-HDFS]] server must also be installed, but this does not need to be on the same server as the !BeStMan2 server.  A larger site will prefer to have their !GridFTP and !BeStMan2 servers installed on separate hosts; see the list of [[HadoopArchitectures][deployment layouts]] for more information.
+   1 In addition to the Java jdk you need the corresponding Java sun-compat package.  For example for =jdk-1.6.0= you need to install =java-1.6.0-sun-compat=.  If you installed the jdk rpm that we supplied you can just let =java-1.6.0-sun-compat= come in as a dependency.  Otherwise you need to find and manually install the correct version before continuing.  See the [[http://www.jpackage.org/installation.php][jpackage installation doc]] for more details.
+   1 CA Certificates installed in =/etc/grid-security/certificates=.
+
+%STARTSECTION{&quot;Prereqs&quot;}%
+
+!BeStMan2 is preconfigured to look for the *host* certificate and key in =/etc/grid-security/http/http*.pem=.
+These files *must* exist and be *owned* by the *bestman* user.  Using certificates in a different directory or with different names is not supported.
+
+*NOTE:* The names are misleading.  You must copy over your =hostcert.pem= and =hostkey.pem= as =httpcert.pem= and =httpkey.pem= respectively in the  =/etc/grid-security/http/= directory.  http certs / keys will *NOT* work.
+
+*NOTE* This rpm no longer brings in the OSG CA Certificates package or fetch-crl CRL updater as dependencies.  However we still provide the packages in the repo.  If you would like them run:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install osg-ca-certs
+&lt;/pre&gt;
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install fetch-crl
+&lt;/pre&gt;
+
+*NOTE* if you chose not to install them you must install the certificates in another way.  !BeStMan2 still assumes you have them located in =/etc/grid-security/certificates=.
+
+ *NOTE* the fetch-crl service does not start by default on installation.  To have fetch-crl update automatically, run:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service fetch-crl-cron start
+&lt;/pre&gt;
+
+cron will check for CRL updates every 6 hours.  If this is your first time installing you may need to run it immediately:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /usr/sbin/fetch-crl -r 20  -a 24 --quiet
+&lt;/pre&gt;
+
+The rpm/yum installation will create a &#39;bestman&#39; system account and group (uid,gid &lt; 500) on the host system for running the !BeStMan2 SRM process. If you would like to control the uid/gid that is used, then you should create the &#39;bestman&#39; user and group manually before installing the rpms.
+
+%ENDSECTION{&quot;Prereqs&quot;}%
+
+---++ YUM Installation
+
+Remember, in order to use !BeStMan2 SRM, you must have the [[Hadoop20Installation][Hadoop and the FUSE kernel module]] already installed on your system in order to use the yum installer.
+
+To configure your local installation for the yum repository, [[Hadoop20Installation#Installing_with_yum][follow the advice here]] to install the =osg-hadoop-20= package for your site.
+
+After installing the osg-hadoop-20 yum configuration package, you can install the !BeStMan2 SRM server with:
+
+%STARTSECTION{&quot;Install&quot;}%
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install bestman2-server
+&lt;/pre&gt;
+
+Updates can be installed with:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum upgrade bestman2-server
+&lt;/pre&gt;
+
+%ENDSECTION{&quot;Install&quot;}%
+
+---+ Configuration
+
+%STARTSECTION{&quot;Config1&quot;}%
+
+For those familiar with the VDT installation of !BeStMan, you will know about the =configure_bestman= script for configuring the !BeStMan server.  This script is not supported or included in the RPM package.  Certain operations that you would normally do with =configure_bestman=, such as changing the certificate location, are not supported.
+
+The installation of !BeStMan2 and its dependencies creates several directories.  In addition to the Hadoop installation files, you will also find:
+
+| Log files | =/var/log/bestman2= |
+| main config file | =/etc/bestman2/conf/bestman2.rc= |
+| other runtime config files | =/etc/bestman2/conf/*= |
+| !BeStMan2 lib files | =/usr/share/java/bestman2/= |
+| init.d startup script | =/etc/init.d/bestman2= |
+
+%ENDSECTION{&quot;Config1&quot;}%
+
+!BeStMan2 SRM uses the Hadoop FUSE mount to perform namespace operations, such as mkdir, rm, and ls.  As per the [[Hadoop20Installation][Hadoop install instructions]], edit =/etc/sysconfig/hadoop= and run =service hadoop-firstboot start=.  It is *not* necessary (or even recommended) to start any hadoop services with =service hadoop start=.
+
+%STARTSECTION{&quot;Config2&quot;}%
+
+The !BeStMan2 SRM configuration file is located in =/etc/bestman2/conf/bestman2.rc=.  There are a few settings that you need to add or change manually, depending on your site configuration:
+
+&lt;pre class=&quot;file&quot;&gt;
+supportedProtocolList=gsiftp://%RED%your.gridftp.server1%ENDCOLOR%:2811;gsiftp://%RED%your.gridftp.server2%ENDCOLOR%:2811
+GUMSserviceURL=https://%RED%your.gums.host%ENDCOLOR%:8443/gums/services/GUMSAuthorizationServicePort
+localPathListAllowed=/mnt/hadoop;/tmp
+&lt;/pre&gt;
+
+!BeStMan2 uses sudo to perform changes to the filesystem namespace.  This ensures that directories get created and file get removed with the proper permissions.  You must manually add permissions.  Append the following to the end of the =/etc/sudoers= file with the =visudo= command:
+
+&lt;pre class=&quot;file&quot;&gt;
+Cmnd_Alias SRM_CMD = /bin/rm, /bin/mkdir, /bin/rmdir, /bin/mv, /bin/ls 
+Runas_Alias SRM_USR = ALL, !root 
+bestman ALL=(SRM_USR) NOPASSWD:SRM_CMD
+&lt;/pre&gt;
+
+If you are running SL5, comment out the following line in /etc/sudoers:
+&lt;pre class=&quot;file&quot;&gt;
+Defaults    requiretty
+&lt;/pre&gt;
+With this option enabled, !BeStMan2 will be unable to use sudo because it doesn&#39;t use a console.
+
+%ENDSECTION{&quot;Config2&quot;}%
+
+---++ Running !BeStMan2 SRM
+
+%STARTSECTION{&quot;Running&quot;}%
+
+Start the !BeStMan2 SRM server with the command
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service bestman2 start
+&lt;/pre&gt;
+
+To start !BeStMan2 SRM automatically at boot time:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% chkconfig bestman2 on
+&lt;/pre&gt;
+
+%ENDSECTION{&quot;Running&quot;}%
+
+---+++ JMX Monitoring 
+
+This is an optional customization which will allow admins to closely monitor BeStMan activity.  This is not needed for a typical install.
+
+This allows service administrators to closely monitor memory usage
+and thread activity in a much more Java-centric manner than Ganglia
+monitoring. To enable this, add the following command-line arguments
+to the call to =java= in =$VDT_LOCATION/bestman/sbin/bestman.server=:
+
+&lt;verbatim&gt;
+-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=8004
+&lt;/verbatim&gt;
+
+Note that this allows anyone with access to port 8004 access to read
+out your JVM internal metrics.
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+   DEAR DOCUMENT OWNER
+   ===================
+
+   Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER          = JeffDost
+
+   Please define the document area, choose one of the defined areas from the next line
+   DOC_AREA = (ComputeElement|General|Trash/Trash/Integration|Monitoring|Operations|Security|Storage|Trash/Tier3|User|VO)
+   * Local DOC_AREA       =  Storage
+
+   define the primary role the document serves, choose one of the defined roles from the next line
+   DOC_ROLE = (Developer|Documenter|Scientist|Student|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+   Please define the document type, choose one of the defined types from the next line
+   DOC_TYPE = (HowTo|Installation|Knowledge|Navigation|Planning|Training|Troubleshooting)
+   * Local DOC_TYPE       = Installation
+   
+   Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+   Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+   change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %NO%
+
+   change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+   change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+   DEAR DOCUMENT REVIEWER
+   ======================
+
+   Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = 
+  
+   Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %IN_PROGRESS%
+
+
+   DEAR DOCUMENT TESTER
+   ====================
+
+   Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = 
+  
+   Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+############################################################################################################
+--&gt;

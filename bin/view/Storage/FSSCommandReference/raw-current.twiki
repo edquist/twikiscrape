@@ -1,0 +1,1082 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+
+---+ Federated Storage Service Command Reference
+
+---++ Allocation Accounting Service
+
+Accounts for allocations.
+
+---+++ Storage area discovery utility
+
+Queries BDII and displays space and authorization info for storage areas.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [--vo &lt;VOname1[,VOname2]...&gt;] [--storage_element_id &lt;GlueSEUniqueID&gt;] [--free_online_size &lt;GlueSAFreeOnlineSize&gt;] [--show_site_name] [--hide_vo]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+|--vo|Restrict to storage areas for which all of the named Virtual Organizations are authorized.|no|
+|--match_any|Restrict to storage areas for which any of the named VOs is authorized.|no|
+|--storage_element_id|Restrict to a specific Storage Element. Glue schema attribute is !GlueSEUniqueID.|no|
+|--free_online_size|Restrict to SAs with minimum available space, in MB. Glue schema attribute is !GlueSAFreeOnlineSize.|no|
+|--show_site_name|Show the site name for each storage area. Default is to show the Storage Element ID.|no|
+|--hide_vo|Do not show the VO name in the output.|no|
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ get_storage_area
+STORAGE ELEMENT ID                      STORAGE AREA NAME                                           TOTAL     FREE      VOs
+atlas.bu.edu                            Default Storage Area                                        122984    17059     atlas,cdf,mis,ops,osg
+atlas11.hep.anl.gov                     Default Storage Area                                        0         0         atlas
+atlfs02.phy.duke.edu                    Default Storage Area                                        0         0         atlas
+bsrm-1.t2.ucsd.edu                      Default Storage Area                                        1029054   164169    accelerator,astro,atlas,cdf,... 
+charm.ucr.edu                           Default Storage Area                                        6730      1236      atlas,cdf,cms,engage,fermilab,mis,nebiogrid,nysgrid,sbgrid,star
+...
+&lt;/verbatim&gt;
+
+---+++	Storage area registration utility
+
+Registers a storage area in the AAS Storage Area Registry, or updates an entry in the SAR.
+
+*Script Name*
+
+register_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+register_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ register_storage_area --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Storage area registry broadcast tool
+
+Broadcasts Storage Area Registry information to other Allocation Accounting Services.
+
+*Script Name*
+
+broadcast_storage_area_info
+
+*Usage*
+
+&lt;pre&gt;
+broadcast_storage_area_info [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ broadcast_storage_area_info --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Storage area registration test utility
+
+Tests that the information for a storage area has been correctly entered in the Storage Area Registry.
+
+*Script Name*
+
+test_storage_area_info
+
+
+*Usage*
+
+&lt;pre&gt;
+test_storage_area_info [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ test_storage_area_info --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Storage area info utility
+
+Displays information about storage areas registered in the Storage Area Registry of the Allocation Accounting Service.
+
+*Script Name*
+
+show_storage_area_info
+
+
+*Usage*
+
+&lt;pre&gt;
+show_storage_area_info [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ show_storage_area_info --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Allocation request tool
+
+Creates a record comprising a request for an allocation or suballocation.
+
+*Script Name*
+
+create_allocation_request
+
+
+*Usage*
+
+&lt;pre&gt;
+create_allocation_request [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ create_allocation_request --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Allocation decision tool
+
+Shows the storage areas that could meet a given allocation request.
+
+*Script Name*
+
+decide_allocation
+
+
+*Usage*
+
+&lt;pre&gt;
+decide_allocation [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ decide_allocation
+
+&lt;/verbatim&gt;
+
+
+---+++	Allocation update utility
+
+Creates or updates an allocation with attributes set to the specified parameters.
+
+*Script Name*
+
+update_allocation
+
+
+*Usage*
+
+&lt;pre&gt;
+update_allocation [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ update_allocation
+
+&lt;/verbatim&gt;
+
+
+---+++	Allocation query utility
+
+Selects allocations based on input parameters and shows information about them.
+
+*Script Name*
+
+get_allocation_info
+
+
+*Usage*
+
+&lt;pre&gt;
+get_allocation_info [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ get_allocation_info --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Allocation cleanup tool
+
+Deletes the files in all expired allocations, or in a specified allocation, if it is expired.
+
+*Script Name*
+
+cleanup_allocations
+
+
+*Usage*
+
+&lt;pre&gt;
+cleanup_allocations [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ cleanup_allocations --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Allocation test utility
+
+Confirms that an allocation has been made as expected.
+
+*Script Name*
+
+check_allocation
+
+
+*Usage*
+
+&lt;pre&gt;
+check_allocation [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ check_allocation --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Suballocation tool
+
+Creates a suballocation within an allocation.
+
+*Script Name*
+
+decide_suballocation
+
+
+*Usage*
+
+&lt;pre&gt;
+decide_suballocation [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ decide_suballocation --verbose
+
+&lt;/verbatim&gt;
+
+
+---++	Public Storage Catalog
+
+Catalogs public storage.
+
+
+---+++	Catalog update utility
+
+Updates the namespace information of a file or directory.
+
+*Script Name*
+
+update_namespace
+
+
+*Usage*
+
+&lt;pre&gt;
+update_namespace [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ update_namespace --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Catalog query utility
+
+Selects namespace entries based on input parameters and shows information about them.
+
+*Script Name*
+
+get_namespace_info
+
+
+*Usage*
+
+&lt;pre&gt;
+get_namespace_info [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ get_namespace_info --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	File registration tool
+
+Registers a file in the namespace.
+
+*Script Name*
+
+register_file_name
+
+*Usage*
+
+&lt;pre&gt;
+register_file_name [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ register_file_name --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	User update utility
+
+Creates or updates a user or group in the User Registry.
+
+*Script Name*
+
+update_user
+
+
+*Usage*
+
+&lt;pre&gt;
+update_user [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ update_user --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	User query utility
+
+Selects users based on input parameters and shows information about them. 
+
+*Script Name*
+
+get_user_info
+
+
+*Usage*
+
+&lt;pre&gt;
+get_user_info [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ get_user_info --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Dataset registration tool
+
+Registers a logical dataset with the specified parameters.
+
+*Script Name*
+
+register_dataset
+
+
+*Usage*
+
+&lt;pre&gt;
+register_dataset [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ register_dataset --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Dataset update utility
+
+Updates a registered dataset using the specified parameters.
+
+*Script Name*
+
+update_dataset
+
+
+*Usage*
+
+&lt;pre&gt;
+update_dataset [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ update_dataset --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Dataset query utility
+
+Selects registered datasets based on input parameters and shows information about them. 
+
+*Script Name*
+
+get_dataset_info
+
+
+*Usage*
+
+&lt;pre&gt;
+get_dataset_info [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ get_dataset_info --verbose
+
+&lt;/verbatim&gt;
+
+
+---+++	Dataset cleanup tool
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	File replica update utility
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	File replica query utility
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Dataset replica update utility
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Dataset replica query utility
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---++	Site Monitoring Service
+
+Monitors sites.
+
+---+++	Storage area verification tool
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Storage resource update utility
+
+Creates or updates a storage resource object in the Access Record Repository with access information such as endpoint and rootpath.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Storage resource query utility
+
+Returns endpoint and rootpath information on the storage resource from the Access Record Repository.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Monitoring update utility
+
+Creates or updates a storage access object in the Access Record Repository with results of access checker execution.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Monitoring query utility
+
+Returns results of access checker execution as saved in the Access Record Repository.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---++	Transfer Coordination Service
+
+Coordinates transfers.
+
+
+---+++	Public storage write
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Public storage read
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Public storage delete
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Public storage ls
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Public storage copy
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Dataset operation tool
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---++	OSG Storage Operations Toolkit
+
+Tools for operations.
+
+---+++	Public storage cleanup tool
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+---+++	Public storage post-accounting tool
+
+Loads the cache with information needed by the discovery tools. Removes all previous cache info.
+
+*Script Name*
+
+get_storage_area
+
+
+*Usage*
+
+&lt;pre&gt;
+get_storage_area [ --verbose ]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| verbose | Print search strings | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[xquery]$ get_storage_area --verbose
+Loading cache /home/tdh/testing/discovery-1.0.5/cache/bdii.xml
+//GlueSE/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule]
+&lt;/verbatim&gt;
+
+
+-- Main.TedHesselroth - 20 Sep 2010
+

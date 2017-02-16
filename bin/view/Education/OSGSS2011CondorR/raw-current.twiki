@@ -1,0 +1,178 @@
+---+ Running a job with R
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; border: 1px solid black; padding: 0.5em;&quot;&gt;
+---+++ Objective of this exercise
+The objective of this exercise is to learn how to run a program that depends on a larger run-time environment that isn&#39;t already available on your cluster.
+&lt;/div&gt;
+
+---++ The Problem
+
+Sometimes you want to run a program that depends on a larger run-time environment. For example, perhaps you wrote your program in Perl, but there is no Perl installed on the cluster. (That&#39;s an unlikely example, intended just to give you feel for what I mean by &quot;run-time environment&quot;.) This is a common problem distributed computing users encounter. For example, many people like to use [[http://www.mathworks.com/][Matlab]] (or it&#39;s open-source cousin, [[http://www.gnu.org/software/octave/][Octave]]) or [[http://www.r-project.org/][R]] for doing calculations. These require a fair amount of run-time environment to run the programs you write. What do you do if they aren&#39;t installed?
+
+There are at least two possibilities:
+
+   1. Ask your kindly system administrator to install it for you on all of the computers you might run on. 
+   1. Bring the environment (Such as Octave or R) along with your job. 
+
+Before you read any further, please step for a moment, and think about the tradeoffs between these two methodologies. They both have benefits and drawbacks. Why would you choose each of them? Why not? 
+
+Here are some of my answers... %TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show Alain&#39;s answers...&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; border: 1px solid black; padding: 0.5em;&quot;&gt;
+---+++ Pros and cons of having your system administrator do it for you
+
+   * It&#39;s a lot easier for you.
+   * You have to transfer less data with each job.
+   * You have to wait for the system administrator to install them.
+   * If you want upgrades (or downgrades), you have to ask again and wait for them.
+
+---+++ Pros and cons of bringing it along
+   * It&#39;s more complex for you.
+   * You have to transfer the application and data with each job (or have a job that pre-stages it for you.)
+   * You are in complete control: when you need a tweak, an upgrade, or a downgrade, you can make it happen.
+&lt;/div&gt;
+%ENDTWISTY%
+
+Clearly, there is a choice here. I&#39;d like to enable you to be able to bring along your run-time environment with you. In my experience, if you are capable of bringing it with you, you can take advantage of more computers: you don&#39;t have to wait for someone to build and install the environment for you. 
+
+We&#39;d like to demonstrate how to install one run-time environment called [[http://www.r-project.org/][R]]. Don&#39;t worry if you have no experience with it: neither do I. It&#39;s a package for doing math and statistics and it lets you write programs in the R language. (Actually, it&#39;s the S language. Who chose names like this that are hard to Google?) We&#39;ve built a minimal version of R that won&#39;t do graphical output, which makes it much less interesting, but it&#39;s good enough for our purposes.
+
+---++ Setup
+
+I&#39;ve provided you with R as a tarball. You can find it in /opt/r.tar.gz:
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% ls -lh /opt/r.tar.gz
+-rw-r--r-- 1 root root 33M Jun 20 18:32 /opt/r.tar.gz
+&lt;/pre&gt;
+
+It&#39;s only 33 megabytes! That&#39;s not so much. 
+
+You&#39;ll need an R program. After hours of &lt;strike&gt;combing the internet&lt;/strike&gt; coding, I present to you my first R program. Save it in a file called demo.r:
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+len &lt;- 100
+fibvals &lt;- numeric(len)
+fibvals[1] &lt;- 1
+fibvals[2] &lt;- 1
+for (i in 3:len) { 
+   fibvals[i] &lt;- fibvals[i-1]+fibvals[i-2]
+} 
+print(&quot;First 100 Fibonacci numbers:&quot;)
+for (i in 1:len) { 
+    print(fibvals[i], digits = 21)
+}
+print(&quot;Number of possible combinations of cards in a 52 card deck:&quot;)
+comb &lt;- factorial(52)
+print(comb, digits = 21)
+
+jpeg(&quot;heat.jpg&quot;)
+nba &lt;- read.csv(&quot;http://www.cs.wisc.edu/~roy//ppg2008.csv&quot;)
+nba$Name &lt;- with(nba, reorder(Name, PTS))
+library(ggplot2)
+nba.m &lt;- melt(nba)
+nba.m &lt;- ddply(nba.m, .(variable), transform, rescale = rescale(value))
+(p &lt;- ggplot(nba.m, aes(variable, Name)) + geom_tile(aes(fill = rescale),
+      colour = &quot;white&quot;) + scale_fill_gradient(low = &quot;white&quot;, high = &quot;steelblue&quot;))
+base_size &lt;- 9
+p + theme_grey(base_size = base_size) + labs(x = &quot;&quot;,
+     y = &quot;&quot;) + scale_x_discrete(expand = c(0, 0)) +
+     scale_y_discrete(expand = c(0, 0)) + opts(legend.position = &quot;none&quot;,
+     axis.ticks = theme_blank(), axis.text.x = theme_text(size = base_size *
+         0.8, angle = 330, hjust = 0, colour = &quot;grey50&quot;))
+nba.s &lt;- ddply(nba.m, .(variable), transform,  rescale = scale(value))
+last_plot() %+% nba.s
+
+&lt;/pre&gt;
+
+This program prints the first 100 [[http://en.wikipedia.org/wiki/Fibonacci_number][Fibonacci numbers]]. These are the numbers that show up in the weirdest places, like pineapples and sunflowers. It&#39;s a sequence of numbers beginning with 0, 1, 1, 2, 3, 5, 8... where each successive number is the sum of the previous two numbers. It also prints 52 factorial, which is the number of possible combinations of a standard 52-card deck (not including the jokers, of course). Why would Alain find this number particularly interesting? Hmmm... 
+
+Finally, it makes a JPEG file that is a heatmap based on some NBA data. [[https://learnr.wordpress.com/2010/01/26/ggplot2-quick-heatmap-plotting/][(Source)]]
+
+R is a bit fussy about where it&#39;s been installed on disk, so I had to write a wrapper program so it will happily run wherever it lands in our cluster. I could make you work it out, but that seems unfair. Save this program in run-r.sh. If you&#39;re curious about exactly why it&#39;s needed, ask Alain. There are two important parts to it, and you should know what they are, at least conceptually because this is the magic you would need to do for any run-time environment you want to bring along.
+
+   1. Unpack the R environment. In our case, this is just running the =tar= command to extract R. In general you might have to do more work. 
+   1. Invoke R, using whatever magic is needed. In our case, I set up some environment variables and invoke the right executable.
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+#!/bin/sh -x
+
+if [ $# -ne 1 ]; then
+    echo &quot;Usage: run-r &lt;r-script&gt;&quot;
+    exit 1
+fi
+
+# Step 1: Unpack our environment, the R tarball.
+tar xzf r.tar.gz
+
+# Step 2, Invoke R with the proper environment
+export LD_LIBRARY_PATH=`pwd`/r/lib/R/lib
+export R_HOME=`pwd`/r/lib/R
+r/lib/R/bin/exec/R --slave --vanilla &lt; $1
+&lt;/pre&gt;
+
+If you were on the execute machine, you could run this easily: just make sure that r.tar.gz and demo.r are in the same directory, and run:
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+./run-r.sh demo.r
+&lt;/pre&gt;
+
+---++ On your own
+Write a Condor submit file that will use R to run the demo.r program. Make sure you get back the output. Make sure you transfer the tarball and the program. 
+
+To see the resulting graphic, do the following
+
+   1. Make a subdirectory in your home directory called =public_html=
+   1. Copy heat.jpg into it. 
+   1. Edit the following URL to have your username, then look at it in your web browser. =http://osg-ss-submit.chtc.wisc.edu/~USER/heat.jpg=
+
+---++ The answer
+
+This should be easy for you now, but if it&#39;s not, here&#39;s the answer, just in case it&#39;s hard.
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show the answers...&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Really show the answer...&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Really really show the answer...&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+Universe             = vanilla
+Executable           = run-r.sh
+Arguments            = demo.r
+Output               = demo.out
+Error                = demo.error
+Log                  = demo.log
+transfer_input_files = /opt/r.tar.gz, demo.r
+ShouldTransferFiles  = Yes
+WhenToTransferOutput = ON_EXIT
+queue 
+&lt;/pre&gt;
+
+%ENDTWISTY%
+%ENDTWISTY%
+%ENDTWISTY%

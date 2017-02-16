@@ -1,0 +1,23 @@
+---+ Acceptance testing for: !GSI !OpenSSH
+
+---++ Basic background on this component 
+
+Check out the following links for more information on this component. 
+
+   * Documentation.Release3.InstallGsiOpenSSH
+   * http://grid.ncsa.illinois.edu/ssh/ 
+
+---++ How to test a fresh install 
+
+   1. Spin up two VM&#39;s and set up the EPEL/OSG repos on both of them.
+   1. Choose one of the VM&#39;s, it will be the server VM. Consult these [[Documentation.Release3.InstallGsiOpenSSH][instructions]] to set up the server. 
+   1. From the other VM (client):
+      * Install the necessary packages: &lt;pre class=&quot;screen&quot;&gt;%UCL_PROMPT_ROOT% yum install globus-proxy-utils gsi-openssh-clients&lt;/pre&gt;
+      * Initialize your proxy. After this, none of the gsi commands should prompt you for your password.
+      * Connect to the server: &lt;pre class=&quot;screen&quot;&gt;%UCL_PROMPT% gsissh -p 2222 %RED%&amp;lt;server hostname&amp;gt;%ENDCOLOR%&lt;/pre&gt;
+      * Copy a test file to the server: &lt;pre class=&quot;screen&quot;&gt;%UCL_PROMPT% gsiscp -p 2222 testfile %RED%&amp;lt;server hostname&amp;gt;%ENDCOLOR%:/tmp&lt;/pre&gt;
+      * Connect to the server via SFTP and grab files: &lt;pre class=&quot;screen&quot;&gt;%UCL_PROMPT% gsisftp -P 2222 %RED%&amp;lt;server hostname&amp;gt;%ENDCOLOR%
+cd /tmp
+get testfile&lt;/pre&gt;
+ 
+-- Main.BrianLin - 05 Dec 2013

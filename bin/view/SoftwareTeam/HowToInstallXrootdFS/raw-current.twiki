@@ -1,0 +1,91 @@
+%TOC{depth=&quot;3&quot;}%
+---++ How to install and test !XrootdFS rpm
+   1. login as _root_ on a host you want to install !xrootdFS server.
+   1. create ==/etc/yum.repos.d/vdt.repo== :&lt;pre class=&quot;rootscreen&quot;&gt;
+[vdt-development]
+name = VDT RPM repository - development versions for Redhat Enterprise Linux 5 and compatible
+baseurl = http://vdt.cs.wisc.edu/native/rpm/development/rh5/$basearch
+gpgcheck = 0
+enabled = 1
+&lt;/pre&gt;
+   1.Install xrootdfs and dependent rpms:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ yum install xrootd-fuse
+&lt;/pre&gt;The following rpms will be installed:&lt;pre class=&quot;rootscreen&quot;&gt;
+Installing:
+ xrootd-fuse                       x86_64                     1:3.0.4-X.xu                      vdt-development                      15 k
+Installing for dependencies:
+ xrootd-client                     x86_64                     1:3.0.4-X.xu                      vdt-development                     1.5 M
+ xrootd-libs                       x86_64                     1:3.0.4-X.xu                      vdt-development                     1.9 M
+&lt;/pre&gt;
+   1. %ICON{warning}% If you are installing xrootdfs on the redirector node only xrootd-fuse rpm will be installed.
+   1. Modify ==/etc/fstab== by adding the following entries:&lt;pre class=&quot;file&quot;&gt;
+....
+xrootdfs                %RED%/mnt/local%ENDCOLOR%              fuse    rdr=xroot://%RED%redirector1.domain.com%ENDCOLOR%:1094/%RED%/path/redirector1%ENDCOLOR%,uid=xrootd 0 0
+xrootdfs                %RED%/mnt/remote%ENDCOLOR%          fuse    rdr=xroot://%RED%redirector2.domain.com%ENDCOLOR%:1094/%RED%/path/redirector2%ENDCOLOR%,uid=xrootd 0 0
+&lt;/pre&gt;This configuration assumes that you have two redirectors running on host %RED%redirector1,2.domain.com%ENDCOLOR% listening on port 1094 with the storage_path %RED%/path/redirector1,2%ENDCOLOR% and that local mount point for xrootdfs will be %RED%/mnt/local%ENDCOLOR%, %RED%/mnt/remote%ENDCOLOR%. 
+   1.  If you are installing xrootdfs on a separate node you have to create ==xrootd== user manually.  
+   1. Create mount point directories and set permission: &lt;pre&gt;
+$ mkdir -p %RED%/mnt/local /mnt/remote%ENDCOLOR%
+$ chown xrootd.xrootd %RED%/mnt/local /mnt/remote%ENDCOLOR%
+&lt;/pre&gt; 
+   1. Mount xrootd: &lt;pre class=&quot;rootscreen&quot;&gt;
+$ mount %RED%/mnt/local%ENDCOLOR%
+$ mount %RED%/mnt/remote%ENDCOLOR%
+&lt;/pre&gt;
+   1. Verify that xrootdfs is running and mount points exist:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ ps auxww|grep xrootdfs
+xrootd    1881  0.0  0.4 122388 10204 ?        Ssl  12:52   0:00 xrootdfs /mnt/local -o rw,rdr=xroot://fermicloud061.fnal.gov:1094//data/xrootdfs,uid=100
+xrootd    1893  0.0  0.4 122388 10204 ?        Ssl  12:53   0:00 xrootdfs /mnt/remote -o rw,rdr=xroot://gw016k0.fnal.gov:1094//data/xrootdfs/public,uid=100
+$ df  -t fuse
+xrootdfs              19825120   4185456  15639664  22% /mnt/local
+xrootdfs             706938732  42587384 664351348   7% /mnt/remote
+&lt;/pre&gt; Replace %RED%/mnt/local%ENDCOLOR% with the local mount point you have specified in ==/etc/fstab==.
+   1. Test your installation by executing basic unix file commands, e.g: &lt;pre class=&quot;rootscreen&quot;&gt;
+$ ls %RED%/mnt/remote%ENDCOLOR%
+file_name_1
+$ cat %RED%/mnt/remote/file_name_1%ENDCOLOR%
+$ cp %RED%/mnt/remote/file_name_1%ENDCOLOR% %RED%/mnt/remote/file_name_2%ENDCOLOR%
+$ ls %RED%/mnt/remote%ENDCOLOR%
+file_name_1 file_name_2
+&lt;/pre&gt;
+   1. Dismount xrootd :&lt;pre class=&quot;rootscreen&quot;&gt;
+$ umount  %RED%/mnt/local%ENDCOLOR%
+&lt;/pre&gt;
+
+---++ Configuring secured xrootdfs
+If you want to enable security for access to xrootd via xrootdfs you will need to modify xrootd  configuration and perform several steps to make xrootdfs secured.
+   1. On the node where you have installed xrootd-server rpm execute the following command:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ xrdsssadmin -k  %RED%my_key_name%ENDCOLOR% -u anybody -g usrgroup add %RED%keyfile%ENDCOLOR% 
+&lt;/pre&gt; e.g:&lt;pre class=&quot;rootscreen&quot;&gt;xrdsssadmin -k top_secret  -u anybody -g usrgroup add /etc/xrootd/xrootd.key&lt;/pre&gt;
+   1. Set ownership&lt;pre class=&quot;rootscreen&quot;&gt;chown xrootd.xrootd /etc/xrootd/xrootd.key&lt;/pre&gt; 
+   1. On the node where xrootdfs is installed modify ==/etc/fstab== add security information:&lt;pre class=&quot;rootscreen&quot;&gt;
+xrootdfs                %RED%/mnt/local%ENDCOLOR%              fuse    rdr=xroot://%RED%redirector1.domain.com%ENDCOLOR%:1094/%RED%/path/redirector1%ENDCOLOR%,uid=xrootd,sss=%RED%keyfile%ENDCOLOR%  0 0&lt;/pre&gt;
+   1. Modify xrootd configuration (==/etc/xrootd/xrootd-clustered.cfg==) on every data server by adding the following segment: &lt;pre class=&quot;file&quot;&gt;
+     # ENABLE_SECURITY_BEGIN
+        xrootd.seclib /usr/lib64/libXrdSec.so
+        #the line below should be before &quot;sec.protocol ... unix&quot;
+        %RED%sec.protocol /usr/lib64  sss -s keyfile%ENDCOLOR%
+        sec.protocol /usr/lib64 unix
+        # this specify that we use the &#39;unix&#39; authentication module, additional one can be specified.
+        # this is the authorization file
+        acc.authdb /etc/xrootd/auth_file
+        ofs.authorize
+        # ENABLE_SECURITY_END
+&lt;/pre&gt;
+   1. Copy  %RED%keyfile%ENDCOLOR%  on every data server node. Restart xrootd cluster by following [[https://twiki.grid.iu.edu/bin/view/SoftwareTeam/HowToInstallXrootd][these instructions]]
+   1. on xroodfs node execute mount:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ mount %RED%/mnt/local%ENDCOLOR%
+&lt;/pre&gt;
+   1. Verify that you can access the mount point (df,ls) and can not write into unauthorized path, e.g:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ cp /bin/sh /mnt/loca/tlevshin/test1
+cp: cannot create regular file `/mnt/local/tlevshin/test1&#39;: Permission denied
+&lt;/pre&gt; Login as yourself and try, e.g:&lt;pre class=&quot;rootscreen&quot;&gt;
+$ su - tlevshin
+$ cp /bin/sh /mnt/loca/tlevshin/test1
+&lt;/pre&gt;
+
+   
+
+
+
+-- Main.TanyaLevshina - 18 Apr 2011

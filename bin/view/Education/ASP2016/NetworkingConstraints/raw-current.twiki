@@ -1,0 +1,57 @@
+---+++ Overview
+We assume you got here because you do not have a wide open network configuration for your cluster.
+So let&#39;s assume the worst case scenario:&lt;br&gt;
+
+   * You have an institutional Firewall that you can do nothing about, except request some exceptions.
+   * You want to run your cluster behind a NAT, and have a minimal set of hosts exposed to the &quot;public&quot;
+     network.
+   * You got both of the above.
+
+Let&#39;s go from the inside out.
+
+---+++ NAT
+OSG supports clusters where all worker nodes are behind a network address translation firewall. However the OSG CE itself and any other computers that run OSG services must have a network interface that has a routable IP address in addition to an interface that connects it to the same network as the worker nodes. For example the OSG CE and the OSG Gridftp server (if on another machine) must be dual homed. 
+
+In general you probably want to avoid installing OSG infrastructure on the same host that implements the NAT. It is also not necessary for the OSG CE to be configured to forward IP traffic if it is not installed on the same machine that is the NAT firewall. 
+
+_CMS Note: Tier 3s will also need a &lt;nop&gt;PhEDEx host on the public network._
+
+---+++ Firewall
+It is recommended that you run some sort of host based IP filtering firewall on your OSG service nodes. To assist in configuring your IP firewall please read through the [[https://twiki.grid.iu.edu/twiki/bin/view/ReleaseDocumentation/CEInstallGuide#Firewalls][Firewall]] documentation in OSG. Unless you open the ports specified your OSG CE may not work correctly. 
+
+You should also check to make sure that there are no additional choke style firewalls upstream of your OSG. For example if your institution or department has a central firewall for all traffic. If you do have a firewall upstream from your OSG CE you will need to coordinate with your department or institutions network group to configure the firewall to open the ports specified in [[https://twiki.grid.iu.edu/twiki/bin/view/ReleaseDocumentation/CEInstallGuide#Firewalls][Firewall]].
+
+If you put your Gridftp server on a separate node from your OSG CE it can be configured with the same exceptions as those documented for the OSG CE.
+
+_CMS Note: The &lt;nop&gt;PhEDEx host at a Tier 3 will need to have the same Firewall exceptions as the OSG CE._
+
+---+++ DNS
+
+---++++ All of the IP addresses which are used for internal and external interfaces should have their forward and reverse DNS properly configured. 
+
+If you are using a private class IP network for machines behind a NAT firewall you should either configure a DNS server internally to perform forward and reverse DNS for the internal IP network, or create a /etc/hosts file that contains all of the IP to name mappings required for your internal network. All external interfaces should have their forward and reverse DNS properly configured. This is usually managed by whoever administrates your department or institutions network. 
+
+To test to determine if forward and reverse DNS is properly configured for your external IP addresses you can run
+
+&lt;verbatim&gt;
+tmartin@newport:~$ nslookup osg-gw-2.t2.ucsd.edu
+Server:         128.54.16.2
+Address:        128.54.16.2#53
+
+Name:   osg-gw-2.t2.ucsd.edu
+Address: 137.110.141.17
+
+tmartin@newport:~$ nslookup 137.110.141.17
+Server:         128.54.16.2
+Address:        128.54.16.2#53
+
+17.141.110.137.in-addr.arpa     name = osg-gw-2.t2.ucsd.edu.
+&lt;/verbatim&gt;
+
+---++++ The hostname of your OSG CE should be configured to be the Fully Qualified Domain Name (FQDN) of the primary network interface with a routable IP address. 
+
+If your OSG CE is dual homed you should configure the hostname to be the same as the FQDN of the external network interface. 
+
+
+-- Main.FkW - 16 Feb 2007
+-- Main.TerrenceMartin - 21 Feb 2007

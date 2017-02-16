@@ -1,0 +1,82 @@
+%TOC%
+
+---+ Possibilities for auto-updating CA Certs in OSG Software 3
+
+---++ Current state; problem
+
+As described in [[https://ticket.grid.iu.edu/goc/12257][GOC Ticket #12257]], CA certificate updates are no longer automated, and this is causing some sites to fall behind on CA certificate updates. If a WLCG site doesn&#39;t update its CA certificates within eight days, it sites may be considered &quot;unavailable&quot;.
+
+In OSG 1.2, by default all sites had enabled the =vdt-update-certs= tool, which checks for new CA certificates and downloads them when they are available. It does this outside the normal packaging functions (that is, it doesn&#39;t use Pacman or RPM). Almost all of the time, sites updated to the latest CA certificates within 24 hours of its release. 
+
+In OSG 3, this tool is still available (though it is now called =osg-update-certs=), but it is not installed or enabled by default. Instead, sites have to choose to install and enable it. (It will be instead of the CA certificate RPM) When sites install from RPMs, they have three basic choices. Due to the way RPM packaging works, it is not a good idea to combine these. Instead, one must be chosen.
+
+   1. *Install CA certificates by RPM* &lt;br&gt;This is the current default and if the user makes no choice it is what happens. It matches the RPM philosophy in that everything is installed by RPM and standard tools (=yum= and =rpm verify=) can check versions and consistency of the files. However, many users do *not* do automatic updates for RPMs, but quite reasonably choose to do it at scheduled maintenance times. The CA certificates are in the same repository as the rest of the software. People can update just the CA certificates without updating the software, but we do not currently provide instructions for doing so.
+   1. *Install CA certificates with *osg-update-certs* &lt;br&gt; This is the automated tool we have provided for a while, but it is not installed by default. If sites choose to use it, they will get automated updates. 
+   1. *Install no CA certficates* &lt;br&gt; Users can choose to manage CA certificates themselves. (Perhaps they are installed on a shared filesystem for use across multiple computers). They do this by installing a single RPM that provides no CA certificates while satisfying the RPM dependencies 
+
+The upshot is that right now, nearly all OSG installations install CA certificates via RPM, but they do not receive timely updates. 
+
+---++ How should we automate CA certificate updates?
+
+We are considering two options to resolve this problem outlined. 1) Create a unified interface based on =osg-ca-manage= to install CA certificates RPMs and tarball; and 2) Create a simple update script to update only the =osg-ca-certs rpm= via =yum= and keep the current packages unchanged. Below we will consider the tradeoffs of these options
+
+---+++ Unified Interface
+In this approach we will rewrite osg-ca-manage so that it can install RPMs in addition to tarballs. (This is the old-style of updates.). This will involve new code to be developed and tested.
+
+---++++ Pros
+   * Flexibility: This mechanism allows much more flexibility: instead of merely providing all the CA certificates, it allows users to conveniently add or remove CA certificates from their local distribution. This is an important feature from the security team&#39;s perspective because it maintains site autonomy by allowing them to easily trust the CAs they wish to trust. (There are other alternative to get this behavior, but this is the simplest one right now.)
+   * Having =osg-ca-manage= install rpms will still allow you to use your favorite rpm commands to investigate your packages
+   * Provides a single unified interface that many OSG site admins are used to for installing CAs from both rpm and tarballs sources
+
+---++++ Cons
+   * Though we will have a unified interface, this interface will not be a bit more complex than a simple =yum install osg-ca-certs=. 
+   * Significant new development needed. Special care needs to be taken on how =osg-ca-manage= handles =rpm= and =yum=. Extensive ITB testing needed before it can be deployed on production.
+   * We will need to develop strategy for sites currently using to move to new approach
+   * It would be difficult to leverage software repository mirrors &amp; local squid caches. This might be a significant factor as more sites install CA certificates on worker nodes
+   * An open question that remains is should the =rpms= continue to be available to standalone installs. 
+      * Some sites might have their own update mechanisms and might prefer to still have rpms available. In any case this should become a un-recommended option used only by experienced admins.
+      * We cannot continue officially recommending direct rpm installs since there will be automatic mechanism to update CAs for site using it
+
+---+++ Keep packaging unchanged and adding a new script to update CA RPM
+This option will have us maintain all the current packages and options available as they are. The only change made is we will provide a new =osg-ca-certs-update-cron=  that will update the osg-ca-certs package using yum update mechanisms.
+
+---++++ Pros 
+   * Default interface will be simple since the admins will continue to use their favorite =yum= and =rpm= commands to manage their CA installations. 
+   * Development and testing effort is very low
+   * Minimal change to existing infrastructure and production deployments
+   * Use of RPM and yum can leverage our existing infrastructure (software repository mirrors &amp; local squid caches) for scalability. With RPMs, more people are installing the CA certificates on each worker node, so this may become significant.
+
+---++++ Cons
+   * Using RPMs do not offer the easy flexibility of adding and removing CAs (an important feature from the security team&#39;s perspective as it maintains site autonomy). 
+      * However is sites wish to get this flexibility, =osg-ca-manage= offers this capability and continues to be a supported option by OSG 
+   * Absence of an uniform interface
+   * Need to ensure as well as assure sites that they are not getting any software updates by this automatic update mechanism
+
+---++Other potential options
+
+   1. Change the default installation to install the =osg-update-certs= program. This is slightly tricky at a technical level (it may require renaming packages or changing dependencies) but it can be done. This will affect new installations and may require installations to do slightly more initial setup during the installation process.
+   1. Move the CA certificates to a separate repository and document how to use automatic yum updates to get just CA certificate updates. 
+
+---++ Alain&#39;s current thoughts
+
+Let&#39;s not rush here: we have CA certificates that need to be distributed now and we don&#39;t want to break things, so lets take a two-step approach.
+
+*Step 1 (now):* &lt;br&gt;
+For the next CA certificate release, we should clearly document exactly how to get the CA certificates independently of everything else. We will ship them as a software update, as normal, but in addition to the usual announcement about the release, we will have a separate announcement about how to get the CA certificates. The release notes will be updated to clearly document this as well.
+
+Regardless of what we do in the future, we&#39;ll always need this clear documentation for sites that get the CA certificates via RPM.
+
+*Step 2 (one to two months):* &lt;br&gt;
+   1. Talk to site administrators about what they would appreciate.
+   1. Make one of the proposed changes with sufficient testing to ensure it works reliably.
+   1. Thoroughly document the new update methodology.
+
+
+---++ Anand&#39;s current thoughts
+Given that the main issues we are currently trying to resolve is the lack of an automatic update. I believe that adding a new script to update CA RPM is the most preferable route. Not only does it involve minimal change to the production infrastructure, step of enabling it will be similar to the osg-update-certs-cron script. Also existing rpm installs will just have to enable this new script without any other changes. 
+
+---++ Matyas&#39;s thoughts and design document
+I think we&#39;ve decided to go with the &quot;cron job to run a script that will do yum update&quot; approach.
+Here is a proposed design for the script.
+[[SoftwareTeam.CaCertsAutoUpdaterDesignDocument][Design Document for Auto-Updater]]
+

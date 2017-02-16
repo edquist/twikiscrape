@@ -1,0 +1,75 @@
+---+ Getting a Certificate 
+
+---++ 1.0 Introduction
+
+We&#39;d like you to get a certificate on your own time before Tuesday morning. For now, we&#39;re asking you to walk through this process without much explanation of the background. We want you to have the certificate ready to use, and various aspects will be explained as needed throughout the school. 
+
+Your certificate (really, your combination of a public certificate and private key) are needed for security purposes. They are used to uniquely identify you when you access computing or storage resources in Open Science Grid. 
+
+Your certificate is based on the underlying Public Key Infrastructure ([[http://en.wikipedia.org/wiki/Public_key_infrastructure][background from Wikipedia]]). 
+
+---++ 2.0 Getting your certificate
+
+---+++ 2.1 If you already have a certificate from DOEGrids
+
+If you already have a certificate from DOEGrids, email the DN to Tim Cartwright, cat@cs.wisc.edu. 
+
+---+++ 2.2 If you don&#39;t have a certificate
+
+If you don&#39;t already have a certificate from DOEGrids (and this is probably most of you.)
+
+_Step 1:_ Start your browser and go to https://oim.grid.iu.edu/oim/certificaterequestuser.
+
+_Step 2a:_ Begin by selecting the appropriate VO from the drop down menu, which in this case will be OSGEDU.%BR% 
+
+               %ATTACHURL%/VO_select.png  %BR%
+
+_Step 2b:_ Next be sure that Tim&#39;s name shows up by default as the sponsor.  If you do not see Tim&#39;s name then drill down on the drop box and select his name as the sponsor.%BR% 
+
+               %ATTACHURL%/Sponsor_select.png  %BR%
+
+_Step 2c:_ Now read through the OSG Policy Agreement and after having done so, check the &quot;I AGREE&quot; box and click on Submit..%BR% 
+
+               %ATTACHURL%/OSG_Policy.png  %BR%
+
+_Step 3a:_ After having submitted your request, you will receive an automated email regarding your request.  It will contain your requested DN and a link to the request ticket.
+
+              %ATTACHURL%/Request_email.png  %BR%  
+
+_Step 3b:_ Once the RA agent of the OSGEDU VO (Tim) has approved your request, you will receive another automated email regarding your request with a link to download your certificate.
+
+              %ATTACHURL%/Approved_email.png  %BR%  
+
+_Step 4a:_ Now click on the link found in the email where it says &quot;To retrieve your certificate please visit.&quot;  You will then be taken to your &quot;User Certificate Requests&quot; page in OIM.
+
+_Step 4b:_ On this page you will be able to download your approved user certificate.  To do so, you first will have to go down to the section labeled &quot;Next Action&quot;, enter your password twice and click on &quot;Issue Certificate...&quot;
+                  
+*Note:* Please be sure to note your password and to enter it correctly.  The password is not stored in the system in any way.  The password is used to encrypt your private key and isn&#39;t known by OSG as a security measure.  The only course of action is to cancel out the request and to submit another one. 
+
+              %ATTACHURL%/Enter_password.png  %BR% 
+
+_Step 4c:_  The page will refresh and this is where you will download your certificate.  To download your certificate go down to the section labeled &quot;Certificates&quot; and click on the button &quot;Download Certificates &amp; Private Key (PKCS12).&quot; 
+
+*Note:* Please be sure to note the directory/folder where the certificate will be saved.   The file will be saved as a .p12 file.
+
+_Step 5:_ Try out your new certificate:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% voms-proxy-init -voms osgedu
+Enter GRID pass phrase:
+Your identity: /DC=org/DC=doegrids/OU=People/CN=Alain Roy 424511
+Creating temporary proxy ...................................................... Done
+Contacting  voms.grid.iu.edu:15003 [/DC=org/DC=doegrids/OU=Services/CN=http/voms.grid.iu.edu] &quot;osgedu&quot; Done
+Creating proxy ......................................................................... Done
+
+Your proxy is valid until Sun Jun 24 00:24:21 2012
+&lt;/pre&gt;
+
+---++ 3.0 Converting .p12 to .pem
+
+To convert a single =.p12= file into two =.pem= files:
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+openssl pkcs12 -in &lt;em&gt;cert&lt;/em&gt;.p12 -clcerts -nokeys -out $HOME/.globus/usercert.pem
+openssl pkcs12 -in &lt;em&gt;cert&lt;/em&gt;.p12 -nocerts -out $HOME/.globus/userkey.pem
+&lt;/pre&gt;
+

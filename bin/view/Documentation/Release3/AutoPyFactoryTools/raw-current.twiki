@@ -1,0 +1,401 @@
+*WARNING: THIS DOCUMENTATION IS WORK IN PROGRESS!!!*
+
+&lt;style type=&quot;text/css&quot;&gt;
+.tg  {border-collapse:collapse;border-spacing:0;width:100%}
+.tg td{font-family:Arial, sans-serif;font-size:12px;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:12px;font-weight:normal;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg .tg-raw31s1{font-weight:bold;color:#0055ff;text-align:left;width:20%}
+.tg .tg-raw32s1{text-align:left}
+.tg .tg-raw33s1{text-align:left;width:30%}
+.tg .tg-header{font-weight:bold;background-color:#c0c0c0;text-align:center}
+.tg .tg-splitheader{font-weight:bold;background-color:#e0e0e0;text-align:center}
+&lt;/style&gt;
+
+
+&lt;!-- some useful definitions  (need 3 white spaces before * to enable it)
+   * Set VERSION = 1.0.3
+IMPORTANT NOTE=  The version is actually set in the &quot;Applicable versions&quot; section. It is hardcoded there so it can be copied by other pages.
+--&gt;
+
+---+!! !AutoPyFactory Tools
+&lt;!--
+%DOC_STATUS_TABLE%
+--&gt;
+%TOC{depth=&quot;3&quot;}%
+
+---# About this Document
+
+This document describes the !AutoPyFactory Tools, a set of utilities around AutoPyFactory
+.
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;Header&quot;}%
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;CommandLine&quot;}%
+
+
+%STARTSECTION{&quot;Version&quot;}%
+---# Applicable versions
+
+As the Tools evolve in a different path that !AutoPyFactory, the package has a different version number than !APF. &lt;br&gt;
+The current version of !AutoPyFactory Tools is 1.0.3
+%ENDSECTION{&quot;Version&quot;}%
+
+*WARNING:* these tools may change over time, with no guarantee of backward compatibility. 
+
+---# Description
+
+These Tools is a set of utilities related to !AutoPyFactory. 
+Therefore, they don&#39;t perform any useful action on any host that does not have a factory instance set.
+They are not, extrictly speaking, needed to run the factory, but they provide for ancillary useful commands. 
+
+---# Deployment using RPM
+
+These instructions assume Red Hat /
+Enterprise Linux 6.x (and derivates) and the system Python 2.6.x. Other distros and higher 
+Python versions should work with some extra work. 
+
+Also, it is assumed that !AutoPyFactory has been installed.
+
+We distribute now !AutoPyFactory Tools RPMs using the Open Science Grid (OSG) yum infrastructure. 
+Install the OSG yum repo files:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% rpm -Uhv  http://repo.grid.iu.edu/osg/3.3/osg-3.3-el6-release-latest.rpm
+Retrieving http://repo.grid.iu.edu/osg/3.3/osg-3.3-el6-release-latest.rpm
+Preparing...                ########################################### [100%]
+   1:osg-release            ########################################### [100%]
+&lt;/pre&gt;
+
+More extensive documentation on how to install the OSG yum files can be found [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/YumRepositories][here]].
+                                                  
+*IMPORTANT*: it may happen that a new version of !AutoPyFactory Tools is not available in the release repo, but it is in the development repo. This will happen, for example, when a bug needs to be fixed, and the new RPM is not available yet &quot;officially&quot; until next OSG cycle. 
+Therefore, for this type of cases, you may want to enable the development repo as well, as it is disabled by default, by setting ==enabled=1== in the file =/etc/yum.repos.d/osg-el6-development.repo= :
+
+&lt;pre class=&quot;file&quot;&gt;
+[osg-development]
+name=OSG Software for Enterprise Linux 6 - Development - $basearch
+#baseurl=http://repo.grid.iu.edu/osg/3.3/el6/development/$basearch
+mirrorlist=http://repo.grid.iu.edu/mirror/osg/3.3/el6/development/$basearch
+failovermethod=priority
+priority=98
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+consider_as_osg=yes
+
+[osg-development-source]
+name=OSG Software for Enterprise Linux 6 - Development - $basearch - Source
+baseurl=http://repo.grid.iu.edu/osg/3.3/el6/development/source/SRPMS
+failovermethod=priority
+priority=98
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+
+[osg-development-debuginfo]
+name=OSG Software for Enterprise Linux 6 - Development - $basearch - Debug
+baseurl=http://repo.grid.iu.edu/osg/3.3/el6/development/$basearch/debug
+failovermethod=priority
+priority=98
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+
+&lt;/pre&gt;
+
+To install:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install autopyfactory-tools
+&lt;/pre&gt;  
+
+---# Tools
+
+---## apf-condor-q
+
+Prints some information about the current pilots, one by one.
+
+Input options:
+
+&lt;table class=&quot;tg&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;variable&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;description&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;comment&lt;/th&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;-H|--headers&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; Prints the header of each column&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Optional &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+Example:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% apf-condor-q -H
+id           owner          qdate                cmd                             jobstatus  enteredcurrentstatus  ec2amiid   match_apf_queue                     
+11799213.7   autopyfactory  2016-07-05 15:45:46  /usr/libexec/wrapper-0.9.15.sh  I          0+00:00:00            undefined  mwt2_himem-uct2-gk-htcondor         
+11799213.8   autopyfactory  2016-07-05 15:45:46  /usr/libexec/wrapper-0.9.15.sh  I          0+00:00:00            undefined  mwt2_himem-uct2-gk-htcondor         
+11799213.9   autopyfactory  2016-07-05 15:45:46  /usr/libexec/wrapper-0.9.15.sh  I          0+00:00:00            undefined  mwt2_himem-uct2-gk-htcondor         
+11799214.0   autopyfactory  2016-07-05 15:45:51  /usr/libexec/wrapper-0.9.15.sh  I          0+00:00:00            undefined  mwt2_himem_mcore-uct2-gk-htcondor   
+11799215.1   autopyfactory  2016-07-05 15:46:01  /usr/libexec/wrapper-0.9.15.sh  R          0+00:00:49            undefined  analy_swt2_cpb                      
+11799215.2   autopyfactory  2016-07-05 15:46:01  /usr/libexec/wrapper-0.9.15.sh  R          0+00:00:46            undefined  analy_swt2_cpb                      
+11799215.3   autopyfactory  2016-07-05 15:46:01  /usr/libexec/wrapper-0.9.15.sh  R          0+00:00:51            undefined  analy_swt2_cpb     
+  ...
+  ...          
+&lt;/pre&gt;  
+
+
+
+
+---## apf-condor-status
+
+Prints information about the condor slots.
+
+Input options:
+
+&lt;table class=&quot;tg&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;variable&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;description&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;comment&lt;/th&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;-H|--headers&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; Prints the header of each column&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Optional &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+Example:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% apf-condor-status -H
+name                                         slotid  state    activity  nodetype  loadavg  remotegroup  ec2instanceid  ec2publicdns                                                   ec2amiid      
+host-172-12-1-200.openstack.bnl.gov:slot1_1  1       claimed  busy      atlas     8.33     group_mcore  i-0000216a     server-cada3d8d-02db-4a42-b891-67ab0417dc3d.openstack.bnl.gov  ami-00000046  
+host-172-12-1-200.openstack.bnl.gov:slot1_2  1       claimed  busy      atlas     8.3      group_mcore  i-0000216a     server-cada3d8d-02db-4a42-b891-67ab0417dc3d.openstack.bnl.gov  ami-00000046  
+host-172-12-1-201.openstack.bnl.gov:slot1_1  1       claimed  busy      atlas     8.15     group_mcore  i-0000216b     server-9af3ae5f-26fe-4122-aa30-739369bed25b.openstack.bnl.gov  ami-00000046  
+host-172-12-1-210.openstack.bnl.gov:slot1_1  1       claimed  busy      atlas     8.06     group_mcore  i-00002174     server-4b51499d-5f79-48e3-b739-ffe401d33256.openstack.bnl.gov  ami-00000046  
+host-172-12-1-201.openstack.bnl.gov:slot1_2  1       claimed  busy      atlas     8.13     group_mcore  i-0000216b     server-9af3ae5f-26fe-4122-aa30-739369bed25b.openstack.bnl.gov  ami-00000046  
+  ...
+  ... 
+&lt;/pre&gt;
+
+---## apf-queue-status
+
+Prints aggregated status info queue by queue.
+
+Input options:
+&lt;table class=&quot;tg&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;variable&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;description&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;comment&lt;/th&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;-N|--new&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt;Makes the output to be displayed in new format &lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Optional &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;-H|--headers&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt;Prints the header of each column. &lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Optional&lt;br&gt;Triggers the new output format &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;-L|--longest&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt;Prints two additional columns with the longest waiting and running times&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Optional &lt;br&gt;Triggers the new output format&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+Example:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% apf-queue-status -N -H -L
+qname                               unsub  idle  running  removed  completed  held  error  longestidle  longestrunning  
+AGLT2_LMEM-htcondor                 0      3     125      0        0          0     0      0+00:27:47   0+05:56:23      
+AGLT2_MCORE-htcondor                0      5     32       0        0          0     0      0+00:27:11   2+21:37:00      
+AGLT2_SL6-htcondor                  0      8     117      0        0          0     0      0+00:10:35   2+07:59:21      
+AGLT2_TEST-htcondor                 0      3     0        0        0          0     0      0+00:13:07   0+00:00:00      
+ANALY_AGLT2_SL6-htcondor            0      100   434      0        0          0     0      0+00:04:36   2+23:24:22      
+ANALY_BNL_LONG-gridgk01-htcondor    0      8     14       0        0          0     0      0+00:36:05   0+08:29:08      
+ANALY_BNL_LONG-gridgk02-htcondor    0      10    20       0        0          0     0      0+00:48:04   1+02:16:41      
+ANALY_BNL_LONG-gridgk03-htcondor    0      72    42       0        0          0     0      0+02:44:07   0+08:38:11      
+ANALY_BNL_LONG-gridgk04-htcondor    0      10    22       0        0          0     0      0+01:04:46   1+14:38:04  
+  ...
+  ... 
+&lt;/pre&gt;
+
+---## apf-simulate-scheds
+
+Allows to simulate the behaviour of the sched plugins. 
+
+Input options:
+&lt;table class=&quot;tg&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;variable&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;description&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;comment&lt;/th&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;--conf=&amp;lt;file&amp;gt;&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt;path to a fake config file with the list of sched plugins and their configurations &lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Mandatory &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;--activated=&amp;lt;n_jobs&amp;gt;&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt;Number of jobs in activated status&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Optional. Defaults to 0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;--pending=&amp;lt;n_pilots&amp;gt;&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt;Number of pilots in pending status&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Optional. Defaults to 0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;--running=&amp;lt;n_pilots&amp;gt;&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt;Number of pilots in runniing status&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Optional. Defaults to 0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;--status=&amp;lt;queue_status&amp;gt;&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt;Status of the WMS queue. &lt;br&gt; Valid values are =online=, =offline=, and =test= &lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Optional. Defaults to =online= &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+Example. Given a fake config file like this one:
+
+&lt;pre class=&quot;file&quot;&gt;
+Content of file /tmp/sim.conf:
+
+[FAKE_QUEUE]
+
+schedplugin = Ready, Scale, MaxPerCycle, MinPerCycle, StatusTest, StatusOffline, MaxPending
+
+sched.scale.factor = 0.5
+
+sched.minpercycle.minimum = 1
+sched.maxpercycle.maximum = 100
+sched.maxpending.maximum = 10
+
+sched.statustest.allowed = True
+sched.statustest.pilots = 3
+
+sched.statusoffline.allowed = True
+sched.statusoffline.pilots = 0
+&lt;/pre&gt;
+
+we can run a command like this
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% apf-simulate-scheds.py --conf=file:///tmp/sim.conf --activated=1234 --pending=5 --running=50
+
+inputs:
+   activated :  1234
+   pending   :  5
+   running   :  50
+   status    :  online
+
+sched plugin Ready
+   configuration:
+   output 1229 
+
+sched plugin Scale
+   configuration:
+      sched.scale.factor = 0.5 
+   output 615 
+
+sched plugin MaxPerCycle
+   configuration:
+      sched.maxpercycle.maximum = 100 
+   output 100 
+
+sched plugin MinPerCycle
+   configuration:
+      sched.minpercycle.minimum = 1 
+   output 100 
+
+sched plugin StatusTest
+   configuration:
+      sched.statustest.allowed = True 
+      sched.statustest.pilots = 3 
+   output 100 
+
+sched plugin StatusOffline
+   configuration:
+      sched.statusoffline.allowed = True 
+      sched.statusoffline.pilots = 0 
+   output 100 
+
+sched plugin MaxPending
+   configuration:
+      sched.maxpending.maximum = 10 
+   output 5 
+
+Final output 5
+&lt;/pre&gt;
+
+
+---## apf-reverse-logstree
+
+This tool creates, using links, a reverse tree structure of the factory logs directories. 
+From an initial tree like this
+
+&lt;pre class=&quot;file&quot;&gt;
+&amp;lt;BASE_LOGS_DIR&amp;gt;/
+    /2055-03-22/
+        /ANALY_FOO/
+        /FOO_PROD/
+        /FOO_MCORE/
+    /2055-03-23/
+        /ANALY_FOO/
+        /FOO_PROD/
+        /FOO_MCORE/
+    /2055-03-24/
+        /ANALY_FOO/
+        /FOO_PROD/
+        /FOO_MCORE/
+&lt;/pre&gt;
+
+it creates a simlinks structure like this:
+
+&lt;pre class=&quot;file&quot;&gt;
+&amp;lt;NEW_BASE_LOGS_DIR&amp;gt;/
+    /ANALY_FOO/
+        /2055-03-22/
+        /2055-03-24/
+        /2055-03-25/
+    /FOO_PROD/
+        /2055-03-22/
+        /2055-03-24/
+        /2055-03-25/
+    /FOO_MCORE/
+        /2055-03-22/
+        /2055-03-24/
+        /2055-03-25/
+&lt;/pre&gt;
+
+Input options:
+
+&lt;table class=&quot;tg&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;variable&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;description&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;comment&lt;/th&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;--basedir=&amp;lt;dir&amp;gt; &lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; The root path to the tree with logs files.&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Optional&lt;br&gt; Default value is =/home/autopyfactory/factory/logs/= &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;--newdir=&amp;lt;dir&amp;gt;&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; Location where the new tree, made out of symlinks, will be created.&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt; Optional &lt;br&gt; Default value is =/tmp/apf-reverse-logstree= &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+
+-- Main.JoseCaballero - 03 Jul 2016
+

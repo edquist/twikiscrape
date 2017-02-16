@@ -1,0 +1,116 @@
+---+ Our glideinWMS setup
+
+&lt;!-- ASP 2012 Defaults
+   * Local UCL_HOST = %URLPARAM{&quot;INPUT_HOST&quot; encode=&quot;quote&quot; default=&quot;osg-ss-glidein&quot;}%
+   * Local UCL_USER = %URLPARAM{&quot;INPUT_USER&quot; encode=&quot;quote&quot; default=&quot;user&quot;}%
+   * Local UCL_DOMAIN = %URLPARAM{&quot;INPUT_DOMAIN&quot; encode=&quot;quote&quot; default=&quot;chtc.wisc.edu&quot;}%
+   * Local UCL_CWD= %URLPARAM{&quot;INPUT_CWD&quot; encode=&quot;quote&quot; default=&quot;~/osg_school/glideins&quot;}%
+   * Local UCL_SITES = %URLPARAM{&quot;INPUT_SITES&quot; encode=&quot;quote&quot; default=&quot;Wisconsin,UNL,UCSD,Oklahoma,Chicago&quot;}%
+--&gt;
+
+---+ Submission node
+
+The submission node is %UCL_HOST%.
+
+Login with &lt;pre class=&quot;screen&quot;&gt;
+ssh %UCL_USER%@%UCL_HOST%.%UCL_DOMAIN%
+&lt;/pre&gt;
+
+It shares most of the relevant directories with osg-ss-submit, so you should be able to run most of the Monday&#39;s exercises from here as well.
+
+Suggestion:&lt;br&gt;
+Make a directory for this exercise in%UCL_CWD%.
+&lt;pre class=&quot;screen&quot;&gt;
+mkdir -p %UCL_CWD%
+&lt;/pre&gt;
+
+---+ The glideinWMS system policy
+
+As explained in the lecture, the matchmaking policy in glideinWMS is defined by the system administrators. For this School, the matchmaking policy is as follows:
+   * Jobs without any additional attributes will run on OSG site, but not locally.
+   * If a job defines &lt;pre&gt;
++OFFSITE_ONLY = False
+&lt;/pre&gt;it will run on all OSG resources, including the local cluster here in Wisconsin.
+   * The job can further restrict which sites it is willing to run, by defining &lt;pre&gt;
++DESIRED_SITES = &quot;&amp;lt;list of sites&amp;gt;&quot;
+&lt;/pre&gt;with the available sites being %UCL_SITES%&lt;br&gt;e.g. &lt;pre class=&quot;screen&quot;&gt;
++DESIRED_SITES = &quot;UCSD,UNL&quot;
+&lt;/pre&gt;
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Other knobs&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+Other knobs:
+   * Not all sites have BLAST installed. If you want to restrict your jobs to only sites with BLAST pre-installed, set&lt;pre&gt;
++REQUIRE_BLAST = True
+&lt;/pre&gt;
+%ENDTWISTY%
+
+All attributes are case sensitive.
+
+---+ A Condor submit system
+
+Remember, glideinWMS is based on Condor.
+So the system looks like pretty much like any other Condor system.
+
+You will use the standard Condor commands:
+&lt;pre class=&quot;screen&quot;&gt;
+condor_q
+condor_status
+condor_history
+condor_rm
+&lt;/pre&gt;
+
+The glideinWMS specific details will be described during the exercises.
+
+---+ Customize this Document
+
+%ICON{&quot;warning&quot;}% %RED% Please change your user name and click on the Customize button!%ENDCOLOR%
+&lt;form action=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%WEB%/%TOPIC%&quot;&gt;
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Login Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_USER&quot; value=&quot;%UCL_USER%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Host Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_HOST&quot; value=&quot;%UCL_HOST%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Domain Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_DOMAIN&quot; value=&quot;%UCL_DOMAIN%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Exercise Path
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_CWD&quot; value=&quot;%UCL_CWD%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+     &amp;nbsp;
+     &lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;Customize&quot; /&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/form&gt;
+
+-- Main.RobQ - 27 Jul 2012

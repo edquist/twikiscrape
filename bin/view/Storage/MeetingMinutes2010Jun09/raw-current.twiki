@@ -1,0 +1,173 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Brian Bockelman
+   * Ted Hesselroth
+   * Neha Sharma
+   * Doug Strain
+   * Tanya Levshina
+
+
+---+++ Guests
+   * Robert Engel
+
+
+---++ Status report
+&lt;!-- DESCRIPTION --&gt;
+Abhishek:
+&lt;pre class=&quot;screen&quot;&gt;
+no report
+&lt;/pre&gt;
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* Release
+  - bestman2, bestman-client, srmtester3 distribution packages
+&lt;/pre&gt;
+
+Doug:
+&lt;pre class=&quot;screen&quot;&gt;
+- Creation of Pigeon Tools (TM), a collection to verify storage element functionality for engage vo, and possibly others.
+- Development of first alpha version completed, now refining and testing.
+- Helping Horst Severini with RSV Probes
+&lt;/pre&gt;
+
+Neha:
+&lt;pre class=&quot;screen&quot;&gt;
+
+- Built gratia probes for versions 1.06.15p-1
+- Went through Tanya&#39;s doc on creating the package and started work on new script to automate it
+- On gridworks - upgraded probes, re-did postgres configuration
+- Modified siteinfo.conf, validate.py and gratia install and dcache core operations rpm install scripts to enable user to set value of Summarize
+- Cleaned up siteinfo.conf
+- Tested the latest tarball on fg0x6 couple of times. Troubleshooted problems.
+- Email exchange with Alex w.r.t getting him started to use gridworks
+- Tickets
+&lt;/pre&gt;
+
+Ted
+&lt;pre class=&quot;screen&quot;&gt;
+Investigated Storage Management and Catalog capabilities of iRODS.
+
+Considered workflow of merging of job output data based on catalog info,
+as in the LSST case. Wrote example metadata for definition of datasets
+and subsequently read data from iCAT with iRODS SQL client.
+
+Brought Discovery Tool documentation up to date with current release.
+&lt;/pre&gt;
+
+Tanya
+&lt;pre class=&quot;screen&quot;&gt;
+Meetings: 
+               with Alain
+               with Ted
+               docteam telecon
+               organized by Matt in preparation for WLCG jamboree
+
+
+   Technical work:
+              Prepared vdt-dcache for release:
+                      discussed various issues with siteinfo.conf &amp; INSTALL with Neha
+                      built vdt-dcache 3.0.0 (dcache 1.9.5-19 with chimera and gartia probes 1.06.15p-1)
+                      wrote the document describing the process of building the release
+                      tested installation on SL5_64
+                      released vdt-dcache to ITB  (updated http://vdt.cs.wisc.edu/components/dcache.html), notified ITB  team
+              Read documentation related to WLCG jamboree
+              Discussed the schedule of VDT release with Alain and Alex
+              Discussed pigeon tools rational with Ruth, Alain and Dan
+              Commented on issues found reviewing pigeon tools web results 
+              Reviewed and commented on Alain&#39;s submission for OSG NFS Annual Report
+              Assigned missing tester/reviewers for OSG storage documentation
+              Wrote/Tested FileFinder class that allows to get tar files name for specified files. Work needs to be done on manifest creation (waiting for final approval from Miron &amp; Ruth)
+               Installed/tested xrootd on SL5_64 in order to test security enabled xrootd.
+             
+&lt;/pre&gt;
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+Pigeon tools
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+Doug is done with the first phase of the prototype (https://gw014k0.fnal.gov:8443/gip). The following improvements/fixes have been discussed during the meeting:
+   1. it looks like in some cases, test is not repeated after failure (globus_url_copy_Firefly - last time ran 	2010-06-08 10:33:01)
+   1. srmmkdir test should reports warning if test directory is already exists 
+   1. the specified VO should be a parameter to generator and not hardcoded
+   1. classic SE should be distinguished from srm-SE
+   1. it will be nice if the web page allows to add link to GOC ticket number based on the discovered problem
+   1. source code should be under source control (asked Alain for vdt svn module, put in Fermilab cvs right now)
+   1. continue work on documentation (http://home.fnal.gov/~dstrain/testing.html)
+
+
+---++ Second Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+
+IRODS evaluation
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+Ted is investigating IRODS catalog capability. He has encountered several minor problems. Will  move to discovery and management after that. He is keeping the list with all the questions and potential requests for IRODS group. He would work on the proof-of-concept demo. As soon as demo is working we should try to organize meeting with IRODS developers and go through the list.  
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+vdt-dcache 3.0.0
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+New [[http://vdt.cs.wisc.edu/components/dcache.html][dCache with enabled Chimera] is released to ITB. The release also contains new transfer and storage probes. The tar files of standalone probes were  upload to VDT as well.
+
+Chris has notified us that new gratia common code is available. We will wait for ITB  feedback before starting work on the new release.
+
+Igor has started to run a new stress tests vs dCache on gridwork. We have modified all the parameters and options recommended by dcache team (including tuning postgres). We have also are using dcache.kpwd for authorization for this test. We will use GUMS when we rerun the test. 
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Documentation
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+People should start working on documentation in their queue. Rob has asked Doug to follow installation documentation template for RSV storage probes. Doug will work on improving documentation.
+
+---++ Fifth agenda item
+&lt;!-- DESCRIPTION --&gt;
+upcoming VDT release
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+We are expecting the following for upcoming VDT releases:
+
+   1. srm-fermi  client 1.9.5-16  with java 1.6
+   1. Xrootd transfer and storage probes
+   1. RSV srmtester probes
+   1. !BeStMan2 - we have asked Abhishek to add it to bestman/hdfs rpms. Doug may install it on bestman/hdfs teststand as soon as it is ready. 
+
+---++ Sixth agenda item
+&lt;!-- DESCRIPTION --&gt;
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Doug has received the first ticket regarding RSV storage probe - congratulations! Neha will help him to get GOC access.
+
++++++++++
+New tickets
++++++++++
+
+Closed:
+
+8712 - OSG Storage: dCache: Problem on Chimera headnode visible in Postgresql DB?
+
+++++++++
+Old tickets
+++++++++
+
+Follow up in progress:
+
+8602 - OSG Storage: dCache: Replication Failure
+
+8630 - OSG Storage: dCache: &quot;[CONNECTION_ERROR]&quot; from FTS to our dCache/SRM headnode
+
+No update:
+
+8603 - OSG Storage: dCache: Increasing Log level on Gridftp doors/Specify Pinboard Dump directory
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 09 Jun 2010

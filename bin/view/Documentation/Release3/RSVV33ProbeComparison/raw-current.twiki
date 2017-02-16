@@ -1,0 +1,136 @@
+---+ Comparing old and new !RSV probes
+
+Both of these probes run vdt-version. In the old probe, note the explicit invocation of globus-job-run:
+
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td width=30% valign=top&gt;
+---++ An old-style probe
+
+&lt;pre class=&quot;screen&quot;&gt;
+#!/usr/bin/env perl
+
+###############################################################################
+##
+## Copyright 2009, The Trustees of Indiana University. 
+##
+## Open Science Grid Operations Team, Indiana University
+## Original Author(s): Thomas Wang, Arvind Gopu
+##
+## Type ./vdt-version-probe -h for more information
+##
+## REQUIRES
+##  &#39;RSV::Probe_Base&#39;
+##
+################################################################################
+
+######## Perl modules to use ######################################
+use strict;
+use RSVProbeBase;
+
+######## Retrieve Global variables ################################
+## And alias to RSV::Probe_Base variables
+our %o;         *o         = \%RSVProbeBase::o;      
+our %metric;    *metric    = \%RSVProbeBase::metric;
+
+&amp;RSVProbeBase::Init();
+&amp;RSVProbeBase::Run();
+
+################################################################################
+## Main Program ends ##
+################################################################################
+
+
+################################################################################
+## Local Sub-Routines
+################################################################################
+
+sub Init {
+
+    &amp;RSVProbeBase::Set_MetricName (&quot;org.osg.general.vdt-version&quot;);
+
+    ## Pass &quot;status&quot; or &quot;performance&quot; depending on metric type
+    &amp;RSVProbeBase::Set_MetricType (&quot;status&quot;);
+    &amp;RSVProbeBase::Set_ServiceType (&quot;OSG-CE&quot;);
+    &amp;RSVProbeBase::Set_ServiceVersion (&quot;&gt;= OSG CE 0.8.0&quot;);
+    &amp;RSVProbeBase::Set_ProbeType (&quot;OSG-CE&quot;);
+
+    ## Should automating tools run this probe on above probeType by default?
+    &amp;RSVProbeBase::Set_EnableByDefault (&quot;true&quot;);
+    
+    ## Unix cron type metric interval
+    &amp;RSVProbeBase::Set_MetricInterval (&quot;47 18 * * *&quot;);
+
+    ## Define this value from RCS/SVN version
+    ## What version of the WLCG specification does this probe conform to?
+    &amp;RSVProbeBase::Set_ProbeRevision (&#39;3.0&#39;);
+    &amp;RSVProbeBase::Set_ProbeSpecVersion (&quot;0.91&quot;);
+
+    ## Basic intro for the probe; This string will be used by Print_Usage ()
+    &amp;RSVProbeBase::Set_ProbeHelpIntro (&quot;Probe to report the version of vdt stack running on remote host.&quot;);
+
+    ## Additional options to print in Usage info used by Print_Usage ()
+    ## &amp;RSVProbeBase::Set_ProbeHelpOptions (&quot;&quot;);
+
+    ## Uncomment if you want additional command line options
+    ## &amp;RSVProbeBase::Extra_CLI_Option (&quot;ping-count=i&quot;,&quot;pingCount&quot;);
+
+    ## Uncomment if you do not want detailsData to be trimmed to $o{&#39;detailsDataMaxLength}
+    &amp;RSVProbeBase::Set_DetailsDataTrim (&quot;False&quot;);
+}
+
+
+sub Run {
+    &amp;RSVProbeBase::Get_Remote_Env();
+    &amp;RSVProbeBase::Globus_Job_Run (&quot; $o{&#39;vdtversionCmd&#39;} 2&gt;&amp;1 &quot;, &quot;backtick&quot;);
+    &amp;RSVProbeBase::Print_Metric();
+}
+&lt;/pre&gt;
+&lt;/td&gt;
+&lt;td width=10%&gt;&lt;/td&gt;
+&lt;td width=30% valign=top&gt;
+---++ A new style probe
+&lt;pre class=&quot;screen&quot;&gt;
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+# We assume we have the normal environment for a fork job here. It has
+# $OSG_LOCATION but not $VDT_LOCATION
+
+print &quot;RSV BRIEF RESULTS:\n&quot;;
+
+my $vdt_location = $ENV{OSG_LOCATION};
+my $vdt_version = &quot;$vdt_location/vdt/bin/vdt-version&quot;;
+
+if (! -x $vdt_version) {
+    print &quot;CRITICAL\n&quot;;
+    print &quot;Can&#39;t find vdt-version!\n&quot;;
+    dump_debug();
+}
+else {
+    my $version_out = `$vdt_version -vdt-location $vdt_location 2&gt;&amp;1`;
+    if ($? == 0) {
+        print &quot;OK\n&quot;;
+        print $version_out;
+    } 
+    else {
+        print &quot;CRITICAL\n&quot;;
+        print $version_out;
+        dump_debug();
+    }
+}
+
+exit 0;
+
+sub dump_debug
+{
+    print STDERR &quot;vdt_location = $vdt_location\n&quot;;
+    print STDERR `/usr/bin/env`;
+    return;
+}
+&lt;/pre&gt;
+&lt;/td&gt;
+&lt;tr&gt;
+&lt;/table&gt;

@@ -1,0 +1,286 @@
+---+!! %SPACEOUT{ &quot;Upgrading Fetch-Crl 2 to Fetch-Crl 3 on EL5 (draft)&quot; }%
+
+---+!! This is a DRAFT and will be deleted soon. The document is now available at Documentation/Release3.UpgradeFetchCrl2to3
+
+%DOC_STATUS_TABLE%
+%TOC{depth=&quot;3&quot;}%
+
+---# About This Document
+
+This document is intended for a system administrator upgrading the OSG Software Stack Version 3 from pre-3.1.15 to 3.1.15 or higher on an Enterprise Linux 5 system.
+
+The version of Fetch-CRL version 2, which is the version of Fetch-CRL that is normally installed on Enterprise Linux 5 systems is outdated and is unlikely to receive updates. Therefore, starting with release 3.1.15, the OSG Software stack will require Fetch-CRL 3 instead of Fetch-CRL 2 for software that requires CRLs.
+
+Because the configuration format has changed between versions, some manual work is required to migrate the configuration before the change will take effect.
+
+
+---# Requirements
+
+An installation of the OSG Software Stack Version 3, with Fetch-CRL 2 is required for this procedure. You may test for that by running =rpm -q fetch-crl=, which prints out the name and version of the =fetch-crl= package.
+
+If you are using an Enterprise Linux 6 system, or Fetch-CRL 2 is not installed,
+then this procedure is unnecessary.
+
+---# Procedure
+
+Fetch-CRL 3 can be installed side-by-side with Fetch-CRL 2.
+Because of this, and the fact that configuration has to be migrated, from Fetch-CRL 2 to Fetch-CRL 3, the installation procedure is as follows:
+   1. Install Fetch-CRL 3
+   1. Migrate configuration
+   1. Disable and stop Fetch-CRL 2
+   1. Validate operation of Fetch-CRL 3
+   1. Enable Fetch-CRL 3
+   1. Uninstall Fetch-CRL 2
+All of this can be done without any downtime.
+
+The step-by-step procedure follows:
+
+---## Install Fetch-CRL 3
+
+Install the RPM named =fetch-crl3=. This will be done on an update to OSG-Software 3.1.15 or higher. If are not updating from an earlier version of OSG-Software and thus have no Fetch-CRL 2 configuration to migrate, you may skip to the [[#3_4_Validate_Fetch_CRL_3_operati][section marked &quot;Validate operation of Fetch-CRL 3.&quot;]]
+
+---## Migrate the configuration
+
+There are two parts to this: migrating changes to the cron job (in
+=/etc/cron.d/fetch-crl=), and migrating changes to the configuration (in
+=/etc/fetch-crl.conf=).
+
+---+++!! Migrating cron job
+
+If any changes were made to the =/etc/cron.d/fetch-crl= file, then see
+if those changes need to be migrated in =/etc/cron.d/fetch-crl3=.
+
+One way to determine if =/etc/cron.d/fetch-crl= was changed from the installed
+version is to run the following:
+&lt;pre&gt;
+rpm --verify --nouser --nogroup fetch-crl | grep /etc/cron.d/fetch-crl
+&lt;/pre&gt;
+That command should display no output if the file was unmodified.
+
+A typical argument that is added onto the =fetch-crl= command line is =--randomwait= (or its abbreviation, =-r=). This parameter determines the maximum length of time to wait for before starting to download CRL files. The intent of this is to reduce load spikes on the servers hosting the CRLs.
+%NOTE% For Fetch-CRL 2, that argument was given in minutes, but in Fetch-CRL 3, it should be given in seconds.
+
+---+++!! Migrating configuration file
+
+Edit =/etc/fetch-crl3.conf= as desired, see the translation table below on how to migrate customizations made in =/etc/fetch-crl.conf= to =/etc/fetch-crl3.conf=. Also see the example file below the translation table.
+
+---++++!! Configuration Translation
+
+| *fetch-crl.conf* | *fetch-crl3.conf* |
+|&lt;code&gt;ALLWARNINGS=yes&lt;/code&gt; | No equivalent; see the =nowarnings= and =verbosity= options to achieve the same results (1) |
+|&lt;code&gt;CACHEDIR=/var/cache/fetch-crl&lt;/code&gt; |&lt;code&gt;statedir = /var/cache/fetch-crl3&lt;/code&gt; |
+|&lt;code&gt;CACHEDIR=&lt;/code&gt; (disables cache) |&lt;code&gt;nocache&lt;/code&gt; or &lt;code&gt;stateless&lt;/code&gt; (2) |
+|&lt;code&gt;CRLDIR=/etc/grid-security-certificates&lt;/code&gt; |&lt;code&gt;infodir = /etc/grid-security/certificates&lt;/code&gt; |
+|&lt;code&gt;CRL_AGING_THRESHOLD=24&lt;/code&gt; |&lt;code&gt;agingtolerance = 24&lt;/code&gt; |
+|&lt;code&gt;FETCH_CRL_OPENSSL=/usr/bin/openssl&lt;/code&gt; |&lt;code&gt;openssl = /usr/bin/openssl&lt;/code&gt; |
+|&lt;code&gt;FORCE_OVERWRITE=yes&lt;/code&gt; | No equivalent; this is always on |
+|&lt;code&gt;HTTP_PROXY=...&lt;/code&gt; |&lt;code&gt;http_proxy = ...&lt;/code&gt; (3) |
+|&lt;code&gt;QUIET=yes&lt;/code&gt; |&lt;code&gt;verbosity = 0&lt;/code&gt; (1) |
+|&lt;code&gt;RESETPATHMODE=yes&lt;/code&gt; |&lt;code&gt;path = /bin:/usr/bin&lt;/code&gt; (4) |
+|&lt;code&gt;RESETPATHMODE=searchopenssl&lt;/code&gt; | No equivalent (4) |
+|&lt;code&gt;SERVERCERTCHECK=no&lt;/code&gt; | No equivalent; the server cert is never checked (5) |
+|&lt;code&gt;SLOPPYCRLHASHES=yes&lt;/code&gt; | No equivalent |
+|&lt;code&gt;SYSLOGFACILITY=daemon&lt;/code&gt; |&lt;code&gt;syslogfacility = daemon&lt;/code&gt; |
+|&lt;code&gt;WGET_OPTS=...&lt;/code&gt; | No equivalent |
+|&lt;code&gt;WGET_RETRIES=2&lt;/code&gt; | No equivalent |
+|&lt;code&gt;WGET_TIMEOUT=120&lt;/code&gt; |&lt;code&gt;httptimeout = 120&lt;/code&gt; |
+
+   1. Setting &lt;code&gt;nowarnings = 1&lt;/code&gt; in the =fetch-crl3.conf= silences a few warnings, mostly about not being able to execute openssl commands.%BR%
+      The &lt;code&gt;verbosity&lt;/code&gt; variable, which is an integer from -1 to 7, is a more fine-grained way of controlling the amount of output.%BR%
+      The default &lt;code&gt;verbosity&lt;/code&gt; is 0.
+   1. &lt;code&gt;nocache&lt;/code&gt; disables caching of CRLs, while &lt;code&gt;stateless&lt;/code&gt; also disables saving metadata (such as last update time).
+   1. To set the HTTP proxy, you may also add the =HTTP_PROXY= variable to =/etc/sysconfig/fetch-crl3= and add &lt;code&gt;http_proxy = ENV&lt;/code&gt; to =fetch-crl3.conf=
+   1. The =$PATH= used internally in the script can now be explicitly specified by setting the =path= variable in the =fetch-crl3.conf= file.%BR%
+      =searchopenssl= was primarily used to find a copy of openssl in a non-standard location, such as under the Globus hierarchy.
+   1. The CRLs themselves are signed, so checking the server cert is unnecessary and may give false positives for security warnings.%BR%
+      If you still want to check, perform the following:
+      1. yum install the package =perl-Crypt=SSLeay=
+      1. Edit or create =/etc/sysconfig/fetch-crl3= and set the variable =HTTPS_CA_FILE= to the CA cert you want to check the server cert against.
+
+
+See also =/usr/share/doc/fetch-crl3-*/fetch-crl.conf.example=
+
+Example =fetch-crl3.conf= file, based on the default configuration file shipped with fetch-crl 2.8.5 in the EPEL 5 repository:
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show...&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;verbatim class=&quot;file&quot;&gt;
+# Configuration file for fetch-crl 3.0.x
+
+# Directory containing .crl_url files and output directory
+
+info_dir = /etc/grid-security/certificates
+verbosity = 0
+nowarnings
+
+# The time in hours for which CRL download failures are accepted
+# without printing an error (instead, a warning is generated)
+# Default=24hours (used to be 0 for versions &lt;= 2.6.6).
+#agingtolerance = 24
+
+# What do we set the path to? Uses $PATH in environment by default.
+#path = /bin:/usr/bin
+
+# Write messages also to syslog using logger(1) if and only if the facility
+# name is set. When empty, no syslog messages are generated. Default is
+# empty. For valid facility values see logger(1)
+#syslogfacility = 
+
+# Path to an explicit OpenSSL version to use. Default will look through
+# the path.
+#openssl = &lt;path&gt;
+
+# Path of a download cache directory, *exclusively writable by the user
+# running fetch-crl*, where the original downloads are stored. The
+# cache is used unless &quot;nocache&quot; or &quot;stateless&quot; are set. Default is a cache
+# in &quot;/var/cache/fetch-crl3&quot; if that exists.
+# You will need to manually create this directory first with proper permissions
+#statedir=/var/cache/fetch-crl3
+
+# What http proxy to use. By default, no proxy is used. If set to &quot;ENV&quot;, then
+# the value of the HTTP_PROXY environment variable (in the environment
+# fetch-crl3 is run) is used. This environment variable is often set in
+# &quot;/etc/sysconfig/fetch-crl3&quot;, which does not exist by default.
+#http_proxy = ENV
+#http_proxy = http://myproxy.domain.com:8080
+
+&lt;/verbatim&gt;
+%ENDTWISTY%
+
+---## Disable and stop Fetch-CRL 2
+
+This involves running the following commands:
+&lt;pre class=&quot;rootscreen&quot;&gt;
+service fetch-crl-boot disable
+service fetch-crl-cron disable
+&lt;/pre&gt;
+
+If fetch-crl is running (which can be tested by running =ps axuw= and looking for the process =fetch-crl=), wait for it to finish. You may kill the process, but that might end up leaving incomplete CRL files behind, so it is not recommended.
+
+---## Validate Fetch-CRL 3 operation
+
+This is done by running =/usr/sbin/fetch-crl3= from the command line.  It
+should take a few minutes to download updated CRLs from various sites; with the
+default configuration, it should produce no output. Run
+&lt;code&gt;ls -l /etc/grid-security/certificates/*.r0&lt;/code&gt;
+and examine the timestamps to make sure that new CRLs have actually been
+downloaded.
+
+---## Enable Fetch-CRL 3
+
+This involves running the following commands:
+&lt;pre class=&quot;rootscreen&quot;&gt;
+service fetch-crl3-boot enable
+service fetch-crl3-cron enable
+&lt;/pre&gt;
+
+---## Remove Fetch-CRL 2
+
+If you have Fetch-CRL 2 installed, and are satisfied that Fetch-CRL 3 works, then remove Fetch-CRL 2 by running =yum erase fetch-crl=
+
+=yum= should not be trying to remove any packages other than =fetch-crl= (i.e. there should be no section in the table yum produces marked &quot;Removing for dependencies&quot;). If this is not true, stop and verify that you have fully updated your installation to 3.1.15 or higher.
+
+
+---# New Commands
+Please note that after installing fetch-crl3 all the commands to start, stop, enable and disable the fetch-crl service will be different:
+
+%STARTSECTION{&quot;OSGBriefFetchCrlStart&quot;}% To start the fetch-crl service to keep the CRLs up to date:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /usr/sbin/fetch-crl3   # This fetches the CRLs 
+%UCL_PROMPT_ROOT% /sbin/service fetch-crl3-boot start
+%UCL_PROMPT_ROOT% /sbin/service fetch-crl3-cron start
+&lt;/pre&gt; %IF{&quot;$ TOPIC != &#39;InstallCertAuth&#39;&quot; then=&quot;For more details and options, please see our [[Documentation.Release3.InstallCertAuth#Managing_Certificate_Revocation][CRL documentation]].&quot; else=&quot;&quot;}%  %ENDSECTION{&quot;OSGBriefFetchCrlStart&quot;}%
+
+%STARTSECTION{&quot;OSGBriefFetchCrlEnable&quot;}% To enable the fetch-crl service to keep the CRLs up to date after reboots:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /sbin/chkconfig fetch-crl3-boot on
+%UCL_PROMPT_ROOT% /sbin/chkconfig fetch-crl3-cron on
+&lt;/pre&gt; %ENDSECTION{&quot;OSGBriefFetchCrlEnable&quot;}%
+
+
+%STARTSECTION{&quot;OSGBriefFetchCrlStop&quot;}% To stop fetch-crl:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /sbin/service fetch-crl3-boot stop
+%UCL_PROMPT_ROOT% /sbin/service fetch-crl3-cron stop
+&lt;/pre&gt; %IF{&quot;$ TOPIC != &#39;InstallCertAuth&#39;&quot; then=&quot;For more details and options, please see our [[Documentation.Release3.InstallCertAuth#Managing_Certificate_Revocation][CRL documentation]].&quot; else=&quot;&quot;}%  %ENDSECTION{&quot;OSGBriefFetchCrlStop&quot;}% %ENDSECTION{&quot;OSGBriefFetchCrlStartStop&quot;}%
+
+%STARTSECTION{&quot;OSGBriefFetchCrlDisable&quot;}% To disable the fetch-crl service:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /sbin/chkconfig fetch-crl3-boot off
+%UCL_PROMPT_ROOT% /sbin/chkconfig fetch-crl3-cron off
+&lt;/pre&gt; %ENDSECTION{&quot;OSGBriefFetchCrlDisable&quot;}%
+
+
+
+---# Getting Help
+To get assistance please use this [[HelpProcedure][Help Procedure]].
+
+---# References
+
+   * [[InstallCertAuth][Installing Certificate Authorities Certificates and related RPMs]]
+
+---# Comments
+
+%COMMENT{type=&quot;tableappend&quot;}%
+
+
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = MatyasSelmeci
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|General|Trash/Trash/Integration|Monitoring|Operations|Security|Storage|Trash/Tier3|User|VO)
+   * Local DOC_AREA       = General
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (Developer|Documenter|Scientist|Student|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (HowTo|Installation|Knowledge|Navigation|Planning|Training|Troubleshooting)
+   * Local DOC_TYPE       = HowTo
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = MarcoMambelli
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = SuchandraThapa
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+############################################################################################################
+--&gt;
+
+
+&lt;!-- vim:ft=twiki
+--&gt;
+

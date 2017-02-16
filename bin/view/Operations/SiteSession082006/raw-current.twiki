@@ -1,0 +1,107 @@
+---+   OSG Consortium Meeting:  Parallel Session: Site and Fabric Installation and Configuration
+
+---++  Goals
+   *  Develop site and fabric requirements to be delivered to the OSG Executive team.  Working list in Trash.ReleaseDocumentationSiteFabricRequirements
+   * Review current best practices for site and fabric deployment, collected in SiteFabricBestPractices
+   *  Review current documentation list, identify what may be missing.  (Particular focus on issues which until now have been considered &quot;out of scope&quot; of the OSG CE Installation guide).  See SiteFabricDocumentationTable for documents identified thus far.
+   *  Develop a work plan to create and improve the documentation set which is provided by the Trash/Trash/Integration activity.   Draft plan is in SiteFabricDocumentationWorkPlan.
+
+---++ Ungoals
+   * Security (covered in other parallel session)
+   * Support centers (covered in detail last meeting)
+   * Storage and data management (covered in other parallel sessions)
+
+---++ Location and Attendance
+   * Location--Physics and Astronomy Complex, room A214
+   * Time--Monday Aug 21 4:30-6:30
+---+++  Attendance
+Present at the session: Steven Timm Fermilab Leigh Grundhoefer UW/IU Dan Riley Cornell Murali Ramsunder, PSU Greg Cross U of C Alain Roy, VDT/ UW David Meyers Caltech/LIGO Rob Gardner UofC? Razvan Popescu BNL Iwona Sakrejda LBNL Frank Wuerthwein UCSD Eileen Beman FNAL Rob Quick IU Michael Thomas, Caltech, H. Severini, OU, Mark Green, Buffalo, Kevin Buterbaugh, Vanderbilt, Ilya Narsky, Caltech, David Braun, Purdue
+
+
+---++ Agenda
+
+
+| *Start* | *Duration*  |  *Description*  |  *Who*  | *Location* |
+| *4:30* | 15min | Site Administrator duties within the OSG and Software Release| Leigh | A214 |
+| *4:45* | 20min | [[http://osg-docdb.opensciencegrid.org/cgi-bin/RetrieveFile?docid=455][Best practices for CE installation and interactions with local batch systems]] | Steve Timm | A214 |
+| *5:05* | 15min | Trash/Deployment Experiences |  Razvan Popescu | A214 |
+| *5:20* | 10min | %GREEN%break |||
+| *5:30* | 30min | Documentation Improvements and Troubleshooting procedures | David Meyers and Shaowen Wang | A214 |
+| *6:00* | 25min | Batch System configuration and policies | Various | A214 |
+| *6:25* |  5min | Wrap-up | Various | A214 |
+
+We divided the session into three main parts, as seen in the above table.  More explanation of the parts of the session are given below.  On this page is a stream-of-consciousness record of the brainstorming.  After the session it was organized into
+some of the other documents that are linked off of this.
+
+---+++  Site Overview and Trash/Deployment Best Practices Discussion
+
+   *  Current Duties and Best Practices  Steve Timm and Leigh Grundhoefer
+   *  The talks listed in the first half of the meeting are meant to spark discussion on these topics and  time will be given for discussion after each.
+   *  Among topics covered here will be input to the VDT team for requirements on software updates.  Alain Roy of VDT team will be present.
+   *   Two important documents in DOCDB, one is the OSG 0.4.1 CE best practices and the second one is NFS-Lite
+[[http://osg-docdb.opensciencegrid.org/0003/000379/001/ComputeElement.pdf]]
+[[http://osg-docdb.opensciencegrid.org/0003/000382/001/ComputeElement.pdf]]
+---++++  Discussion--Leigh&#39;s talk
+   * What is the purpose of Squid--for download of tarballs, not as frontend for redundant service.
+   * Validation--GIP, how often does it check, 1 hour, sites are supposed to check if they are red--should make GIP error a ticketable thing from the GOC now that it is required.
+   * Comments--should know why are we red in case of failure
+   * [[%ATTACHURL%/osg-site-overview.ppt][osg-site-overview.ppt]]: Leigh&#39;s OSG Software talk
+---++++  Discussion--Steve&#39;s Talk
+   * Greg--how to keep GUMS alive, no experts here, see K. Chadwick&#39;s talk in campus grids tomorrow, others say GUMS fix is being worked on but not here yet.  Most who are getting through are monitoring tomcats closely and restarting if necessary.  Trash.ReleaseDocumentationCareAndFeedingOfTomcat is a topic in this twiki that needs to be filled in.
+   * Alain--WSgram will still need NFS too, just substitute gridftp from globus-gass-server
+   * GIP discussion--issue is that default GIP configuration will show total number of free cpu&#39;s on a cluster even if only a few of those are available to a given VO.  It can and does lead to LCG VO&#39;s submitting high number of jobs--if you are visible to the LCG, also to lots of resource brokers (97 currently in LCG) polling your GRIS at high intervals.
+   * Central submit node?  Steve suggested this in talk, several others disagreed, not enough time to discuss pros and cons.
+   * Tracing jobs--Alain points out that the matching of condor job ID to globus-job-manager PID can be done in $VDT_LOCATION/globus/var/accounting.log
+---++++  Discussion--Razvan&#39;s Talk
+   * Horst--some requirements, running with shared-nothing file systems for ATLAS, can it be done, more discussion of nfs-lite
+   * Rob, others, are the glite rpms razvan showed all necessary, can some of the file transfer utilities in vdt/globus stack be used instead, maybe but have to interoperate with EGEE which is using these glite ones.  See ATLAS wish list, linked above.
+---+++Alain Roy, VDT Updates
+   *  What do people need to upgrade the full VDT to a new version?
+   *  pacman -update or something else?
+   *  Configuration transfer, from one directory to another?
+   *   What to do with patches, need ways to roll in, roll out.
+   *  Several comments in favor of new install but with configuration auto-transfer if possible.  (Iwona, Eileen).
+   *  Run 2 simultaneously on same host, alternate ports?  Most people think not, better to go back and forth.
+   *  What to do with running jobs
+   *  Can some vdt configuration be cached outside of VDT_LOCATION (accidental deletes)
+   *  vdt_app_data is intended for this but not used by all applications yet
+   * Consensus from this group seemed to be the following:
+   *  %RED% For VDT/OSG upgrades, VDT will be set up so that you can install it into a new directory, with one command switch new one on, turn old one off, and reverse the process if necessary.
+   *  For small patches such as the coming Globus security patch, will make a small patch that can be installed on top of existing VDT directory and rolled back out if necessary
+   *  Alain will formalize these suggestions and write them up, further discussion in VDT office hours and on mailing lists
+   *  Best way to handle versioning, make the main directory have a versioned name, such as /usr/local/vdt-1.3.10, /usr/local/vdt-1.3.11, switch between them by making /usr/local/vdt be a soft link to the one you want.  %ENDCOLOR%
+   *  OSG-specific software not included in VDT will build on whatever VDT does.
+   *  At this time it was about 6:25 and the other two topics below didn&#39;t get their full discussion.  Some discussion happened and the brainstorming ideas that came up are mentioned below.
+---+++ Documentation and Troubleshooting Discussion
+   * This section will not have a formal presentation but will be a facilitated discussion.
+   * David Meyers and Shaowen Wang will lead out
+   * Any changes or additions to the Trash/Trash/Integration set of documentation that we identify will be marked directly in the Trash/Trash/Integration twiki set.
+   * Monitoring--what to do with non-osg jobs, makes MIS-CI, monalisa run too slow
+      * [[http://osg.ivdgl.org/twiki/bin/view/Trash/Trash/Trash/Trash/Integration/DocumentationTable050][ITB Docs]]
+   *  Heterogeneous cluster--how to declare, what does a cpu-hour mean
+   *  Policy--no good way to see what policy is from the GIP
+   *  Do we need to split a monitoring box off?
+---+++Batch System Configuration Discussion
+   * Condor (Steve Timm, others)
+   * SGE (Iwona Sakrejda)
+   * LSF
+   * PBS (Murali Ramsunder)
+   * how to indicate case of site full of scavenger jobs, which OSG could preempt
+   * how to show, declare, advertise batch system policies
+   * Problem expressed--users discouraged because of site policies against very short, very long jobs
+   * problems of blackhole nodes--how to get info back to job-submitting robots
+   * minimal Condor install documentation, for either user Condor-G submit client or managedfork
+ 
+---+++Wrap-up
+   * Action items reviewed (5 minutes).
+   * OSG/VDT installation help--experts at this session will arrange to meet afterwards one on one with people that need help.
+   * Discuss options and implementation for OSG and VDT version updates.  Informal discussion can continue afterward with members of VDT team that will be present.
+
+
+
+-- Main.LeighGrund - 03 Aug 2006
+-- Main.LeighGrund - 15 Aug 2006
+
+Set ALLOWTOPICCHANGE = Main.LeighGrund, Main.StevenTimm, Main.IwonaSakrejda, Main.RobQ, Main.MuraliRamsunder
+
+

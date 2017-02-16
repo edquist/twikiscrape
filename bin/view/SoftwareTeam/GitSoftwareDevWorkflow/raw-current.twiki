@@ -1,0 +1,165 @@
+---+ Git software development workflow
+
+
+This document describes the development workflow for OSG software packages kept
+in !GitHub. It is intended for people who wish to contribute to OSG software.
+
+
+---++ Git and !GitHub basics
+
+
+If you are unfamiliar with Git and !GitHub, the !GitHub website has a good
+series of tutorials at https://help.github.com/categories/bootcamp/
+
+
+---++ Getting shell access to !GitHub
+
+
+There are multiple ways of authenticating to !GitHub from the shell.  This
+section will cover using SSH keys.  This is no longer the method recommended by
+!GitHub, but is easier to set up for someone with existing SSH experience.
+
+The instructions here are derived from [[https://help.github.com/articles/generating-an-ssh-key/][GitHub&#39;s own instructions on using SSH keys]].
+
+
+---+++ Creating a new SSH key (optional but recommended)
+
+If you already have an SSH keypair in your =~/.ssh= directory that you want to
+use for !GitHub, you may skip this step.  It is more secure, however, to create
+a new keypair specifically for use with !GitHub.
+
+The instructions below will create an SSH public/private key pair with the
+private key stored in =~/.ssh/id_github= and public key stored in
+=~/.ssh/id_github.pub=.
+
+---++++ Generating the key
+
+Use =ssh-keygen= to generate the SSH keypair.  For &lt;em&gt;EMAIL_ADDRESS&lt;/em&gt;,
+use the email address associated with your !GitHub account.
+
+&lt;pre class=&quot;screen&quot;&gt;ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_github -C &lt;em&gt;EMAIL_ADDRESS&lt;/em&gt;&lt;/pre&gt;
+
+---++++ Configuring SSH to use the key for !GitHub
+
+Make sure SSH uses the new key by default to access !GitHub.  Create or edit
+=~/.ssh/config= and append the following lines:
+
+&lt;pre class=&quot;file&quot;&gt;
+Host github.com
+IdentityFile &lt;em&gt;YOUR_HOME_DIR/.ssh/id_github&lt;/em&gt;
+&lt;/pre&gt;
+
+---+++ Adding the SSH public key to !GitHub
+
+Using the !GitHub web interface:
+
+   1. On the upper right of the screen, click on your profile picture
+   1. In the menu that pops up, click &quot;Settings&quot;
+   1. On the left-hand sidebar, click &quot;SSH and GPG keys&quot;
+   1. In the top right of the &quot;SSH keys&quot; box, click &quot;New SSH key&quot;
+   1. In the &quot;Title&quot; field of the dialog that pops up, enter a descriptive name for the key
+   1. Open the public key file (e.g. =~/.ssh/id_github.pub= (don&#39;t forget the =.pub=)) in a text editor and copy its full contents to the clipboard
+   1. In the &quot;Key&quot; field, paste the public key
+   1. Below the &quot;Key&quot; field, click &quot;Add SSH key&quot;
+
+You should see your new key in the &quot;SSH keys&quot; list.
+
+---+++ Testing that shell access works
+
+To verify you can authenticate to !GitHub using SSH, SSH to =git@github.com=.
+You should see a message that &#39;you&#39;ve successfully authenticated, but !GitHub
+does not provide shell access.&#39;
+
+---++ Contribution workflow
+
+
+We use the standard !GitHub [[https://help.github.com/articles/using-pull-requests/][pull request]] workflow for making contributions to OSG software.
+
+If you&#39;ve never contributed to this project on !GitHub before, do the following
+steps first:
+   1. Using the !GitHub web interface, &lt;!-- or curl if you&#39;re Carl --&gt;fork the repo you wish to contribute to.
+   1. Make a clone of your forked repo on your local machine.&lt;pre class=&quot;screen&quot;&gt;
+git clone git@github.com:&lt;em&gt;USERNAME&lt;/em&gt;/&lt;em&gt;PROJECT&lt;/em&gt;&lt;/pre&gt;
+      NOTE: If you get a &quot;Permission denied&quot; error, your public key may not be
+      set up with !GitHub -- please see the &quot;Getting shell access to !GitHub&quot;
+      section above.
+      %BR%
+      If you get some other error, [[https://help.github.com/categories/ssh/][the GitHub page on SSH]] may contain
+      useful information on troubleshooting.
+
+Once you have your local repo, do the following:
+   1. Create a branch to hold changes that are related to the issue you are
+      working on. Give the branch a name that will remind you of its purpose,
+      such as =sw2345-pathchange=.&lt;pre class=&quot;screen&quot;&gt;
+git checkout -b &lt;em&gt;BRANCH&lt;/em&gt;&lt;/pre&gt;
+   1. Make your commits to this branch, then push the branch to your repo on
+      !GitHub.&lt;pre class=&quot;screen&quot;&gt;
+git push origin &lt;em&gt;BRANCH&lt;/em&gt;&lt;/pre&gt;
+   1. Select your branch in the !GitHub web interface, then create a &quot;pull
+      request&quot; against the original repo. Add a good description of your change
+      into the message for the pull request. Enter a JIRA ticket number in the
+      message to automatically link the pull request to the JIRA ticket.
+   1. Wait for your pull request to be reviewed by a software team member.
+      * If the team member accepts your changes, they will merge your pull
+        request, and your changes will be incorporated upstream. You may then
+        delete the branch you created your pull request from.
+      * If your changes are rejected, then you may make additional changes to
+        the branch that your pull request is for. Once you push the changes
+        from your local repo to your !GitHub repo, they will automatically be
+        added to the pull request.
+
+
+---++ Release workflow
+
+This section is intended for OSG Software team members or the primary
+developers of a software project (i.e. those that make releases). Some of the
+steps require direct write access the !GitHub repo for the project owned by
+=opensciencegrid=. (If you can approve pull requests, you have write access).
+
+&lt;!--
+Before you release, you need to make sure your local clone is in sync with the
+AFS backup of the !GitHub repo at UW. This requires a UW CS login.
+
+   1. If you haven&#39;t already, add the UW repo as a &quot;remote&quot; to your repo:&lt;pre class=&quot;screen&quot;&gt;
+git remote add uw &lt;em&gt;USERNAME&lt;/em&gt;@&lt;em&gt;MACHINE&lt;/em&gt;:/p/condor/workspaces/vdt/git/repo/&lt;em&gt;PROJECT&lt;/em&gt;.git&lt;/pre&gt;
+      (where &lt;em&gt;USERNAME&lt;/em&gt; is your UW CS username (e.g. &quot;matyas&quot;),
+      &lt;em&gt;MACHINE&lt;/em&gt; is a machine you have access to (e.g.
+      &quot;library.cs.wisc.edu&quot;), and &lt;em&gt;PROJECT&lt;/em&gt; is the name of the project
+      you are releasing (e.g. &quot;osg-configure&quot;))
+   1. Fetch changes from the UW repo:&lt;pre class=&quot;screen&quot;&gt;
+git fetch uw&lt;/pre&gt;
+   1. Compare your branch you are releasing from (probably =master=) to its copy in the UW repo:&lt;pre class=&quot;screen&quot;&gt;
+git checkout master; git diff uw/master&lt;/pre&gt;
+      There should be no differences.
+--&gt;
+A release of a software is created from your local clone of a software project.
+Before you release, you need to make sure your local clone is in sync with the
+!GitHub repo owned by =opensciencegrid= (the OSG repo):
+
+   1. If you haven&#39;t already, add the OSG repo as a &quot;remote&quot; to your repo:&lt;pre class=&quot;screen&quot;&gt;
+git remote add upstream git@github.com:opensciencegrid/&lt;em&gt;PROJECT&lt;/em&gt;&lt;/pre&gt;
+   1. Fetch changes from the OSG repo:&lt;pre class=&quot;screen&quot;&gt;
+git fetch upstream&lt;/pre&gt;
+   1. Compare your branch you are releasing from (probably =master=) to its copy in the OSG repo:&lt;pre class=&quot;screen&quot;&gt;
+git checkout master; git diff upstream/master&lt;/pre&gt;
+      There should be no differences.
+   1. Once this is done, release the software as you usually do. This process
+      varies from one project to another, but often it involves running
+      =make upstream= or similar. Check your project&#39;s =README= file for
+      instructions.
+   1. *Test your software.*
+   1. Tag the commit that you made the release from. Git release tags are
+      conventionally called &lt;code&gt;v&lt;em&gt;VERSION&lt;/em&gt;&lt;/code&gt;, where
+      &lt;em&gt;VERSION&lt;/em&gt; is the version of the software you are releasing.
+      So if you&#39;re releasing version 1.3.0, you would create the tag =v1.3.0=.
+      %BR%
+      &lt;strong&gt;Note:&lt;/strong&gt; once a tag has been pushed to the OSG repo, it
+      should not be changed. Be sure the commit you want to tag is the final
+      one you made the release from.
+\
+      1. Create the tag in your local repo:&lt;pre class=&quot;screen&quot;&gt;
+git tag &lt;em&gt;TAG&lt;/em&gt;&lt;/pre&gt;
+      1. Push the tag to your own !GitHub repo:&lt;pre class=&quot;screen&quot;&gt;
+git push origin &lt;em&gt;TAG&lt;/em&gt;&lt;/pre&gt;
+      1. Push the tag to the OSG repo:&lt;pre class=&quot;screen&quot;&gt;
+git push upstream &lt;em&gt;TAG&lt;/em&gt;&lt;/pre&gt;

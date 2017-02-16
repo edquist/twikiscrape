@@ -1,0 +1,118 @@
+---+!! Gratia Interfaces - APEL/WLCG - ILC VO
+
+
+
+%TOC%
+
+%STARTINCLUDE%
+
+---++ Description
+A request was made on 9/22/11 to publish the ILC VO Gratia accounting data to APEL/EGI.
+
+
+
+The Gratia/APEL interface is designed to publish specific data to APEL/WLCG for specific Tier 1/2  Resource Groups and VOs. 
+
+The current list of VOs are: cms, atlas and alice.
+
+Resource Groups:
+&lt;TABLE border=&quot;1&quot;&gt;&lt;TR&gt;
+&lt;TD valign=&quot;top&quot;&gt;
+#--- CMS Tier 1 ----&lt;br/&gt;
+USCMS-FNAL-WC1&lt;br/&gt; 
+#--- CMS Tier 2 ----&lt;br/&gt;
+CIT_CMS_T2&lt;br/&gt;
+GLOW&lt;br/&gt;
+MIT_CMS&lt;br/&gt;
+Nebraska&lt;br/&gt;
+Purdue-RCAC&lt;br/&gt;
+Purdue-Steele&lt;br/&gt;  
+Purdue-Rossmann&lt;br/&gt;
+UCSDT2&lt;br/&gt;
+SPRACE&lt;br/&gt;         
+!GridUNESP_CENTRAL&lt;br/&gt;
+UFlorida-HPC&lt;br/&gt;
+UFlorida-PG&lt;br/&gt;
+&lt;/TD&gt;&lt;TD valign=&quot;top&quot;&gt;
+#--- ATLAS Tier 1 ----&lt;br/&gt;
+BNL-ATLAS&lt;br/&gt;      
+#--- ATLAS Tier 2 ----&lt;br/&gt;
+AGLT2&lt;br/&gt;          
+HU_ATLAS_Tier2&lt;br/&gt; 
+BU_ATLAS_Tier2&lt;br/&gt;
+MWT2&lt;br/&gt;
+MWT2_UC&lt;br/&gt; 
+OU_OCHEP_SWT2&lt;br/&gt;
+WT2&lt;br/&gt;
+SWT2_CPB&lt;br/&gt;
+UTA_SWT2&lt;br/&gt;
+&lt;/TD&gt;&lt;TD valign=&quot;top&quot;&gt;
+#--- ALICE Tier 2 ----&lt;br/&gt;
+NERSC-PDSF&lt;br/&gt;
+LC-glcc&lt;br/&gt;
+&lt;/TD&gt;&lt;/TR&gt;
+&lt;/TABLE&gt;
+
+Based on viewing the Gratia data for that VO, it appears ILC users have run jobs on the following Gratia sites from 7/1/11 through 9/22/11:
+
+&lt;verbatim&gt;
++------------------+---------+------------+--------+--------+
+| SiteName         | Period  | Sum(NJobs) | SumCPU | SumWCT |
++------------------+---------+------------+--------+--------+
+| FNAL_DZEROOSG_2  | 2011-08 |          1 |      0 |      0 |
+| FNAL_FERMIGRID   | 2011-08 |          3 |      0 |      0 |
+| FNAL_GPGRID_1    | 2011-07 |          3 |      0 |      2 |
+| FNAL_GPGRID_1    | 2011-09 |       2030 |    550 |    578 |
+| FNAL_GPGRID_3    | 2011-08 |          2 |      0 |      0 |
+| LIGO_UWM_NEMO    | 2011-08 |          1 |      0 |      0 |
+| MIT_CMS          | 2011-09 |          3 |      0 |      0 |
+| RENCI-Engagement | 2011-09 |         54 |      0 |      1 |
+| UColorado_HEP    | 2011-09 |         54 |      0 |     14 |
++------------------+---------+------------+--------+--------+
+&lt;/verbatim&gt;
+
+Keep in mind Gratia site name and !MyOSG resource group/resource are not necessarily the same. For the Gratia site names listed above, these are the resource groups that data would have to be reported for (MIT_CMS is the only one already being reported):
+
+&lt;verbatim&gt;
+ Resource Group      Gratia Site(s)
+ ----------------    ---------------
+ FNAL_FERMIGRID      FNAL_DZEROOSG_2 FNAL_FERMIGRID FNAL_GPGRID_3
+ FNAL_GPGRID_1       FNAL_GPGRID_1
+ LIGO_UWM_NEMO       LIGO_UWM_NEMO
+ RENCI-Engagement    RENCI-Engagement
+ UColorado_HEP       UColorado_HEP
+ MIT_CMS             MIT_CMS  (already interfaced)
+&lt;/verbatim&gt;
+
+Another factor in the Gratia/APEL interface is that, in addition to raw CPU and Wall Time,  normalized CPU and Wall Time is a requirement. So, for each Resource Group, a normalization factor (based on HEPSpec06 values) is required.  These can be calculated programmatically for each resource group based on GIP data:
+
+&lt;verbatim&gt;
+Resource Group          SI2K   HS06
+--------------          ----   ----
+FNAL_FERMIGRID          2728  10912
+FNAL_GPGRID_1           3233  12932
+LIGO_UWM_NEMO           1500   6000
+RENCI-Engagement        1285   5140
+UColorado_HEP           4925  19700
+MIT_CMS                 1873   7492
+&lt;/verbatim&gt;
+
+
+This can all be done with the interface as designed today by just including these new resource groups and the ILC VO to the interface criteria.
+
+__The main question would be__  : What happens to the data once it gets to APEL?
+
+We understand how the Tier 1 and 2 site&#39;s data get used in EGI.  Each of these sites needs to be registered with LCG accounting and an MOU agreement is a part of that agreement.
+
+Is there a registration requirement for these new sites?%BR%
+Or can we just send the data and everyone will be happy?
+
+__Another question__ : Is this the complete list of sites that ILC will be running on?
+
+__Reminder__ : Unless otherwise instructed, the interface will still send up only a set of specified VOs.  It can be changed to send all VO data up for the resource groups specified if so desired.
+
+
+
+
+
+-- Main.JohnWeigand - 23 Sep 2011

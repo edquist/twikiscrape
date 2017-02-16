@@ -1,0 +1,78 @@
+The =%&lt;nop&gt;IF%= construct gives TWiki the power to include content in topics based on the value of simple expressions.
+
+=%&lt;nop&gt;IF{&quot;CONDITION&quot; then=&quot;THEN&quot; else=&quot;ELSE&quot;}%=
+
+In the example above, if CONDITION evaluates to TRUE, then THEN will be included in the topic; otherwise ELSE will be included.
+
+What can be included in the THEN and ELSE parameters is obviously limited by standard TWiki syntax for parameters.
+
+The basic syntax of a condition is as follows:
+&lt;verbatim&gt;
+expr ::= &#39;(&#39; expr &#39;)&#39; ;
+expr ::= andexpr | andexpr &#39;or&#39; expr ;
+andexpr ::= notexpr | notexpr &#39;and&#39; andexpr ;
+notexpr ::= basexpr | &#39;not&#39; baseexpr ;
+basexpr ::= atom | uop atom | atom bop basexpr ;
+uop ::= &#39;context&#39; | &#39;defined&#39; | &#39;$&#39; ;
+bop ::= &#39;=&#39; | &#39;!=&#39; | &#39;&gt;&#39; | &#39;&lt;&#39; | &#39;&gt;=&#39; | &#39;&lt;=&#39; ;
+atom ::= context identifier, TWiki variable name, single-quoted string, or configuration item
+&lt;/verbatim&gt;
+| *Operators* ||
+| and | True if both sides are true |
+| or | True if one or other side is true |
+| not | negate the following expression |
+| &lt;nop&gt;=, !&lt;nop&gt;= | String comparison |
+| &amp;lt;, &amp;gt;, &amp;lt;=, &amp;gt;= | Number comparison (there is no explicit numeric =) |
+| context | True if the current context is set (see below) |
+| defined | True if a preference variable or url parameter of this name is defined. |
+| $ | expands a URL parameter or [[TWikiVariables][TWikiVariable]]. Plugin handlers *are not called*. Built-in variables and user-defined preferences are supported. You can pass a limited subset of parameters to TWiki variables by enclosing the variable name in single quotes; for example, =$ &#39;VARIABLE{value}&#39;=. The =&#39;VARIABLE{value}&#39;= string may *not* contain quotes (&#39; or &quot;). |
+examples:
+&lt;verbatim&gt;
+TWiki variable defined or not
+%IF{&quot;defined WIKINAME&quot; then=&quot;WIKINAME is defined&quot; else=&quot;WIKINAME is not defined&quot;}%
+
+You are %IF{ &quot;$ WIKINAME=&#39;TWikiGuest&#39; and not defined OPEN_DAY&quot; then=&quot;not&quot; }% allowed to
+%IF{ &quot;context view&quot; then=&quot;view&quot; else=&quot;edit&quot;}% this TWiki today.
+
+URL parameter
+%IF{ &quot;defined search&quot; then=&quot;Search: %URLPARAM{search}%&quot; else=&quot;No search passed in&quot;}%
+
+Configuration item set or not
+%IF{ &quot;{AntiSpam}{HideUserDetails}&quot; then=&quot;User details are hidden&quot; }%
+
+url param t is %IF{ &quot;0 &lt; $ t and $ t &lt; 1000&quot; then=&quot;in&quot; else=&quot;out of&quot;}% range.
+
+Text comparison
+%IF{ &quot;$&#39;URLPARAM{scope}&#39;=&#39;text&#39;&quot; then=&quot;Plain text search&quot; }% 
+&lt;/verbatim&gt;
+
+*Configuration items* are defined in =configure=. You cannot see the value of a configuration item, you can only see if the item is set or not.
+
+*Context identifiers* are used in TWiki to label various stages of the rendering process. They are especially useful for [[TWikiSkins][skin]] authors to find out where they are in the rendering process. The following context identifiers are available:
+| *id* | *context* |
+| absolute_urls | Set if absolute URLs are required |
+| authenticated | a user is authenticated |
+| body_text  | when the body text is being processed in a view (useful in plugin handlers) |
+| can_login | current environment supports login |
+| changes | in changes script (see TWikiScripts) |
+| command_line | the running script was run from the command line, and not from CGI |
+| diff | in rdiff script (see TWikiScripts) |
+| edit | in edit script (see TWikiScripts) |
+| footer_text | when the footer text is being processed in a view (useful in plugin handlers) |
+| header_text | when the header text is being processed in a view (useful in plugin handlers) |
+| i18n_enabled | when user interface I18N support is enabled (i.e., user can choose the language for UI) |
+| inactive | if active links such as &#39;edit&#39; and &#39;attach&#39; should be disabled |
+| mirror | if this is a mirror |
+| new_topic | if the topic doesn&#39;t already exist |
+| oops | in oops script (see TWikiScripts) |
+| preview | in preview script (see TWikiScripts) |
+| rss | if this is an RSS skin rendering |
+| save | in save script (see TWikiScripts) |
+| search | in search script (see TWikiScripts) |
+| view | in view script (see TWikiScripts) |
+| rest | in rest script (see TWikiScripts) |
+
+In addition there is a context identifier for each enabled plugin; for example, if =Gallous&lt;nop&gt;BreeksPlugin= is installed *and enabled*, then the context ID =Gallous&lt;nop&gt;BreeksPluginEnabled= will be set. Other extensions may set additional context identifiers.
+
+The =%&lt;nop&gt;IF%= statement is deliberately kept simple. In particular, note that there is no way to conditionally execute a Set statement. If you need more sophisticated control over formatting, then consider using the SpreadSheetPlugin.
+

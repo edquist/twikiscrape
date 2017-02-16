@@ -1,0 +1,238 @@
+---+!!Data Management Exercises
+%TOC{depth=&quot;3&quot;}%
+
+---+ Customize this Document
+
+&lt;!-- OSG Summer School 2011 Defaults
+   * Local VO= %URLPARAM{&quot;INPUT_VO&quot; encode=&quot;quote&quot; default=&quot;hcc&quot;}%
+   * Local UCL_HOST = %URLPARAM{&quot;INPUT_HOST&quot; encode=&quot;quote&quot; default=&quot;hcc-group6&quot;}%
+   * Local UCL_USER = %URLPARAM{&quot;INPUT_USER&quot; encode=&quot;quote&quot; default=&quot;bbockelm&quot;}%
+   * Local UCL_DOMAIN = %URLPARAM{&quot;INPUT_DOMAIN&quot; encode=&quot;quote&quot; default=&quot;unl.edu&quot;}%
+   * Local GATEKEEPER = %URLPARAM{&quot;INPUT_GATEKEEPER&quot; encode=&quot;quote&quot; default=&quot;red.unl.edu&quot;}%
+   * Local UCL_CWD= %URLPARAM{&quot;INPUT_CWD&quot; encode=&quot;quote&quot; default=&quot;~/grid_dm&quot;}%
+   * Local BATCH_SYSTEM = %URLPARAM{&quot;BATCH_SYSTEM&quot; encode=&quot;quote&quot; default=&quot;condor&quot;}%
+   * Local REMOTE_ROOT = %URLPARAM{&quot;INPUT_REMOTE_ROOT&quot; encode=&quot;quote&quot; default=&quot;/mnt/hadoop/user&quot;}%
+   * Local REMOTE_SRM = %URLPARAM{&quot;INPUT_SRM&quot; encode=&quot;quote&quot; default=&quot;red-srm1.unl.edu:8443&quot;}%
+   * Local REMOTE_GRIDFTP= %URLPARAM{&quot;INPUT_GRIDFTP&quot; encode=&quot;quote&quot; default=&quot;red-gridftp12.unl.edu&quot;}%
+   * Local SURL = srm://%REMOTE_SRM%/srm/v2/server?SFN=%REMOTE_ROOT%
+   * Local TURL= gsiftp://%REMOTE_GRIDFTP%/%REMOTE_ROOT%
+   * Local OSG_DATA=%URLPARAM{&quot;INPUT_OSG_DATA&quot; encode=&quot;quote&quot; default=&quot;/osg/data&quot;}%
+--&gt;
+
+%ICON{&quot;warning&quot;}% %RED% Please change your user name and click on the Customize button!%ENDCOLOR%
+&lt;form action=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%WEB%/%TOPIC%&quot;&gt;
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      VO
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_VO&quot; value=&quot;%VO%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Host Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_HOST&quot; value=&quot;%UCL_HOST%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Domain Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_DOMAIN&quot; value=&quot;%UCL_DOMAIN%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Login Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_USER&quot; value=&quot;%UCL_USER%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Remote SE root directory
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_REMOTE_ROOT&quot; value=&quot;%REMOTE_ROOT%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      SRM host endpoint
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_SRM&quot; value=&quot;%REMOTE_SRM%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      !GridFTP host endpoint
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_GRIDFTP&quot; value=&quot;%REMOTE_GRIDFTP%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+     &amp;nbsp;
+     &lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;Customize&quot; /&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/form&gt;
+
+---+ Exercises 
+---++ Prerequisite 
+
+   * Login on submission node &lt;pre class=&quot;screen&quot;&gt;
+ssh %UCL_USER%@%UCL_HOST%.%UCL_DOMAIN%
+&lt;/pre&gt;
+   * Obtain proxy certificate, if you have not done so already &lt;pre class=&quot;screen&quot;&gt;
+voms-proxy-init -voms %VO%:/%VO%
+&lt;/pre&gt;
+
+---++ Hands-on with !GridFTP
+
+As discussed in the lecture, the primary protocol for accessing storage on the OSG is SRM.  SRM is an XML-based protocol that provides users with the ability to:
+   1 Invoke Unix-like metadata commands on the storage (ls, rm, mkdir).
+   1 Load-balance file transfers done via other &quot;transfer&quot; protocols.  The most common transfer protocol on the OSG is !GridFTP.
+   1 Manage storage reservations.
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; background-color: #ffff66; border: 1px solid black; padding: 0.5em;&quot;&gt;
+Food for thought: !GridFTP, being built on top of the venerable FTP protocol, also can invoke metadata commands.  Why is SRM necessary?
+%TWISTY{
+showlink=&quot;Show the answer!&quot;
+hidelink=&quot;Ok, move on...&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+While !GridFTP *can* perform metadata commands, SRM still retains some advantages:
+   1 Ability to perform load-balancing, including across more common protocols such as HTTP.
+   1 Ability to queue some metadata commands.  Listing a directory, in particular, can cause heavy loads on the remote system if enough clients do it at once.  SRM has the ability to ask clients to back off and perform the request later.
+   1 !GridFTP has no ability to manage space reservations.  This is used heavily by some VOs on grids that interoperate with the OSG, although it&#39;s not common in smaller OSG VOs.
+%ENDTWISTY%
+&lt;/div&gt;
+
+Unfortunately, there are unresolved issues in using your CILogon certificates with SRM.  While we&#39;re working out these issues, we&#39;ll switch to GridFTP instead of the more-common-on-OSG SRM.
+
+---+++ File Movement: Upload
+We&#39;ll need to generate a few input files to play with.  Let&#39;s fill a few files with random noise:
+&lt;pre class=&quot;screen&quot;&gt;
+dd if=/dev/urandom of=/tmp/input_file_%UCL_USER%_1 bs=1MB count=10
+dd if=/dev/urandom of=/tmp/input_file_%UCL_USER%_2 bs=1MB count=100
+dd if=/dev/urandom of=/tmp/input_file_%UCL_USER%_3 bs=1MB count=200
+&lt;/pre&gt;
+%TWISTY{
+showlink=&quot;Show output&quot;
+hidelink=&quot;Hide output&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+[%UCL_USER%@%UCL_HOST% ~]$ dd if=/dev/urandom of=/tmp/input_file_%UCL_USER%_1 bs=1MB count=10
+10+0 records in
+10+0 records out
+10000000 bytes (10 MB) copied, 2.97662 seconds, 3.4 MB/s
+[%UCL_USER%@%UCL_HOST% ~]$ dd if=/dev/urandom of=/tmp/input_file_%UCL_USER%_2 bs=1MB count=100
+100+0 records in
+100+0 records out
+100000000 bytes (100 MB) copied, 22.6203 seconds, 4.4 MB/s
+[%UCL_USER%@%UCL_HOST% ~]$ dd if=/dev/urandom of=/tmp/input_file_%UCL_USER%_3 bs=1MB count=200
+200+0 records in
+200+0 records out
+200000000 bytes (200 MB) copied, 42.8626 seconds, 4.7 MB/s
+&lt;/pre&gt;
+%ENDTWISTY%
+
+We&#39;ll place these on the remote gridftp storage.
+
+---+++ File Movement: !GridFTP
+On other grids, !GridFTP may be more common than SRM.  Let&#39;s take a moment to use the most common !GridFTP client, =globus-url-copy= directly.
+
+=globus-url-copy= has a simple usage syntax of =globus-url-copy [OPTIONS] SOURCE_URL DEST_URL=.  The source and destination must be either be prefixed with =file://= (designating a file on the local disk) or =gsiftp://= (designating a file on a remote server).  You can see what the various OPTIONS are by looking at the output of =-help=; we&#39;ll be using =-vb= in the examples to increase the verbosity of the client.
+
+First, let&#39;s copy a file to the remote !GridFTP server:
+&lt;pre class=&quot;screen&quot;&gt;
+globus-url-copy -cd -vb file:/tmp/input_file_%UCL_USER%_1 %TURL%/%VO%/%UCL_USER%/input_file_1
+&lt;/pre&gt;
+%TWISTY{
+showlink=&quot;Show output&quot;
+hidelink=&quot;Hide output&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+[%UCL_USER%@%UCL_HOST% ~]$ globus-url-copy -cd -vb file:/tmp/input_file_%UCL_USER%_1 %TURL%/%VO%/%UCL_USER%/input_file_1
+Source: file:/tmp/
+Dest:   %TURL%/%VO%/%UCL_USER%/
+  input_file_%UCL_USER%_1  -&gt;  input_file_1
+
+&lt;/pre&gt;
+Note that the =-cd= command line flag is required to create the destination directory.
+%ENDTWISTY%
+
+Next, let&#39;s copy it back to the local disk:
+&lt;pre class=&quot;screen&quot;&gt;
+globus-url-copy -vb %TURL%/%VO%/%UCL_USER%/input_file_1 file:/tmp/read_gridftp_input_file_%UCL_USER%_1
+&lt;/pre&gt;
+%TWISTY{
+showlink=&quot;Show output&quot;
+hidelink=&quot;Hide output&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+[%UCL_USER%@%UCL_HOST% ~]$ globus-url-copy -vb %TURL%/%VO%/%UCL_USER%/input_file_1 file:/tmp/read_gridftp_input_file_%UCL_USER%_1
+Source: %TURL%/%VO%/%UCL_USER%/
+Dest:   file:/tmp/
+  input_file_1  -&gt;  read_gridftp_input_file_%UCL_USER%_1
+
+            0 bytes         0.00 MB/sec avg         0.00 MB/sec inst
+&lt;/pre&gt;
+%ENDTWISTY%
+
+Finally, we can use =md5sum= to verify the contents:
+&lt;pre class=&quot;screen&quot;&gt;
+[%UCL_USER%@%UCL_HOST% ~]$ md5sum /tmp/read_gridftp_input_file_%UCL_USER%_1 /tmp/input_file_%UCL_USER%_1
+a0689a9b03257c1be05fe555bd6e1d3c  /tmp/read_gridftp_input_file_%UCL_USER%_1
+a0689a9b03257c1be05fe555bd6e1d3c  /tmp/input_file_%UCL_USER%_1
+&lt;/pre&gt;
+As long as the hash results are the same for both files, they should be identical!
+
+---+++ List Files
+
+Listing of a single file or the contents of a directory can be done with =uberftp=, a command-line client similar to traditional FTP clients.
+
+&lt;pre class=&quot;screen&quot;&gt;
+uberftp %REMOTE_GRIDFTP% &quot;dir %REMOTE_ROOT%/%VO%/%UCL_USER%&quot;
+&lt;/pre&gt;
+%TWISTY{
+showlink=&quot;Show output&quot;
+hidelink=&quot;Hide output&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+[%UCL_USER%@%UCL_HOST% ~]$ uberftp %REMOTE_GRIDFTP% &quot;dir %REMOTE_ROOT%/%VO%/%UCL_USER%&quot;
+220 %REMOTE_GRIDFTP% GridFTP Server 6.2 (gcc64, 1319549260-1) [unknown] ready.
+230 User %VO% logged in.
+-rw-rw-r--   1     root     root           13 Nov 15 08:57 /user/%VO%/%UCL_USER%/input_file_1
+&lt;/pre&gt;
+%ENDTWISTY%
+
+---+++ Example Exercise
+
+In the [[Education.OSGSS2011StorageEx2][OSG Summer School exercise]], we give an example of how to integrate file staging via SRM with a job wrapper script.  You may want to study this example closely, as the solution posted there might significantly help with your Assignment 6.
+
+Again, you must adopt this solution to using GridFTP.
+

@@ -1,0 +1,200 @@
+-- Main.VivekJain - 05 Jul 2005
+
+
+%TOC%
+
+---++Introduction
+
+Here are some *tips/comments* for setting up a grid node as per instructions in the OSG Install Guide. *I installed OSG-ITB software version 0.1.6*
+
+When I started this project, I had very, very limited knowledge about system adminstration, so these comments may be useful for novices (like me). Feel free to [[mailto:vj@bnl.gov e-mail]] me. A lot of people helped, especially Terence, Alain, Horst, Nate to name a few.
+
+---++ Installing the cluster
+
+We first set up the cluster using [[http://www.rocksclusters.org/Rocks/ ROCKS 3.3]] (Makalu). This includes the ROCKS headnode and compute nodes. We then set up the Gatekeeper node; this node contains all the VDT software. 
+
+---+++ Setting up the ROCKS cluster
+
+The ROCKS installation documentation is very well written. Since we were setting up a test grid node, we used some old CPU&#39;s which were lying around. I mention this because, we ended up booting the compute nodes using a floppy disk (the CD drives were not working and the NIC cards were too old to know about a PXE boot). We downloaded the relevant software from [[http://www.rom-o-matic.net/ here]] - you have to know the type of your NIC.
+
+For installing the ROCKS cluster, we only used the base roll and the Kernel+HPC roll. All other software came from VDT.
+
+The ROCKS headnode is multi-homed. One NIC is connected to the external world and the other to the internal network. The latter has the IP address - 10.1.1.1. We have three compute nodes. When we go to a bigger cluster, we will probably have to do more sophisticated things for setting up NFS.
+
+Make sure that _eth0_ is connected to the internal network (_eth1_ is connected to the outside world).
+
+---+++ OSG-GateKeeper
+
+#MyGatekeeper Here we took a box and installed Scientific Linux 3 on it. Initially, we had connected this only to the external world, but it was recommended by [[Main.TerrenceMartin][Terrence]] that we also connect it to the same private network as the ROCKS headnode; the GK&#39;s internal card is connected on the &quot;same side&quot; of the switch as the ROCKS compute nodes. 
+
+The internal NIC had a IP address of 10.1.1.2. For the DNS address, we used 10.1.1.1, i.e., the ROCKS headnode. It is necessary to have the GK talk directly to the compute nodes - makes the operation of CONDOR more robust. I will talk more about this [[#MyHeadnode][here]].
+
+Make sure that _eth0_ is connected to the internal network (_eth1_ is connected to the outside world).
+
+---++ Following the OSG Install Guide
+
+Now come my comments/tips on the install guide - [[Trash/Trash/Integration.OSGCEInstallGuide-0.1.6]]. For the most part, the guide is well documented. Some stuff needs to be better explained, at least for a novice.
+
+---+++ Pre-installation Checklist
+
+Most of the stuff listed here is pretty straightforward and well documented. Some comments:
+
+---++++ Firewalls
+
+   If you follow the link, you will come to the separate section on [[Trash/Trash/Integration.OSGCEInstallGuide-0.1.6#Firewalls][Firewalls]]. As it is currently written, it appears that information regarding setting environment variables like GLOBUS_TCP_PORT_RANGE only applies to the case of host-based firewalls. This is not *true*. It applies equally to the case where you have an external firewall &quot;surrounding the nodes&quot;. 
+
+You need to set the variables *GLOBUS_TCP_PORT_RANGE* and *GLOBUS_TCP_SOURCE_RANGE* (both have the same range, _e.g.,_ 40000-41000).
+
+   * In */etc/xinetd.d/gsiftp,gsiftp2,globus-gatekeeper* - both variables need to be set
+   * Wherever you have installed the VDT software, below that will be sub-dirs, globus and vdt
+      * In *globus/etc/globus-job-manager.conf*, you need to set *GLOBUS_TCP_PORT_RANGE*
+      * In *vdt/etc/vdt-local-setup.sh (.csh)*, you can set both these varibles (_won&#39;t hurt_)
+
+Remember to change the configuration files on the firewall to allow traffic on these ports, as well as the other ports specified in the documentation. 
+
+---++++ User accounts
+
+I installed the VDT software under */usr/local/grid* and the plan is to export this to the ROCKS headnode and compute nodes. Thus, I put the user accounts in /usr/local/grid/users/. To make a new user account, do
+
+useradd -d /usr/local/grid/users/&amp;lt;username&amp;gt; &amp;lt;username&amp;gt;
+
+Remember, to set up the user accounts on the ROCKS headnode too. Here, it doesn&#39;t matter where the home directory is. Just use the command,
+
+useradd &amp;lt;username&amp;gt;
+
+The only requirement is that the user ID&#39;s should match on the two nodes.
+
+---+++ Installation Procedure
+
+Again the documentation is quite self-explanatory. Some comments:
+
+---++++ Certificates
+
+#MyCertificates Once you get your User certificate, you will also need other certificates which are for the host as well as for services on the host. In some cases, it is better to wait for the certificate before proceeding. I needed a host certificate as well as service certificates for LDAP and http. It may save time if you were to apply for all these certificates at once (%BLUE% Is this possible? Need to check %ENDCOLOR%).
+
+To apply for the certificates, go to https://pki1.doegrids.org and follow instructions.
+
+---+++ Configuration and setup of OSG CE Services
+
+Again the documentation is quite self-explanatory. Some comments:
+
+---++++ Configuring [[Trash/Trash/Integration.MonALISA][Trash.ReleaseDocumentationMonALISA]]
+
+The !Trash.ReleaseDocumentationMonALISA daemon monitors the state of the ROCKS compute nodes through the ROCKS headnode. The latter uses Ganglia for collecting information. It was suggested that it would be better for this communication to occur via the internal network. So, when you are configuring !Trash.ReleaseDocumentationMonALISA, you will be asked the host name on which Ganglia is running. Instead of giving the fully qualified domain name, I used ahepg1h.local (my ROCKS headnode is called _ahepg1h.tld_). Even if you don&#39;t answer correctly, you can go back and edit the file *$VDT_LOCATION/MonaLisa/Service/VDTFarm/vdtFarm.conf*.   Make sure in the following line, it says ahepg1h.local instead of the FQDN
+
+*PN_vdt{monIGangliaTCP, ahepg1h.local, 8649}%30
+
+On the ROCKS headnode (_ahepg1h_), you have to edit */etc/gmond.conf* and set *trusted_hosts* to point to the Gatekeeper node. Again, you want to use the internal network. I say *trusted_hosts osg-gk.local* - on the internal network, the gatekeeper is known as *osg-gk*, even though to the external world, it is known as _aheposgk.tld_. I&#39;ll talk about how to set this up [[#MyHeadnode][here]].
+
+---++++ Authorizing other users 
+
+Since I have a test node, for now I am using the simplest scheme, *Grid3*, to authorize others users. Basically, I have grid-mapfile which gets updated regularly with user names.
+
+You also need to do chkconfig --add edg-gridmapfile-upgraded, so that the daemon comes up at boot time.
+
+---++++ Configuring MIS-CI
+
+When I originally configured OSG and other packages, I had set the variable *$WNTMP* to be */usr/local/grid/tmp*, which is exported to all nodes. I later realized that this is not necessary and that $WNTMP can point to a directory which is available only on the ROCKS compute nodes. So, I re-ran *$VDT_LOCATION/monitoring/configure_osg.sh*, and set this variable to be */state/partition1/tmp* (visible only on the ROCKS compute nodes).
+
+I think because originally I had set it to be /usr/local/grid/tmp, MIS-CI didn&#39;t know about the change. We discovered this because Gridcat started to look at the MIS-CI information and was reporting the wrong location. [[mailto:jrosheck@indiana.edu John]] suggested I do the following steps:
+
+   * cd $VDT_LOCATION  and then *. setup.sh*
+   * cd MIS_CI and then *./configure-misci.sh*
+   * When I had originally configured MIS-CI, I had started a cron job, the database should get updated automatically. However, one can force the issue by doing, *cd sbin and ./run-mis-ci.sh*
+
+
+---++++ Configuring CONDOR
+
+This took the longest time to tweak. [[Main.TerrenceMartin][Terrence]] made many suggestions and we finally got it working. Here are the steps I followed. I did all this tweaking after I had set up the system and discovered that CONDOR wasn&#39;t working
+
+---+++++ %BLUE% Setup the Gatekeeper on the internal network %ENDCOLOR%
+
+#MyHeadnode As mentioned previously, the OSG Gatekeeper needs to communicate with both the ROCKS headnode (for [[Trash/Trash/Integration.MonALISA][Trash.ReleaseDocumentationMonALISA]]) and the ROCKS compute nodes (for CONDOR). It was suggested that we set it up so that it uses the internal network as much as possible. Some details are [[#MyGatekeeper][here]].
+
+On the ROCKS headnode,
+
+   * Make a file, */var/named/rocks.domain.local* and put the line &quot;osg-gk A 10.1.1.2&quot; in it.
+   * cd /var/named
+   * dbreport dns &gt; rocks.domain
+   * Make a file, */var/named/reverse.rocks.domain.local* and put the line &quot;2.1.1 PTR osg-gk.local.&quot; in it.
+   * dbreport dns reverse &gt; reverse.rocks.domain
+   * /etc/init.d/named reload
+
+These steps allow osg-gk.local, osg-gk, 10.1.1.2 to be resolved. Remember, that for the Gatekeeper, the DNS server is the ROCKS headnode.
+
+---+++++ %BLUE% Exporting directories from the Gatekeeper %ENDCOLOR%
+
+I installed the VDT software below */usr/local/grid*. Some of the software needs to be visible from the ROCKS compute nodes, so we have to export these sub-dirs.
+
+   On the _Gatekeeper_,
+
+   * Edit */etc/exports* and add &quot;/usr/local/grid 10.0.0.0/255.0.0.0(rw,no_root_squash)&quot; - not clear if no_root_squash is necessary. We put it in while trying to fix a bug.
+   * Export via &quot;exportfs -r&quot;  (refreshes the kernel)
+   * &quot;service nfs start&quot; (Start NFS on the Gatekeeper) 
+   * If you also do &quot;chkconfig nfs on&quot; and &quot;chkconfig nfslock on&quot;, it will keep NFS on all the time
+
+On the _ROCKS headnode_,
+
+   * Edit */etc/auto.master* and add the line &quot;/usr/local/grid /etc/auto.osg -- timeout 600&quot;
+   * Edit */etc/auto.osg* and add lines like &quot;app osg-gk.local:/usr/local/grid/app&quot;. Similarly add more lines where _app_ is replaced by _data,scratch,users,condor_
+   * Make the directory */usr/local/grid*
+   * Issue the command &quot;cluster-fork mkdir /usr/local/grid&quot; - this makes the sub-dir on all the ROCKS compute nodes
+   * Since the ROCKS headnode communicates to the compute nodes via 411, restart this service. Issue the following commands, 
+      * &quot;make -C /var/411 clean&quot;
+      * &quot;make -C /var/411&quot;
+      * &quot;cluster-fork /opt/rocks/bin/411get&quot; - forces the compute nodes to get the latest 411 information
+      * &quot;cluster-fork service autofs reload&quot;
+
+---+++++ %BLUE% To start CONDOR at boot %ENDCOLOR%
+
+To ensure that CONDOR starts up at boot, 
+
+   * Make the directory */etc/condor/* 
+   * Issue the command, &quot;ln -s /usr/local/grid/condor/etc/condor_config /etc/condor&quot;
+
+---+++++ %BLUE% Other CONDOR configuration files to be changed %ENDCOLOR%
+
+I have to admit that somewhere along the way I sort of strayed off the path where CONDOR would have done a lot of work I describe below, especially that relating to the installation on the compute nodes. I am trying to re-trace my steps to sort this out.
+
+We also need to edit a few CONDOR configuration files on the %RED% Gatekeeper %ENDCOLOR%
+
+Edit */usr/local/grid/condor/etc/condor_config*
+
+   * Set &quot;RELEASE_DIR = /usr/local/grid/condor&quot;
+   * Set &quot;LOCAL_DIR = $(RELEASE_DIR)/local.$(HOSTNAME)&quot;
+   * Set &quot;LOCAL_CONFIG_FILE = $(LOCAL_DIR)/condor_config.local&quot;
+   * Set &quot;CONDOR_HOST = osg-gk.local&quot;
+   * Set &quot;UID_DOMAIN =albany.edu&quot;
+   * Set &quot;TRUST_UID_DOMAIN&quot; = True
+   * Set &quot;FILESYSTEM_DOMAIN&quot; = True
+   * Set &quot;USE_NFS = True&quot;  (can&#39;t hurt)
+
+Edit */usr/local/grid/condor/local.aheposgk/condor_config.local*. I think this file gets created when we initially ran CONDOR as per instructions in the Install guide (Remember, I did all this tweaking after I had set up the system and discovered that CONDOR wasn&#39;t working).
+
+   * Set variables _CONDOR_HOST, RELEASE_DIR, LOCAL_DIR, UID_DOMAIN, FILESYSTEM_DOMAIN, USE_NFS__ as above.
+   * Set &quot;NETWORK_INTERFACE = 10.1.1.2&quot; (do this at the very top of the file, just after CONDOR_HOST)
+   * Set the variable &quot;DAEMON_LIST = COLLECTOR, MASTER, NEGOTIATOR, SCHEDD&quot; (I didn&#39;t want the gatekeeper to run jobs, so I removed STARTD from the list
+
+After all this tweaking, do &quot;condor_reconfig&quot; on the Gatekeeper. Re-reads the config. file(s).
+
+Wait, we are not done yet. We need to make local config files for the ROCKS compute nodes. I did it by hand (to test the system), but one can do issue a cluster-fork command from the ROCKS headnode and do all compute nodes at once. In any case, I did the following.
+
+On one of my %RED% ROCKS compute nodes (compute-0-0.local) %ENDCOLOR%, I did the following,
+
+   * In /usr/local/grid/ do &quot;mkdir condor/local.compute-0.0/&quot; (%BLUE% Do I have to make them on all compute nodes by hand? %ENDCOLOR% %GREEN% No. If I had configured CONDOR &quot;correctly&quot;, I shouldn&#39;t need to do this by hand %ENDCOLOR%)
+   * &quot;touch condor_config.local&quot; within this sub-dir
+   * Issue the command, &quot;/usr/local/grid/condor/condor_configure --install_dir = /usr/local/grid/condor/ --type=execute --central-manager=osg-gk.local --owner=condor&quot; - this sets up the configuration file (%BLUE%This step could be done by cluster-fork, but I am not sure. %ENDCOLOR% %GREEN% Again, if I had configured CONDOR correctly, I shouldn&#39;t need to do this by hand %ENDCOLOR%)
+   * Issue the command, &quot;EXPORT CONDOR_CONFIG = /usr/local/grid/condor/etc/condor_config&quot; followed by &quot;condor/sbin/condor_master&quot; - This turns CONDOR on this node
+   * For the other nodes, I did, &quot;cp -rp local.compute-0-0/ local.compute-0-1/&quot;, etc. and start CONDOR on those nodes. (%BLUE% Is there a better way? %ENDCOLOR% %GREEN% Yes, I have to figure it out %ENDCOLOR%)
+
+This should get it working...
+
+---++ Testing some of this software
+
+I set up another machine where I installed VDT-Client software using the command 
+
+pacman -get http://www.cs.wisc.edu/vdt/vdt-136-cache:VDT-Client 
+
+I put my User Certificate on this machine and made the .pem files as explained on the website mentioned [[#MyCertificates][above]]
+
+Make sure that this machine does not have a firewall, or the Gatekeeper will not be able to talk to it.

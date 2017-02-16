@@ -1,0 +1,101 @@
+-- Main.DanFraser - 12 Jun 2012
+---++ Action/Significant Items:
+   * Brian highlighted an issue where GGUS tickets get exchanged with GOC-TX, but are not routed to the specific site. GOC Ticket #: https://ticket.grid.iu.edu/goc/12218
+   * BDII updates are being introduced to address the problem identified last week where SE-only sites were not being added. (Rob)
+   * There was a major security Incident at CERN and SLAC. Hypernews and some other web servers got compromsied password file are stolen and broken into. No affect on OSG. FNAL is unaffected so far and continue to take defensive measures. (Mine)
+
+---++ Attendees:
+   * Brian, Tony, Rob Q., Mine, Chander, Dan
+ 
+---++ CMS (Tony)
+
+   * Job statistics for last week
+      * 26,907 jobs/day
+
+   * Transfer statisics for last week
+      * ~545 TB/day
+
+   * GGUS tickets get exchanged with GOC-TX, but are not routed to the specific site.  See GOC Ticket #: https://ticket.grid.iu.edu/goc/12218
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * LHC continue to have quite stable operation, with significant data collected. Current collected luminosity for ATLAS ~6.3 fb-1.
+      * US ATLAS production during the past week continue to be very stable, at the average level around 20K running jobs, mostly simulation type.
+   * Job statistics for last week.      
+      * Gratia report: 1.5M pilot jobs run on USATLAS sites, with CPU/walltime ratio of 88%  
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 1.2M
+   * Data Transfer statistics for last week
+      * Data transfer rate was 300~400TB/day at BNL T1 in last week.  
+   * Issues
+
+---++ Grid Operations Center (Rob Q.)
+---+++ Operations Last Week
+   * [[http://tinyurl.com/6nh3glo][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * New CA distribution released [[http://osggoc.blogspot.com/2012/06/osg-ca-distribution-129-release.html][Notice]]
+      * Problem with synchronization of repo.grid and software.grid versions
+   * New OSG stack, [[http://osggoc.blogspot.com/2012/06/correction-osg-314-has-been-released.html][version 3.1.4]] released.
+   * Production release, [[http://osggoc.blogspot.com/2012/06/goc-service-update-tuesday-june-12th.html][release note]]
+   * remove obsolete xml from !MyOSG deferred until July, earliest
+   * repo.grid LVS enabled
+   * WMS Glide In Factory
+      * Upgrade GOC Factory to use Condor 7.6.7.
+      * Discovered strange behavior for gt5 sites where all running jobs from a single DN go held with Globus error 79.
+         * It may be due to limits of allowed open TCP connections at the CE
+         * We are working with Brian Bockelman (UNL) and Bockjoo Kim (UFlorida) to try and reproduce the problem and better understand it.
+         * For reference:
+            * https://savannah.cern.ch/support/?129414
+            * https://savannah.cern.ch/support/?128469
+            * https://savannah.cern.ch/support/?129165
+      * GOC disk partition filled to ~90% this weekend.  We cleared out old logs to get below 90%
+         * Setting up a backup scheme with our new disk to reduce this will be top priority this week.
+
+---+++ Operations This Week
+   * ITB release, note in preparation.
+      * BDII: allow SE only resources to report, currently CE required, see [[http://jira.opensciencegrid.org/browse/MYOSG-15][MYOSG-15]], [[http://jira.opensciencegrid.org/browse/MYOSG-42][MYOSG-42]] and [[https://ticket.grid.iu.edu/goc/viewer?id=12258][12258]] for details.
+      * !MyOSG and OIM: PKI changes continue
+      * display: Minor bug fix, php version update
+      * TX: usability changes
+   * OS updates, reboots required. Will coordinate as usual.
+   * New VO Package - updates to LSST entry and addition of COUPP VO.
+   * WMS Glide In Factory
+      * We will begin testing glideinWMS v2_6_rc1.
+
+
+---++ Campus Infrastructures / HTPC (Dan, Brooklin)
+   * Bosco v1 work is continuing per plan.
+   * Partitionable slots (for htPc) are running in two clusters at UNL and generally working well. There have been two Condor support tickets entered (2993, 3013) for relatively minor issues. Should be able to start writing documentation next week for other campuses to deploy.
+
+---++ Integration (Suchandra)
+
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 3.1.4 / 1.2.28
+      *       31 (1) OSG 3.x (       8 are 3.1.4)
+      *       70 (-1) OSG 1.2.X resources (      16 are 1.2.28)
+      *        1 (-1) OSG 1.0.X resources (       0 are 1.0.6)
+      *        1 (0) OSG 1.0.0 resources
+
+
+---++ User Support (Chander, Mats)
+PNNL site registered in OIM.  Virginia Tech Campus Grid flocking moved to OSG-XSEDE host (thanks Derek).  Working on re-homing Baker Lab flocking to UCSD.
+
+---++ Security (Mine)
+   * Emergencies/Incidents/Vulnerabilities
+      * Incident at CERN and SLAC. Hypernews and some other web servers got compromsied password file are stolen and broken into. No affect on OSG. FNAL is unaffected so far and continue to take defensive measures. 
+   * Normal Operations:
+      * CA release. Some sites who have switched to CA rpm bundles did not realize they must run yum updates manually. Some sites had RSV probes in warning state. We sent out broad and targeted announcement. No sites have failed any RSV probes due to this problem. For the longer term solution, a proposal to automatically update the CA bundles is sent to VDT. Waiting for VDT team&#39;s feedback.
+      * Leaving for CERN next week. Continue working there. Kevin and Anand stay in teh US and will keep the operations during regular hours. 
+      * Security Test and Controls are moving along to meet deadline.
+ 
+
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings

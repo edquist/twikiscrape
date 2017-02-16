@@ -1,0 +1,139 @@
+---+ v48 
+
+---++ !SeaQuest Sub-VO addition
+[[https://ticket.grid.iu.edu/goc/16423][Ticket 16423]]
+
+---+++ GUMS template addition
+&lt;verbatim&gt;
+&lt;!-- Fermilab SeaQuest roles --&gt;
+&lt;groupMapping name=&quot;seaquest&quot; accountingVo=&quot;seaquest&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;seaquest&quot; 
+    voGroup=&quot;/fermilab/seaquest&quot;  
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; 
+    groupName=&quot;seaquest&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;seaquestpro&quot; accountingVo=&quot;seaquest&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;seaquestpro&quot; 
+    voGroup=&quot;/fermilab/seaquest&quot; 
+    voRole=&quot;production&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; 
+    groupName=&quot;seaquestpro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;seaquestana&quot; accountingVo=&quot;seaquest&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;seaquestana&quot; 
+    voGroup=&quot;/fermilab/seaquest&quot; 
+    voRole=&quot;analysis&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; 
+    groupName=&quot;seaquestana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;seaquestgli&quot; accountingVo=&quot;seaquest&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;seaquestgli&quot; 
+    voGroup=&quot;/fermilab/seaquest&quot; 
+    voRole=&quot;pilot&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; 
+    groupName=&quot;seaquestgli&quot;/&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Added seaquest, seaquestpro, seaquestana, seaquestgli to hostGroup className 
+
+---+++ Local accounts
+Add: seaquest, seaquestpro, seaquestana, seaquestgli
+
+---++ ENMR Configuration Change
+
+---+++ GUMS template addition
+&lt;verbatim&gt;
+&lt;!-- 59 ENMR --&gt;
+&lt;groupMapping name=&#39;enmr.eu&#39; accountingVo=&#39;enmr.eu&#39; accountingDesc=&#39;ENMR&#39;&gt;
+    &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+    url=&#39;https://voms2.cnaf.infn.it:8443/voms/enmr.eu/services/VOMSAdmin&#39;
+    persistenceFactory=&#39;mysql&#39;
+    name=&#39;enmr.eu&#39;
+    voGroup=&quot;/enmr.eu&quot;
+    sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+    sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;
+    matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&#39;true&#39; /&gt;
+    &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39;
+    groupName=&#39;enmr.eu&#39; /&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Add unix account enmr.eu
+
+---++ DOSAR Change VOMS Certificate
+[[https://ticket.grid.iu.edu/goc/16867][Ticket]]
+
+---+++ vomses change
+&lt;verbatim&gt;
+&quot;dosar&quot; &quot;voms.dosar.org&quot; &quot;15000&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=http/voms.dosar.org&quot; &quot;dosar&quot;
+&lt;/verbatim&gt;
+to
+&lt;verbatim&gt;
+&quot;dosar&quot; &quot;voms.dosar.org&quot; &quot;15000&quot; &quot;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=voms.dosar.org&quot; &quot;dosar&quot;
+&lt;/verbatim&gt;
+
+Recreated the vomsdir file for DOSAR
+
+---++ GLOW Change VOMS Certificate
+[[https://ticket.grid.iu.edu/goc/16848][Ticket]]
+
+---+++ .lsc file update
+Changed lsc file to contain
+
+&lt;verbatim&gt;
+/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=glow-voms.cs.wisc.edu
+/DC=com/DC=DigiCert-Grid/O=DigiCert Grid/CN=DigiCert Grid CA-1
+&lt;/verbatim&gt;
+
+---+ VO Package Files Location
+
+   * For ITB VO Files see:
+
+https://osg-svn.rtinfo.indiana.edu/pacman/vo-package/tags/release-48/
+
+   * For Production VO Files see:
+
+http://software.grid.iu.edu/pacman/tarballs/vo-package/
+
+
+
+
+
+
+-- Main.RobQ - 30 Jul 2013
+
+
+
+-- Main.RobQ - 30 Aug 2013
+
+
+
+-- Main.RobQ - 02 Oct 2013

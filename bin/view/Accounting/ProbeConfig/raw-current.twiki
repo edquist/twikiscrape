@@ -1,0 +1,71 @@
+Example of ProbeConfig:
+
+To configure a Gratia Probe.  One should modify the value of
+
+| *Gratia Configuration Variable=&amp;quot;Default&amp;quot;* | *Set value information* |
+| !ProbeName = &amp;quot;generic&amp;quot; | This value will be entered in the database to indicate where the record came from.&lt;br /&gt;We recommend a =batchsystem:FQDN= such as &quot;condor:fermigrid1.fnal.gov&quot;. |
+| !SiteName = &amp;quot;Generic Site&amp;quot; | This value is used in the report to refer to the site/farm/cluster to which the head node gives access. |
+| !VDTSetupFile = &amp;quot;&lt;tt&gt;MAGIC_VDT_LOCATION&lt;/tt&gt;/setup.sh&amp;quot; |Path to the VDT =setup.sh= file. Please expand =MAGIC_VDT_LOCATION=. |
+
+&lt;verbatim&gt;
+&lt;ProbeConfiguration 
+
+    Title1=&quot;Collector Information&quot;
+
+    CollectorHost=&quot;gratia-osg.fnal.gov:8880&quot;
+       Comments0=&quot;Collector host replaces SOAPHost&quot;
+    SSLHost=&quot;gratia-osg.fnal.gov:8443&quot; 
+    SSLRegistrationHost=&quot;gratia-osg.fnal.gov:8880&quot;
+
+    CollectorService=&quot;/gratia-servlets/rmi&quot; 
+    SSLCollectorService=&quot;/gratia-servlets/rmi&quot;
+    RegistrationService=&quot;/gratia-registration/register&quot;
+
+    Title2=&quot;Probe information and functional configuration&quot;
+
+    ProbeName=&quot;generic&quot; 
+       Comments1=&quot;ProbeName used to be spelled &#39;MeterName&#39;&quot;
+    SiteName=&quot;Generic Site&quot;
+    Grid=&quot;OSG&quot;
+    SuppressUnknownVORecords=&quot;0&quot;
+    SuppressNoDNRecords=&quot;0&quot;
+    SuppressGridLocalRecords=&quot;0&quot;
+    EnableProbe=&quot;0&quot;
+
+    Title3=&quot;Tuning parameter&quot;
+
+    BundleSize=&quot;20&quot;
+    MaxPendingFiles=&quot;100000&quot;
+    UseSyslog=&quot;0&quot;
+
+    LogLevel=&quot;2&quot;
+    DebugLevel=&quot;0&quot; 
+    LogRotate=&quot;31&quot;
+    GratiaExtension=&quot;gratia.xml&quot;
+
+    Title4=&quot;Authentication Configuration&quot;
+
+    UseSSL=&quot;0&quot; 
+    CertificateFile=&quot;/etc/grid-security/hostcert.pem&quot;
+    KeyFile=&quot;/etc/grid-security/hostkey.pem&quot;
+    UseGratiaCertificates=&quot;0&quot;
+       Comments2=&quot;If no directory is specified the gratia certificate file will be created in &#39;WorkingFolder&#39;/certs.&quot;
+    GratiaCertificateFile=&quot;gratia.probecert.pem&quot;
+    GratiaKeyFile=&quot;gratia.probekey.pem&quot;
+    
+
+    Title5=&quot;File and directory location&quot;
+
+    VDTSetupFile=&quot;MAGIC_VDT_LOCATION/setup.sh&quot;
+    UserVOMapFile=&quot;MAGIC_VDT_LOCATION/monitoring/grid3-user-vo-map.txt&quot;
+    CertInfoLogPattern=&quot;MAGIC_VDT_LOCATION/var/log/accounting/blahp.log-*&quot;
+       Comments51=&quot;Location and wildcard pattern of log files that contains certificate information about the jobs in the format followed by the &#39;blah demons&#39;.&quot;
+
+    DataFolder=&quot;MAGIC_VDT_LOCATION/gratia/var/data/&quot;
+    WorkingFolder=&quot;MAGIC_VDT_LOCATION/gratia/var/tmp&quot;
+    LogFolder=&quot;MAGIC_VDT_LOCATION/gratia/var/logs/&quot;
+/&gt;
+&lt;/verbatim&gt;
+
+
+-- Main.PhilippeCanal - 15 Dec 2006

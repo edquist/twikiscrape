@@ -1,0 +1,22 @@
+See also VDT ticket #5838 (http://crt.cs.wisc.edu/SelfService/Display.html?id=5838)
+
+---++ Installation
+   * Download the files attached to this twiki page and drop them in /tmp
+   * Back up $VDT_LOCATION/globus/lib/perl/Globus/GRAM/JobManager
+
+   * &lt;verbatim&gt;
+cp /tmp/ea_table.txt $VDT_LOCATION/vdt-app-data
+cp /tmp/uid_table.txt $VDT_LOCATION/vdt-app-data
+cd $VDT_LOCATION/globus/lib/perl/Globus/GRAM/JobManager
+patch -p1 &lt; /tmp/AccountingGroups.patch
+&lt;/verbatim&gt;
+
+   * Edit the ea_table.txt and uid_table.txt.   The UID table format is =[uid/username] [group]=.  The EA table format is =[perl-regex] [group]=.
+   * The UID table gets scanned first, and the first match wins.   If no match is found in the UID table, the extended attribute table is searched.
+   * Test with &lt;verbatim&gt;condor_q -constraint &#39;isUndefined(AccountingGroup) =!= True&#39; -format &#39;%s &#39; ClusterId -format &#39;%s\n&#39; AccountingGroup&lt;/verbatim&gt;
+
+---++ Helpful tips
+   * Accounting groups only get mapped once, when the remote job is submitted.  Use condor_qedit to change accounting groups in the queue.
+
+-- Main.BurtHolzman - 14 Mar 2011
+

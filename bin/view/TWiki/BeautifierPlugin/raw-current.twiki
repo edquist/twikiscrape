@@ -1,0 +1,154 @@
+---+ &lt;nop&gt;%TOPIC%
+
+This plugin allows you to have code fragments automatically formatted and highlighted. It uses the [[http://www.beautifier.org/][Beautifier library]] (included) written by Mike Jewell.
+
+
+---++ Syntax Rules
+
+   * Insert the code between =%&lt;nop&gt;CODE{&quot;&lt;i&gt;language&lt;/i&gt;&quot;}%= and =%ENDCODE%=.  The following table indicates the values used for the different languages:
+
+&lt;blockquote&gt;
+| *Language* | *Syntax* |
+| bash | =%&lt;nop&gt;CODE{&quot;bash&quot;}%= ... =%ENDCODE%= |
+| C++ | =%&lt;nop&gt;CODE{&quot;cpp&quot;}%= ... =%ENDCODE%= |
+| C# | =%&lt;nop&gt;CODE{&quot;csharp&quot;}%= ... =%ENDCODE%= |
+| Java | =%&lt;nop&gt;CODE{&quot;java&quot;}%= ... =%ENDCODE%= |
+| &lt;nop&gt;JavaScript | =%&lt;nop&gt;CODE{&quot;javascript&quot;}%= ... =%ENDCODE%= |
+| Lua | =%&lt;nop&gt;CODE{&quot;lua&quot;}%= ... =%ENDCODE%= |
+| Makefile | =%&lt;nop&gt;CODE{&quot;makefile&quot;}%= ... =%ENDCODE%= |
+| Perl | =%&lt;nop&gt;CODE{&quot;perl&quot;}%= ... =%ENDCODE%= |
+| PL/SQL | =%&lt;nop&gt;CODE{&quot;plsql&quot;}%= ... =%ENDCODE%= |
+| Python | =%&lt;nop&gt;CODE{&quot;python&quot;}%= ... =%ENDCODE%= |
+| PHP3 | =%&lt;nop&gt;CODE{&quot;php3&quot;}%= ... =%ENDCODE%= |
+| Scheme | =%&lt;nop&gt;CODE{&quot;scheme&quot;}%= ... =%ENDCODE%= |
+| TCL | =%&lt;nop&gt;CODE{&quot;tcl&quot;}%= ... =%ENDCODE%= |
+| HTML | =%&lt;nop&gt;CODE{&quot;html&quot;}= ... =%ENDCODE%= |
+| XML | =%&lt;nop&gt;CODE{&quot;xml&quot;}%= ... =%ENDCODE%= |
+| Verilog | =%&lt;nop&gt;CODE{&quot;verilog&quot;}%= ... =%ENDCODE%= |
+| VHDL | =%&lt;nop&gt;CODE{&quot;vhdl&quot;}%= ... =%ENDCODE%= |
+&lt;/blockquote&gt;
+
+Additional languages can be added since the Beautifier library is flexible and can support a wide range of language families.  Other languages can be added with relative ease by downloading the full PHP dist from http://www.beautifier.org and converting the relevant language file from PHP to Perl.
+
+---+++ Display Customisation
+
+The code fragments are formaated using CSS. To change the look, upload a new version of [[%PUBURL%/%WEB%/%TOPIC%/style.css][style.css]] to this topic.
+
+
+---++ Examples
+
+&lt;blockquote&gt;
+&lt;pre&gt;
+%&lt;nop&gt;CODE{&quot;cpp&quot;}%
+   void foo() {
+     print(&quot;Do stuff.\n&quot;);
+   }
+%ENDCODE%
+&lt;/pre&gt;
+&lt;/blockquote&gt; 
+
+
+---++ &lt;nop&gt;%TOPIC% Global Settings
+
+Plugin settings are stored as preferences variables. To reference a plugin setting write ==%&lt;nop&gt;&amp;lt;plugin&amp;gt;_&amp;lt;setting&amp;gt;%==, i.e. ==%&lt;nop&gt;BEAUTIFIERPLUGIN_SHORTDESCRIPTION%==
+
+   * One line description, is shown in the %TWIKIWEB%.TextFormattingRules topic:
+      * Set SHORTDESCRIPTION = Highlights and formats code fragments
+
+
+---++ Plugin Installation Instructions
+
+__Note:__ You do not need to install anything on the browser to use this plugin. The following instructions are for the administrator who installs the plugin on the server where TWiki is running. 
+
+   * Download the ZIP file from the Plugin web (see below)
+   * Unzip ==%TOPIC%.zip== in your twiki installation directory, this will also install the Beautifier library by default. Content:
+   * (Dakar) Visit =configure= in your TWiki installation, and enable the plugin in the {Plugins} section.
+   * To install the Beautifier library, either install it in the Perl library folder or unpack it into the twiki directory.  For the latter, the following files are installed:
+     | *File:* | *Description:* |
+   | ==data/TWiki/BeautifierPlugin.txt== | NEW |
+   | ==data/TWiki/VarCODE.txt== | NEW |
+   | ==lib/Beautifier/Context.pm== | NEW |
+   | ==lib/Beautifier/Core.pm== | NEW |
+   | ==lib/Beautifier/HFile.pm== | NEW |
+   | ==lib/Beautifier/Magic.pm== | NEW |
+   | ==lib/Beautifier/MagicConfig.pm== | NEW |
+   | ==lib/HFile/HFile_bash.pm== | NEW |
+   | ==lib/HFile/HFile_cpp.pm== | NEW |
+   | ==lib/HFile/HFile_csharp.pm== | NEW |
+   | ==lib/HFile/HFile_html.pm== | NEW |
+   | ==lib/HFile/HFile_java.pm== | NEW |
+   | ==lib/HFile/HFile_javascript.pm== | NEW |
+   | ==lib/HFile/HFile_lua.pm== | NEW |
+   | ==lib/HFile/HFile_makefile.pm== | NEW |
+   | ==lib/HFile/HFile_perl.pm== | NEW |
+   | ==lib/HFile/HFile_php3.pm== | NEW |
+   | ==lib/HFile/HFile_plsql.pm== | NEW |
+   | ==lib/HFile/HFile_python.pm== | NEW |
+   | ==lib/HFile/HFile_scheme.pm== | NEW |
+   | ==lib/HFile/HFile_tcl.pm== | NEW |
+   | ==lib/HFile/HFile_vhdl.pm== | NEW |
+   | ==lib/HFile/HFile_xml.pm== | NEW |
+   | ==lib/Output/ANSI.pm== | NEW |
+   | ==lib/Output/DocBook.pm== | NEW |
+   | ==lib/Output/HTML.pm== | NEW |
+   | ==lib/TWiki/Plugins/BeautifierPlugin.pm== | NEW |
+   | ==pub/TWiki/BeautifierPlugin/style.css== | NEW |
+
+
+   * Test if the installation was successful:
+
+%CODE{&quot;cpp&quot;}%
+#include &lt;nworld.h&gt;
+
+/**
+    @brief Advance the simulation by one timeslice.
+*/
+void nWorld::StepSim()
+{
+    // Iterate simulation loop
+    for (node = entityList.GetHead(); node != NULL; node = node-&gt;GetSucc())
+    {
+        entity = (nEntity*)node-&gt;GetPtr();
+        entity-&gt;Trigger(this, this-&gt;stepSize);
+    }
+}
+%ENDCODE%
+
+%CODE{&quot;unknown&quot;}%
+	testing an invalid language setting...
+%ENDCODE%
+
+
+---++ History
+
+| *Date* | *Change* | *Name* |
+| 20 May 2007 | added &lt;nop&gt;JavaScript language file, removed legacy CODE_&lt;i&gt;lang&lt;/i&gt; construct | TWiki:Main.WillNorris |
+| 30 Apr 2007 | warnings cleanup; no functional changes | TWiki:Main.WillNorris |
+| 27 Apr 2007 | automatically adds CSS for formatting code fragments | TWiki:Main.WillNorris |
+|  1 Jan 2006 | upgraded to TWiki::Func::extractNameValuePair for better parameter parsing, upgraded TWiki:Plugins.BuildContrib support | TWiki:Main.WillNorris |
+| 26 Jul 2003 | Syntax fixes from TWiki:Main/WillNorris  | TWiki:Main/LingLo |
+| 10 Feb 2003 | Syntax fix from TWiki:Main/JoshMore  | TWiki:Main/LingLo |
+| 28 Dec 2002 | Accepts mixed case language names | TWiki:Main/LingLo |
+| 20 Dec 2002 | Changed syntax to allow for simpler addition of new languages | TWiki:Main/LingLo |
+| 16 Oct 2002 | Added nebula nodes and links to Python scripts, but it doesn&#39;t work since the node names are usually in strings | TWiki:Main/LeafGarland |
+| 30 Jul 2002 | Added nebula nodes and links to TCL scripts | TWiki:Main/LeafGarland |
+| 30 Jul 2002 | Changed Beautifier::Core to use &#39;linkscripts&#39; | TWiki:Main/LeafGarland |
+| 28 Jul 2002 | Created | TWiki:Main/LingLo |
+
+
+---++ Plugin Info
+
+|  Plugin Author: | TWiki:Main/LingLo |
+|  Plugin Version: | 27 Apr 2007 |
+|  CPAN Dependencies: | none |
+|  Other Dependencies: | [[http://www.beautifier.org][Beautifier]] (supplied) |
+|  Perl Version: | 5.005 |
+|  Plugin Home: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC% |
+|  Feedback: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC%Dev |
+
+__Related Topics:__ %TWIKIWEB%.TWikiPreferences, %TWIKIWEB%.TWikiPlugins
+
+-- TWiki:Main.LingLo - 18 Dec 2002
+
+
+

@@ -1,0 +1,103 @@
+%TOC%
+
+&lt;!--
+   * Set EngageFqanExample = Engage
+--&gt;
+
+%EngageFqanExample%
+
+---++ 1. Overview
+
+The Engage VO (Virtual Organization) has been established to help new communities make use of Open Science Grid. For any questions or comments, please email Engage support at engage-team@opensciencegrid.org The purpose of this document is to provide some quick notes on things you need to do to run jobs on OSG as a member of the Engagement VO. If you need more detailed information than this document provides, see the OSG documentation.
+
+[[https://twiki.grid.iu.edu/twiki/bin/view/ReleaseDocumentation/OverviewOfServicesInOSG][Overview of Services in OSG]]
+
+[[https://twiki.grid.iu.edu/twiki/bin/view/Documentation/WebHome][OSG Documentation Hub]]
+
+---++ 2. Getting a Certificate
+
+Open Science Grid authentication is a single-sign on system based on X.509 certificates. In order to submit jobs you need a certificate for authentication. The process for acquiring the certificate involves using your web browser, and installing certificates on your client machine for the web browser to use. Best results have been had with Mozilla Firefox, but other browsers are known to also work. Make sure that you use your own computer, as you need to use the exact same browser for applying for and retrieving the certificate, and there  are perhaps a few days between these steps. 
+
+---++++ Updating the CA Chain
+
+The Digicert root and intermediate CA certs  are needed to add to the OS X Keychain (for example) or to the trusted issuer stores in your web browser. Instructions for this are available on this page https://twiki.grid.iu.edu/bin/view/Documentation/CertificateGetWeb   in the section titled: Downloading CA certificate files for new OSG DigiCert-based certificates
+
+---++++ Applying for a Personal Certificate
+
+%STARTSECTION{&quot;ApplyForDOECert&quot;}%
+To apply for a personal certificate, use a web browser and go to:
+
+[[http://oim.grid.iu.edu/oim/certificate][http://oim.grid.iu.edu/oim/certificate]]
+
+Select &quot;Request New Certificate&quot; from the menu in the upper left.. For Virtual Organization name, select &#39; *Engage* &#39;. Please include the name of your Engage contact in the comments section. If you require help, please contact the Engage team at engage-team@opensciencegrid dot org
+%ENDSECTION{&quot;ApplyForDOECert&quot;}%
+
+---++++ Retrieving/Exporting a Personal Certificate
+
+It may  take a day or two for the certificate to be approved. Once you receive email notification that the certificate has been approved and is available, follow these instructions on how to export the certificate to a Grid public/private key pair:
+
+[[https://twiki.grid.iu.edu/bin/view/Documentation/CertificateGetWeb]]
+
+Under the &amp;ldquo;Exporting your key pair for use by Globus grid-proxy-init&amp;rdquo; heading. note that after generating the usercert.pem and userkey.pem files in your $HOME/.globus directory, you need to change the permissions: chmod 600 ~/.globus/userkey.pem
+
+more details on certificates can be found here:
+[[https://www.racf.bnl.gov/docs/howto/grid/osg-certificates][https://www.racf.bnl.gov/docs/howto/grid/osg-certificates]]
+
+---++ 3. Joining the Engage VO
+
+%STARTSECTION{&quot;JoinTheEngageVO&quot;}%
+Once you have your certificate, you can join the Engage Virtual Organization (VO). Go to:
+
+%STARTSECTION{&quot;EngageVOMRSLink&quot;}%
+[[https://osg-engage.renci.org:8443/voms/Engage/][https://osg-engage.renci.org:8443/voms/Engage/]]
+%ENDSECTION{&quot;EngageVOMRSLink&quot;}%
+
+The browser should present your certificate to the server, and you should see something like this on the bottom of the page (but with your name):
+
+&lt;verbatim&gt;
+DN: /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=JANE DOE 72645
+&lt;/verbatim&gt;
+
+Fill out and submit the form. 
+%ENDSECTION{&quot;JoinTheEngageVO&quot;}%
+You will get a confirmation email, which asks you to click a link to verify your email address. Once that is done, in less than a day, you should receive an email stating that you are now part of the Engage VO.
+
+---++ 4. Submit Host
+
+%STARTSECTION{&quot;SubmitHostBasic&quot;}%
+The submit host is the machine managing your jobs. RENCI has a submit node for you to use with all of the client software pre-installed and configured. You could run your own, but until you are more familiar with the tools and how they work together, it is recommended to use RENCI&#39;s submit host. The current host is engage-submit3.renci.org. To get an account on this host, please email engage-team@opensciencegrid.org for instructions.
+%ENDSECTION{&quot;SubmitHostBasic&quot;}%
+
+---++ 5. Initializing a User Proxy
+%STARTSECTION{&quot;InitUserProxyBasic&quot;}%
+Note that you will have to have your certificate exported as mentioned above, and placed in ~/.globus/ on the submit host. A proxy is a time limited version of your certificate. The proxy is what is actually presented to the remote site during authentication. To create a proxy, use the voms-proxy-init command:
+
+&lt;pre&gt;[rynge@nantahala ~]$ voms-proxy-init -voms %EngageFqanExample% -valid 72:00
+Cannot find file or dir: $prefix/etc/vomses
+Your identity: /DC=org/DC=doegrids/OU=People/CN=Mats Rynge 722233
+Enter GRID pass phrase:
+Creating temporary proxy ...................................... Done
+Contacting  osg-engage.renci.org:15001 [/DC=org/DC=doegrids/OU=Services/CN=osg-engage.renci.org] &quot;Engage&quot; Done
+
+Creating proxy ............................................ Done
+Your proxy is valid until Thu Apr  5 10:29:08 2007
+&lt;/pre&gt;
+
+Note that you can specify how long the proxy should be valid for. It should be long enough for the job run to finish, but should not be longer than 72 hours. You might see some warnings in the output of voms-proxy-init. Do not worry about them as long as you get a proxy at the end. You can check the proxy with voms-proxy-info:
+
+&lt;verbatim&gt;
+[rynge@nantahala ~]$ voms-proxy-info
+WARNING: Unable to verify signature! Server certificate possibly not installed.
+Error: Cannot find certificate of AC issuer for vo Engage
+subject   : /DC=org/DC=doegrids/OU=People/CN=Mats Rynge 722233/CN=proxy
+issuer    : /DC=org/DC=doegrids/OU=People/CN=Mats Rynge 722233
+identity  : /DC=org/DC=doegrids/OU=People/CN=Mats Rynge 722233
+type      : proxy
+strength  : 512 bits
+path      : /tmp/x509up_u1031
+timeleft  : 23:20:17
+&lt;/verbatim&gt;
+%ENDSECTION{&quot;InitUserProxyBasic&quot;}%
+
+
+-- Main.Engage - 29 May 2013

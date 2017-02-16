@@ -1,0 +1,54 @@
+---++ Koji-Hub Upgrade Plan
+
+Upgrading koji-hub will require a day of downtime and timely assistance from CHTC infrastructure, so we need to schedule a day that works for everyone.
+
+Tasks which we can do are marked with (OSG); tasks that CHTC infrastructure needs to do are marked with (INF).
+
+---+++ Before
+
+Schedule one day of downtime; inform osg-software, bbockelm, and the goc, since the following things will not work while koji-hub is down:
+   * koji builds
+   * mash scripts at repo.grid.iu.edu (goc repo updates)
+   * mash scripts at hcc
+   * installs from minefield
+
+---+++ Upgrade
+
+   1. =(OSG)= Inform osg-software that downtime has started and they should not attempt to build
+   1. =(OSG)= Shut down koji-hub
+   1. =(OSG)= Stop postgres on db-01 and make a backup of the database (dirclone /var/lib/pgsql /var/lib/pgsql.snapshot)
+   1. =(INF)= Take out the hard drives from koji-hub and put in two blank 1TB hard drives; set them up for hardware RAID-1
+   1. =(INF)= Install the latest SL6 (minimal install + puppet), keeping the name as koji-hub.batlab.org, partitioned as follows:
+      * 40G for /var/lib/mock
+      * 30G for /
+      * 30G for /var
+      * Remainder for /mnt/koji
+   1. =(INF)= Run puppet and set up the machine to use CHTC logins
+   1. =(INF)= Shut off the machine, put the old hard drives into the other two drive bays, turn on the machine
+   1. =(OSG)= Mount the partitions from the old hard drives, read-only:
+      1. Edit /etc/fstab and add:&lt;pre class=&quot;file&quot;&gt;
+UUID=1bc76f3e-6762-4ef3-beae-4c4c10dd90c8  /mnt/oldkoji           ext4  noauto,ro  1 1
+UUID=110be48f-a256-45ac-852d-cf8c7030f96f  /mnt/oldkoji/home      ext4  noauto,ro  1 2
+UUID=815e97cf-08fe-4221-8e0c-49ea49a2d9a5  /mnt/oldkoji/mnt/koji  ext4  noauto,ro  1 2
+&lt;/pre&gt;
+      1. Create the mount points: &lt;code&gt;mkdir -p /mnt/oldkoji/{home,mnt/koji}&lt;/code&gt;
+      1. Mount: &lt;code&gt;mount /mnt/oldkoji; mount /mnt/oldkoji/home; mount /mnt/oldkoji/mnt/koji&lt;/code&gt;
+      * Note: get help from inf right away if something breaks here
+   1. =(OSG)= Follow the &quot;Restoring Koji-Hub&quot; section in MatyasSelmeciKojiHubRestoreRecipe, except restore from /mnt/oldkoji instead of backups
+   1. =(OSG)= Start postgres on db-01
+   1. =(OSG)= Follow the &quot;Starting Services and Validation&quot; section in the restore recipe
+   1. =(OSG)= Send an all-clear to osg-software
+
+---+++ Afterward
+
+   1. =(INF)= Turn Nagios monitoring back on if necessary
+   1. =(INF)= Set up Nagios monitoring for koji-hub&#39;s hardware RAID
+
+---+++ Rollback
+
+   1. =(OSG)= Shut down koji-hub
+   1. =(OSG)= Stop postgres on db-01
+   1. =(OSG)= Restore postgres database from snapshot on db-01 (dirclone /var/lib/pgsql.snapshot /var/lib/pgsql)
+   1. =(OSG)= Start postgres on db-01
+   1. =(INF)= Remove the new hard drives from koji-hub and put the old hard drives back in
+   1. =(INF)= Start koji-hub

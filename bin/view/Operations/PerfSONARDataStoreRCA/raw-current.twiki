@@ -1,0 +1,113 @@
+---+ Root Cause Analysis of Reported PerfSonar DataStore Issue
+
+---++ Introduction
+After the 23-Aug-2016 Maintenance Window the !PerfSONAR datastore at psds failed to restart collecting and sending network metrics.  
+
+---++ Timeline
+   * 4 Jul Marian B discovered a bug that potentially sends duplicated summaries to CERN AMQ and creates a [[https://github.com/opensciencegrid/rsv-perfsonar/pull/1][PR]]
+   * 6 Jul Edgar tested Marian&#39;s PR on dev node fermicloud164.fnal.gov with no duplicate summaries created. 
+   * 7 Jul Edgar tags rsv-perfsonar 1.1.3 with the fix
+   * 4 Aug [[https://jira.opensciencegrid.org/browse/SOFTWARE-2385][SOFTWARE-2385]] is closed and released on OSG August&#39;s release.
+   * 16 Aug ITB master datastore (psds-itb1) updated and frozen; appears to be functioning properly
+   * 23 Aug Normal Maintenance window update on master datastore (psds0)
+      * yum update esmond
+      * yum update rsv-perfsonar
+      * Edgar reports problems with RSV posting
+      * ITB master datastore continues to operate without problems
+      * Shawn flying to Shanghai and out of contact.
+   * 24 Aug Operations restarts Postgres based on Edgar&#39;s request
+      * Edgar reports there is still a problem
+   * 26 Aug Ticket Closed prematurely
+      * Ticket reopened same day when Shawn reports there are still problems
+   * 31 Aug Operations posts some log contents to ticket
+      * GOC checked esmond and pgsql versions, psql versions are different 9.4.6 on prod, 9.4.8 on itb
+   * 1 Sep ESNet added to ticket for guidence
+      * Brian adds this is a problem for a student using the data from UNL
+   * 3 Sep Shawn returns from China trip (where he had limited access to email and remote systems)
+   * 6 Sep Troubleshooting call determines Apache was not restarted after upgrade attributing to at least some of the issue
+      * esmond had new configuration /etc/httpd/conf.d/apache-esmond.conf
+      * new files were moved to /usr/lib/esmond/esmond
+      * Service restarted and normal operations for ~4 hours
+      * After 4 hours memory swapping begins and service stops publishing
+      * Shawn begins the process of discussing data recovery from the outage
+   * 7 Sep Full reboot performed and memory available to the VM updated from 12G to 16G
+   * 8 Sep 17:56 CEST After Edgar suggests checking RPM versions of condor, condor-cron, and rsv packages, Tom notes, &quot;The version of condor is the same, but production lags behind ITB on condor-cron and rsv.&quot;
+   * 8 Sep 18:16 CEST Shawn reports additional RPMS that were older on Production vs ITB
+   * 8 Sep 19:05 CEST By Edgar&#39;s request Tom looks in /var/log/rsv/consumers/html-consumer.err and discovers &quot;insecure string pickle&quot; error
+   * 8 Sep 21:10 CEST Edgar notices that several RPMs besides the ones updated are out of date compared to ITB
+   * 8 Sep 21:15 CEST On advice from both Shawn and Edgar, Tom restarts simplevisor on psds0, which appears to reset the memory usage of stompclt for now, but doesn&#39;t restore data flow to CERN
+   * 8 Sep 21:36 CEST By request Tom updates all the RPMs on production that Shawn noted were lagging and reboots psds0 (this seemed to be an important part of getting back to a working state)
+   * 8 Sep 22:17 CEST Tom deletes /usr/share/rsv/www/state.pickle, stops simplevisor and stompclt, and runs stompclt from the command line as a test
+   * 8 Sep 22:26 CEST Shawn posts graph showing that data is being published to CERN (Hendrik Borras confirms this)
+   * 8 Sep 22:33 CEST On advice from Marian, Tom interrupts command-line stompclt to obtain its stats (and starts simplevisor again), producing the following:
+      * =# 2016/09/08-20:31:48 stompclt[47740]: main lingering=
+      * =processed 31731 messages in 1636.728 seconds (0.019 k msg/sec)=
+      * =throughput is around 0.140 MB/second=
+      * =# 2016/09/08-20:31:48 stompclt[47740]: main stopping=
+      * =stompclt: unexpected ERROR frame received: User CN=OSG Operations Center, OU=People, O=Open Science Grid, DC=DigiCert-Grid, DC=com is not authorized to write to: topic://perfsonar.summary.packet-loss-rate-bidir=
+   * 8 Sep 23:45 CEST CERN stops receiving data again, according to both Hendrik Borras and Shawn
+   * 9 Sep 18:22 CEST Tom deletes /usr/share/rsv/www/state.pickle and restarts simplevisor; Shawn reports that this starts data being published to CERN again (but it doesn&#39;t last)
+   * 10 Sep Service restarted and memory usage shows signs of returning to normal. 
+      * Memory usage visualization in attachments.
+      * Memory usage continues to rise and is associated with the &quot;stompclt&quot; process that is supposed to send data to the ActiveMQ at CERN
+   * 12 Sep 10:00 CEST Marian reports that the CERN broker was re-configured to accept topic &quot;packet-loss-bidir&quot; following Tom&#39;s earlier report on stompclt run from command line. In July the CERN broker was re-configured &quot;to introduce new topics and have per-topic authorisation&quot;; this predates the appearance of the issue but cannot have caused it, as it was working until late August.
+   * 12 Sep 20:56 CEST Scott reboots psds0; stompclt starts publishing data to CERN and doesn&#39;t stop this time
+   * 12 Sep 21:31 CEST After that reboot, Tom reports the following stompclt errors in syslog (times are UTC; CEST = UTC + 2):
+      * =Sep 12 18:38:21 psds0 stompclt[2911029]: [ERROR] failed to flush outgoing buffer (13469824136 bytes)!=
+      * =Sep 12 19:02:08 psds0 stompclt[2589]: [WARNING] removing too old volatile file: /usr/local/rsv-perfsonar//57d6f9c8/57d6f9ef92b9eb.tmp=
+   * 13 Sep 10:00 CEST Lionel points out that outgoing buffer in stompclt should be normally empty as it&#39;s only used to buffer data before sending them to a socket. Buffer this big (13469824136 bytes) suggests communication with socket is not working (possible cause might be a network problem on psds0). Lionel suggests to re-configure stompclt to limit the maximum size of this buffer (by adding window=100 in its configuration) and also suggests &quot;reliable = true&quot; setting
+   * 13 Sep 20:30 CEST Tom adds &quot;window = 100&quot; and &quot;reliable = true&quot; to stompclt configuration in /etc/rsv/stompclt/default.conf and restarts simplevisor/stompclt
+
+---++ Analysis 
+      The analysis is ongoing.
+
+   * Tom&#39;s current but quite incomplete hypothesis:
+      * Some sort of configuration change of unknown nature was done between 26 July and 23 Aug that did not take effect until the reboot of 23 Aug.
+      * This configuration change&#39;s known properties:
+         * It noticeably affected only stompclt&#39;s data publishing to the CERN broker and nothing else.
+         * It caused the TCP socket to allow traffic for a few hours, then somehow become latched. Perhaps a buffer filled up, perhaps some sort of kernel/driver bug occurred. (Perhaps something else.)
+         * This socket latching did not behave like a full buffer, which would still send some data and then accept new data from stompclt as space became available. It simply stopped sending.
+         * It seems to be related to the TCP socket stompclt was using, and not the network interface in general, because networking continued to function overall, and restarting stompctl (causing the old socket to close and a new one to open) would temporarily alleviate the problem.
+         * It did not affect the ITB instance, either because the change was not made to the ITB instance, other changes were also made to the ITB instance (but not the production instance) that negated the problem, or the circumstances that activated the problem did not arise on ITB (higher traffic levels on the production instance, for example).
+      * Once the TCP socket latched, stompclt was unable to transmit and began to expand in memory usage.
+      * Some change made between 10 Sep and 12 Sep altered the circumstances enough that the 12 Sep reboot of psds0 restored service and the issue stopped materializing. It did not restore service before this because stompclt&#39;s TCP socket was already latched, and/or because it did not take effect until a reboot of the system.
+   * Strengths of this hypothesis:
+      * It does fit the data
+   * Weakness of this hypothesis:
+      * It leaves many questions unanswered: what change caused the issue? Why didn&#39;t it affect ITB? What change resolved the issue?
+
+   * Any complete hypothesis must explain the data:
+      * The issue began to manifest with the reboot of 23 Aug, and not before or after
+      * Stompclt would work for 1-4 hours after being restarted, then cease to publish data and instead begin to fill up memory (according to Lionel, the only situation where this can happen is if the TCP socket that stompclt has opened suddenly stops accepting input)
+      * Updating psds0&#39;s RPM packages to the same versions the ITB instance was using, then rebooting psds0, did not solve the problem
+      * The reboot of 12 Sep made the issue cease to occur despite no (known) changes to psds0
+      * The problem didn&#39;t affect the ITB instance
+
+---++ Follow Up Actions
+
+---+++ Update procedures
+
+One issue noted was that the ITB instance of the OSG network service was not having problems. When we compared the software package versions on the ITB vs Production we noticed that a number of them were (much) older on the Production systems. Another issue was that Production systems were not restarted after updates were applied. Because of the very old version of one of the RPMS a fix (from February) was missing that would have restarted a reconfigured service when the new RPM was installed. Since that fix was missing and the services/system were not restarted, the Production instances were running with a mix of old and new services.  
+
+   * We should have a policy of updating RPMs to match ITB versions on Production as we move updates in place (to make this possible, we must keep careful track of the RPMs updated on ITB so these changes can be replicated on production)
+   * Production updates should be applied before the system is restarted (stated another way, we should ensure that the system is rebooted after the production updates, whether or not it was rebooted prior to them)
+
+---+++ Access to logging
+
+One of the primary tools of evaluating and fixing any service issue is troubleshooting log and error messages. 
+
+   * All developers of services hosted by OSG Operations should have access to logging on the service they develop. This will allow quicker troubleshooting of problems. This will be done by delivering logging to a non-production location where developers will be given access. This extends to all operational services not only Perfsonar. 
+
+---+++ Training and Experience
+
+PSDS has been a production service for less than a year and the technologies used Cassandra and Esmond are still not well understood by operations staff. 
+   * Ops staff will seek out user communities and training sessions for Cassandra to become more familiar with these technologies. 
+   * Esmond is a ESNet product and not widely used outside of OSG and ESNet. ESNet developers should create a troubleshooting guide to be added to the Perfsonar Operations document. 
+   * Experience and familiarity with services is the main source of education about how to handle production service failures. This will only come by experiencing outages.
+
+---++ Reference
+
+[[https://ticket.grid.iu.edu/30823][Primary Ticket]]
+
+-- Main.RobQ - 13 Sep 2016
+

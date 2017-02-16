@@ -1,0 +1,127 @@
+&lt;!-- This is the default OSG Trash/Trash/Integration template. 
+Please modify it in the sections indicated to create your topic!
+If you have any comments/complaints about this template, then please email me:
+rwg@hep.uchicago.edu.  (Adapted from Atlas wiki template, Ed Moyse)
+--&gt; 
+
+&lt;!-- By default the title is the WikiWord used to create this topic !--&gt;
+&lt;!-- if you want to modify it to something more meaningful, just replace %TOPIC% below with i.e &quot;My Topic&quot;!--&gt;
+
+---+!!&lt;nop&gt;Gratia Grid Accounting Project
+%TOC%
+%STARTINCLUDE%
+
+---++Introduction
+
+The implementation of the OSG Accounting System is named Gratia and follows the requirements
+and design described in these [[http://osg-docdb.opensciencegrid.org/cgi-bin/ShowDocument?docid=205&amp;version=1][documents]].
+
+See also the [[http://osg.ivdgl.org/twiki/pub/Accounting/WebHome/AccountingProjectDefinition1.doc][Full Project Definition]].
+
+---++Readiness and Trash/Trash/Integration Plan
+
+We describe a service readiness and integration plan for the Gratia Grid
+Accounting System following guidelines set forth in
+[[http://osg.ivdgl.org/twiki/bin/view/Trash/Trash/Trash/Trash/Integration/NewOSGServices?rev=5][New OSG Services]]. This version of the document pertains to the Gratia
+projects readiness plan for OSG 0.6.0.
+
+---+++ Description of Service
+
+See the
+[[http://osg.ivdgl.org/twiki/pub/Accounting/WebHome/AccountingProjectDefinition1.doc][Full Project Definition]] and
+[[http://osg-docdb.opensciencegrid.org/cgi-bin/ShowDocument?docid=205&amp;version=1][requirement and design documents]].
+
+#CentralServices Running the Gratia services is not necessary to gain
+the advantage of access to accounting data for a site: one can install
+only the appropriate probes and use the central Gratia servers (=BANANA=
+Twiki link to server list).
+
+---+++ Dependencies and Other Services
+
+Running the Gratia services requires a Tomcat 5.5 container and a Mysql
+5.0 or greater DB, neither of which are required to be running on the
+compute element or gatekeeper.
+
+Running the Condor probe requires patches to condor.pm and
+managedfork.pm for VDT releases up through 1.5.0.
+
+---+++ Required Resources
+
+The Gratia services require Java 5, a running Tomcat 5.5 with at least
+(=BANANA= XXXMB) memory allocated to it, and a Mysql 5 or better
+DB. There are different requirements for each probe (=BANANA= links),
+but at a minimum they all require at least Python v2.2.
+
+---+++ Server requirements
+
+A local instance of the Gratia services is not required: see
+[[#CentralServices][above]].
+
+Locally an appropriately configured Tomcat/Apache server is required and
+access to a Mysql database, neither of which need be on the compute
+element or gatekeeper. The Tomcat container should be allocated at least
+(=BANANA= XXXMB memory).
+
+---+++ Packaging
+
+Gratia Services will be packaged with VDT via pacman; probes will be
+available via VDT or by RPM direct from the [[ProbeInstallation][Gratia Probe Installation Page]].
+
+---+++ Installation and Configuration
+
+Via VDT: =BANANA= provide pacman line; configuration procedure TBA.
+
+Probes via RPM: see [[ProbeInstallation][Gratia Probe Installation Page]].
+
+---+++ Testing and Validation
+
+Probes and Services are tested on Fermilab&#39;s test batch facilities
+before being propagated to local and volunteer external sites for final
+pre-release validation.
+
+A Gratia Services installation may be tested by running a test probe
+(not yet available). Individual probes may be tested by checking for
+expected data either through a Gratia Services report page or through
+direct DB queries and comparison with probe log files.
+
+---+++ Validation
+
+---++++ Scalability
+
+=BANANA= Greg: current Services handling speed in records per min, say?
+
+---++++ Known Problems and Issues
+
+Currently access to accounting data is unrestricted. A future
+enhancement will restrict direct DB access to the data and provided
+role-based access to reports based upon browser-provided certificates.
+
+Patching condor.pm and managedfork.pm for VDT versions prior to 1.6.0
+may be non-trivial if these files have already been customized locally.
+
+Once sent to the Gratia collector, information from the Condor probe is
+discarded. If the collector loses this information (DB destruction),
+these data may not be reconstructible.
+
+For each site, a user -&gt; VO map file is required currently as there is
+no universal mechanism for obtaining these data from the underlying
+batch system for the currently available probes. 
+
+---++ Contact Information
+
+Send comments and questions to osg-accounting@opensciencegrid.org.
+
+---+++ More Documentation
+
+See the current documentation at http://osg.ivdgl.org/twiki/bin/view/Accounting/WebHome
+
+&lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+
+*Major updates*:%BR%
+&lt;!--Future editors should add their signatures beneath yours!--&gt;
+-- Main.PhilippeCanal - 14 Oct 2005
+
+-- Main.ChrisGreen - 09 Oct 2006
+
+%STOPINCLUDE%

@@ -1,0 +1,26 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+
+%RED%
+WARNING! This page is for an older version of Hadoop.
+For newer versions, please visit [[Documentation/Release3.InstallHadoopSE][Hadoop Release 3 Installation]]
+%ENDCOLOR%
+
+%TOC%
+
+---+ Gratia Validation
+
+---++ Local validation
+
+   1 Run the gridftp validation; transfer at least one file so there are transfers to report to Gratia.
+   1 Verify that the gratia probe&#39;s cron job shows up in =/etc/cron.d/gratia-probe-gridftp-transfer.cron=
+   1 Run the cron script by hand:
+      &lt;verbatim&gt;/opt/vdt/gratia/probe/gridftp-transfer/gridftp-transfer_meter.cron.sh&lt;/verbatim&gt;
+   1 Verify that the exit code was 0; &lt;verbatim&gt;echo $?&lt;/verbatim&gt;
+   1 Examine the log file, =/opt/vdt/gratia/var/logs/&amp;lt;date&amp;gt;.log=.  Verify there are no error messages or exceptions.
+
+---++ Collector validation
+   1 Go to the web interface for the Gratia collector.  Usually, this is http://&amp;lt;collector host&amp;gt;:&amp;lt;port&amp;gt;/gratia-reporting.  [[http://gratia-osg-transfer.opensciencegrid.org/gratia-reporting/][For the OSG transfer collectory, click here]].
+   1 Click on the &quot;Custom SQL Report&quot;
+   1 Run the following query:
+      &lt;verbatim&gt; select * from MasterTransferSummary where StartTime &gt;= DATE_SUB(NOW(), INTERVAL 4 DAY) and ProbeName like &#39;%.&lt;hostname&gt;&#39; limit 10;&lt;/verbatim&gt;
+      Replace the word &quot;&lt;hostname&gt;&quot; with your actual hostname.  The query should return results (if necessary, wait 5 minutes and try again), assuming your probe reported some data.

@@ -1,0 +1,161 @@
+---+ Package =TWiki::Users::BaseUserMapping=
+
+User mapping is the process by which TWiki maps from a username (a login name)
+to a display name and back. It is also where groups are maintained.
+
+The BaseMapper provides support for a small number of predefined users.
+No registration - this is a read only usermapper. It uses the mapper
+prefix &#39;BaseUserMapping_&#39;.
+
+---++ Users
+   * TWikiAdmin - uses the password that was set in Configure (IF its not null)
+   * TWikiGuest
+   * UnknownUser
+   * TWikiContributor - 1 Jan 2005
+   * TWikiRegistrationAgent - 1 Jan 2005
+
+---+++ Groups
+   * $TWiki::cfg{SuperAdminGroup}
+   * TWikiBaseGroup
+
+
+%TOC%
+
+---++ ClassMethod *new* &lt;tt&gt;($session)&lt;/tt&gt;
+
+Construct the BaseUserMapping object
+
+
+
+---++ ObjectMethod *finish* &lt;tt&gt;()&lt;/tt&gt;
+Break circular references.
+
+
+
+---++ ObjectMethod *loginTemplateName* &lt;tt&gt;() -&gt; templateFile&lt;/tt&gt;
+
+allows UserMappings to come with customised login screens - that should preffereably only over-ride the UI function
+
+
+
+---++ ObjectMethod *handlesUser* &lt;tt&gt;($cUID,$login,$wikiname) -&gt; $boolean&lt;/tt&gt;
+
+See baseclass for documentation.
+
+In the BaseUserMapping case, we know all
+the details of the users we specialise in.
+
+
+
+---++ ObjectMethod *login2cUID* &lt;tt&gt;($login) -&gt; $cUID&lt;/tt&gt;
+
+Convert a login name to the corresponding canonical user name. The
+canonical name can be any string of 7-bit alphanumeric and underscore
+characters, and must correspond 1:1 to the login name.
+(undef on failure)
+
+
+
+---++ ObjectMethod *getLoginName* &lt;tt&gt;($cUID) -&gt; login&lt;/tt&gt;
+
+converts an internal cUID to that user&#39;s login
+(undef on failure)
+
+
+
+---++ ObjectMethod *getWikiName* &lt;tt&gt;($cUID) -&gt; wikiname&lt;/tt&gt;
+
+Map a canonical user name to a wikiname
+
+
+
+---++ ObjectMethod *userExists* &lt;tt&gt;($user) -&gt; $boolean&lt;/tt&gt;
+
+Determine if the user already exists or not.
+
+
+
+---++ ObjectMethod *eachUser* &lt;tt&gt;() -&gt; listIteratorofcUIDs&lt;/tt&gt;
+
+See baseclass for documentation.
+
+
+
+---++ ObjectMethod *eachGroupMember* &lt;tt&gt;($group) -&gt; listIteratorofcUIDs&lt;/tt&gt;
+
+See baseclass for documentation.
+
+The basemapper implementation assumes that there are no nested groups in the
+basemapper.
+
+
+
+---++ ObjectMethod *isGroup* &lt;tt&gt;($name) -&gt; boolean&lt;/tt&gt;
+
+See baseclass for documentation.
+
+
+
+---++ ObjectMethod *eachGroup* &lt;tt&gt;() -&gt; ListIteratorofgroupnames&lt;/tt&gt;
+
+See baseclass for documentation.
+
+
+
+---++ ObjectMethod *eachMembership* &lt;tt&gt;($cUID) -&gt; ListIteratorofgroupsthisuserisin&lt;/tt&gt;
+
+See baseclass for documentation.
+
+
+
+---++ ObjectMethod *isAdmin* &lt;tt&gt;($cUID) -&gt; $boolean&lt;/tt&gt;
+
+True if the user is an admin
+   * is a member of the $TWiki::cfg{SuperAdminGroup}
+
+
+
+---++ ObjectMethod *getEmails* &lt;tt&gt;($name) -&gt; @emailAddress&lt;/tt&gt;
+
+If $name is a cUID, return their email addresses. If it is a group,
+return the addresses of everyone in the group.
+
+
+
+---++ ObjectMethod *findUserByWikiName* &lt;tt&gt;($wikiname) -&gt; listofcUIDsassociatedwiththatwikiname&lt;/tt&gt;
+
+See baseclass for documentation.
+
+
+
+---++ ObjectMethod *checkPassword* &lt;tt&gt;($login,$passwordU) -&gt; $boolean&lt;/tt&gt;
+
+Finds if the password is valid for the given user.
+
+Returns 1 on success, undef on failure.
+
+
+
+---++ ObjectMethod *setPassword* &lt;tt&gt;($cUID,$newPassU,$oldPassU) -&gt; $boolean&lt;/tt&gt;
+
+If the $oldPassU matches matches the user&#39;s password, then it will
+replace it with $newPassU.
+
+If $oldPassU is not correct and not 1, will return 0.
+
+If $oldPassU is 1, will force the change irrespective of
+the existing password, adding the user if necessary.
+
+Otherwise returns 1 on success, undef on failure.
+
+
+
+---++ ObjectMethod *passwordError* &lt;tt&gt;() -&gt; $string&lt;/tt&gt;
+
+returns a string indicating the error that happened in the password handlers
+TODO: these delayed error&#39;s should be replaced with Exceptions.
+
+returns undef if no error
+
+
+

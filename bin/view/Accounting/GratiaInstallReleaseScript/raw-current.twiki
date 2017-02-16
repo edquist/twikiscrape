@@ -1,0 +1,76 @@
+---+!! &lt;nop&gt;The Gratia install-release script.
+
+&lt;!--
+   * Set VIEWTHISTOPIC = &lt;div class=&quot;twikiSmall&quot;&gt;&lt;a href=&quot;%TOPIC%&quot;&gt;View this section&lt;/a&gt;&lt;/div&gt;
+--&gt; 
+%TOC% 
+%STARTINCLUDE%
+
+---++ The Gratia install-release script.
+
+%VIEWTHISTOPIC%
+
+This script is a wrapper around gratia-upgrade.sh, as an attempt to reduce the options and arguments required in the most common cases.
+
+Usage information follows below:
+
+&lt;verbatim&gt;
+install-release [&lt;opt&gt;] &lt;release&gt;
+install-release [&lt;opt&gt;] -B &lt;official-build&gt;
+install-release [&lt;opt&gt;] -L &lt;full-release-path&gt;
+install-release [-h]
+
+Build Types:
+   Default
+      Official release (found as ~gratia/gratia-releases/gratia-&lt;release&gt;.
+   -B
+      Official build (found as ~gratia/gratia-builds/gratia-&lt;official-build&gt;.
+   -L
+      Local build (found as &lt;full-release-path&gt;).
+
+Help:
+   -h
+      This help.
+
+Options:
+   -a
+      Auto-start collector (default no start).
+
+   -c &lt;config&gt;
+      Instance name is tomcat-&lt;config&gt; (except see -p).
+
+   -p
+      Production: instance name is tomcat-gratia, config-name=&lt;config&gt;
+
+   -v
+      Verbose: mention a little more about what we&#39;re doing.
+
+Default config name is current user name (XXX), unless -p is
+specified (in which case there is no default and -c is required).
+
+Examples
+
+   Install and start a development collector tomcat-greenc as root on
+   the machine in question:
+
+      install-release -a -c greenc -L ~greenc/gratia-test
+
+   Install and start a development collector tomcat-greenc remotely
+   (assuming user is greenc):
+
+      install-release -a -L ~greenc/gratia-test
+
+   Install an integration collector with the latest build (manual
+   start):
+
+      install-release -c itb_gratia_itb -B latest
+
+NOTES
+
+   Any specified instance (either explicitly with -c or implicitly as
+   &lt;user&gt;) must correspond to a configuration cluse in a collector-*.dat
+   file. See gratia/common/configuration/collector*.dat for examples.
+
+&lt;/verbatim&gt;
+
+-- Main.ChrisGreen - 28 Oct 2009

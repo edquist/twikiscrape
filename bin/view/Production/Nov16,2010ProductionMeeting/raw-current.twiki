@@ -1,0 +1,152 @@
+-- Main.DanFraser - 15 Nov 2010
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+---++ Action/Significant Items:
+   * The issue where the CERN BDII was dropping BNL was temporarily corrected by lengthening the timeouts from 30s to 120s and decreasing the amount of data published by BNL. Last week however it was recognized that underlying issue was a network issue. Several folks from the GOC, Internet2, and FNAL spent some time looking into this. The issue was finally traced to the Indiana GigaPOP and appears, as of earlier today, to have been resolved. (Rob, Burt, Xin, Dan, ...)
+      * Assuming that the problem stays fixed for the next 12 hours or so, the next step will be for BNL to start publishing the full amount of data again sometime tomorrow. (Xin)
+   * A BDII issue on the ITB required an LDAP restart yesterday. Based on discussions with the BDII developers, there is a known issue with OpenLDAP when running in a VM, as IS3 BDII v5 is currently doing at the GOC. Because of this issue, we will NOT move IS3 into the production round robin next week. We will be updating the plan on how to proceed with the v5 upgrade. (Rob, Dan)
+   * There will be a power outage at FNAL on Thursday between 5am and 8am to fix a faulty breaker. This will affect Gratia, !ReSS, 
+     and all FermiGrid-managed gatekeepers (FNAL_FERMIGRID, FNAL_GPGRID_1). 
+
+---++ Attendees:
+   * Xin, Armen, Britta, Suchandra, Burt, Marco, Marcia, Rob Q., Scott T., Mine, Chander, Dan
+ 
+---++ CMS (Burt)
+   * LHC: Very smooth transition to Pb+Pb -- from zero to 121 x 121 bunches, up to 120 Hz.  We are really exercising CASTOR (CERN&#39;s tape system).
+   * 252 khour/day, 87% success rate.
+   * BDII issues - spent some time debugging on OSG&#39;s dime.
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * LHC running stable heavy ion collisions since last Monday. Quite a good progress since then. Number of bunches per beam up from 2 to 121. ATLAS data reprocessing campaign moving quite nicely, without major problems. Main issue in all T1 at the moment is storage availability.Production at US is stable at the level of ~10k running jobs. Will start last part of data reprocessing shortly (include October runs). T1(s) are doing the data reprocessing, and T2(s) at the moment are finishing Geant simulation, and later will move to reprocessing of those simulated samples. 
+   * Job statistics for last week. 
+      * Gratia report: USATLAS ran 1.4M jobs, with CPU/Walltime ratio of 81%. 
+      * Panda world-wide production report (real jobs): 
+         * completed 772K managed/group MC production, validation and reprocessing jobs.
+         * average 110K jobs per day
+         * failed 93K jobs
+         * average efficiency: 
+            * jobs     - 89%
+            * walltime - 90%
+   * Data Transfer statistics for last week
+      * BNL T1 data transfer rate last week was ~400TB/day.
+   * Issues
+      * BDII issues : timeout limit extension seems to have fixed the issue for now. 
+      * New BDIIv5 test: looks fine. 
+
+---++ LIGO (Britta, Robert E.)
+
+---+++ Gratia Reports
+   * This week&#39;s total usage: 5 users utilized 33 sites
+      * 86048 jobs total (29590 / 56458 = 34.4% success)
+      * 478554.7 wall clock hours total (292500.8 / 186053.9 = 61.1% success)
+   * Last  week&#39;s total usage: 6 users utilized 33 sites
+      * 64197 jobs total (32210 / 31987 = 50.2% success)
+      * 420551.5 wall clock hours total (385785.9 / 34765.6 = 91.7% success)
+
+---+++ LIGO / E@OSG
+   * Recent Average Credit (RAC): 1,307,391.95052
+   * E@H rank based on RAC: 2 (-1)
+   * E@H rank based on accumulated credits: 3
+
+---+++ LIGO / INSPIRAL
+
+   * FILE TRANSFERS
+      * Open GOC ticket:s:
+         * SBGrid-Harvard-East (9571): wrong directory permisssions, disk and hardware failures at site
+         * NWICG_NotreDame (9572): bad pass phrase error during srm-copy call
+         * OUHEP_OSG: same behavior as at Notredame: bad pass phrase error during srm-copy call
+
+   * TESTS WITH SRM SETUP
+      * Found error RLS catalog population, fixed 
+      * CIT_CMS_T2: currently running on 3 day data set
+      * Nebraska: currently running on 3 day data set
+
+---++ Grid Operations Center (Rob Q.)
+
+
+---+++ Operations Last Week 
+   * [[http://tinyurl.com/27fknc6][Reliability/Availability of GOC Services]]
+   * [[http://tinyurl.com/35zl55c][Reliability/Availability of Security Services]]
+   * Production Release ([[http://osggoc.blogspot.com/2010/11/goc-service-update-tuesday-november-9th.html][Notes]])
+   * is3 is in rsync with backup, effectively adding 3rd server to GOC BDII, testing by hearty users undeway.
+      * This will not be added into the Production RR until CMS/ATLAS have approved it. We are targeting November 23rd at this point. 
+   * Ticket Exchange with VDT implemented in sandbox, will deploy to production 23/Nov.
+   * x509 authentication notification sent out. 
+      * Will send a second reminder today. 
+   * Scott T. at SC10, then vacation through Thanksgiving, Rob Q. at SC10 Tue, Wed.  Both available for emergencies. 
+   * !ReSS services were updated 11/10 to !ReSS 1.0.11, Condor 7.4.3, VDT 2.0.0p22.  Only OIM-registered sites now allowed to advertise to !ReSS.
+      * Everything is working well so far.
+
+---+++ Operations This Week
+   * BDII Issues for BNL
+      * Timeout at CERN has been increased to 120s from 30s for ldapsearches
+      * The network issue seem to have been identified and fixed, error was tracked to the Indiana GigaPOP. Traffic was switched to a backup route which restored traffic flow, troubleshooting is still ongoing to find out why the link had problems to begin with. 
+
+     &lt;img src=&quot;%ATTACHURLPATH%/Picture_1.png&quot; alt=&quot;Picture_1.png&quot; width=&#39;509&#39; height=&#39;282&#39; /&gt;    
+     &lt;img src=&quot;%ATTACHURLPATH%/Picture_2.png&quot; alt=&quot;Picture_2.png&quot; width=&#39;510&#39; height=&#39;316&#39; /&gt;    
+     &lt;img src=&quot;%ATTACHURLPATH%/Picture_3.png&quot; alt=&quot;Picture_3.png&quot; width=&#39;508&#39; height=&#39;269&#39; /&gt;    
+
+      * We still need a final approval from ATLAS and CMS for enabling is3
+   * ITB Release (Went well)
+   * Automate VO list generation for DoE cert request page
+   * VDT ticket exchange to ITB
+   * Potential 1hr power outage @ Fermilab&#39;s Feynman Computing Center this week, would affect Gratia, !ReSS, 
+     and all FermiGrid-managed gatekeepers (FNAL_FERMIGRID, FNAL_GPGRID_1).  Final time and date to 
+     be confirmed.
+
+
+---++ Engage (Mats, John)
+
+Current week&#39;s total usage: 12 users utilized 44 sites;
+
+37245 jobs total (34391 / 2854 = 92.3% success);
+
+211523.5 wall clock hours total (203455.2 / 8068.3 = 96.2% success);
+
+No production issues. Trash/Engagement will not be able to attend the phone call today.
+
+
+---++ Integration (Suchandra)
+   * ITB 1.1.28 released today
+      * [[http://vdt.cs.wisc.edu/releases/2.0.0/release-p23.html][Changes]]
+      * Big changes to ca cert scripts
+      * Hope to complete ITB testing within a week 
+
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.2.14
+      *       92 (-3) OSG 1.2.X resources (      13 are 1.2.14)
+      *        4 (0) OSG 1.0.X resources (       0 are 1.0.6)
+      *        4 (0) OSG 1.0.0 resources
+      *        1 (1) OSG 0.8.0 resources
+
+
+---++ Virtual Organizations Group (Marcia)
+
+---+++ CDF
+
+   * Processing at KISTI seems to be going well. KISTI is adding 100 dedicated nodes.
+  
+
+---+++ CompBioGrid
+   * Due to new hardware purchase and reconfiguration, the site CE will be unavailable, possibly until early next year. They plan to add 512 cores.
+
+---+++ GLUE-X
+   * Highest priority jobs wait longest to get free slots. Richard will email condor-users for some help. (As of report, Richard was not pre-empting jobs.
+
+---+++ HCC
+   * Priority workflow successfully completed last weekend--110K CPU hours, 26 TB transferred. HPC continues to get good CPU cycles on OSG (~300K last weekend).
+
+   * Open HCC tickets are being handled on HCC&#39;s behalf by the UCSD !glideinWMS team.
+---++ Security (Mine)
+   * Openssl vulnerability just came out. Working on an announcement and recommendation for the sites.
+   * Doug Benjamin asked for customized security announcements for the Trash/Tier3 sites. he also asked if GOC can provide a way to directly send these announcements to tier3 sites. At the moment we can send announcements to all sites. We do not have the capability to selectively notify sites. 
+

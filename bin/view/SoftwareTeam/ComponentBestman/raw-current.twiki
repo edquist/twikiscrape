@@ -1,0 +1,47 @@
+---+ OSG Software Component: !BeStMan
+
+---++ Purpose
+
+[[http://sdm.lbl.gov/bestman BeStMan]] (aka the Berkeley Storage Manager) provides a consistent interface to a variety of large-scale and distributed file storage systems, including those deployed across a wide area. Specifically, it is a full implementation of the SRM interface, which allows users to access files, handle space tokens, reserve storage space, and so forth. !BeStMan can be used as a uniform interface to local-area storage resources and simple file transfers as well.
+
+---++ Usage
+
+Typical usage is by installing bestman2-server, configuring it to talk to underlying !GridFTP resoures. The !GridFTP resources then retrieve the requested file from the underlying storage system.
+
+It is used by all SRM endpoints with the exception of dCache sites.
+
+---++ Source
+
+The !BeStMan&amp;nbsp;2 source code is located at Lawrence Berkeley National Laboratory (LBNL) in [[https://codeforge.lbl.gov/projects/bestman a Codeforge repository]]. This project&#39;s SVN repository can be checked out through anonymous access with: =svn checkout= =https://codeforge.lbl.gov/anonscm/bestman=
+
+Although the OSG Software team maintains the code, changes should be coordinated with LBNL team.
+
+Currently the OSG maintains a [[https://codeforge.lbl.gov/anonscm/bestman/bestman2/branches/osg-dev/][branch]] of the main [[https://codeforge.lbl.gov/anonscm/bestman/bestman2/sources/][sources]], which means changes to the main sources need to be manually merged into the OSG branch or patched in at build time.
+
+The bestman2 source tarball used for OSG contains both the main sources and the osg-dev branch.  (See the [[https://vdt.cs.wisc.edu/svn/native/redhat/trunk/bestman2/README][README]] in the packaging area for instructions to generate the tarball.)  Due to the way the osg-dev branch is maintained separately, the OSG&#39;s source tarball does not reflect a specific release version from the main sources.  OSG&#39;s current version number &quot;2.3.0&quot; came out of discussions between Alex Sim, Doug Strain Neha Sharma in April 2012; but, notably, it is missing some features from versions &lt;= 2.3.0 from the main sources.
+
+---++ Packaging
+
+*Repository:* OSG.
+
+---++ History
+
+The original !BeStMan was run within a Globus web-services container and was the version used in the Pacman-based software stack. !BeStMan 2 is a reimplementation that runs within Jetty, but otherwise has comparable features to the original !BeStMan.
+
+!BeStMan was written and maintained at LBNL, led by Alex Sim. After a loss of funding in 2012, code maintenance was handed off to the OSG Software team.  Neha Sharma did the OSG maintenance work until Dec 2013, when it was handed off to Carl Edquist.
+
+---++ Future
+
+---++ Technical Design
+
+Based on an IM chat with Brian Bockelman, 3 November 2015:
+
+   * GUMS implements a particular callout protocol, technically called the “Authorization Interoperability profile”, which is based on the Security Assertion Markup Language (SAML) profile of the [[https://en.wikipedia.org/wiki/XACML][eXtensible Access Control Markup Language]] (XACML).
+   * In the OSG stack, the implementation of the profile is in lcmaps-plugins-scas-client package (for C systems) and privilege-xacml package (for Java systems).
+   * As a side note, the GUMS client package does not implement the callout protocol itself; it only provides a way to query the management interface, not the mapping interface used by other components.
+   * !BeStMan server must authorize users to perform its functions. It does so either by using a grid mapfile (in its own code) or by delegating the decision to another software component via the Authorization Interoperability profile, aka the GUMS callout, using the privilege-xacml software.
+   * The !BeStMan client does not do much authorization. It simply makes sure that the DNS entry and the hostname on the (server?) certificate match.
+
+---+++ References
+
+Garzoglio, Alderman, Altunay, et al. [[http://cd-docdb.fnal.gov/cgi-bin/RetrieveFile?docid=2986&amp;filename=AuthZ-Interop-Chep09-Paper-v1.0.pdf&amp;version=1][XACML profile and implementation for authorization interoperability between OSG and EGEE.]] Technical report, Fermi National Accelerator Laboratory.

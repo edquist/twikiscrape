@@ -1,0 +1,129 @@
+-- Main.DanFraser - 08 Apr 2011
+---++ Action/Significant Items:
+   * DOEGrids Root CA CRL problems. DOEgrids moved the CRL service to a new machine (new URL, hardware, etc). All grid nodes hits the old location and gets failures. The problem started yesterday. Esnet put a re-direct from the old server location which fixed the problem. Should not affect the grid access. But it affected web access via CERN Single Sign on Service. The issue is a bit more complicated between CERN and DOEgrids. CERN uses a ADFS and requires a special certificate type from DOEgrids ca. It still somehow hits the unavailable CRL location. Work is ongoing. (Mine)
+      * Burt noted that while the Single Sign On problem is not a showstopper, it is painful to navigate around. 
+   * CMS is running at an all time high number of hours of ~440Khours/day. (Burt)
+   * LIGO production is ramping up again.
+   * The number of sites reporting has dropped to about 88 (down from over 100 about 6 weeks ago), Dan asked Rob to take a look at this.
+   * The new BDII configuration seems to be stable and working well. (Rob)
+   * Karthik discussed the issue of accounting for hyperthreading. We identified the key players so that he can set up a meeting to follow up specifically on the details of this. 
+
+---++ Attendees:
+   * Xin, Armen, Britta, Burt, Marco, Rob Q., Karthik, Mine, Chander, Dan
+ 
+---++ CMS (Burt)
+   * Machine: ramping back up, had some nice fills.  Plans are to go to 480 bunches soon @ 50 ns.
+   * Last week: 440 khour/day, 89% success
+   * We are impacted by CERN single-sign on no longer being able to find the ESNet CRLs.  This is a major inconvenience (but we can limp along).
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * LHC collisions were back last week with improved luminosity. So far this year the integrated luminosity for ATLAS is ~60pb-1, about half of which was collected during the last week, after the collisions were back. More improvements on coming 2-3 weeks.
+      * US ATLAS production was relatively stable at the average level of about 10k running jobs. Fast reprocessing of 2011 data is practically finished, and production is mainly simulation jobs. 
+   * Job statistics for last week. 
+      * Gratia report: USATLAS ran 2.4M jobs, with CPU/Walltime ratio of 87%. 
+      * Panda world-wide production report (real jobs): 
+         * completed 1.1M managed group, MC production, validation and reprocessing jobs 
+         * average 162K jobs per day
+         * failed 85K jobs 
+         * average efficiency:  jobs - 93%, walltime - 98%
+   * Data Transfer statistics for last week
+      * BNL T1 data transfer rate was around 300~350TB/day in last week. 
+   * Issues
+      * HCC opportunistic use: HCC folks will join USATLAS facility meeting to discuss their use cases etc this week. 
+
+---++ LIGO (Britta, Robert E.)
+
+---+++ Gratia Reports
+   * Previous week&#39;s total usage: 3 users utilized 18 sites
+      * 6289 jobs total (6224 / 65 = 99.0% success)
+      * 56877.0 wall clock hours total (56714.1 / 162.9 = 99.7% success)
+   * Current week&#39;s total usage: 3 users utilized 32 sites
+      * 21923 jobs total (12543 / 9380 = 57.2% success)
+      * 125792.3 wall clock hours total (88323.4 / 37468.9 = 70.2% success)
+
+
+---+++ LIGO / E@OSG
+   * Recent Average Credit (RAC): 178,809.77351, Last Week: 261,064.60726 
+   * E@H rank based on RAC: 6 (-2)
+   * E@H rank based on accumulated credits: 3 (+-0)
+
+
+---+++ LIGO / INSPIRAL
+   * Data transfers:  1 week data (0.14 TB ) to LIGO_CIT: 65 hrs, Nebraska: 33 hrs, FF: 32 hrs, CIT_CMS_T2: 9 days
+   * 1 week work-flow test runs:  LIGO_CIT: 37 hrs, Nebraska: 4 days, 19 hrs, 19 mins, FF: failed, CIT_CMS_T2: to be submitted 
+   * trouble shooting failed 1 week work-flow at FF work-flow
+
+---+++ LIGO/PULSAR
+   * running two large work-flows (&gt;10000 jobs) via GlideinWMS on OSG (4 sites, pre staged data)
+
+
+---++ Grid Operations Center (Rob Q.)
+
+---+++ Operations Last Week 
+   * [[http://tinyurl.com/27fknc6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * Production release, [[http://osggoc.blogspot.com/2011/04/goc-service-update-tuesday-april-12th.html][Release notes]]
+   * All services moved outside IU institutional firewall.
+      * The [[http://mypage.iu.edu/~steige/NDT_perf.jpg][previous]] and [[http://mypage.iu.edu/~steige/indy-after.jpg][current]] results.
+      * This was in response to a recurring problem where a dramatic decrease in network performance was noticed around 1 AM.
+      * No problems observed resulting from this change. Process count on BDII servers improved, stable.
+   * Incorrect RSV failures were reported for some !GridFTP sites 9-12/Apr. Mechanism understood.
+   * DOEGrid maintenance 13/Apr, [[http://osggoc.blogspot.com/2011/04/doegrids-maintenance-notice-april-13.html][Maintenance notice]]
+   * SAM data consumer was down 8-11/Apr. RSV reports have &quot;Unknown&quot; status on 10/Apr. Data has been resent.
+   * is4 placed into DNS RR, no seg-faults observed, ~1/3 load taken as expected.
+   * Rob, Scott and Soichi met with David Collados regarding RSV/SAM interoperability issues.
+      * Gridview to be phased out (effects RSV/WLCG comparison reports) in favor of MyEGI
+      * A small change in message format of message sent by GOC will allow removal of a component at SAM. 
+      * Some messages have what seems to be a non-standard service type field, investigating. 
+      * Will configure SAM endpoints for failover (4 possible endpoints, geographically distributed).
+      * Full meeting minutes will be published soon. 
+   *  WMS Glide In Factory
+      * Has a special classad for glidein max available memory to facilitate large jobs
+
+---+++ Operations This Week
+   * No announced changes for this week.
+   * RSV data to be corrected, work with SAM to propagate corrections.
+   * Retiring an old non-production server
+   * Gratia and !ReSS
+      * looking to schedule rack and subnet moves
+
+
+---++ Engage (Mats, John)
+
+
+---++ Integration (Suchandra)
+   * Still waiting for VDT updates for testing
+   * HTPC
+      * Ran HTPC script against OUHEP and UC_ITB, verifying and checking the results
+      * BNL won&#39;t be able to run HTPC jobs in the near term 
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.2.19
+      *       84 (0) OSG 1.2.X resources (      16 are 1.2.19)
+      *        3 (0) OSG 1.0.X resources (       0 are 1.0.6)
+      *        1 (0) OSG 1.0.0 resources
+      *        0 (0) OSG 0.8.0 resources
+
+
+
+---++ VO &amp; User Support (Chander)
+Nothing to report.
+
+---++ Security (Mine)
+
+   * DOEGrids Root CA CRL problems. DOEgrids moved the CRL service to a new machine (new URL, hardware, etc). All grid nodes hits the old location and gets failures. The problem started yesterday. Esnet put a re-direct from the old server location which fixed the problem. Should not affect the grid access. But it affected web access via CERN Single Sign on Service. The issue is a bit more complicated between CERN and DOEgrids. CERN uses a ADFS and requires a special certificate type from DOEgrids ca. It still somehow hits the unavailable CRL location. This needs more work. 
+   * Vulnerabilities:
+      * glibc announcement went out last week. serious vulnerability. any sites having trouble with patch should let us know
+      * The bug reported in cacert-verify probe was fixed. This could be a security vulnerability. 
+   * Production testing of new cert layout -- continuing. we will meet with you separately. 
+ 
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings

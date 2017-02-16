@@ -1,0 +1,780 @@
+&lt;div id=&quot;content&quot;&gt;
+
+&lt;h1 class=&quot;title&quot;&gt;OpenSees OSG Trash/Integration Details&lt;/h1&gt;
+
+
+&lt;div id=&quot;table-of-contents&quot;&gt;
+&lt;h2&gt;Table of Contents&lt;/h2&gt;
+&lt;div id=&quot;text-table-of-contents&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-1&quot;&gt;1 Introduction &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-2&quot;&gt;2 How the Task Was Parallelized to Run on the Grid &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-3&quot;&gt;3 Get a proxy certificate &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-4&quot;&gt;4 Create a Job Submission file &lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-4_1&quot;&gt;4.1 Manual Approach &lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-4_1_1&quot;&gt;4.1.1 opensees_input_file &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-4_1_2&quot;&gt;4.1.2 opensees_output_directory &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-4_1_3&quot;&gt;4.1.3 opensees_num_runs &lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-4_2&quot;&gt;4.2 (Mostly) Automatic Approach &lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-5&quot;&gt;5 While the Job is Running &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-6&quot;&gt;6 Automated Tests &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-7&quot;&gt;7 A More Realistic Test Case &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-8&quot;&gt;8 Appendix: Untarring multiple output files at once &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sec-9&quot;&gt;9 Appendix: Monitoring a running job &lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-1&quot; class=&quot;outline-2&quot;&gt;
+&lt;h2 id=&quot;sec-1&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;1&lt;/span&gt; Introduction &lt;/h2&gt;
+&lt;div class=&quot;outline-text-2&quot; id=&quot;text-1&quot;&gt;
+
+
+&lt;p&gt;
+OSG consistes of many &lt;i&gt;sites&lt;/i&gt;, each of which is a
+network of computers administered by a single
+organization. The computers at any particular site
+typically have the same software configuration, and
+have access to a shared file system for the site.
+&lt;/p&gt;
+&lt;p&gt;
+We are going to be running jobs using the Condor
+distributed computing system. More specifically, in
+this case Condor will actually be running on top of a
+system called glideinWMS, which makes it easier to
+run at many sites, but that is mostly transparent to
+us.
+&lt;/p&gt;
+&lt;p&gt;
+Background reading: &lt;a href=&quot;https://twiki.grid.iu.edu/bin/view/Documentation/UsingTheGrid&quot;&gt;UsingTheGrid&lt;/a&gt;.
+&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-2&quot; class=&quot;outline-2&quot;&gt;
+&lt;h2 id=&quot;sec-2&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;2&lt;/span&gt; How the Task Was Parallelized to Run on the Grid &lt;/h2&gt;
+&lt;div class=&quot;outline-text-2&quot; id=&quot;text-2&quot;&gt;
+
+
+&lt;p&gt;
+The OpenSees setup in this case has two key files:
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+SAClaRecords.txt:: This gives information on the ground acceleration
+records to be used. Each line of the file indicates three things:
+the filename of the .txt file containing the ground acceleration
+time history, the total time of the ground motion, and the time
+increment between individual acceleration values (all separated by
+commas).
+
+&lt;/li&gt;
+&lt;li&gt;
+gmMP.tcl:: A Tcl script that parallelizes the running of the
+analyses. This gives the ability to subject one building (or
+structure) model to multiple acceleration records simultaneously.
+&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;
+The parallelization to run on OSG works like this: The submit file
+sets an environment variable, OPENSEES_PROCESS_ID, from the condor
+$(Process) macro. Then, at the worker node, gmMP.tcl skips over the
+first $OPENSEES_PROCESS_ID - 1 lines of the SAClaRecords.txt file, and
+does the processing for the ground acceleration record on the next
+line.
+&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-3&quot; class=&quot;outline-2&quot;&gt;
+&lt;h2 id=&quot;sec-3&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;3&lt;/span&gt; Get a proxy certificate &lt;/h2&gt;
+&lt;div class=&quot;outline-text-2&quot; id=&quot;text-3&quot;&gt;
+
+
+&lt;p&gt;
+A proxy certificate is necessary to have permission
+to run on OSG. The commands to get one are:
+&lt;/p&gt;
+&lt;pre class=&quot;example&quot;&gt;
+. /opt/osg/osg-1.2/setup.sh
+&lt;/pre&gt;
+
+
+&lt;p&gt;
+This command sets up the environment so that
+condor and its associated commands (including the
+ones to get a proxy) work.
+&lt;/p&gt;
+&lt;pre class=&quot;example&quot;&gt;
+voms-proxy-init -valid 72:00 --voms Engage:/Engage/NEES
+&lt;/pre&gt;
+
+
+&lt;p&gt;
+This gets a proxy certificate good for 3 days
+good for running as the Engage VO in the NEES group.
+Can add the &quot;-debug&quot; option if there are problems.
+&lt;/p&gt;
+&lt;pre class=&quot;example&quot;&gt;
+voms-proxy-info --all
+&lt;/pre&gt;
+
+
+&lt;p&gt;
+This lists some information about the new proxy.
+&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-4&quot; class=&quot;outline-2&quot;&gt;
+&lt;h2 id=&quot;sec-4&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;4&lt;/span&gt; Create a Job Submission file &lt;/h2&gt;
+&lt;div class=&quot;outline-text-2&quot; id=&quot;text-4&quot;&gt;
+
+
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-4_1&quot; class=&quot;outline-3&quot;&gt;
+&lt;h3 id=&quot;sec-4_1&quot;&gt;&lt;span class=&quot;section-number-3&quot;&gt;4.1&lt;/span&gt; Manual Approach &lt;/h3&gt;
+&lt;div class=&quot;outline-text-3&quot; id=&quot;text-4_1&quot;&gt;
+
+
+&lt;p&gt;
+There is a kind of template file, &lt;i&gt;openseesA.csf&lt;/i&gt;,
+included in the distribution. The three variables that
+need to change from run to run are at the top of the file:
+&lt;/p&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-4_1_1&quot; class=&quot;outline-4&quot;&gt;
+&lt;h4 id=&quot;sec-4_1_1&quot;&gt;&lt;span class=&quot;section-number-4&quot;&gt;4.1.1&lt;/span&gt; opensees_input_file &lt;/h4&gt;
+&lt;div class=&quot;outline-text-4&quot; id=&quot;text-4_1_1&quot;&gt;
+
+
+&lt;p&gt;
+This has to be in gzipped tar format. At the top
+level there should be an OpenSees executable, and a
+single directory that contains the OpenSees input
+files. Both the executable and the directory
+can have any valid name, but there must be only
+one of each.
+&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-4_1_2&quot; class=&quot;outline-4&quot;&gt;
+&lt;h4 id=&quot;sec-4_1_2&quot;&gt;&lt;span class=&quot;section-number-4&quot;&gt;4.1.2&lt;/span&gt; opensees_output_directory &lt;/h4&gt;
+&lt;div class=&quot;outline-text-4&quot; id=&quot;text-4_1_2&quot;&gt;
+
+
+&lt;p&gt;
+This is a directory on the submit host where the
+output from all of the runs from a particular
+condor_submit command (see below) should go. It
+just needs to be different from any other directory
+names where output goes.
+&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-4_1_3&quot; class=&quot;outline-4&quot;&gt;
+&lt;h4 id=&quot;sec-4_1_3&quot;&gt;&lt;span class=&quot;section-number-4&quot;&gt;4.1.3&lt;/span&gt; opensees_num_runs &lt;/h4&gt;
+&lt;div class=&quot;outline-text-4&quot; id=&quot;text-4_1_3&quot;&gt;
+
+
+&lt;p&gt;
+This is the number of separate runs required. In this prototype
+integration it typically the number of lines in the &lt;i&gt;SAClaRecords.txt&lt;/i&gt;
+file.
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-4_2&quot; class=&quot;outline-3&quot;&gt;
+&lt;h3 id=&quot;sec-4_2&quot;&gt;&lt;span class=&quot;section-number-3&quot;&gt;4.2&lt;/span&gt; (Mostly) Automatic Approach &lt;/h3&gt;
+&lt;div class=&quot;outline-text-3&quot; id=&quot;text-4_2&quot;&gt;
+
+
+&lt;p&gt;
+There is a script called setup_opensees.pl that
+partially automates this process. Typing
+&quot;setup_opensees.pl -h&quot; will print
+out its usage, which currently says
+&lt;/p&gt;
+
+
+
+&lt;pre class=&quot;example&quot;&gt;             ./setup_opensees.pl
+This script modifies a template submit file to have
+the proper parameters for running opensees, and also
+creates the tar file and a directory for the output.
+  This script should be run from the directory where
+the submit will occur. All arguments are required
+except -a.
+
+-c [filename]
+    Input condor submit file to be used as a template
+    to run the job.  This can be an actual working
+    submit file, but needs to have the
+    opensees_input_file, opensees_output_directory,
+    and opensees_num_runs macros at the top.
+
+-o [filename]
+    Name of condor submit file that will
+    incorporate the changes.
+
+-i [name of directory]
+   Name of directory that contains the input
+   data for OpenSees, like exampleTeraGridCode/.
+
+-e [filename]
+   Path to the OpenSees executable.
+
+-t [filename]
+   Name of tar file to later be used as input
+   to runOpenSeesA.sh.
+
+-d [name of directory]
+    Directory on the submit host to store output. A
+    relative path is ok.
+
+-a [filename]
+   Name of the dag file to produce. If the -a
+   argument is not present then this script produces
+   a regular condor submit file whose name is
+   indicated by -o.
+&lt;/pre&gt;
+
+
+
+&lt;p&gt;
+An example of this command is:
+&lt;/p&gt;
+
+
+
+&lt;pre class=&quot;example&quot;&gt;./setup_opensees.pl -c openseesA.csf -i exampleTeraGridCodeZZZ \
+  -e ./OpenSees  -o test4.csf -t opensees_distA2.tgz -d test4_C \
+  -a test4.dag
+&lt;/pre&gt;
+
+
+
+&lt;p&gt;
+Here the inputs (files or directories that must already exist)
+are
+&lt;/p&gt;&lt;dl&gt;
+&lt;dt&gt;&lt;i&gt;openseesA.csf&lt;/i&gt;&lt;/dt&gt;&lt;dd&gt;
+is a template submission file,
+&lt;/dd&gt;
+&lt;dt&gt;&lt;i&gt;exampleTeraGridCodeZZZ&lt;/i&gt;&lt;/dt&gt;&lt;dd&gt;
+has the input data for OpenSees,
+&lt;/dd&gt;
+&lt;dt&gt;&lt;i&gt;OpenSees&lt;/i&gt;&lt;/dt&gt;&lt;dd&gt;
+is the executable to run on the worker node,
+&lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;p&gt;and the outputs (files or directories that the
+script creates) are:
+&lt;/p&gt;&lt;dl&gt;
+&lt;dt&gt;&lt;i&gt;test4L.csf&lt;/i&gt;&lt;/dt&gt;&lt;dd&gt;
+will be the resulting submission file
+with the fields filled in,
+&lt;/dd&gt;
+&lt;dt&gt;&lt;i&gt;opensees_dist2A.tgz&lt;/i&gt;&lt;/dt&gt;&lt;dd&gt;
+will have the OpenSees
+executable and input data in the form (a
+gzipped tar file ) that we send it to the
+worker node,
+&lt;/dd&gt;
+&lt;dt&gt;&lt;i&gt;test4_C&lt;/i&gt;&lt;/dt&gt;&lt;dd&gt;
+is the name of the directory where the
+the output should go.
+&lt;/dd&gt;
+&lt;dt&gt;&lt;i&gt;test4.dag&lt;/i&gt;&lt;/dt&gt;&lt;dd&gt;
+is the name of a DAG input file to
+create.
+&lt;/dd&gt;
+&lt;/dl&gt;
+
+
+&lt;p&gt;
+The script will also print a suggested command to run the
+job, in this case:&lt;br/&gt;
+&lt;/p&gt;&lt;pre class=&quot;example&quot;&gt;
+  condor_submit_dag -usedagdir test4_C/test4.dag\\
+&lt;/pre&gt;
+
+&lt;p&gt;or without the -a option the command would be&lt;br/&gt;
+&lt;/p&gt;&lt;pre class=&quot;example&quot;&gt;
+  condor_submit test4L.csf
+&lt;/pre&gt;
+
+
+&lt;p&gt;
+Further reading:
+&lt;a href=&quot;http://www.cs.wisc.edu/condor/manual/v7.5/condor_submit.html&quot;&gt;http://www.cs.wisc.edu/condor/manual/v7.5/condor\_submit.html&lt;/a&gt;
+For the -a option:
+&lt;a href=&quot;http://www.cs.wisc.edu/condor/manual/v7.5/condor_submit_dag.html&quot;&gt;http://www.cs.wisc.edu/condor/manual/v7.5/condor\_submit\_dag.html&lt;/a&gt;
+&lt;a href=&quot;http://www.cs.wisc.edu/condor/manual/v7.5/2_10DAGMan_Applications.html#sec:DAGLotsaJobs&quot;&gt;http://www.cs.wisc.edu/condor/manual/v7.5/2\_10DAGMan\_Applications.html#sec:DAGLotsaJobs&lt;/a&gt;
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-5&quot; class=&quot;outline-2&quot;&gt;
+&lt;h2 id=&quot;sec-5&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;5&lt;/span&gt; While the Job is Running &lt;/h2&gt;
+&lt;div class=&quot;outline-text-2&quot; id=&quot;text-5&quot;&gt;
+
+
+&lt;p&gt;
+The status of the jobs while they are running can be checked
+with a command like
+&lt;/p&gt;&lt;pre class=&quot;example&quot;&gt;
+ condor_q [username]
+&lt;/pre&gt;
+
+&lt;p&gt;The status of the jobs can also be monitored by checking the
+log file(s) that condor creates in the submit directory.
+&lt;/p&gt;
+&lt;p&gt;
+It is possible to stop the jobs before they&#39;re done
+by issuing a command like
+&lt;/p&gt;&lt;pre class=&quot;example&quot;&gt;
+condor_rm [cluster #]
+&lt;/pre&gt;
+
+&lt;p&gt;where the cluster number is printed by condor_submit,
+or is listed as the number before the dot by condor_q.
+&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-6&quot; class=&quot;outline-2&quot;&gt;
+&lt;h2 id=&quot;sec-6&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;6&lt;/span&gt; Automated Tests &lt;/h2&gt;
+&lt;div class=&quot;outline-text-2&quot; id=&quot;text-6&quot;&gt;
+
+
+&lt;p&gt;
+There is a script called test_opensees.pl that will
+try running a couple OpenSees test cases. It expects
+the directory exampleTeraGridCodeZZZ and the
+executable OpenSees to be in the same directory from
+which it is run. It may be run as follows:
+&lt;/p&gt;
+&lt;pre class=&quot;example&quot;&gt;
+./test_opensees.pl
+&lt;/pre&gt;
+
+
+&lt;p&gt;
+and doesn&#39;t need any arguments.
+&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-7&quot; class=&quot;outline-2&quot;&gt;
+&lt;h2 id=&quot;sec-7&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;7&lt;/span&gt; A More Realistic Test Case &lt;/h2&gt;
+&lt;div class=&quot;outline-text-2&quot; id=&quot;text-7&quot;&gt;
+
+&lt;ol&gt;
+&lt;li&gt;
+Suppose the directory with the input data is called
+&lt;code&gt;exampleTeraGridCode_long&lt;/code&gt;. Make sure to to modify
+userDir in gmMP.tcl to say
+&lt;pre class=&quot;example&quot;&gt;
+set userDir &quot;[pwd]/exampleTeraGridCode_long&quot;
+&lt;/pre&gt;
+
+&lt;p&gt;(This is specific to this user&#39;s OpenSees setup.)
+&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;
+Run this command to set things up:
+&lt;pre class=&quot;example&quot;&gt;
+./setup_opensees.pl -c openseesA.csf -o test_fnpB.csf \
+  -t opensees_distA2_fnpB.tgz -i exampleTeraGridCode_rl \
+  -e ./OpenSees -d test_fnpB -a test_fnpB.dag
+&lt;/pre&gt;
+
+&lt;/li&gt;
+&lt;li&gt;
+If necessary, fix the dag file to have the runs you&#39;d like.
+&lt;pre class=&quot;example&quot;&gt;
+cd test_fnpB
+nano test_fnpB.dag
+&lt;/pre&gt;
+
+&lt;/li&gt;
+&lt;li&gt;
+Submit job using the command from setup_opensees.pl:
+&lt;pre class=&quot;example&quot;&gt;
+   condor_submit_dag -usedagdir test_fnpB/test_fnpB.dag
+&lt;/pre&gt;
+
+&lt;/li&gt;
+&lt;li&gt;
+Check its progress with
+&lt;pre class=&quot;example&quot;&gt;
+  condor_q [username]
+&lt;/pre&gt;
+
+&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-8&quot; class=&quot;outline-2&quot;&gt;
+&lt;h2 id=&quot;sec-8&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;8&lt;/span&gt; Appendix: Untarring multiple output files at once &lt;/h2&gt;
+&lt;div class=&quot;outline-text-2&quot; id=&quot;text-8&quot;&gt;
+
+
+&lt;p&gt;
+Here is an example with comments that
+uses a for loop to untar
+several output files at once. (The setup_opensees.pl
+command line here was edited to split it into several
+lines so it fits.)
+&lt;/p&gt;
+
+
+
+&lt;pre class=&quot;example&quot;&gt;
+# Set up a quick run:
+
+glidein:opensees$ ./setup_opensees.pl -c openseesA.csf -o test4.csf \
+  -t opensees_distA2.tgz -i exampleTeraGridCodeZZZ -e ./OpenSees \
+  -d test4_C $extra_params
+Using SAClaRecords_test.txt as the SACla file.
+num_runs: 2
+Suggested command:  condor_submit test4.csf
+glidein:opensees$ 
+
+# Start jobs going:
+
+glidein:opensees$ condor_submit test4.csf
+Submitting job(s)..
+2 job(s) submitted to cluster 2471.
+glidein:opensees$ 
+
+# ... Wait for them to finish.
+
+glidein:opensees$ condor_q mslyz
+
+
+-- Submitter: glidein.unl.edu : &amp;lt;129.93.239.145:49510&amp;gt; : glidein.unl.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+
+0 jobs; 0 idle, 0 running, 0 held
+
+
+glidein:opensees$ cd test4_C
+
+# Use a bash for loop to list all the output files:
+
+glidein:test4_C$ for x in OpenSees_output_*.tgz; do echo $x; done
+OpenSees_output_0.tgz
+OpenSees_output_1.tgz
+
+# Now add the untar command to the for loop:
+
+glidein:test4_C$ for x in OpenSees_output_*.tgz; do echo $x; tar -x -f $x; done
+OpenSees_output_0.tgz
+OpenSees_output_1.tgz
+
+
+# See that the la29GM and la28GM directories were created:
+
+glidein:test4_C$ ls -lt
+total 1924
+-rw-r--r-- 1 mslyz bockelman   1324 Feb 10 11:35 openseesA_2471.log
+-rw-r--r-- 1 mslyz bockelman  24585 Feb 10 11:35 debug_output_for_1.txt
+-rw-r--r-- 1 mslyz bockelman     60 Feb 10 11:35 openseesA_stderr.2471.1.txt
+-rw-r--r-- 1 mslyz bockelman   5874 Feb 10 11:35 openseesA_stdout.2471.1.txt
+-rw-r--r-- 1 mslyz bockelman 843226 Feb 10 11:35 OpenSees_output_1.tgz
+-rw-r--r-- 1 mslyz bockelman  29230 Feb 10 11:35 debug_output_for_0.txt
+-rw-r--r-- 1 mslyz bockelman     60 Feb 10 11:35 openseesA_stderr.2471.0.txt
+-rw-r--r-- 1 mslyz bockelman   5835 Feb 10 11:35 openseesA_stdout.2471.0.txt
+-rw-r--r-- 1 mslyz bockelman 973440 Feb 10 11:35 OpenSees_output_0.tgz
+drwxr-xr-x 3 mslyz bockelman   4096 Feb 10 11:35 la29GM
+drwxr-xr-x 3 mslyz bockelman   4096 Feb 10 11:35 la28GM
+
+
+# Another variant:
+
+# Clean up the just-produced output:
+
+glidein:test4_C$ 
+glidein:test4_C$ 
+glidein:test4_C$ rm -r la*GM
+
+
+# Put the numbers of the output files that you&#39;d like to
+# untar in a list in braces (called &quot;brace expansion&quot;):
+
+glidein:test4_C$ 
+glidein:test4_C$ for x in OpenSees_output_{0,1}.tgz; do echo $x; tar -x -f $x; done
+OpenSees_output_0.tgz
+OpenSees_output_1.tgz
+
+# In this case using the * is less typing, but brace expansion is
+# useful if you&#39;d like to untar more than one output file but not all
+# of them.
+
+glidein:test4_C$ ls -lt
+total 1924
+-rw-r--r-- 1 mslyz bockelman   1324 Feb 10 11:35 openseesA_2471.log
+-rw-r--r-- 1 mslyz bockelman  24585 Feb 10 11:35 debug_output_for_1.txt
+-rw-r--r-- 1 mslyz bockelman     60 Feb 10 11:35 openseesA_stderr.2471.1.txt
+-rw-r--r-- 1 mslyz bockelman   5874 Feb 10 11:35 openseesA_stdout.2471.1.txt
+-rw-r--r-- 1 mslyz bockelman 843226 Feb 10 11:35 OpenSees_output_1.tgz
+-rw-r--r-- 1 mslyz bockelman  29230 Feb 10 11:35 debug_output_for_0.txt
+-rw-r--r-- 1 mslyz bockelman     60 Feb 10 11:35 openseesA_stderr.2471.0.txt
+-rw-r--r-- 1 mslyz bockelman   5835 Feb 10 11:35 openseesA_stdout.2471.0.txt
+-rw-r--r-- 1 mslyz bockelman 973440 Feb 10 11:35 OpenSees_output_0.tgz
+drwxr-xr-x 3 mslyz bockelman   4096 Feb 10 11:35 la29GM
+drwxr-xr-x 3 mslyz bockelman   4096 Feb 10 11:35 la28GM
+glidein:test4_C$ 
+glidein:test4_C$ 
+
+# Clean-up:
+
+glidein:test4_C$ cd ..
+glidein:opensees$ rm -r test4_C opensees_distA2.tgz test4.csf
+glidein:opensees$ 
+&lt;/pre&gt;
+
+
+
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;outline-container-9&quot; class=&quot;outline-2&quot;&gt;
+&lt;h2 id=&quot;sec-9&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;9&lt;/span&gt; Appendix: Monitoring a running job &lt;/h2&gt;
+&lt;div class=&quot;outline-text-2&quot; id=&quot;text-9&quot;&gt;
+
+&lt;ol&gt;
+&lt;li&gt;
+ &lt;code&gt;condor_ssh_to_job  [jobid]&lt;/code&gt;&lt;br/&gt;
+This should start a login session at the
+computer where the job is running.
+Then it&#39;s possible to check
+the output files etc using standard
+unix commands like less/more, tail, etc.
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;code&gt;glidein_ls [jobid]&lt;/code&gt;&lt;br/&gt;
+This lists the files in the directory
+where condor is running.
+
+&lt;p&gt;
+&lt;code&gt;glidein_interactive [jobid] [command]&lt;/code&gt;&lt;br/&gt;
+This runs an arbitrary command in that
+directory.
+&lt;/p&gt;
+&lt;p&gt;
+It may be that one or the other
+of these monitoring options doesn&#39;t work for any
+particular job, but hopefully at
+least one does.
+&lt;/p&gt;
+&lt;p&gt;
+Here is a sample session that
+uses these commands:
+&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+
+
+
+&lt;pre class=&quot;example&quot;&gt;
+# On the submit host, set up the job:
+
+glidein:opensees$ ./setup_opensees.pl -c openseesA.csf -o test_fnpB.csf \
+   -t opensees_distA2_fnpB.tgz -i exampleTeraGridCode_rl -e ./OpenSees \
+   -d test_fnpB -a test_fnpB.dag
+Using SAClaRecords.txt as the SACla file.
+num_runs: 60
+Suggested command:  condor_submit_dag -usedagdir test_fnpB/test_fnpB.dag
+glidein:opensees$ 
+glidein:opensees$ 
+glidein:opensees$ 
+
+
+# Start it running.
+
+glidein:opensees$ condor_submit_dag -usedagdir test_fnpB/test_fnpB.dag
+
+-----------------------------------------------------------------------
+File for submitting this DAG to Condor           : test_fnpB/test_fnpB.dag.condor.sub
+Log of DAGMan debugging messages                 : test_fnpB/test_fnpB.dag.dagman.out
+Log of Condor library output                     : test_fnpB/test_fnpB.dag.lib.out
+Log of Condor library error messages             : test_fnpB/test_fnpB.dag.lib.err
+Log of the life of condor_dagman itself          : test_fnpB/test_fnpB.dag.dagman.log
+
+Submitting job(s).
+1 job(s) submitted to cluster 2403.
+-----------------------------------------------------------------------
+
+
+# Wait a little while for jobs to start running.
+
+# Do &quot;condor_q&quot; to figure out what the job ids are.
+# 2406.0 is one of them in this case.
+
+
+======================================================================
+# Using condor_ssh_to_job:
+
+glidein:opensees$ condor_ssh_to_job 2406.0
+Welcome to glidein_20209@red-d8n6!
+Your condor job is running with pid(s) 20793.
+
+# We are now logged into the machine where the
+# job is running.
+
+bash-3.2$ ls -lat
+total 13004
+drwxr-xr-x 6 hcc grid    4096 Feb 10 00:05 .
+drwxr-xr-x 2 hcc grid    4096 Feb 10 00:05 .condor_ssh_to_job_3
+-rw-r--r-- 1 hcc grid    3948 Feb 10 00:05 .job.ad
+-rw-r--r-- 1 hcc grid    5215 Feb 10 00:05 .machine.ad
+-rw-r--r-- 1 hcc grid   59748 Feb 10 00:05 openseesA_stdout.2406.2.txt
+drwxr-xr-x 2 hcc grid    4096 Feb  9 23:57 .condor_ssh_to_job_2
+drwxr-xr-x 2 hcc grid    4096 Feb  9 23:42 .condor_ssh_to_job_1
+drwxr-xr-x 3 hcc grid    4096 Feb  9 23:34 ..
+-rwxr-xr-x 1 hcc grid    2038 Feb  9 23:34 condor_exec.exe
+-rw-r--r-- 1 hcc grid       0 Feb  9 23:34 debug_output_for_2.txt
+-rw-r--r-- 1 hcc grid      60 Feb  9 23:34 openseesA_stderr.2406.2.txt
+-rw-r--r-- 1 hcc grid 4082242 Feb  9 23:34 opensees_distA2_fnpB.tgz
+-rw-r--r-- 1 hcc grid       0 Feb  9 23:34 OpenSees_output_2.tgz
+drwxr-xr-x 4 hcc grid    4096 Feb  4 00:41 exampleTeraGridCode_rl
+-rwxr-xr-x 1 hcc grid 9099208 Jan 12 16:49 OpenSees
+bash-3.2$ 
+
+# Look at the end of the output file that OpenSees would
+# usually print to the screen. &quot;tail&quot; is a standard
+# unix command the lists the last few lines.
+
+bash-3.2$ tail openseesA_stdout.2406.2.txt
+DirectIntegrationAnalysis::analyze() - the Algorithm failed at time 4.03793
+OpenSees &amp;gt; analyze failed, returned: -3 error flag
+Trying Reducing This Time Step by 2 ..
+WARNING: CTestEnergyIncr::test() - failed to converge 
+after: 70 iterations
+AcceleratedNewton::solveCurrentStep() -The ConvergenceTest object failed in test()
+DirectIntegrationAnalysis::analyze() - the Algorithm failed at time 4.03743
+OpenSees &amp;gt; analyze failed, returned: -3 error flag
+Trying Reducing This Time Step by 10 ..
+Converged at this step, continuing....
+bash-3.2$ 
+bash-3.2$ 
+
+
+# Look the info about the running processes.
+
+bash-3.2$ ps uaxw | grep -i opensees
+hcc       4129  0.0  0.0  61208   816 pts/0    SN+  00:06   0:00 grep -i opensees
+hcc      20793  0.0  0.0   8928  1140 ?        SN   Feb09   0:00 /bin/bash -x /var/lib/condor/execute/dir_17051/glide_Q17104/execute/dir_20791/condor_exec.exe opensees_distA2_fnpB.tgz
+hcc      20806 99.9  0.4 130828 104188 ?       RNl  Feb09  31:51 ./OpenSees exampleTeraGridCode_rl/gmMP.tcl
+hcc      24587  0.0  0.0   8928  1140 ?        SN   Feb09   0:00 /bin/bash -x /var/lib/condor/execute/dir_21879/glide_K21932/execute/dir_24585/condor_exec.exe opensees_distA2_fnpB.tgz
+hcc      24600 99.8  0.4 130828 104052 ?       RNl  Feb09  27:47 ./OpenSees exampleTeraGridCode_rl/gmMP.tcl
+bash-3.2$ 
+bash-3.2$ 
+
+# Done looking around.
+
+bash-3.2$ logout
+Connection to condor-job.red-d8n6 closed.
+
+============================================================
+# Using the glidein_* tools:
+
+
+# List files in the directory where the job # 2406.0 is running:
+
+glidein:opensees$ glidein_ls 2406.0
+OpenSees
+OpenSees_output_2.tgz
+condor_exec.exe
+debug_output_for_2.txt
+exampleTeraGridCode_rl
+openseesA_stderr.2406.2.txt
+openseesA_stdout.2406.2.txt
+opensees_distA2_fnpB.tgz
+glidein:opensees$ 
+
+
+# See the last few line of the output using the tail command again:
+
+glidein:opensees$ glidein_interactive 2406.0 tail openseesA_stdout.2406.2.txt
+DirectIntegrationAnalysis::analyze() - the Algorithm failed at time 4.06923
+OpenSees &amp;gt; analyze failed, returned: -3 error flag
+Trying Reducing This Time Step by 10 ..
+Converged at this step, continuing....
+WARNING: CTestEnergyIncr::test() - failed to converge 
+after: 70 iterations
+AcceleratedNewton::solveCurrentStep() -The ConvergenceTest object failed in test()
+DirectIntegrationAnalysis::analyze() - the Algorithm failed at time 4.06983
+OpenSees &amp;gt; analyze failed, returned: -3 error flag
+Trying Reducing This Time Step by 2 ..
+glidein:opensees$ 
+
+
+# Could do &quot;glidein_cat openseesA_stdout.2406.2.txt&quot;
+# to see the whole output so far.
+
+
+# If the runs were just to experiment with the job
+# monitoring tools then it&#39;s probably best to
+# do a condor_rm on the first job at this point.
+
+&lt;/pre&gt;
+
+
+
+
+&lt;p&gt;
+&lt;a href=&quot;https://twiki.grid.iu.edu/bin/view/Engagement/EngageOpenSeesB&quot;&gt;(Up)&lt;/a&gt;
+&lt;/p&gt;
+
+
+
+
+
+
+
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&quot;postamble&quot;&gt;
+&lt;p class=&quot;author&quot;&gt;  Marko Slyz with help from P. Clayton
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;

@@ -1,0 +1,351 @@
+%TOC%
+
+---+ Switching Software Area (/software) to !GitHub
+
+This document details the plan for migrating OSG Software source code from the UW–Madison Subversion repository to Git.
+
+Also see the [[SoftwareTeam.SW025_GitHubMigration][project page]].
+
+
+---++ Objectives
+
+   * OSG must control directly the authoritative source code repository and will be wholly responsible for its operation and maintenance
+   * The authoritative repository will be synchronized frequently with approved changes to the working repository at !GitHub
+   * Anyone may view source code and submit contributions using the !GitHub repository
+   * The OSG Technology team must manage all write access to the repositories and will decide which contributions are accepted
+   * The OSG Technology team must be able to work when the !GitHub repository is unavailable
+   * Common use cases should be easy to learn and efficient, and all supported use cases must be documented clearly
+   * The migration process must preserve existing data, interrupt work as little as reasonable, and be reversible in case of problems
+
+---++ Repo characteristics
+
+There will be two repositories:
+
+   * *UW–Madison* repository – the authoritative copy for all OSG Software source code
+      * Stored at the UW–Madison on the Computer Sciences AFS system
+      * If another repository conflicts with the UW one, the UW copy is correct unless the Software team explicitly decides otherwise
+      * If the UW repository becomes unavailable, the Software team addresses the outage as soon as possible within business hours and with top priority
+
+   * *GitHub* repository – for regular development use
+      * It is easy to access and update (for authorized users)
+      * Developers publish their changes to the !GitHub repository
+      * The AFS repository pulls data from the !GitHub repository
+
+
+---++ High-Level Architecture
+
+Developers use the !GitHub repos for day to day work, using the typical !GitHub
+workflow: fork, commit, make pull requests. Repos are synchronized frequently to the UW
+to maintain a current repository under OSG control.
+
+---+++ UW repository
+
+Authentication and access control is provided by the UW CSL Kerberos system.
+In the normal case, team members do not touch or clone from the AFS
+repositories, but if !GitHub is unavailable, trusted developers (i.e., those
+with the right AFS ACLs) can push directly to the UW repository until !GitHub
+is available.
+
+---+++ !GitHub repository
+
+The !GitHub repository is organized into individual repositories per software
+component and is owned by the =opensciencegrid= organization.  Each team member
+must have a !GitHub account and write access granted via !GitHub&#39;s access
+control mechanisms in order to approve contributions.  The !GitHub repos will
+be configured to reject &quot;unsafe&quot; commits (commits that alter history, cause
+conflicts, or otherwise cause breakage or potential loss of information).
+
+---+++ Synchronization
+
+The UW repository organization mirrors the !GitHub one. Each individual UW
+repository will pull from the corresponding !GitHub repository periodically.
+The UW repository will be configured to accept only safe changes.
+
+If an unsafe update is attempted, the developers will be notified via email.
+They will have to resolve the conflict and push the changes back to !GitHub.
+
+---+++ Backups
+
+The UW repository will live on an AFS volume that is backed up nightly by the CSL.
+We will make a snapshot of the repo before each backup runs, to ensure
+consistency.  This process is modeled after what we do for the Subversion repository.
+
+---+++ Contributions
+
+External collaborators or team members will fork one of the !GitHub repos and
+submit their changes as pull requests; a team member will review and merge the
+pull requests to incorporate the changes.
+
+---+++ Access control
+
+We will use !GitHub&#39;s access control mechanisms.
+
+The privilege to make changes to repos and approve others&#39; changes will be
+given to people with some percentage on the Software team, and the primary
+contributors of the software if they are not in the Software team.
+
+The privilege to move or delete repos, and to grant or revoke others&#39;
+privileges will be given to the heads of the software, release, investigations,
+and production teams, plus their delegates.
+
+---++ Detailed Architecture
+
+
+---+++ UW repository
+
+For a given software component, the UW repository is located at
+&lt;code&gt;/p/condor/workspaces/vdt/git/software/&lt;em&gt;project&lt;/em&gt;.git&lt;/code&gt;
+Once the !GitHub repo for a project has been created, making the corresponding
+AFS repo is as follows:
+&lt;pre&gt;
+PROJECT=&amp;lt;your project&amp;gt;
+
+cd /p/condor/workspaces/vdt/git/repo/
+git clone --mirror https://github.com/opensciencegrid/$PROJECT.git
+cd $PROJECT.git/
+
+# Check integrity of each object fetched:
+git config transfer.fsckObjects true
+
+# Enable the reflog (helps debugging):
+git config core.logAllRefUpdates true
+
+# Only allow non-fast-forward updates for pull requests:
+git config remote.origin.fetch &#39;+refs/pull/*:refs/pull/*&#39;
+git config --add remote.origin.fetch &#39;refs/*:refs/*&#39;
+
+# Allow pushing only one branch/tag at a time back to GitHub.
+# Pushing all branches/tags can be done by explicitly specifying
+# --mirror to &quot;git push&quot;
+git config --unset remote.origin.mirror
+&lt;/pre&gt;
+
+The AFS ACLs for each repo will be copied from
+&lt;code&gt;/p/condor/workspaces/vdt/git&lt;/code&gt;.
+
+---+++ !GitHub repository
+
+Each !GitHub repository is located at
+&lt;code&gt;https://github.com/opensciencegrid/&lt;em&gt;PROJECT&lt;/em&gt;&lt;/code&gt;
+and is owned by the OSG !GitHub
+organization (=opensciencegrid=).
+
+We will enable
+[[https://help.github.com/articles/about-protected-branches/][protected branches]]
+for all branches of the project, to prevent non-fast-forward pushes.
+
+---++++ Access control
+
+In general, !GitHub repositories have three kinds of permissions:
+
+   $ Read: the ability to see the contents of the repository, fork the repo, and submit a pull request
+   $ Write: the ability to accept pull requests or push to the repository; implies read access
+   $ Admin: the ability to grant or revoke privileges, and the ability to make changes that affect the entire repo, such as transferring ownership, or deleting the repo; implies read and write access
+
+Everyone has Read access, because !GitHub repositories are public unless we
+pay !GitHub money.
+
+Write access will be implemented by giving the
+[[https://github.com/orgs/opensciencegrid/teams/software][Software GitHub team]]
+write privileges.
+
+Admin access will be implemented by giving the
+[[https://github.com/orgs/opensciencegrid/teams/core][Core GitHub team]] admin
+privileges. These people will also control team membership, which will be
+implemented by making them the
+[[https://github.com/orgs/opensciencegrid/people?utf8=%E2%9C%93&amp;query=role%3Aowner+][owners of the Open Science Grid organization]]
+in !GitHub.
+
+---+++ Synchronization
+
+---++++ Fetcher cron job
+
+   * There will be one &quot;fetcher&quot; cron job, owned by =cndrutil=, to download
+     !GitHub repo changes to the AFS repos by running =git fetch= for each repo.
+   * The cron job will run every 10 minutes.  This is often enough to keep the
+     AFS repos in sync most of the time, but should avoid placing too much load
+     on the machine doing the syncing.
+   * Any nonzero exit codes will result in an email to Madison people.
+   * The list of repos will be taken from a file called =/p/condor/workspaces/vdt/git/repo/remotes.list=
+   * Results will be logged to =/p/condor/workspaces/vdt/git/log/backups.log=. The log will be rotated.
+   * After a successful fetch, update a file containing the timestamp of the last successful fetch.
+   * A team member can create a file named =NO_FETCH= in an AFS repo to disable
+     fetches for that repo, in case there is a persistent error that needs manual
+     intervention to solve.
+
+---++++ Watchdog cron job
+
+   * There will be one &quot;watchdog&quot; cron job that will run nightly to examine the AFS
+     repos and send email to the Madison people about:
+      * any =NO_FETCH= files
+      * last update time for each repo (mismatches should be investigated)
+
+---+++ Nightly AFS Backups
+
+A single cron job will go through each AFS repo dir &lt;em&gt;PROJECT&lt;/em&gt;.git, and do this:
+
+&lt;pre&gt;
+PROJECT=&amp;lt;your project&amp;gt;
+
+rm -rf &quot;/p/condor/workspaces/vdt/git/snapshot/${PROJECT}.git.tmp&quot;
+git clone --mirror &quot;/p/condor/workspaces/vdt/git/repo/${PROJECT}.git&quot; \
+                   &quot;/p/condor/workspaces/vdt/git/snapshot/${PROJECT}.git.tmp&quot;
+rm -rf &quot;/p/condor/workspaces/vdt/git/snapshot/${PROJECT}.git&quot;
+mv &quot;/p/condor/workspaces/vdt/git/snapshot/${PROJECT}.git.tmp&quot; \
+   &quot;/p/condor/workspaces/vdt/git/snapshot/${PROJECT}.git&quot;
+&lt;/pre&gt;
+
+In the unlikely event of an AFS repo becoming unrepairable &lt;em&gt;and&lt;/em&gt; we are
+unable to make a new clone from !GitHub, this is how we restore:
+
+&lt;pre&gt;
+PROJECT=&amp;lt;your project&amp;gt;
+
+rm -rf &quot;/p/condor/workspaces/git/repo/${PROJECT}.git&quot;
+git clone --mirror &quot;/p/condor/workspaces/git/snapshot/${PROJECT}.git&quot; \
+                   &quot;/p/condor/workspaces/git/repo/${PROJECT}.git&quot;
+cd &quot;/p/condor/workspaces/git/repo/${PROJECT}.git&quot;
+# restore &quot;config&quot; from an AFS backup
+&lt;/pre&gt;
+
+---++ Migration
+
+---+++ One-time setup
+
+   1. Create AFS volume for =/p/condor/workspaces/vdt/git= (done). Have the quota notifier from [[https://jira.opensciencegrid.org/browse/SOFTWARE-1666][SOFTWARE-1666]] monitor this volume
+   1. Create authors file to map Subversion user names to email addresses for Git (there is one at &quot;/p/condor/workspaces/vdt/svn-access/authors.txt&quot; -- make sure it&#39;s up-to-date)
+   1. Create &quot;backup&quot; cron job, run by =cndrutil= (see &quot;Backups&quot; section)
+   1. Create &quot;fetch&quot; and &quot;watchdog&quot; cron jobs, run by =cndrutil= (see &quot;Synchronization&quot; section)
+
+---+++ Per-project migration
+
+One of the !GitHub migration owners (read: Main.MatyasSelmeci and
+Main.CarlEdquist) will convert each project from Subversion to Git.
+
+Some projects already have read-only !GitHub mirrors. For example,
+[[https://vdt.cs.wisc.edu/svn/software/osg-configure/][osg-configure in Subversion]]
+has a corresponding
+[[https://github.com/opensciencegrid/osg-configure][osg-configure repo in !GitHub]].
+There are special considerations for those projects.
+
+Before doing any conversions, we must contact the software owners and major
+contributors, and work with them to make sure the conversion has a minimal
+impact on their work process.
+
+The outcomes of the conversion that may affect their work are:
+
+   * The corresponding Subversion repo will become read-only
+   * If a !GitHub read-only mirror exists, it will have its history overwritten
+
+&lt;b&gt;Contributors must commit their work to Subversion before the conversion to avoid
+problems.&lt;/b&gt; If necessary, schedule a switchover date with the owners and
+major contributors.
+
+Overall steps are:
+
+   1. Wait for the switchover date if necessary.
+   1. If there is no read-only !GitHub mirror, create the !GitHub repo under
+      the &quot;opensciencegrid&quot; organization.
+   1. Do the conversion -- create a new Git repo based on the data from Subversion using the scripts in
+      [[https://vdt.cs.wisc.edu/svn/software/tools/github/git-svn-bare-setup][software/tools/github]]:\
+&lt;pre&gt;
+PROJECT=&lt;em&gt;PROJECT&lt;/em&gt;
+
+svn checkout https://vdt.cs.wisc.edu/svn/software/tools/github
+./github/git-svn-bare-setup $PROJECT
+cd $PROJECT.git
+&lt;/pre&gt;
+   1. Inspect the repo and perform any manual tidying, if appropriate.
+      See the [[#ManualTidying][manual tidying suggestions]] section.
+   1. Push all branches and tags.\
+&lt;pre&gt;
+git push github
+&lt;/pre&gt;
+   1. Enable protected branches for the repo in !GitHub:
+      1. In the !GitHub web interface for the repo, go to &quot;Settings &amp;rarr; Branches&quot;.
+      1. Under &quot;Protected branches&quot;, select a branch.
+      1. Check &quot;Protect this branch&quot;.
+      1. Click &quot;Save changes&quot;.
+      1. Repeat for all the other branches.
+   1. Edit !GitHub permissions on the repo:
+      1. In the !GitHub web interface for the repo, go to &quot;Settings &amp;rarr; Collaborators &amp;amp; teams&quot;.
+      1. Ensure the team &quot;Core&quot; is added and has Admin privileges.
+      1. Ensure the team &quot;Software&quot; is added and has Write privileges.
+      1. If the software owner is not on the Software team, add them to the
+         &quot;Collaborators&quot; section and give them Write privileges.
+   1. Set up synchronization for the repo:
+      1. Add the repo to =/p/condor/workspaces/vdt/git/repo/remotes.list=.
+      1. Wait for the fetcher script to run.
+      1. Verify that =/p/condor/workspaces/vdt/git/repo/&lt;em&gt;PROJECT&lt;/em&gt;.git= exists
+         and the contents look good.
+   1. Close off the original Subversion repo:
+      1. Make a file in the trunk of the Subversion directory called =MOVED-TO-GIT= that contains the following text:\
+          &lt;pre&gt;The source code for this project is now contained in GitHub at
+   https://github.com/opensciencegrid/&lt;em&gt;PROJECT&lt;/em&gt;
+Changes committed to SVN will be ignored.&lt;/pre&gt;
+      1. Edit =/p/condor/workspaces/vdt/svn/hooks/pre-commit= and add =software/&lt;em&gt;PROJECT&lt;/em&gt;= to the =@blocked_dirs= list.
+      &lt;!--1. Edit =/p/condor/workspaces/vdt/svn-access/svn-acl-file= and add the following lines to shut off !HTTPS write access to the repo:\
+         &lt;pre&gt;[/software/&lt;em&gt;PROJECT&lt;/em&gt;]
+* = r&lt;/pre&gt; and commit the changes to Git.--&gt;
+
+%RED%If anything fails, either debug, _carefully recording all steps_ or just try again.%ENDCOLOR%
+
+
+---++ Reference
+
+---+++ Safety
+
+See the [[SoftwareTeam.GitHubMigrationProposalSafetyInvestigation][safety investigation]]
+page for a report our investigations into the safety of this plan.
+
+#ManualTidying
+---+++ Manual tidying suggestions
+
+After the initial conversion with the =git-svn-bare-setup=, there are a number
+of optional tasks which can be done to create a tidier repository. This is
+mostly a reference for the migration owners.
+
+Since this task involves a lot of manual steps, it is *strongly* recommended
+that you keep a log of the exact steps you take. Saving shell history is a good
+idea.
+
+A good way to inspect the history of the repo is to run:
+&lt;pre&gt;gitk --branches -tags --date-order&lt;/pre&gt;
+You might want to keep this window up and refresh it after making changes.
+
+Two common problems are:
+
+   1. Zombie branches -- branches that have been deleted in SVN but were
+      recreated for some reason during the conversion.
+   1. Unidentified merges -- merges that happened in SVN but do not show up as
+      such in the Git repo.
+
+The script =trim-deleted-svn-branches= helps identify both of these: branches
+are often deleted after merging, so a zombie branch may indicate the presence
+of a merge.
+
+   1. Run the trim script (=trim-deleted-svn-branches=), to see what would be
+      trimmed (don&#39;t actually execute commands). The script returns a set of
+      =git branch= and =git tag= commands.
+      1. For any =branch@rev= tags that would be created, see if there&#39;s
+         anything *obvious* to you, the one performing the migration, in the
+         chronological vicinity of the =branch@rev= commit that clearly matches
+         the concept of a git merge, and if so, add a git graft for it.
+      1. Do any other tidying that you would like, that seems worth doing, that
+         just so happens to come to your attention at the moment while
+         inspecting =gitk=, for which you feel like expending the effort and
+         eye strain to tidy up.
+         1. This may include making what should have been merges look like
+            merges in git, even for commits which are already part of the
+            history for active branches.
+         1. Feel free to consult Main.CarlEdquist for help if you are confused.
+      1. If any grafts have been added and you are satisfied with the result in
+         =gitk=, then finalize your changes:
+         &lt;pre&gt;git-filter-branch -- --all  &amp;&amp;  rm -rf refs/original info/grafts&lt;/pre&gt;
+   1. Re-run the trim script, and this time run the tag and branch commands
+      that it outputs.
+
+See also the following guide for identifying potential git merge points for svn branches that were merged into trunk but not subsequently deleted:
+
+   * [[%ATTACHURL%/merge-guessing.txt][merge-guessing.txt]]
+

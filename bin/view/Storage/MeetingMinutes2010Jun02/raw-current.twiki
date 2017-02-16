@@ -1,0 +1,152 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Brian Bockelman
+   * Ted Hesselroth
+   * Neha Sharma
+   * Alex Sim
+   * Doug Strain
+   * Tanya Levshina
+
+
+---+++ Guests
+   * Robert Engel
+   * Gabriele Garzoglio
+   * Derek Weitzel 
+
+---++ Status report
+&lt;!-- DESCRIPTION --&gt;
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* Release
+  - bestman2 distribution package and testing
+* Misc
+  - Helping Tanya on Storage forum agenda
+&lt;/pre&gt;
+
+Doug
+&lt;pre class=&quot;screen&quot;&gt;
+- RSV probes: status will be critical if any dependency fails, including clean-up tasks.
+- storage information verification tools design and proof-of-concept in progress.
+&lt;/pre&gt;
+
+Neha:
+&lt;pre class=&quot;screen&quot;&gt;
+- Cleaned up disk space and fixed Trash.StoragePoolManager.conf 
+- Modified gratia install scripts to install both probes on admin node. Changed related documentation
+- Built gratia probes for versions 1.06.15n-3 and 1.06.15o-1
+- Cleaned up dcache install on gridworks and performed a fresh install with new gratia probes
+- Fixed the error in gratia install script (reference to non-existent function). committed in cvs
+- Modified siteinfo.conf, validate.py and gratia install scripts to enable user to set value of DBName
+- Tickets
+&lt;/pre&gt;
+Tanya:
+&lt;pre class=&quot;screen&quot;&gt;
+Meetings: 
+               with Ruth, Brian to discuss public storage
+               OSG production 
+               docteam telecon
+               gratia operation/development
+
+   Technical work:
+              Tested gratia dcache transfer probe, found the following problems:
+                       1. storage probes stopped working with  new gratia release 
+                                 (changes in underlying libraries didn&#39;t propagate to ComputeElement.py, StorageElement.py, ..) - notified Chris
+                        2. the changes of ProbeConfig (Summarize) don&#39;t propagate to rpm - notified Chris
+                        3. new transfer probe doesn&#39;t work correctly with Summarize=1; duplicate record reported - notified Andrew and Brian
+                        4. there is not documentation in the trunk about behavior of new transfer when Summarize is set to 1. 
+                           Asked for documentation (https://twiki.grid.iu.edu/bin/view/Storage/DcacheTransferSummaryVerification written by Brian)
+       
+
+                   Investigated problem reported bin Xin Zhao (BNL). He has installed  production transfer probe but the probe failed to start. 
+                   It was discovered  after comparing his &quot;modified&quot; old code with the new one that the name of database harcoded in the code 
+                     has been changed for some reason to another name. After this change has been applied to a new code the probe started to work.
+                     Phillipe has requested code modification  that allows to configure the name of the database.  
+              Discussed xrootd release and problems reported by Doug
+              Continued work on Storage Forum indico page 
+                                    http://indico.fnal.gov/confRegistrantsDisplay.py/list?confId=3377, sent preliminary agenda
+             
+&lt;/pre&gt;
+
+Ted:
+&lt;pre class=&quot;screen&quot;&gt;
+no report
+&lt;/pre&gt;
+
+Abhishek:
+&lt;pre class=&quot;screen&quot;&gt;
+no report
+&lt;/pre&gt;
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+IRODS evaluation
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Ted is continuing IRODS evaluation and keeps notes on the web (https://twiki.grid.iu.edu/bin/view/Storage/FederatingStorageElementsForOpportunisticUse). He is currently working on the python plugin for IRODS and client that allows IRODS to serve as a shadow storage service. IRODS performs discovery of SURL/TURL and provides client with information, client does transfer directly to/from SE.
+Next steps: 
+   * evaluation of IRODS management capabilities (replication (automatic and on demand), group/user policy, cleaning)
+   * ICAT service (LSST use case applicability)
+
+---++ Second Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+RSV srmtester doc
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+Doug has committed the latest changes in VDT svn and is working on documentation https://twiki.grid.iu.edu/bin/view/Trash/StorageSrmTesterProbe. Robert has volunteered to review it and Neha will do testing as soon as the probe is released in vdt testcache.
+We are still looking for the right place for RSV probe documentation. STG owns RSV probe now, so we are waiting for Alain&#39;s input.
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+storage information verification tools 
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Doug has started to work on storage information verification tools design. Had  discussion how tools could be helpful for IRODS discovery. Gabriele has proposed to look at existing testing framework that has been used for MCAS (cruiscontrol, fitnesse, etc). 
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+dcache release
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+We have postponed the release again due to Philippe request to fix the gratia transfer probe handling of transfer failures.  
+---++ Fifth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Tickets
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
++++++++++
+New tickets
++++++++++
+
+Closed:
+
+8653 - OSG Storage: xrootd: Unable to mount xrootdfs when running configure_xrootd
+
+8654 - OSG Storage: Bestman: Question about TCP-wrapper settings
+
+8655 - OSG Storage: dCache: Error - &quot;Fault occured in repository: I/O test failed&quot;
+
+++++++++
+Old tickets
+++++++++
+
+Closed:
+
+8631 - OSG Storage: dcache: Defective Credential Detected Error on gsiftp door
+
+8567 - OSG Storage: dCache: No space left on pool (metadata on pool node aswell)
+
+Follow up in progress:
+
+8630 - OSG Storage: dCache: &quot;[CONNECTION_ERROR]&quot; from FTS to our dCache/SRM headnode
+
+No update:
+
+8603 - OSG Storage: dCache: Increasing Log level on Gridftp doors/Specify Pinboard Dump directory
+
+8602 - OSG Storage: dCache: Replication Failure
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 03 Jun 2010

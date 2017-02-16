@@ -1,0 +1,28 @@
+---+ TWiki Tips Of the Day Include
+
+This Page randomly picks a Tip of the day to display. The %HOMETOPIC% includes the part between the horizontal rules.
+
+-----
+%STARTINCLUDE%
+&lt;!--
+| Topic list:     | %CALC{$SET(list, %SEARCH{ &quot;^TWiki[Custom]*Tip[0-9A-Z]&quot; web=&quot;%TWIKIWEB%, %MAINWEB%&quot; topic=&quot;TWiki*Tip*&quot; scope=&quot;topic&quot; type=&quot;regex&quot; casesensitive=&quot;on&quot; nosearch=&quot;on&quot; nototal=&quot;on&quot; separator=&quot;, &quot; format=&quot;$web.$topic&quot; noheader=&quot;on&quot; }%)$GET(list)}% |
+| Number of Tips: | %CALC{$SET(number,$LISTSIZE($GET(list)))$GET(number)}% |
+| Random Number:  | %CALC{$SET(number, $INT($RAND( $GET(number) ) + 1))$GET(number)}% | 
+| Web.Topic:      | %CALC{$SET(webtopic, $LISTITEM( $GET(number), $GET(list)))$GET(webtopic)}% |
+| Dot pos:        | %CALC{$SET(pos, $FIND(., $GET(webtopic)))$GET(pos)}% |
+| Web:            | %CALC{$SET(web, $REPLACE($GET(webtopic), $GET(pos), 100))$GET(web)}% |
+| Topic:          | %CALC{$SET(topic, $REPLACE($GET(webtopic), 1, $GET(pos)))$GET(topic)}% |
+| Full URL:       | %CALC{$SET(webTotd,%SCRIPTURL%/view%SCRIPTSUFFIX%/$GET(web)/$GET(topic))}% |
+--&gt;
+&lt;div class=&quot;tipsOfTheDay&quot;&gt;&lt;div class=&quot;tipsOfTheDayContents&quot;&gt;
+&lt;strong class=&quot;tipsOfTheDayHeader&quot;&gt;%ICON{tip}% TWiki Tip of the Day&lt;/strong&gt;
+&lt;div class=&quot;tipsOfTheDayText&quot;&gt;
+%CALC{$NOP(%)SEARCH{ \&quot;^$GET(topic)$\&quot; web=\&quot;$GET(web)\&quot; scope=&quot;topic&quot; regex=&quot;on&quot; nosearch=\&quot;on\&quot; noheader=\&quot;on\&quot; nototal=\&quot;on\&quot; limit=\&quot;1\&quot; format=\&quot;&lt;span class=\\&quot;tipsOfTheDayTitle\\&quot;&gt;[[%SCRIPTURL%/view%SCRIPTSUFFIX%/$web/$topic][$pattern(.*?\-\-\-\+([^\n\r]+).*)]]&lt;/span&gt;&lt;br /&gt; $summary(100, noheader) [[%SCRIPTURL%/view%SCRIPTSUFFIX%/$web/$topic][%MAKETEXT{&quot;Read on&quot;}%&amp;nbsp;&lt;img src=\\&quot;%PUBURLPATH%/%TWIKIWEB%/TWikiDocGraphics/more-small.gif\\&quot; alt=\\&quot;Read more\\&quot; title=\\&quot;Read on\\&quot; width=\\&quot;13\\&quot; height=\\&quot;13\\&quot; border=\\&quot;0\\&quot; /&gt;]]\&quot;}$NOP(%)}% 
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+%STOPINCLUDE%
+-----
+
+__See also:__ TWikiTipsOfTheDay, TWikiTipsOfTheDayAdmin
+

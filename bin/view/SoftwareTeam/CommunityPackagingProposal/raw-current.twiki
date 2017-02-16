@@ -1,0 +1,288 @@
+---+ Community Packaging: A Proposal
+
+---++ 1. Goal of this document
+
+We propose an alternative approach to packaging that we call Community Packaging. If we adopt this approach, it will fundamentally shift how we package and ship the VDT. We discuss this in detail below, but it can be summarized as:
+
+&lt;blockquote&gt;
+*Proposed Principle of Community Packaging:* &lt;br&gt;
+The OSG Software Team should be a good community citizen when it comes to packaging: When possible, we should use packages from existing and/or broader communities; when that is not possible, we should make our own packaging but contribute them back to the broader communities. Therefore, we should package software only when one of the following is true:
+
+   1. The software is not already packaged; or 
+   1. The software is packaged but needs significant changes to be acceptable to our users. (Different version, extra patches, etc...)
+
+Otherwise we should use the existing packaging provided by external developers or software repositories.
+&lt;/blockquote&gt;
+
+_Note:_ Earlier versions of this document used the term &quot;pass-through packaging&quot; instead of &quot;community packaging&quot;. We feel that &quot;community packaging&quot; is more evocative of our goals and sounds less like a bodily function.
+
+In the document, we&#39;ll describe the approach, the benefits, and the downsides of Community Packaging. We also share some early results of investigations about the practicality of our approach.
+
+---++ 2. State of this document
+
+This document is a %RED%DRAFT%ENDCOLOR%.
+
+It was written by Alain Roy.
+
+It has been edited/commented on by Dan Fraser, Chander Sehgal, Tim Cartwright, and Matyas Selmeci. They all agree with the approach outlined here.
+
+In other discussions, Brian Bockelman and John Hover have agreed with the approach, but they have not yet reviewed this document.
+
+---++ 3.0 Background Part 1: Mission of the OSG Software Team
+
+(It&#39;s possible this should be in a separate document, but it&#39;s here for now.) 
+
+To understand how Community Packaging affects the OSG Software Team, we must be clear about the goals of the team.
+
+---+++ 3.1 Mission
+
+The Open Science Grid helps scientists use distributed high-throughput computing to transform their research; the OSG Software Team supports this goal by minimizing the effort needed to manage the underlying software.
+
+---+++ 3.2 Principles
+
+   1. We distribute software to fill the gaps between the operating system and end-user scientific software
+   1. We improve continually by exchanging software, techniques, and wisdom with relevant communities 
+   1. Installed software components must work together seamlessly by default
+   1. Providing and accessing grid resources should be easy, efficient, and enjoyable
+   1. Our primary end users are site administrators, who ultimately support scientists and other stakeholders
+   1. We serve the Open Science Grid, but we aim to support other communities as possible
+
+---+++ 3.3 Core Activities
+
+   1. Package and distribute the software -- patching, building, and configuring as needed
+   1. Test the installed software under realistic conditions
+   1. Create and provide tools that help users configure the software
+   1. Support our users with documentation and direct user assistance
+   1. Evaluate new software for possible inclusion
+   1. Update our services and software to meet our users&#39; evolving needs
+
+---+++ 3.4 Evolution of this mission
+
+This mission and these principles have long been discussed within the team, but not stated clearly in the past. Nonetheless, we believe that the principles represent our goals as they were when we started OSG and the proposed community packaging approach does not change the mission, the principles, or core activities. However, the proposal does improve our ability to meet the mission and do a better job of following our principles. Specifically, if we implement this proposal we will improve in the following respects:
+
+   * Principle 1 (Fill the gaps). With pacman, it has been easy and seductive to provide too many software components, especially ones that overlap with base operating system distributions. We will refocus our efforts on the software components that are not available already. And if we broaden our view of “operating system” to include other OS-specific, standard software repositories (e.g., EPEL for Red Hat), then eventually we will distribute fewer software components ourselves. Doing so will allow us to put more effort into activities of high value to the OSG.
+   * Principle 2 (Exchange with communities). Because our packaging will be in line with standards from the communities we work with, people will be able to easily contribute to the OSG Software Team, and the OSG Software Team will be able to easily contribute to other communities.
+   * Principle 3 (Work together seamlessly). Our software packages will interoperate with existing software from the software distributions used by our users.
+   * Principle 4 (Easy, efficient, and enjoyable). Our software packages will use the same mechanisms for installation that are already in use by our users.
+
+---++ 4.0 Background Part 2: Native packaging inside and outside the VDT
+
+We have previously recognized the need to support RPMs. As Dan Fraser has discovered in recent requirement gathering, there are many people in our community that prefer RPMs to Pacman: both the community and the industry are moving towards RPMs. After much internal discussion (including but not limited to Alain, Brian, Dan, Chander, and John), we believe that our current approach to providing RPMs is not the correct approach, and we should change. 
+
+Today we are implementing RPMs as an adjunct to Pacman packaging (ignoring some earlier work that was specific for LIGO): We&#39;re augmenting our existing builds to produce binary native packages (primarily RPMs). This keeps our Pacman and RPM packaging in sync, but it results in packages that are suboptimal (see below). Not only that, but we&#39;re making slow progress — we want to consider if we should be using a different approach. By decoupling our native packaging from our Pacman packaging, can we get results done in a similar time frame or faster? Will they be more acceptable to the community?
+
+Part of our reasoning is that we see the writing on the wall in various ways:
+
+   * More and more, people are asking for packages that &quot;just work&quot; with their existing systems. But &quot;existing systems&quot; aren&#39;t just the base OS installation, but include commonly used 3rd party software repositories like EPEL.
+   * Many of the packages that are in the VDT are either in a community-accepted software repository (Fedora, EPEL, Debian...) or are likely to be there within the next year. 
+
+---+++ 4.1 Our current binary packages are suboptimal
+
+Today, our RPMs are suboptimal in the following ways:
+
+   * The binary RPMs do not install software into standard locations, according to the widely adopted Filesystem Hierarchy Standard (FHS). This matters to users. For instance, the recent [[https://twiki.grid.iu.edu/bin/view/SoftwareTeam/XrootdRPMPhase1Reqs?rev=12][ATLAS requirements for xrootd]] say that xrootd should be installed into FHS locations.
+   * The RPMs are not compatible with the EPEL repository. This is a very commonly used 3rd-party repository for software not shipped by the OS vendor. At least one site (Nebraska) says that it&#39;s a serious problem for them if our RPMs are incompatible with the EPEL repository. We know EPEL is commonly used — incompatibility is likely to be a serious inconvenience.
+   * We only provide binary RPMs, not source RPMs. This is less serious, but it&#39;s an aid to users who wish to use our packages on another platform that we don&#39;t support. LIGO has benefited from the source packages we provide because they rebuilt them on unsupported platforms. Source packages are also useful for advanced users who wish to customize what we provide.
+
+---+++ 4.2 External packaging
+
+As we noted above, many packages that are currently in the VDT are provided by community-accepted software repositories. Some examples:
+
+   * Many packages are shipped by OS vendors and in almost all cases our repackaging provides a known version but little other benefit. Examples: Tomcat, Apache, !MySQL. 
+   * Globus is part of EPEL (Red Hat-compatible repository) and Debian 6. It is Globus 5 and it doesn&#39;t have our patches.
+   * xrootd has begun to provide an EPEL-compatible source RPM for xrootd.
+   * EMI 1.0 (due in May) will provide all their software as [[https://twiki.cern.ch/twiki/bin/view/EMI/EmiSa2PackagingPolicy][source RPMs that follow the guidelines for Fedora and EPEL]]. This includes the gLite software we use (such as gLExec, LFC, FTS, and CREAM). Given that it is a 1.0 release, we expect it to be a bit rough, but they are headed in this direction.
+
+---++ 5.0 Community Packaging
+
+---+++ 5.1 The New Approach
+
+We propose to package software only when it is essential to do so. This is merely an extension of the Principle #1, above: We distribute software to fill the gaps between the operating system and end-user scientific software. That is, if we broaden our view of “operating system” to include other OS-specific, standard software repositories, and if we *only* fill gaps, then we will package as few components as possible but instead use the packages as they come from existing repositories.
+
+*Proposed Approach:* We package software only when:
+
+   1. The software is not already packaged; or 
+   1. The software is packaged but needs significant changes to be acceptable to our users (different version, extra patches, etc.)
+
+For software that does not meet those criteria, we will use the existing packaging provided by external developers or software repositories. 
+
+The VDT will maintain a software repository (or set of repositories) that contain the set of software we have to package or repackage. Depending on a few characteristics (outlined below), we may copy external packages into the VDT repository or include them by reference in the external repository.
+
+When we say _copy_, we mean that we will copy the &quot;source packages&quot;. We will always build the software that we include in our repository. This way we will have the ability to control precisely what we ship and maintain our capability of patching it.
+
+---+++ 5.2 Example of Community Packaging
+
+&lt;center&gt;&lt;img src=&quot;%ATTACHURLPATH%/packaging1.png&quot; alt=&quot;packaging1.png&quot;/&gt;&lt;/center&gt;
+
+In this picture, there are two points to be made:
+
+   1. Much of the software we rely on comes from an external software repository. (Or perhaps multiple repositories, if appropriate.) In the diagram, these are Packages 1 to 3 on the right. 
+      * External Package 1 has been copied to the VDT repository without making any changes. (However, we do build the software because we only copied the source packaging.)
+      * External Package 2 has been copied to the VDT repository, but it&#39;s also been patched. A &quot;patch&quot; could be any change, including changing the version of the software, changing the software itself, or changing how the software has been packaged. Like Package 1, we built it. 
+      * External Package 3 has not been copied, but one of the VDT packages depends on it by reference. In this case, we do not build the binary that the user installs.
+   1. The VDT has created some packages unique to the VDT. In the diagram, these are the &quot;VDT Packages A and B&quot; on the left.
+
+---+++ 5.3 Possible States of a Package
+
+When do we use an existing package from the community, and when do we contribute our own? In order of preference:
+
+   1. *Refer*: When a component is available from a stable external distribution and is likely to remain compatible with our packages, we simply use what exists. Examples: cURL, wget, Tomcat, !MySQL.
+   1. *Copy*: When we must control the version of a component, and those versions are not available from an external distribution, we will copy the source package from the community. For example, if ATLAS requires that we provide the same version of xrootd as is shipped with ROOT, we may ship an older version of xrootd than provided by the xrootd developers. We expect that much of the gLite/EMI software would be in this category.
+   1. *Patch*: When user requirements demand that we change the build or packaging of a component, but the component already exists in the community, we will copy a source package from the community and patch it. For example, in the short-term we will likely continue to patch Globus to provide OSG-specific changes. *Note:* We will avoid patching whenever possible. We will share our patches with the software provider and work with them to include the patches (or an equivalent) whenever possible so that we do not need to provide modified versions of the software.
+   1. *Package*: When there is no stable, sustained packaging of a component, then we will package it ourselves. If possible, we will contribute our packages to community distributions. Examples: RSV and !BeStMan. Please note that the OSG-specific configuration scripts that we provide will likely be in this category.
+
+---++ 6.0 Continuing Support for Pacman Packaging
+
+&lt;blockquote&gt;
+Since this document was originally written, we are considering (in early June 2011) an accelerated transition to RPM for (initially) RHEL 5 and variants. We may stop non-critical updates to Pacman by the end of June. The transition still looks similar to what we outline below, but with almost no Pacman updates. 
+&lt;/blockquot&gt;
+
+We are unable to simply drop support for Pacman packaging. The community packaging approach will take considerable time to implement, and users will not be able to upgrade as soon as it is available. We expect to provide Pacman packaging for the foreseeable future. 
+
+We will maintain the Pacman packaging in parallel with our native/RPM packaging. This does mean a duplication of effort. However, we are struggling to find an effective way to make RPMs that continue to be synchronized with our Pacman packages, so we believe that the effort to stay synchronized is not well-spent effort. 
+
+Over time, we expect Pacman packages to be deprecated then dropped, but the deprecation and dropping may take a long time. To illustrate what we mean:
+
+&lt;center&gt;&lt;img src=&quot;%ATTACHURLPATH%/packaging2.png&quot; alt=&quot;packaging2.png&quot; /&gt;&lt;/center&gt;
+
+---++ 7.0 Benefits of Community Packaging
+
+   1. Community packaging will allow us to focus our efforts where we provide the most value. We believe that as more software is well-packaged by external groups, we will provide limited value by repackaging the software ourselves. Instead we will focus our efforts on:
+      1. Packaging software that really needs packaging
+      1. Providing high-quality testing and integration
+      1. Providing configurations appropriate for OSG users
+      1. Providing front-line support to OSG users
+   1. It will be easier for people to contribute packages (or fixes for packages) to the VDT. Instead of using a proprietary system (Pacman) for which most of the world doesn&#39;t know how to provide packages, people will be able to use a well-known, well-documented system for packaging. For example, the !GlideinWMSVOFrontEnd developers have created an RPM independently. 
+   1. Where appropriate, the VDT will be able to contribute packages to external repositories. This is a path to sustainability: The software will be available outside the VDT and will allow external groups to contribute maintenance to the packages.
+   1. We are better able to meet the desires of our customers: Packages that interoperate well with their OS and commonly used third-party software repositories.
+
+---++ 8.0 Downsides of Community Packaging
+
+---+++ 8.1 General Downsides
+
+Many of these downside are the result of a more general idea: By adopting a solution that integrates well with existing software distributions (such as Red Hat), we also tie ourselves more tightly to those software distributions. Our Pacman-based installations are comparatively weakly tied to the software distribution because we rely on as little of the OS software and packaging mechanisms as possible. Binary-only RPMs (depending on how they are implemented) are more tightly tied to software distributions, but not as tightly tied as source native packages that rely on community packaging. This tight integration has implications for platform support and our ability to test what users end up use. Specifically:
+
+   1. *Risk*: When we rely more heavily on external software packagers, we are less in control of the software we provide to our users. See [[#AppendixA][Appendix A]] below for details.
+   1. *Platform Support*: It will be significantly harder to provide support for a wide variety of platforms. Right now, most of our &quot;paying&quot; customers use RHEL-compatible OSes, except for LIGO which also uses Debian. However, we have some interest in SUSE from NERSC (which uses RPMs, but is different enough to require significant effort) and some small interest in Mac OS X (which doesn&#39;t have a clear common native packaging solution). Future Campus Grid efforts might require support of other OSes. Adding support for new styles of operating systems is more complicated with source native packaging than binary native packaging or Pacman. Should we limit our set of supported platforms? Should we accept the extra effort for adding other styles of platforms?
+   1. *More versions*: Our users will end up using a wider variety of packages, since we are likely to refer to external versions more often. This makes it harder for us to guarantee our integrated suite of software. We&#39;ve always had this problem to some extent (since we rely on the underlying OS), but it will be greater.
+   1. *Synchronization with Pacman*: Our Pacman packages and our native packages may not always be synchronized. This is partly a question of clear documentation, but can lead to user confusion.
+   1. *Configuration*: We do not yet have a coherent plan for configuration with Community Packaging. Some of our configuration that we currently do as a separate configuration step goes away because well-packaged RPMs do limited self-configuration: for a basic installation they work out of the box. However, advanced configuration is not provided. We are likely to be stuck with re-doing much of our advanced configuration. While we can learn from our existing configuration scripts, not much of the actual code could be reused. 
+
+---+++ 8.2 Short-term downsides
+
+   1. Choosing to be compatible with EPEL means that we need to upgrade to Globus 5, and there will be effort associated with switching: testing, verifying, understanding compatibility. 
+   1. A major source of our packages is EMI for gLite software. EMI 1.0 is scheduled for early May. Given that it&#39;s a 1.0 release and a major new packaging scheme, we have to assume that there will be problems and it will take a while to stabilize. In the worst case, we may need to continue packaging many !gLite packages (such as !CREAM) ourselves.
+   1. We will need to redo the work we&#39;ve done for the worker nodes. 
+
+---++ 9.0 Experiences with Community Packaging
+
+We have done small trials with two packages to make understand Community Packaging more deeply. 
+
+---++ 9.1 xrootd
+
+The xrootd developers have created a source RPM for xrootd. Because [[XrootdRPMPhase1Reqs][ATLAS requires an RPM for xrootd]] but xrootd is not in any standard distribution, we decided to Copy this RPM into the VDT repository.
+
+We (Doug and Tanya) took the source RPM, built it, and pushed the binary RPM into the VDT repository. Several small problems were discovered, but the xrootd developer, Lukasz Janyst, was very accommodating and made changes to meet our needs. As of this writing (6-April-2011) there are still a few changes to be made, but we believe that will end up using their source RPM without modification to supply ATLAS with xrootd. The only major blocker is the missing !GridFTP plugin (aka, DSI module), but we have a path to resolve it. ATLAS appears likely to approve of the final result.
+
+In order to get a full xroot installation, we also install the !GridFTP server from our binary Globus RPMs.
+
+Conclusion: Copying xrootd works well.
+
+---++ 9.2 gLExec
+
+We have started to build gLExec (needed for !CREAM) from source RPMs provided by by EMI that will be part of the upcoming EMI 1.0 release. Matyas Selmeci did the work. So far we have only built some of the gLExec dependencies (LCAS, LCMAPS, some plugins for LCAS and LCMAPS, and the SAML 2 library).
+
+Because we are still using our VDT Globus, we had to modify their RPMs lightly to get them to work. (Mat modified the build-time dependencies to refer to our Globus, and the arguments to _configure_ to find Globus.) We found some minor problems with the source RPMs which we will report soon. 
+
+In early tests, LCAS and LCMAPS appear to work just fine. We suspect that we will soon be able to conclude that Copying gLExec works well. Should we switch to using the EPEL version of Globus, this approach will be even simpler — none of our existing patches will be needed anymore. 
+
+We did discover that the EMI source RPMs have some problems due to the methodology they&#39;ve used for jumpstarting the process for making source RPMs. The gLExec developers have independently created source RPMs that are likely to work better, but we have not yet tried them out.
+
+---++ 10.0 Open Questions
+
+   1. At a technical level, how can we control inclusion of other packages. (yum priorities and the like.)
+   1. What changes are needed to Globus such that we can stop patching it? (Will be discussed at !GlobusWorld)
+   1. How much do we really need !SuSE support?
+
+#AppendixA
+---++ Appendix A: Risk Assessment
+
+One of the fundamental shifts we will make in switching to community packaging is that we will have less control over the entire software stack our users use. Historically we&#39;ve provided several off-the-shelf software components, like Apache, Tomcat, !MySQL, and various Perl modules. These are not grid-specific packages (unlike Globus). We&#39;ve argued that we can therefore ensure that our entire software stack has been tested and we feel confident that it works together. This has been one of the main values of the VDT. (It&#39;s not entirely true, because we do rely on many low-level components from the base operating system distribution, but they have been very stable in our supported operating systems.) With the move to community packaging, we will have less control: Other versions of the software will be installed (or pre-installed) and we will need to interact with them.
+
+&lt;blockquote&gt;
+*Question* How risky is this situation for us? How ready is our software ready to live in this world?
+&lt;/blockquote&gt;
+
+There is a low to moderate risk here. We believe the risk is acceptable and we have methods to help us deal with the risk. 
+
+---+++ A.1 What is the risk?
+
+There is a low to moderate risk that, occasionally, external software updates will break our installed software.
+
+Red Hat (our primary platform) has the best of intentions and policies, but there remains a risk. They have policy documents that describe how they maintain compatibility across updates (e.g., see [[http://www.redhat.com/f/pdf/rhel/RHEL6_App_Compatibility_WP.pdf][Red Hat Enterprise Linux: Application Compatibility Specification]]), and our investigation of some key packages show that they indeed are cautious with upgrades. (See Appendix B for some data on this.)
+
+We&#39;ve talked to several system administrators who have dealt with Red Hat updates for years. These include administrators from UW-Madison, the GOC, and Fermilab. While their opinions differ slightly, a summary is that Red Hat has the best of intentions and they succeed _most_ of the time. However, a couple of times a year there are problems with updates. Red Hat cannot test the software in all the ways it is used by their customers and upstream software developers will often combine bug fixes with new features or simply have less strict standards for compatibility and quality control. All of these system administrators have methods for dealing with the risk (managing updates carefully, testing them before they are released, having good downgrade strategies, etc.), but the upshot is that they feel the need to have mechanisms to deal with the occasional problems with updates. 
+
+---+++ A.2 Why is the risk acceptable?
+
+There are a few reasons why the risk is acceptable:
+
+   1. In practice, relatively few updates from our OS vendors (particularly Red Hat) are bad updates. Between their policies and their actions, we believe that they take a very cautious approach to updates.
+   1. We belong to a larger developer/packaging community that deals with the same risk: We are not dealing with this risk in isolation. For example, the Globus and EMI projects are using community packaging. They are forced to deal with the risk and their software improves as a result. Moreover, there is a large community of users that can identify and contribute fixes.
+   1. Our user community is already dealing with this risk every day with software components that are not in the VDT. While we are extending the set of software that is at risk due to updates out of our control, our sites and users are already dealing with this risk across the rest of their software. 
+
+---+++ A.3 How can we manage the risk?
+
+---++++ A.3.1 Detection
+
+First, we must detect problems quickly by continuously testing the latest versions of the VDT against the latest updates of our supported operating systems. We must provide an up-to-date report that says, for example, &quot;VDT version X has been tested against Red Hat 5.5 (initial release) and Red Hat 5.5 (latest release) and there were the following problems (or no problems).&quot; This will change the kinds of testing we do and the information we provide to our community. There are a couple of interesting questions about this kind of testing and reporting. What versions of the OS should we test against? How do we report the full version? (Probably by a breakdown of the full set of underlying software, since Red Hat 5.5 gets a stream of unlabeled updates.)
+
+---++++ A.3.2 Mitigation
+
+In the rare cases where updates cause problems, we must react quickly to fix problems. We have multiple strategies:
+
+   1. *Manually revert to older versions*: We can provide instructions to our users to tell them how to immediately revert to an older version. Fortunately, Red Hat (and other large Linux distributions) keep older releases available for this kind of situation. Manual downgrades are a very quick, if short-term repair strategy.
+   1. *Requiring a specific version*: We can change our !RPMs to require specific (older) versions of dependent software, to avoid versions with particular updates. This strategy formalizes and automates a particular downgrade or version freeze.
+   1. *Copy into our repository*: We can copy upstream software into our repository so that users will use our version instead of other versions.
+   1. *Repackage, rename*: We can copy software into our repository and rename it (such as renaming &quot;mysql&quot; to &quot;vdt-mysql&quot;) to ensure it doesn&#39;t conflict with other software. This is an extreme step we hope to avoid, but it can be done if absolutely necessary.
+
+In the bigger picture there are two more methods to help moderate risk:
+
+   1. We can participate in the larger community and contribute fixes to the software and packaging to avoid problems that we encounter.
+   1. In talking with experienced system administrators, we have learned that many of them have processes and custom tools to help manage software updates. We can pass on best practices to our less experienced users as well as harden and formalize such custom tools to help all of our users manage software updates. 
+
+---++ Appendix B: Raw data on how software was upgraded within Scientific Linux 5
+
+Historically speaking RHEL 4/5, how have the following packages evolved over
+
+|  *Software Package*  |  *SL 5.0*  |  *SL 5.1  * |  *SL 5.2  * |  *SL 5.3  * |  *SL 5.4  * |  *SL 5.5  * |  *Comments*  | 
+|  Apache  |  2.2.3-6  |  2.2.3-11  |  2.2.3-11  |  2.2.3-22  |  2.2.3-31  |  2.2.3-31  | |
+|  !MySQL  |  5.0.22-2  |  5.0.22-2  |  5.0.45-7  |  5.0.45-7  |  5.0.77-3  |  5.0.77-4  |  The VDT has gone through a similar evolution, with no problem.  |
+|  Tomcat  |  5.5.17-8jpp2  |  5.5.23-0.jpp3  |  5.5.23-0.jpp7  |  5.5.23-0.jpp7  |  5.5.23-0.jpp7  | 5.5.23-0.jpp7  | |
+|  wget  |  1.10.2-7  |  1.10.2-7  |  1.10.2-7  |  1.10.2-7  |  1.11.4-2  |  1.11.4-2  | |
+|  curl  |  7.15.5-2  | 7.15.5-2  |  7.15.5-2  |  7.15.5-2  |  7.15.5-2  |  7.15.5-9  | |
+|  Python  |  2.4.3-19  |  2.4.3-19  |  2.4.3-21  |  2.4.3-24  |  2.4.3-27  |  2.4.3-27  | |
+|  Expat  |  1.95.8-8  |  1.95.8-8  |  1.95.8-8  |  1.95.8-8  |  1.95.8-8  |  1.95.8-8  | |
+|  Java  |  1.5.0_11  |  1.5.0_14  |  1.5.0_15  |  1.6.0_12  |  1.6.0_16  |  1.6.0_20  |  The VDT has gone through a similar jump, with no problem.  |
+|  PHP  |  5.1.6-12  |  5.1.6-15  |  5.1.6-20  |  5.1.6-23  |  5.1.6-23  |  5.1.6-27  | |
+|  Squid  |  2.6STABLE6-4  |  2.6STABLE6-5  |  2.6STABLE-5  |  2.6STABLE21-3  |  2.6STABLE21-3  |  2.6STABLE21-6  | |
+|  Tcl (for !TclGlobus)  |  8.4.13-3  |  8.4.13-3  |  8.4.13-3  |  8.4.13-3  |  8.4.13-3  |  8.4.13-4  | |
+|  !OpenSSL  |  0.9.8b-8.3  |  0.9.8b-8.3  |  0.9.8b-10  |  0.9.8e-7  |  0.9.8e-12  |  0.9.8e-12  |  We use the system OpenSSL, and the changes did not affect us.  |
+
+%RED% To be researched: Fetch-CRL and Globus from EPEL%ENDCOLOR%&lt;br&gt;
+%RED% To be researched: OpenLDAP%ENDCOLOR%
+
+---++ Interesting References
+
+Fedora Packaging Guidelines:
+http://fedoraproject.org/wiki/PackagingGuidelines
+
+EPEL Packaging Guidelines:
+http://fedoraproject.org/wiki/EPEL/GuidelinesAndPolicies
+
+EMI Packaging Guidelines:
+https://twiki.cern.ch/twiki/bin/view/EMI/EmiSa2PackagingPolicy
+
+EMI 1 Release information:
+https://twiki.cern.ch/twiki/bin/view/EMI/EMI-1
+

@@ -1,0 +1,225 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+
+%RED%
+WARNING! This page is for an older version of Hadoop.
+For newer versions, please visit [[Documentation/Release3.InstallHadoopSE][Hadoop Release 3 Installation]]
+%ENDCOLOR%
+
+%TOC%
+
+---+ Installing HDFS
+
+This guide covers installation of the HDFS core components, along with the FUSE mounts.  The current version of HDFS covered in this guide is 0.19.1.
+
+Once done with this guide, you should have Hadoop installed, configured, and working.  You should be able to navigate the file system through the FUSE mount point.  The next two guides cover the installation of grid components.
+
+---++ General Prerequisites
+
+Hadoop will run anywhere that Java is supported (including Solaris).  However, these instructions are for RedHat 4 and RedHat 5 derivants (including Scientific Linux) because of the RPM based installation.  There are RPMs available for 32-bit and 64-bit systems.
+
+The HDFS prerequisites are:
+   * Minimum of 1 headnode (the namenode), although 2 recommended (the namenode and the secondary namenode)
+   * At least one node which will hold data, preferably at least 2.  Most sites will have 20 to 200 datanodes.
+   * The namenode and secondary name node are *not* datanodes.
+   * Working Yum and RPM installation on every system.
+   * Java RPM installed.  This requires the &quot;jdk&quot; RPM available at java.sun.com; Java 1.6.0 or higher is needed; patch level 14 is recommended.
+
+*Compatibility Note* Note that versions of !OpenAFS less than 1.4.7 and greater than 1.4.1 create nameless groups on Linux; these groups confuse Hadoop and prevent its components from starting up successfully. If you plan to install Hadoop on a Linux !OpenAFS client, make sure you&#39;re running at least !OpenAFS 1.4.7.
+
+*Deprecation Note* There used to be two choices for installation method - RPM-based or Pacman-based.  From feedback we have received from site admins, we are moving forward only with the RPM-based installs.  [[The Pacman install is documented only for posterity][HadoopInstallDeprecated]].
+
+The rpm/yum installation will create a &#39;hadoop&#39; system account and group  (uid,gid &lt; 500) on the host system for running the datanode services.  If you would like to control the uid/gid that is used, then you should create the &#39;hadoop&#39; user and group manually before installing the rpms.
+
+---++ RPM installation
+
+---+++ Quick Install
+
+Quickstart for the impatient (without fuse).  Follow the following steps on your namenode, secondary namenode, and all the data nodes.
+
+This assumes you already have the *jdk* 1.6.0 RPM installed on all relevant nodes.
+
+ &lt;verbatim&gt;
+rpm -ivh http://vdt.cs.wisc.edu/hadoop/osg-hadoop-1-2.el5.noarch.rpm
+yum install hadoop
+vi /etc/sysconfig/hadoop # Edit appropriately (see below)
+service hadoop-firstboot start
+chkconfig hadoop on
+service hadoop start
+&lt;/verbatim&gt;
+
+---+++ Full Install
+
+The Hadoop RPMs require Sun Java jdk 1.6.0 or later.  You can download this from http://java.sun.com.
+
+The Hadoop init script assumes that you are not running multiple hadoop services (datanode, namenode, secondary namenode) on the same host.
+
+The fuse interface to HDFS requires the fuse kernel module.  The stock RHEL kernels do not include the fuse kernel module.  Atrpms provides kernel modules for the most recent RHEL4 and RHEL5 kernels at www.atrpms.net.  If you are running a custom kernel, then be sure to enable the fuse module with =CONFIG_FUSE_FS=m=.  Building and installing a fuse kernel module for your custom kernel is beyond the scope of this document.
+
+*Note:* If you cannot find a fuse kernel module to match your kernel, ATRPMs has a [[guide for using their RPM spec files][http://people.atrpms.net/~pcavalcanti/LCG_kernel_modules.html]] in order to generate a module.  That page mostly works, although sections are a bit out dated.  Contact the list if you need help.
+
+The recommended method for installation is the yum install in the next section.
+
+---+++ Yum install
+
+A yum repository for installing and upgrading Hadoop is hosted at the VDT.  This is the quickest install method, but you must have the fuse kernel module already installed on your system in order to use the yum installer.
+
+To configure your local installation for the yum repository, you should install the osg-hadoop package with the following command:
+
+&lt;verbatim&gt;
+rpm -ihv http://vdt.cs.wisc.edu/hadoop/osg-hadoop-1-2.el5.noarch.rpm
+&lt;/verbatim&gt;
+
+After installing the caltech-hadoop yum configuration package, you can install the hadoop core with:
+
+&lt;verbatim&gt;
+yum install hadoop
+&lt;/verbatim&gt;
+
+Next, we install the FUSE-related portions:
+
+&lt;verbatim&gt;
+yum install hadoop-fuse
+&lt;/verbatim&gt;
+
+If you installed the fuse kernel module from somewhere other than the Atrpms repository, then you will need to install the fuse rpm manually as described below.  The hadoop-fuse and fuse-libs packages can still be installed with yum after you have installed the fuse RPM:
+
+&lt;verbatim&gt;
+rpm -ivh --nodeps fuse*.rpm
+yum install hadoop-fuse fuse-libs
+&lt;/verbatim&gt;
+
+Proceed to the HDFS configuration step below.
+
+---+++ Manual Hadoop RPM install
+This is not the recommended method for unexperienced admins.
+
+HDFS and FUSE userspace RPMs for RHEL4 and RHEL5 are available from:
+
+&lt;verbatim&gt;
+http://vdt.cs.wisc.edu/hadoop/stable/1.0/rhel4//i386/
+http://vdt.cs.wisc.edu/hadoop/stable/1.0/rhel4//x86_64/
+http://vdt.cs.wisc.edu/hadoop/stable/1.0/rhel5//i386/
+http://vdt.cs.wisc.edu/hadoop/stable/1.0/rhel5//x86_64/
+&lt;/verbatim&gt;
+
+Download the latest Hadoop RPMs from the appropriate directory above.  If you wish to use the fuse interface (recommended), then you should also download the fuse and fuse-libs RPMs.
+
+After downloading the RPMs, install with:
+
+&lt;verbatim&gt;
+rpm -ivh hadoop-0.19.1*.rpm
+&lt;/verbatim&gt;
+
+Download the hadoop-fuse, fuse, and fuse-libs rpms from the locations above.  If you downloaded the fuse-kmdl module from Atrpms, then you can install all of the RPMs with a single command:
+
+&lt;verbatim&gt;
+rpm -ivh hadoop-fuse*.rpm fuse-*.rpm
+&lt;/verbatim&gt;
+
+If you obtained your fuse kernel module from elsewhere, or built the fuse module into your custom kernel, then you will need to add =--nodeps= to avoid errors:
+
+&lt;verbatim&gt;
+rpm -ivh --nodeps hadoop-fuse*.rpm fuse-*.rpm
+&lt;/verbatim&gt;
+
+---+ Configuring HDFS
+
+---++ HDFS Directory Locations
+
+The Hadoop RPMs install files into the standard system locations.  The following table highlights some of the more interesting locations, and documents whether you might ever want to edit them.
+
+| File Type | Location | Needs editing? |
+| Log files | =/var/log/hadoop/*= | No |
+| PID files | =/var/run/hadoop/*.pid= | No |
+| init scripts | =/etc/init.d/hadoop=, =/etc/init.d/hadoop-firstboot= | No |
+| init script config file | =/etc/sysconfig/hadoop= | Yes |
+| runtime config files | =/etc/hadoop/*= | Maybe |
+| System binaries | =/usr/bin/hadoop*= | No |
+| JARs | =/usr/share/java/hadoop/*= | No |
+
+---++ Edit /etc/sysconfig/hadoop
+
+The most common site configuration settings can be changed in =/etc/sysconfig/hadoop=.  In most cases, this file will be identical on the namenode and datanodes.  The configuration settings are documented in the file itself, but we document some of the most commonly edited ones in the table below:
+
+| Option Name | Needs editing? | Suggested value |
+| HADOOP_NAMENODE | Yes | The host name of your namenode; should match the output &#39;hostname -s&#39; on the namenode server |
+| HADOOP_NAMEPORT | Yes | 9000 |
+| HADOOP_SECONDARY_NAMENODE | Yes | The host name of the secondary namenode; should match the output of &#39;hostname -s&#39; |
+| HADOOP_CHECKPOINT_DIRS | Yes | Comma-separated (*important:* no spaces between commas!) list of directories to store checkpoints on.  The safest configuration is to store 2 checkpoints locally on 2 block devices and 1 checkpoint on a NFS server.  At least 1 checkpoint directory is required.  |
+| HADOOP_CHECKPOINT_PERIOD | Yes | The time, in seconds, between checkpoints.  600 is suggested for small sites |
+| HADOOP_REPLICATION_DEFAULT | Yes | Default number of replications.  Suggested: 2 |
+| HADOOP_REPLICATION_MIN | Yes | Minimum number of replications; below this, an error will be thrown.  Suggested: 1 or 2. |
+| HADOOP_REPLICATION_MAX | Yes | Maximum number of replications.  Suggested: 512 |
+| HADOOP_GANGLIA_ADDRESS | Maybe | Hostname or IP of your Ganglia gmetad.  If left empty then hadoop will try to extract the ganglia metad address from /etc/gmond.conf |
+| HADOOP_DATADIR | Yes | The base directory where HDFS temp and management data will be written.  On datanodes this is usually the parent of the first data partition. It is safe to leave this empty for client-only installations.|
+| HADOOP_DATA | Yes | A comma-separated list of directories (no spaces!) where the HDFS data blocks will be stored.  The first one is typicall the same as $HADOOP_DATADIR/data.  It is safe to leave this empty for client-only installations. |
+| HADOOP_USER | Maybe | The username that the hadoop datanode daemons will run under.  The namenode will always run as &#39;root&#39;.  Suggested: hadoop |
+| HADOOP_NAMENODE_HEAP | Maybe | The Java heap size for the namenode; bigger is better, but the node shouldn&#39;t swap.  Minimum: 2048m.  Suggested: 8192m |
+| HADOOP_MIN_DATANODE_SIZE | Maybe | A value in GB; if the data directory is smaller than this size, HDFS will refuse to start.  Safeguards against starting the datanode daemon on non-datanodes.  Suggested: 300 (this value will vary widely with your datanode size). Set to zero or an empty string to bypass this check. |
+
+After making changes to the file, you must run =service hadoop-firstboot start= to propagate the changes to the hadoop configuration files in =/etc/hadoop=.  =hadoop-firstboot= must be run every time you make changes to /etc/sysconfig/hadoop.
+
+%NOTE% If you just installed Hadoop for the first time, you must log in/out of your shell or source /etc/profile.d/hadoop.sh before your you try playing with the command line tools.
+
+*Upgrade note:* Configuration files will be saved with a =.rpmsave= extension if you ever update your hadoop rpms with rpm or yum.  *Make sure to copy your settings from =/etc/sysconfig/hadoop.rpmsave= to =/etc/sysconfig/hadoop= if you ever update your hadoop rpms.*  Any manual changes to the hadoop configuration files in =/etc/hadoop/= should be preserved during an upgrade, but may be overwritten when running =hadoop-firstboot=.
+
+---+++ Side topic: Multiple data directories on a datanode.
+
+Hadoop has the ability to store data in multiple directories on a datanode.  This can be useful if you have multiple drives on your datanode and don&#39;t want to run them in a raid array, or if you have multiple large storage volumes mounted on your datanode.  To configure a datanode to use multiple directories, you need to enter each directory in the =HADOOP_DATA= setting in =/etc/sysconfig/hadoop= as a comma-separated list of directories (no spaces!) and then run =service hadoop-firstboot start=.  Here is an example of a datanode with 4 storage directories:
+
+&lt;verbatim&gt;
+HADOOP_DATA=/data1/hadoop/data,/data2/hadoop/data,/data3/hadoop/data,/data4/hadoop/data
+&lt;/verbatim&gt;
+
+---++ Running Hadoop
+
+The Hadoop rpms install a startup script in =/etc/init.d/hadoop=.  The same command is used to start hadoop services on a datanode, namenode, or secondary namenode:
+
+&lt;verbatim&gt;
+service hadoop start
+&lt;/verbatim&gt;
+
+You will also want to configure hadoop to start at boot time with:
+
+&lt;verbatim&gt;
+chkconfig hadoop on
+&lt;/verbatim&gt;
+
+---+++ Side topic: Client-only installation
+
+Sometimes it is handy to configure a node to be a client, that is, a system that has access to hadoop but will not serve as a datanode or namenode.  The installation and configuration for such a node is the same as above, except that you do not need to start any hadoop services with =/etc/init.d/hadoop=.  It is still necessary to modify =/etc/sysconfig/hadoop=, but it is not necessary to specify any datanode directories in =HADOOP_DATA=.
+
+---++ Mounting fuse at boot time
+
+After you have installed the fuse-libs rpms as well as the fuse kernel module (preferably via the fuse RPM), you can mount FUSE by adding the following line to =/etc/fstab= (Be sure to change the =/mnt/hadoop= mount point and =namenode.host= to match your local configuration.  To match the help documents, we recommend using =/mnt/hadoop= as your mountpoint):
+
+&lt;verbatim&gt;
+hdfs# /mnt/hadoop fuse server=namenode.host,port=9000,rdbuffer=32768,allow_other 0 0
+&lt;/verbatim&gt;
+
+Then run:
+
+&lt;verbatim&gt;
+mount /mnt/hadoop
+&lt;/verbatim&gt;
+
+When mounting the HDFS fuse mount, you will see the following harmless warnings printed to the screen:
+
+&lt;verbatim&gt;
+# mount /mnt/hadoop
+port=32767,server=(
+fuse-dfs didn&#39;t recognize /mnt/hadoop,-2
+fuse-dfs ignoring option allow_other
+&lt;/verbatim&gt;
+
+To start the fuse mount in debug mode, you can run the fuse mount command by hand:
+
+&lt;verbatim&gt;
+/usr/bin/hdfs  /mnt/hadoop -o rw,server=compute-13-1,port=9000,rdbuffer=131072,allow_other -d
+&lt;/verbatim&gt;
+
+Debug output will be printed to stderr, which you will probably want to redirect to a file.  Most FUSE-related problems can be tackled by reading through the stderr and looking for error messages.
+
+---+ Next steps
+
+Congratulations!  At this point, you should have a working Hadoop installation.  Please proceed to the validation steps or the next guide, [[HadoopGridFTP][Hadoop and GridFTP]].

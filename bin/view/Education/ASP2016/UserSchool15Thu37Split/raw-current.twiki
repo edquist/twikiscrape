@@ -1,0 +1,126 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+---+!! Bonus Exercise 3.3: Blast Search - Split Database (optional)
+%TOC%
+
+---++ Background
+Some computations require large amounts of input data. It may be unreasonable to transfer an entire dataset to a remote worker, either because it is too large for the worker to store, or will take too much time to transfer. In these situations, it&#39;s often advantageous to break the inputs up and use multiple jobs to instead of a single job.  While there is no general method for this, we&#39;ll look at an example using BLAST (Basic Local Alignment Search Tool) data.
+
+&lt;center&gt;
+&lt;img src=&quot;%ATTACHURLPATH%/DataChunk_1.jpg&quot; alt=&quot;DataChunk_1.jpg&quot; width=&#39;400&#39; height=&#39;300&#39;/&gt;
+&lt;/center&gt;
+
+---++ Data chunks and workflow
+As mentioned before the BLAST database used for this exercise has a total size of 20GB. We&#39;ve already split into 18 chunks using the standard tools that comes with blast package. The files are located at
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;ls /stash/public/blast/database/nt.5-30-2014/*.gz &lt;/strong&gt;
+-rw-rw-r-- 1 dbala @OSG-Staff 801M Jan 27 14:44 /stash/public/blast/database/nt.5-30-2014/nt.00.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 825M Jan 27 14:44 /stash/public/blast/database/nt.5-30-2014/nt.01.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 769M Jan 27 14:44 /stash/public/blast/database/nt.5-30-2014/nt.02.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 778M Jan 27 14:45 /stash/public/blast/database/nt.5-30-2014/nt.03.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 690M Jan 27 14:45 /stash/public/blast/database/nt.5-30-2014/nt.04.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 769M Jan 27 14:45 /stash/public/blast/database/nt.5-30-2014/nt.05.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 743M Jan 27 14:46 /stash/public/blast/database/nt.5-30-2014/nt.06.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 636M Jan 27 14:46 /stash/public/blast/database/nt.5-30-2014/nt.07.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 617M Jan 27 14:46 /stash/public/blast/database/nt.5-30-2014/nt.08.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 524M Jan 27 14:47 /stash/public/blast/database/nt.5-30-2014/nt.09.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 722M Jan 27 14:47 /stash/public/blast/database/nt.5-30-2014/nt.10.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 733M Jan 27 14:47 /stash/public/blast/database/nt.5-30-2014/nt.11.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 708M Jan 27 14:48 /stash/public/blast/database/nt.5-30-2014/nt.12.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 202M Jan 27 14:48 /stash/public/blast/database/nt.5-30-2014/nt.13.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 426M Jan 27 14:48 /stash/public/blast/database/nt.5-30-2014/nt.14.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 766M Jan 27 14:48 /stash/public/blast/database/nt.5-30-2014/nt.15.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 810M Jan 27 14:49 /stash/public/blast/database/nt.5-30-2014/nt.16.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 652M Jan 27 14:49 /stash/public/blast/database/nt.5-30-2014/nt.17.tar.gz
+-rw-rw-r-- 1 dbala @OSG-Staff 285M Jan 27 14:49 /stash/public/blast/database/nt.5-30-2014/nt.18.tar.gz
+&lt;/pre&gt;
+
+We want to perform blast analysis for a given query file on these smaller chunks. Blast search takes the sequence in the query file and  matches with the sequences in database.   For a given query file, we want to perform blast search on these chunks.   We&#39;ll give an example of this and your task will be to create a submit script that will perform a different query.
+
+---++ Get and explore example files
+On the OSG submit node, copy the required files to your home directory.
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cp -r /stash/public/userschool2015/BlastSplitSearch ~   &lt;/strong&gt;
+&lt;/pre&gt;
+
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cd  BlastSplitSearch  &lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt; ls  &lt;/strong&gt;
+blast_exe.bash  # Job wrapper script
+blast.submit       # Condor submit file
+HLA.txt              # Query file
+&lt;/pre&gt;
+Note: The in-line comments are inserted here but don&#39;t show up on your screen.
+
+Let us take a look at our job submission file
+&lt;pre class=&quot;screen&quot;&gt;
+universe = vanilla
+
+executable = blast_exe.bash
+arguments = HLA.txt  nt.00  HLA.txt.nt.00.output
+transfer_input_files = HLA.txt, /stash/public/blast/database/nt.5-30-2014/nt.00.tar.gz
+
+transfer_output_files = HLA.txt.nt.00.output
+
+output = job_nt.00.out
+error = job_nt.00.err
+log = job_nt.00.log
+
+requirements = (HAS_CVMFS_oasis_opensciencegrid_org =?= TRUE)
+
+queue
+
+arguments = HLA.txt  nt.01  HLA.txt.nt.01.output
+transfer_input_files = HLA.txt, /stash/public/blast/database/nt.5-30-2014/nt.01.tar.gz
+transfer_output_files = HLA.txt.nt.01.output
+
+output = job_nt.01.out
+error = job_nt.01.err
+log = job_nt.01.log
+
+queue
+&lt;/pre&gt;
+
+In the above job, we use two data chunks ==nt.00.tar.gz== and ==nt.01.tar.gz== for demo and it is s easy to extend for rest of the data chunks.
+
+To submit the jobs
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt; condor_submit blast.submit &lt;/strong&gt;
+&lt;/pre&gt;
+
+The jobs would complete in few minutes and produce two output files:
+&lt;pre&gt;
+HLA.txt.nt.00.output
+HLA.txt.nt.01.output
+&lt;/pre&gt;
+
+Check the output file
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt; tail -n 1 HLA.txt.nt.00.output   &lt;/strong&gt;
+Gap Penalties: Existence: 0, Extension: 2.5
+&lt;/pre&gt;
+The above line indicates  that your blast job is successful.
+
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+
+---++ Perform blast search for a different query file
+
+   *  The query file  BRAC1.txt is located at /stash/public/userschool2015/BlastSplitSearch/QueryFiles/
+   * In this exercise, change the job wrapper and submission file to perform blast search on &quot;BRAC1.txt&quot;  
+   * BRAC1.txt is located at /stash/public/userschool2015/BlastSplitSearch/QueryFiles/
+
+
+
+
+
+
+-- Main.BalamuruganDesinghu - 29 Jul 2015
+

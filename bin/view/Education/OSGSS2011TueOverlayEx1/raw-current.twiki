@@ -1,0 +1,173 @@
+---+ Overlay Exercises - Overlay pool basics
+
+This exercise will give you some experience using glideinWMS.
+
+%TOC%
+
+---++ Environment
+
+We will use the usual Condor submit host:&lt;br&gt;
+=vdt-itb.cs.wisc.edu=
+
+The glideinWMS is installed alongside the local Condor pool.
+
+There will be no shared file system between the submit and the execute hosts, so you will should plan on transferring all the needed files with you.
+
+---++ Exercise 1 - Overlay job basics
+
+As stated above, the glideinWMS is installed alongside the regular Condor pool.
+
+To tell the jobs to use the glideins (and glideins only), you just need to add:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
++DESIRED_Sites=&quot;any&quot;
+requirements = GLIDEIN_Site=!=UNDEFINED
+&lt;/pre&gt;
+to any vanilla jobs.
+
+For example:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+# this is standard Condor part
+Universe = vanilla
+Executable = &amp;lt;your executable here&amp;gt;
+Arguments  = &amp;lt;your arguments here&amp;gt;
+transfer_input_files = &amp;lt;list any additional files you need here&amp;gt;
+Log        = simple.log
+Output     = simple.out.$(Cluster).$(Process)
+Error      = simple.error.$(Cluster).$(Process)
+
+# this tells glideinWMS you want to run on remote resources
++DESIRED_Sites=&quot;any&quot;
+# this forces the job to run on glideins only
+requirements = GLIDEIN_Site=!=UNDEFINED
+
+Queue &amp;lt;as many as you need&amp;gt;
+&lt;/pre&gt;
+
+Each of the students should submit 10 jobs. Pick any job you want; you can take any of the ones you run today or yesterday, or create a new one if you like; just make sure that it lasts at least a minute, and not more than about ten minutes.
+
+Can you tell where they are running?&lt;br&gt;
+%TWISTY{
+showlink=&quot;Show solution&quot;
+hidelink=&quot;Hide solution&quot;
+start=&quot;hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+Each job has an attribute called =MATCH_GLIDEIN_Site=. You can look at it using condor_q.
+
+Each job also has a =RemoteHost= attribute that tells you exactly which node it is running on.
+%ENDTWISTY% 
+
+When they are finished, do you know where they ran?&lt;br&gt;
+%TWISTY{
+showlink=&quot;Show solution&quot;
+hidelink=&quot;Hide solution&quot;
+start=&quot;hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+The  =MATCH_GLIDEIN_Site= is preserved even when the job finishes. You can look at it using condor_history.
+%ENDTWISTY% 
+
+What do you think of the experience.
+
+---++ Exercise 2 - Selecting a site
+
+In the previous exercise, you told the glideinWMS to run just anywhere.
+Suppose you had data pre-installed at a site... how do you limit where will the jobs go?
+
+The answer is in the =DESIRED_Sites= attribute you publish in your job.
+Instead of using =&quot;any&quot;=, provide a list of sites (coma separated).
+
+Then limit your jobs to those sites with:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+requirements = stringListMember(GLIDEIN_Site,DESIRED_Sites)
+&lt;/pre&gt;
+
+To get the list of available sites, run:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+/opt/glidein/list_sites.sh
+&lt;/pre&gt;
+
+Each of you pick 1 or 2 sites, and run 10 jobs.
+Check that they ran where you expected to.
+
+%TWISTY{
+showlink=&quot;Show hint&quot;
+hidelink=&quot;Hide hint&quot;
+start=&quot;hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
++DESIRED_Sites=&quot;UNL,UCSD&quot;
+requirements =  stringListMember(GLIDEIN_Site,DESIRED_Sites)
+&lt;/pre&gt;
+%ENDTWISTY% 
+
+
+%TWISTY{
+showlink=&quot;Show follow up&quot;
+hidelink=&quot;Hide&quot;
+start=&quot;hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+The glideins also advertise the Grid CE used to obtain the resources. The attribute to look for is =GLIDEIN_Gatekeeper=.
+
+Similarly, the jobs has this value in their own =MATCH_GLIDEIN_Gatekeeper= attribute.
+
+To get the list of all available CEs, run
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+/opt/glidein/list_CEs.sh
+&lt;/pre&gt;
+%ENDTWISTY% 
+
+---++ Exercise 3 - Mixing local and remote resources
+
+The previous two exercises forced the jobs to use remote resources only; while the local ones were idle doing nothing.
+
+There is no reason to do this; you could easily use all of them. 
+
+Can anyone tell me how?
+
+%TWISTY{
+showlink=&quot;Show hint&quot;
+hidelink=&quot;Hide hint&quot;
+start=&quot;hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
++DESIRED_Sites=&quot;UNL,UCSD&quot;
+requirements =  stringListMember(GLIDEIN_Site,DESIRED_Sites) || GLIDEIN_Site=?=UNDEFINED
+&lt;/pre&gt;
+%ENDTWISTY% 
+
+Then each run 40 [[OSGSS2011TueDHTCEx2#Exercise_2_Many_users][1 minute jobs]], and let&#39;s see if things work as expected.
+
+Let&#39;s now have a brief discussion about the experience, compared to the partitioning earlier this morning.
+
+---++ Exercise 4 - BLAST
+
+Let&#39;s now re-run the [[OSGSS2011CondorBLAST][BLAST exercise]] using also the glideinWMS provided resources.
+
+The system has been instrumented to do the right thing if you use:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
++DESIRED_Sites=&quot;any&quot;
++NEED_BLAST=True
+requirements = (HAS_BLAST=?=True)
+&lt;/pre&gt;
+
+Of course, the BLAST binaries and database can be installed in slightly different locations, on different sites. The nodes that have BLAST have the following variables defined:
+   * BLAST_BIN - You can be sure to find =$BLAST_BIN/blastp= in your job.
+   * BLAST_DATA - You can be sure to find =$BLAST_DATA/yeast.aa= in your job.
+
+All the databases you have in the local pool should be available at all sites. Try it out. Run a 10-20 jobs each and see if you get the results you expect.
+
+Where did you end running?

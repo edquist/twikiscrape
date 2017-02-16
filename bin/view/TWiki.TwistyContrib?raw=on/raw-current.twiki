@@ -1,0 +1,110 @@
+---+!! &lt;nop&gt;%TOPIC%
+
+%TOC%
+
+---++ Summary
+
+This contrib packages in a convenient way the Javascript library and the CSS file needed to implement TWisty Sections.
+
+See the  [[%ATTACHURL%/toggle-optm-jsoff-sep.html][attached file]] for a demo and an example of usage.
+
+To use the libraries, you must place the following scriplet either in the head section of the page (by modifying the %TWIKIWEB%.TWikiSkins) or putting it somewhere in the topic:
+
+&lt;verbatim&gt;
+&lt;style type=&quot;text/css&quot; media=&quot;all&quot;&gt;
+@import url(&quot;%PUBURLPATH%/TWiki/TwistyContrib/twist.css&quot;);
+&lt;/style&gt;
+
+&lt;script type=&quot;text/javascript&quot; src=&quot;%PUBURLPATH%/TWiki/TwistyContrib/twist.js&quot;&gt;&lt;/script&gt;
+&lt;/verbatim&gt;
+
+It&#39;s recommended to use the TWiki:Plugins.TwistyPlugin, as it eases the deployment and use of this contrib.
+
+%RED%Caution: If the previous scriplet is put in the HEAD section of the page or the TWiki:Plugins.TwistyPlugin is used, it won&#39;t work if the =&amp;lt;body onload=&quot;&quot;&amp;gt;= manager is set by the skin. Check the [[%ATTACHURL%/twist.js][twist.js]] file for an idea on how to register an eventmanager for the onload event without overwriting the previous one.%ENDCOLOR%
+
+This Contrib should work in all versions of TWiki. It has been tested against TWiki:Codev.CairoRelease and TWiki:Codev.DakarRelease.
+
+---++ Customization
+
+Skins can customize the color of the twisty placeholder by modifiying the =.twistyPlaceholder= style.
+
+---++ Settings
+
+	* Set SHORTDESCRIPTION = Twisty section javascript library to open/close content dynamically 
+	* Set STUB = TWiki::Contrib::TwistyContrib
+
+---++ Installation Instructions
+
+	* Download the ZIP file from the Plugin web (see below)
+	* Unzip ==%TOPIC%.zip== in your ($TWIKI_ROOT) directory. Content:
+	| *File:* | *Description:* |
+   | ==data/TWiki/TwistyContrib.txt== |  |
+   | ==lib/TWiki/Contrib/TwistyContrib.pm== |  |
+   | ==pub/TWiki/TwistyContrib/toggle-optm-jsoff-sep.html== |  |
+   | ==pub/TWiki/TwistyContrib/twist.css== |  |
+   | ==pub/TWiki/TwistyContrib/twist.js== |  |
+
+	* Optionally, run ==%TOPIC%_installer== to automatically check and install other TWiki modules that this module depends on. You can also do this step manually.
+	* Alternatively, manually make sure the dependencies listed in the table below are resolved.
+	None
+
+---++ Demo &amp; Text
+
+If the contrib is properly installed (and Javascript is enabled in your browser!), then you should see some folding sections below. Look at [[%SCRIPTURLPATH{&quot;view&quot;}%/%WEB%.%TOPIC%?raw=on]] to see how it&#39;s done.
+
+&lt;style type=&quot;text/css&quot; media=&quot;all&quot;&gt;
+@import url(&quot;%PUBURLPATH%/TWiki/TwistyContrib/twist.css&quot;);
+&lt;/style&gt;
+
+&lt;script type=&quot;text/javascript&quot; src=&quot;%PUBURLPATH%/TWiki/TwistyContrib/twist.js&quot;&gt;&lt;/script&gt;
+
+
+&lt;span id=&quot;demoshow&quot; class=&quot;twistyHidden&quot;&gt;
+&lt;button class=&quot;twistyTrigger&quot;&gt; Unfold &lt;/button&gt;
+&lt;/span&gt;
+&lt;span id=&quot;demohide&quot; class=&quot;twistyMakeVisible&quot;&gt;
+&lt;button class=&quot;twistyTrigger&quot;&gt; Fold &lt;/button&gt;
+&lt;/span&gt;
+&lt;div id=&quot;demotoggle&quot; class=&quot;twistyMakeVisible&quot;&gt;
+---
+Click on the button above to fold this section.
+---
+&lt;/div&gt;
+
+&lt;span id=&quot;no_1show&quot; class=&quot;twistyMakeVisible&quot;&gt;
+	&lt;a href=&quot;#&quot; class=&quot;twistyTrigger&quot;&gt;Expand...&lt;/a&gt;
+	&lt;span class=&quot;twistyPlaceholder twistyMakeVisible&quot;&gt;Hamlet is without question the most famous play in the English language...&lt;/span&gt;
+&lt;/span&gt;
+&lt;span id=&quot;no_1hide&quot; class=&quot;twistyHidden&quot;&gt;
+	&lt;a href=&quot;#&quot; class=&quot;twistyTrigger&quot;&gt;Collapse...&lt;/a&gt;
+&lt;/span&gt;
+&lt;div id=&quot;no_1toggle&quot; class=&quot;twistyMakeHidden&quot;&gt;
+Hamlet is without question the most famous play in the English language. Probably written in 1601 or 1602, the tragedy is a milestone in Shakespeare&#39;s dramatic development; the playwright achieved artistic maturity in this work through his brilliant depiction of the hero&#39;s struggle with two opposing forces: moral integrity and the need to avenge his father&#39;s murder.
+
+&lt;span id=&quot;no_2show&quot; class=&quot;twistyMakeVisible&quot;&gt;
+&lt;a href=&quot;#&quot; class=&quot;twistyTrigger&quot;&gt;More...&lt;/a&gt;
+&lt;/span&gt;
+&lt;span id=&quot;no_2hide&quot; class=&quot;twistyHidden twistyMakeVisible&quot;&gt;
+&lt;a href=&quot;#&quot; class=&quot;twistyTrigger&quot;&gt;Hide more&lt;/a&gt;
+&lt;/span&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;no_2toggle&quot; class=&quot;twistyMakeHidden&quot;&gt;
+For more Shakespeare plays, see Wikipedia:WilliamShakespeare
+&lt;/div&gt;
+
+---++ Contrib Info
+
+| Authors: | Javascript created by TWiki:Main.SamHasler, Contrib packaged by  TWiki:Main.RafaelAlvarez |
+| Copyright &amp;copy;: | 2005 Sam Hasler and Rafael Alvarez |
+| License: | [[http://www.gnu.org/copyleft/gpl.html][GPL]] |
+| Dependencies: | None |
+|  12 Sep 2005 | 1.000 First Version |
+|  Home: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC% |
+|  Feedback: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC%Dev |
+|  Appraisal: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC%Appraisal |
+
+__Related Topics:__ %TWIKIWEB%.TWikiPreferences
+ 
+-- TWiki:Main.SamHasler - 12 Sep 2005

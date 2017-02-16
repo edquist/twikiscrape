@@ -1,0 +1,96 @@
+---+ HTCondor CE Transition Plan 
+
+| Version | Name | Date | 
+| 0.1 | Rob Quick | 5/28/2014 | 
+| 0.2 | Rob Quick | 6/11/2014 |
+
+---++ Introduction
+The !HTCondor CE aims to provide an end-to-end gatekeeper technology built entirely from core !HTCondor components. The first production-ready version of the !HTCondor CE was released by the OSG Software group on May 13, 2014. This release began the move to an !HTCondor based compute element and away from the current Globus (GRAM) based compute element. This document will describe the issues and timeline associated with this transition with the final goal of having all OSG compute elements using the !HTCondor CE and no reliance on GRAM based CEs. 
+
+The transition team will consist of members of the OSG Operations, Technology, Software and Security teams as well as members from ATLAS and CMS.
+
+---++ Scope
+
+The scope of this change is limited to the OSG Production CE and the CEs interaction with other components of the OSG topology. 
+
+Priority consideration will be given to transitioning WLCG sites to avoid clashes with the LHC restart in April of 2015. 
+
+---++ Risks
+
+As with all major changes there will be risks involved. These include but are not limited to failure of the software or components of the new software, security concerns, functionality changes, and scalability issues.
+
+At of this writing ATLAS and CMS are dependent on GRAM for SAM monitoring, while this is on the road map to change, there is no definite date this dependency will be eliminated.
+
+SGE and LSF have no end to end verification. This has been added to the timeline and volunteer resources have been identified to do this verification. 
+
+Adoption rates will be monitored during this transition; while ATLAS and CMS are expected convert quickly, non-LHC resources, Tier 3 resources, and resources using LSF or SGE may lag. OSG Operations will monitor and publish metrics based on the number of GRAM CEs vs number of HTCondor CEs monthly during the transition, these will be reported and discussed during the weekly Production Meeting. 
+
+---++ Strategies
+
+A staged strategy for implementation will be used. 
+   * Production deployment of the GRAM based CE as the preferred installation during the initial adoption period,
+   * A period of having a preferred HTCondor CE with the GRAM CE supported as a backup,
+   * A period where support for the GRAM CE is dropped yet it is still available to the community,
+   * Concluding with the removal of all GRAM based CE content from the OSG distribution
+
+This process will be undertaken based on the [[https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/ReleaseSeriesSupportPolicy][Release Support Policy.]]
+
+---++ Transition Schedule, Tasks and Activities
+
+This is an estimated timeline and will be adjusted based on transition activities and will conform to the [[https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/ReleaseSeriesSupportPolicy][Release Support Policy.]] &lt;/br&gt;&lt;/br&gt;
+---+++ HTCondor Rollout 
+| *Date* | *Task* | *Responsible Team* | *Completed* | *Release Version and Notes* | 
+| 5/13/2014 | Initial production deployment of HTCondor | Technology - Software | %Y% | 3.2.9 | 
+| 6/15/2014 | Confirm Road Map Date for SAM Dependency Elimination | Operations | %Y% | Roadmap Date is 10/1 | 
+| 8/1/2014 | Target of 10 production sites fully !HTCondor* | Operations | %Y% | Completed Late ~Sept 1 |
+| 10/20/2014 | Train Support Staff on HTCondor CE | Operations and Technology | %Y% | Running Target - Schedule with Brian |
+| %RED%12/1/2014%ENDCOLOR% | All LHC Tier1 and Tier2 resources transitioned | Operations | | Ken Bloom thinks this may be too aggressive. Considering revising to 11/1/14. Date pushed based on Ken&#39;s feedback and current status of prior timeline items. |
+| 12/1/2014 | Condor Collector Service for !CondorCE | Operations | %Y% | ITB, production instances exist, tested.|
+| 12/9/2014 | HTCondor CE given preferred installation status and is not the default CE for OSG resources** | Operations - Software | %Y% |On Target |
+| 12/19/2014 | Incidence response drill | Security | %Y% | Initial drill has been completed and followup drills are pending | 
+| 4/1/2015 | End-to-end verification of LSF and SGE job manager functionality | Technology | %Y% | Still ongoing need input from Brian Lin. Moved from original 7/1 date, seen as less of a priority than other items on this list as very few sites use SGE/LSF |
+
+* Initial target sites are: FNAL, UCSD, Florida, Nebraska, Boston, AGLT2, SLAC, one non-LHC site?
+
+** Notification to the community at 3 month, 1 month and 1 week before event. 
+
+---+++ GRAM CE Deprecation  
+
+&lt;!--
+   * Set PENDING =  &lt;span style=&quot;color: white; background-color: #AAA; padding-left: 1em; padding-right: 1em;&quot;&gt;Waiting&lt;/span&gt;
+   * Set ACTIVE = &lt;span style=&quot;color: white; background-color: #0A0; padding-left: 1em; padding-right: 1em;&quot;&gt;In&amp;nbsp;Progress&lt;/span&gt;
+   * Set BEHIND =   &lt;span style=&quot;color: white; background-color: #F60; padding-left: 1em; padding-right: 1em;&quot;&gt;Behind&lt;/span&gt;
+   * Set AT_RISK =  &lt;span style=&quot;color: white; background-color: #C00; padding-left: 1em; padding-right: 1em;&quot;&gt;At&amp;nbsp;Risk&lt;/span&gt;
+   * Set COMPLETE = &lt;span style=&quot;color: white; background-color: #000; padding-left: 1em; padding-right: 1em;&quot;&gt;Done&lt;/span&gt;
+--&gt;
+
+| *Date* | *Task* | *Responsible Team* | *Status* | *Notes* |
+| 2015-11-06 | Report on current state of ecosystem (List of GRAM and HTCondor CEs) | Operations | %COMPLETE% | |
+| 2015-11-11 | Create questions for GRAM Admins | Operations-Software | %COMPLETE% | |
+| 2015-12-01 | Hold follow up discussion with results from Questions | Operations-Software-Technology | %COMPLETE% | |
+| 2016-04-12 | OSG software no longer includes GRAM by default**%BR%(GRAM packages still available and documented) | Operations - Software | %ACTIVE% | OSG 3.3.11 |
+| 2016-11-08 | End support for GRAM-CE installations**%BR%(Support requesters will be asked to install HTCondor-CE) | Operations - Software | %PENDING% | |
+| TBD | OSG factories no longer send pilots to GRAM-CE sites | Operations - Factory Ops | | |
+| TBD | Drop GRAM packages from OSG software stack (OSG 3.4.0) | Software | | |
+| TBD | Remove GRAM code from OSG software (e.g., =osg-configure=) | Software | | |
+
+---++ Management Controls 
+
+At each step of the Transition Schedule above the Area Coordinators responsible for the task will sign off as completed in this document. Completion notice and sign off will be sent to the OSG Project Manager for review and an update will be given during the weekly Production Meeting. 
+
+---++ Transition Team
+
+| *Name* | *Role* | 
+| Rob Quick | Production - Oversees planning and schedule | 
+| Brian Bockleman | Preparation for Initial Release and Training | 
+| Tim Cartwright | HTCondor CE readiness |
+| Tim Theisen | Software Release | 
+| Mine Altunay | Security Review and Training | 
+| Scott Teige | Operations Reporting and Metrics | 
+| Kyle Gross | Support Training and Community Notification | 
+| TBD | ATLAS Transition Lead | 
+| TBD | CMS Transition Lead |
+
+---++ Appendix A - Transition Plan Approval
+
+| *Name* | *Role* | *Approval Date* |

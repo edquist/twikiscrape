@@ -1,0 +1,124 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+
+---+ Making RSV work with HDFS
+
+*This only applies to old versions of RSV.  For OSG 1.2 and later, this patch is no longer necessary!*
+
+Because RSV uses a &quot;:&quot; character in its file names, and HDFS does not support this character (as it is illegal in Windows), RSV currently must be patched in order to work with HDFS.
+
+Start off with RSV v2.4.1 (released in the ITB, but not yet in Production; should be coming within a week or so of this writing).  Apply the below patch.
+
+&lt;verbatim&gt;
+Index: OSG_RSV_Probe_Base.pm
+===================================================================
+--- OSG_RSV_Probe_Base.pm    (revision 67)
++++ OSG_RSV_Probe_Base.pm    (revision 68)
+@@ -287,7 +287,7 @@
+   ## File that&#39;ll be created ON remote host
+   $h_tmp{&#39;globusurlcopyRemoteTestfile&#39;} =
+   $h_tmp{&#39;gridftpDestinationDir&#39;} .&quot;/&quot;.
+-    ${&amp;Get_Timestamp(\%h_tmp,&quot;UTC&quot;)}. &quot;-gridftp-probe-test-file-remote.$$&quot;;
++    ${&amp;Get_Timestamp(\%h_tmp,&quot;UTCSeconds&quot;)}. &quot;-gridftp-probe-test-file-remote.$$&quot;;
+   ## File URI that&#39;ll be created ON remote host
+   $h_tmp{&#39;globusurlcopyRemoteTestfileUri&#39;} =
+   $h_tmp{&#39;globusurlcopyServiceType&#39;}. &quot;://&quot;. $h_uri{&#39;hostName&#39;} .
+@@ -295,7 +295,7 @@
+       $h_tmp{&#39;globusurlcopyRemoteTestfile&#39;};
+   ## File that&#39;ll be copied back for comparison
+   $h_tmp{&#39;globusurlcopyBackTestfile&#39;} = $h_tmp{&#39;slashTmp&#39;} .&quot;/&quot;.
+-    ${&amp;Get_Timestamp(\%h_tmp, &quot;UTC&quot;)}. &quot;-gridftp-probe-test-file-copy.$$&quot;;
++    ${&amp;Get_Timestamp(\%h_tmp, &quot;UTCSeconds&quot;)}. &quot;-gridftp-probe-test-file-copy.$$&quot;;
+   $h_tmp{&#39;globusurlcopyBackTestfileUri&#39;} = &quot;file:///&quot;.$h_tmp{&#39;globusurlcopyBackTestfile&#39;};
+
+
+@@ -340,11 +340,11 @@
+   $h_uri{&#39;hostName&#39;} . &quot;:&quot;.
+   $h_tmp{&#39;srmPortNumber&#39;} . &quot;/&quot;. $h_tmp{&#39;srmWebservicePath&#39;} .
+       &quot;?SFN=&quot;. $h_tmp{&#39;srmcpDestinationDir&#39;}. &quot;/&quot;.
+-        ${&amp;Get_Timestamp(\%h_tmp,&quot;UTC&quot;)}.
++        ${&amp;Get_Timestamp(\%h_tmp,&quot;UTCSeconds&quot;)}.
+       &quot;-storage-probe-test-file-remote.$$&quot;;
+   ## File that&#39;ll be copied back for comparison
+   $h_tmp{&#39;srmcpsrmBackTestfile&#39;}    = $h_tmp{&#39;slashTmp&#39;} . &quot;/&quot;.
+-    ${&amp;Get_Timestamp(\%h_tmp, &quot;UTC&quot;)}.
++    ${&amp;Get_Timestamp(\%h_tmp, &quot;UTCSeconds&quot;)}.
+   &quot;-storage-probe-test-file-copy.$$&quot;;
+   $h_tmp{&#39;srmcpsrmBackTestfileUri&#39;} = &quot;file:///&quot;.$h_tmp{&#39;srmcpsrmBackTestfile&#39;};
+
+@@ -954,7 +954,7 @@
+
+   $h_tmp{&#39;gratiaSendMetricScriptFile&#39;} =
+   &quot;$h_tmp{&#39;gratiaLocationDir&#39;}/&quot;.
+-    ${&amp;Get_Timestamp(\%h_tmp, &quot;UTC&quot;)} . &quot;-&quot; . $h_tmp{&#39;serviceUriHostName&#39;} . &quot;-&quot;.
++    ${&amp;Get_Timestamp(\%h_tmp, &quot;UTCSeconds&quot;)} . &quot;-&quot; . $h_tmp{&#39;serviceUriHostName&#39;} . &quot;-&quot;.
+   $h_tmp_metric{&#39;metricName&#39;}.&quot;.$$.py&quot;;
+
+   ## Escape certain characters that&#39;ll be written into Python script
+@@ -1352,6 +1352,9 @@
+   if ($type eq &quot;LOCAL&quot;) {  ## Double escaping required to pass &quot;\ &quot;
+   $system_date_cmd_out = `$h_tmp{&#39;systemDateCmd&#39;} +%F\\ %T\\ %Z`;
+   }
++    elsif ($type eq &quot;UTCSeconds&quot;) {  ## seconds since 1970
++    $system_date_cmd_out = `$h_tmp{&#39;systemDateCmd&#39;} -u +%s`;
++    }
+   else { $system_date_cmd_out = `$h_tmp{&#39;systemDateCmd&#39;} -u +%FT%TZ`; }
+
+   $system_date_cmd_out =~ s/\s*$//s; ## Remove trailing spaces/newlines 
+&lt;/verbatim&gt;
+
+-- Main.BrianBockelman - 01 Apr 2009
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = BrianBockelman
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Installation
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %NO%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %NO%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = FirstName
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %NO%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = FirstLast
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %NO%
+############################################################################################################
+--&gt;

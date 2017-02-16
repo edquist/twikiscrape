@@ -1,0 +1,104 @@
+-- Main.DanFraser - 07 Aug 2012
+---++ Action/Significant Items:
+   * There seems to be an issue with failing cert-requests to DOEGrids. Jeff (Viewlab) and Marko Slyz (OSG user support) have been attempting several time to issue cert requests over the weekend receiving repeated SSL hadshake errors when trying to submit the request. Marco to follow up with Mine. (Marco)
+   * Some of the producton sites running versions less than OSG 1.2.25 are missing some important security bug fixes, but is still unclear what versions we should target with requests for them to upgrade. Marco to follow up with Brian and discuss further with the Production team to help sort this out.
+   * Bug ( GOC ticket https://ticket.grid.iu.edu/goc/viewer?id=12486 ) is still a blocker for Atlas. Need to understand when we will have a version to try. (Suchandra, Alain)
+
+---++ Attendees:
+   * Xin, Suchandra, Tony, Marco, Rob Q., Kevin (for Mine), Chander, Dan
+ 
+---++ CMS (Tony)
+   * Job statistics for last week
+      * 8,743 jobs/day
+
+   * Transfer statisics for last week
+      * ~677 TB/day
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * LHC operation last week stable. Current collected luminosity for ATLAS is ~11.1 fb-1.
+      * US ATLAS production during the last week was quite stable, at the average level around 20-25K running jobs, mostly simulation type.
+   * Job statistics for last week.      
+      * Gratia report: 1.4M pilot jobs run on USATLAS sites, with CPU/walltime ratio of 89%  
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 770K
+   * Data Transfer statistics for last week
+      * Data transfer rate was around 400~500TB/day at BNL T1. 
+   * Issues
+      * GT5 issue with OSG 3 CE installation at USATLAS sites
+         * GOC ticket https://ticket.grid.iu.edu/goc/viewer?id=12486
+
+
+---++ Grid Operations Center (Rob Q.)
+
+---+++ Operations Last Week
+   * [[http://tinyurl.com/6nh3glo][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * Production release [[http://osggoc.blogspot.com/2012/08/goc-service-update-tuesday-august-14th.html][Release note]]
+   * WMS Glide In Factory
+      * Upgraded GOC Production to glideinWMS 2.6
+      * Added Atlas Frontend support on GOC Production factory
+      * Applied patch at UCSD and ITB to see if it reduces load (smarter policies for when to  release held jobs).
+      * Installed Condor 7.8.2 on ITB Factory
+      * Made Condor 7.8.2 available for glidein usage on all factories.
+
+---+++ Operations This Week
+   * Next update cycle we will begin testing SHA-2 certificates on the ITB version of our services
+      * Impact on ReSS and Gratia
+      * Impact on Glide-In Factories
+   * glidein.grid.iu.edu problems
+   * ITB release, note in preparation
+      * OIM changes for PKI continue
+      * cosmetic changes to !MyOSG and ticket
+      * installed capacity report (deferred from previous cycle)
+      * osg-xsede removed from [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][status board]]
+      * Deprecation of WLCG/RSV morning reports announcement. A prototyp of the  [[http://rsv.grid.iu.edu/daily-reports/2012/08/19/MoU_WLCG_Report-2012-08-19.html][new report]] is available.
+
+---++ Campus Infrastructures / HTPC (Dan, Brooklin)
+
+
+---++ Software (Alain)
+
+
+---++ Integration (Suchandra)
+
+
+---++ Site Coordination (Marco)
+Problem with failing cert-requests to DOEGrids
+   * Jeff (Viewlab) and Marko Slyz (OSG user support) have been attempting several time to issue cert requests over the weekend receiving repeated SSL hadshake errors when trying to submit the request: &lt;pre&gt;
+Error: 500 SSL negotiation failed: error:1406D0CB:SSL routines:GET_SERVER_HELLO:peer error no cipher                            
+  can&#39;t open /tmp/response.16473.html No such file or directory  &lt;/pre&gt;
+   * a successful attempt after 11/12 failed on Saturday, after 2/3 failed on Sunday
+   * something similar happened also in June
+   * Marko is sending an email to DOEGrids
+      * Is it there a known problem?
+      * Does anyone else experienced something similar?
+Report about OSG deployment.
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 3.1.7 / 1.2.29
+      *       37 (3) OSG 3.x (       5 are 3.1.7)
+      *       60 (-5) OSG 1.2.X resources (      13 are 1.2.29)
+      *        2 (0) OSG 1.0.X resources (       0 are 1.0.6)
+      *        0 (-1) OSG 1.0.0 resources
+Summary of OSG 1.2 deployment and security concerns:
+   * [[https://docs.google.com/spreadsheet/ccc?key=0AgAEBtLAIsw_dE5sVFZ3dGFZcE1wX3F6aXFRTDJRS1E][This document]] provides a summary with security notes and update recommendations (by Kevin)
+   * Here is a plot with the deployment status  &lt;img src=&quot;%ATTACHURLPATH%/chart_1.png&quot; alt=&quot;chart_1.png&quot; width=&#39;667&#39; height=&#39;371&#39; /&gt;    
+   * How should we proceed? (differentiate more the recommandations? group email, individual solicitation, force to update, ...)
+
+
+---++ User Support (Chander, Mats)
+Public storage deployment with SAGA team proceeding well; they have installed Condor and iRODs on the OSG side of their portal and have successully distributed test data to multiple OSG sites.  Now they will proceed to send actual data to sites and run analysis jobs via glideinWMS that use that reference data.
+
+---++ Security (Kevin)
+   * Condor vulnerability was announced. Important sites upgrade or at least determine if they are vulnerable or not.
+   * Voms-admin &lt;v2.6 needs to be updated for ca cert compatibility, as well as security vulnerability.
+   * Doegrids is providing test sha-2 certificates. Security team trying out the web interface now.
+ 
+---++ The full report with links is available at http://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+

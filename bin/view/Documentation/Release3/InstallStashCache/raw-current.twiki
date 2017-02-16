@@ -1,0 +1,277 @@
+&lt;style type=&quot;text/css&quot;&gt;
+code em, pre em { color: red; font-weight: normal; font-style: normal; }
+&lt;/style&gt;
+
+---+ Installing and Using !StashCache
+
+%TOC{depth=&quot;3&quot;}%
+
+---++ About This Guide
+
+This document describes how to install a !StashCache cache, a server that caches files locally rather than serving files to the !StashCache federation. The installation utilizes !XRootD and HTCondor for file storage and monitoring, respectively.
+
+---++ Before Starting
+
+Before starting the installation process, consider the following points:
+
+   * *User IDs:* If they do not exist already, the installation will create the Linux user IDs =condor= and =xrootd=
+   * *Service certificate:* The !StashCache service uses a host certificate at =/etc/grid-security/host*.pem=
+   * *Network ports:* The !StashCache service must talk to the central collector on port 9619 (TCP) and !XRootD services on port 1094 (TCP)
+   * *Hardware requirements:* We recommend that a !StashCache server has at least 10Gbps connectivity, 1TB of disk space, and 8GB of RAM.
+
+As with all OSG software installations, there are some one-time steps to prepare in advance:
+
+   * Ensure the host has [[SupportedOperatingSystems][a supported operating system]]
+   * Obtain root access to the host
+   * Prepare [[YumRepositories][the required Yum repositories]]
+   * Install [[InstallCertAuth][CA certificates]]
+
+
+---++ Installing the !StashCache metapackage
+
+The !StashCache daemon consists of an !XRootD server and an HTCondor-based service for collecting and reporting statistics about the cache. To simplify installation, OSG provides convenience RPMs that install all required software with a single command:
+
+&lt;ol&gt;
+%INCLUDE{&quot;Documentation/Release3/OSGReleaseSeries&quot; section=&quot;Update&quot;}%
+  &lt;li&gt;
+    &lt;p&gt;Install the !StashCache metapackage from OSG3.3 repository:&lt;/p&gt;
+    &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% yum install stashcache-daemon fetch-crl stashcache-cache-{server || origin}&lt;/pre&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Mount the disk that will be used for the cache to =/stash= and set owner of the directory to =xrootd= user.
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+---++ Configuring !StashCache
+
+The following section describes required configuration to have a functional !StashCache cache. !StashCache packages need to be manually configured from pre-existing !xrootd configuration.
+
+---+++ Origin server
+Assuming that the origin server connects only to a redirector (not directly to cache server), minimal xrootd configuration is required. The configuration file, =/etc/xrootd/xrootd-stashcache-origin-server.cfg=, in this release is overkill. Here are recommended settings to use: \
+&lt;pre class=&quot;file&quot;&gt;
+all.export /
+set localroot = /stash
+xrd.port 1094
+all.role server
+all.manager redirector.osgstorage.org+ 1213
+oss.localroot $(localroot)
+xrootd.trace emsg login stall redirect
+ofs.trace none
+xrd.trace conn
+cms.trace all
+sec.protocol  host
+sec.protbind  * none
+all.adminpath /var/spool/xrootd
+all.pidpath /var/run/xrootd
+
+# Sending monitoring information
+xrd.report uct2-collectd.mwt2.org:9931
+xrootd.monitor all auth flush 30s window 5s fstat 60 lfn ops xfr 5 dest redir fstat info user uct2-collectd.mwt2.org:9930
+&lt;/pre&gt;
+      
+---+++ Cache server
+One needs to declare =pss.origin redirector.osgstorage.org:1024= instead of configuring the role manger (only the xrootd daemon, role server, is required on the cache server). Example of the configuration of cache server is as follows:
+
+---++++ !XRootD &lt;v4.4.0
+%NOTE% If your node is on OSG3.3 release and you have system on your node updated you might skip this config and refer to next config example in section &quot;XRootD &gt;=v4.4.0&quot;.
+&lt;pre class=&quot;file&quot;&gt;
+all.export  /
+set cachedir = /stash
+xrd.allow host *
+sec.protocol  host
+sec.protbind  * none
+all.adminpath /var/spool/xrootd
+all.pidpath /var/run/xrootd
+
+xrootd.trace emsg login stall redirect
+ofs.trace all
+xrd.trace all
+cms.trace all
+
+pss.trace all
+
+ofs.osslib  libXrdPss.so
+#This is using access to data in the stash federation via redirector
+pss.origin  redirector.osgstorage.org:1094
+pss.cachelib libXrdFileCache.so
+
+oss.localroot $(cachedir)
+
+pfc.cachedir  $(cachedir)
+pfc.nramprefetch 4
+pfc.nramread 4
+
+# Export HTTP on !StashCache machine
+xrd.protocol http:8000 libXrdHttp.so
+
+# Sending monitoring information
+xrd.report uct2-collectd.mwt2.org:9931
+xrootd.monitor all auth flush 30s window 5s fstat 60 lfn ops xfr 5 dest redir fstat info user uct2-collectd.mwt2.org:9930
+&lt;/pre&gt;
+
+---++++ !XRootD &gt;=4.4.0
+!StashCache packages (meta-package) fetch latest !XRootD rpms available in OSG repository. If your node is on OSG3.3 release or you just migrated from older version than xrootd v4.4.0, cache server configuration has introduced slightly different directives in the config file than mentioned in previous section. Here is example:
+&lt;pre class=&quot;file&quot;&gt;
+all.export  /
+set cachedir = /stash
+xrd.allow host *
+sec.protocol  host
+sec.protbind  * none
+all.adminpath /var/spool/xrootd
+
+xrootd.trace emsg login stall redirect
+ofs.trace all
+xrd.trace all
+cms.trace all
+
+ofs.osslib  libXrdPss.so
+pss.origin redirector.osgstorage.org:1094
+pss.cachelib libXrdFileCache.so
+pss.setopt DebugLevel 1
+
+oss.localroot $(cachedir)
+
+pfc.blocksize 512k
+pfc.ram       32g
+pfc.prefetch  10
+pfc.diskusage 0.98 0.99
+
+pss.setopt ParallelEvtLoop 10
+pss.setopt RequestTimeout 25
+pss.setopt ConnectTimeout 25
+pss.setopt ConnectionRetry 2
+
+# Export HTTP on !StashCache machine
+xrd.protocol http:8000 libXrdHttp.so
+
+# Sending monitoring information
+xrd.report uct2-collectd.mwt2.org:9931
+xrootd.monitor all auth flush 30s window 5s fstat 60 lfn ops xfr 5 dest redir fstat info user uct2-collectd.mwt2.org:9930
+&lt;/pre&gt;
+
+---+++ Common sysconfig/xrootd configuration
+In both cases (origin and cach server), administrator needs to set the path of custom configuration file for its xrootd/cmds instance in =/etc/sysconfig/xrootd=. For example, for origin server change the cmds default from: \
+&lt;pre class=&quot;file&quot;&gt;
+CMSD_DEFAULT_OPTIONS=&quot;-l /var/log/xrootd/cmsd.log -c /etc/xrootd/xrootd-clustered.cfg -k fifo&quot;
+&lt;/pre&gt; \
+to \
+&lt;pre class=&quot;file&quot;&gt;
+CMSD_DEFAULT_OPTIONS=&quot;-l /var/log/xrootd/cmsd.log -c &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;/etc/xrootd/xrootd-stashcache-origin-server.cfg&lt;/span&gt; -k fifo&quot; 
+&lt;/pre&gt;
+
+And, modify =XROOTD_DEFAULT_OPTIONS= in the !XRootD system configuration, =/etc/sysconfig/xrootd=, so that it uses the configuration file provided by the =stashcache-cache-server= package: 
+
+&lt;pre class=&quot;file&quot;&gt;
+XROOTD_DEFAULT_OPTIONS=&quot;-l /var/log/xrootd/xrootd.log -c &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;/etc/xrootd/xrootd-stashcache-cache-server.cfg&lt;/span&gt; -k fifo&quot;
+&lt;/pre&gt;
+
+#OptionalConfiguration
+---++ Optional configuration
+
+The following configuration is not required to have a functional !StashCache cache, recommended, though. The default configuration should be sufficient so you should make changes to the configuration only if you have specific reasons to do so.
+
+---+++ Adjust disk utilization
+To adjust the disk utilization of your !StashCache cache, modify the values of =pfc.diskusage= in =/etc/xrootd/xrootd-stashcache-cache-server.cfg=:
+&lt;pre class=&quot;file&quot;&gt;
+pfc.diskusage &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;0.98 .99&lt;/span&gt;
+&lt;/pre&gt;
+The first value and second values correspond to the low and high usage watermarks, respectively, in percentages. When the high watermark is reached, the !XRootD service will automatically purge cache objects down to the low watermark. 
+
+---+++ Export HTTP on !StashCache machine
+There is possiblity to export via the HTTP protocol on the StashCache machines. One can enable adding following configuration line to =/etc/xrootd/xrootd-stashcache-cache-server.cfg= and bounce the service.
+&lt;pre class=&quot;file&quot;&gt;
+xrd.protocol http:8000 libXrdHttp.so
+&lt;/pre&gt;
+%NOTE% Port 8000 must be open to public.
+
+---+++ Enable Remote debugging
+This feature enables remote debugging via the digFS read-only file system
+&lt;pre class=&quot;file&quot;&gt;
+xrootd.diglib * /etc/xrootd/digauth.cf
+&lt;/pre&gt;
+where =/etc/xrootd/digauth.cf= may have following content:
+&lt;pre class=&quot;file&quot;&gt;
+all allow host h=abc.org
+all allow host h=*.xyz.edu
+&lt;/pre&gt;
+
+---+++ Sending monitoring information
+We&#39;re testing Kibana based monitoring which collects xrootd information via UDP packets. It&#39;s recommended each xrootd server sets the following in the config:
+&lt;pre class=&quot;file&quot;&gt;
+all.sitename SiteName # e.g. all.sitename Nebraska
+xrd.report uct2-collectd.mwt2.org:9931
+xrootd.monitor all auth flush 30s window 5s fstat 60 lfn ops xfr 5 dest redir fstat info user uct2-collectd.mwt2.org:9930
+&lt;/pre&gt;
+
+---++ Using !StashCache
+
+---+++ Managing !StashCache and associated services
+Ensure that your =/stash= disk is mounted, and then start the =fetch-crl= and =condor= service:
+
+%TABLE{sort=&quot;off&quot;}%
+| *Software* | *Service name* | *Notes* |
+| Fetch CRL | On EL 6: =fetch-crl-boot= and =fetch-crl-cron= %BR% On EL 5: =fetch-crl3-boot= and =fetch-crl3-cron= | See [[InstallCertAuth#Start_Stop_fetch_crl_A_quick_gui][CA documentation]] for more info |
+| HTCondor | =condor= | for the sending !StashCache stats to GOC htcondor collector |
+| !XRootD | =xrootd= | for the cache server and origin |
+| !XRootD | =cmsd= | for the origin only become data server in the Stash Federation |
+
+Start the services in the order listed and stop them in reverse order. As a reminder, here are common service commands (all run as =root=):
+
+%TABLE{sort=&quot;off&quot;}%
+| *To &amp;hellip;* | *Run the command &amp;hellip;* |
+| Start a service | =service &lt;em&gt;SERVICE-NAME&lt;/em&gt; start= |
+| Stop a service | =service &lt;em&gt;SERVICE-NAME&lt;/em&gt; stop= |
+| Enable a service to start during boot | =chkconfig &lt;em&gt;SERVICE-NAME&lt;/em&gt; on= |
+| Disable a service from starting during boot | =chkconfig &lt;em&gt;SERVICE-NAME&lt;/em&gt; off= |
+
+---+++ Validating !StashCache
+
+To verify that your cache is being monitored properly, run the following command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% condor_status -any -l -const &quot;Name==\&quot;xrootd@`hostname`\&quot;&quot;
+&lt;/pre&gt;
+
+Where &lt;span style=&quot;background-color: #D1CAF2;&quot;&gt;hostname&lt;/span&gt; is the string returned by the =hostname= command. The output of the above command should provide an HTCondor !ClassAd that details the status of your cache.
+
+---++ Registering !StashCache and Monitoring
+
+---+++ Monitoring resources
+To join in on the monitoring you&#39;ll need to [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallStashCache#Registering_cache_proxy][Register your resource]] and send me some information about your cache instructions in the [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallStashCache#Configuring_resource_monitoring][Configuring resource monitoring]].
+
+You can see the current state of affairs here:
+   * *Status history*: [[http://tinyurl.com/pwz7tw2][link]]
+   * *Status details*: [[http://myosg.grid.iu.edu/rgcurrentstatus/index?datasource=currentstatus&amp;rg=on&amp;rg_433=on&amp;end_type=now&amp;active=on&amp;active_value=1][link]] (click on the &quot;+&quot; sign for more detail)
+   * *Availability metrics*: [[http://tinyurl.com/qx6wgq7][link]]
+
+---+++ Registering cache proxy
+To register a cache instance go [[https://oim.grid.iu.edu/oim/resourceedit][here]] (with a cert in your browser). Fill in the required fields, example is displayed below:
+ 
+   * Registering !StashCache resource information: &lt;br /&gt;
+      * the site *must be* OSG-GOC &lt;br /&gt;
+      * the resource group *must be* Monitored Caches &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/resource-info.png&quot; alt=&quot;resource-info.png&quot; width=&#39;500&#39; height=&#39;408&#39; /&gt;    
+
+   * Registering !StashCache resource services: &lt;br /&gt;
+      * the service *must be* !XRootD component &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/resource-services.png&quot; alt=&quot;resource-services.png&quot; width=&#39;500&#39; height=&#39;330&#39; /&gt;    
+
+Contact Information (will be pre-filled, add or modify as you see fit) - there are several types of contact, administrative and security are the most important to the GOC - &lt;em&gt;DO NOT&lt;/em&gt; check the WLCG resource box; Add a Update comment if you&#39;d like.
+ 
+   * Confirming and submitting !StashCache resource registration: &lt;br /&gt;
+      * you *must* click the &quot;Acceptable Use Policy&quot; checkbox &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/resource-confirm.png&quot; alt=&quot;resource-confirm.png&quot; width=&#39;500&#39; height=&#39;335&#39; /&gt;  
+
+Hit the *blue* submit button.
+
+---+++ Configuring resource monitoring
+E.g. for the Indiana instance the status of the following command is checked:
+=xrdcp root://redirector.osgstorage.org//stash/user/test.1M /tmp/dump=
+
+If the return status is zero, the cache is working, otherwise it is not. What we need from you is:
+   * the equivalent =//stash/user/test.1M= a file you select that will always be there.
+
+---++ Getting Help
+
+To get assistance, please use the [[Documentation.HelpProcedure][this page]].  
+

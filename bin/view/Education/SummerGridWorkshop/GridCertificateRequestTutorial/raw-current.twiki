@@ -1,0 +1,60 @@
+---+!! *&lt;nop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+
+---++ Introduction
+See Trash.Trash/IntegrationCertScripts for information about all this.
+
+
+---++ Example user certificate request &amp; retrieval
+
+   * Setup the osg-client: &lt;pre&gt;
+source /opt/client/setup.sh
+&lt;/pre&gt;
+   * Then follow the instructions in Trash.IntegrationCertScripts  (=cert-request --ou p=, and answer questions). When it asks you to input your sponsor&#39;s name, email, phone, use me as your sponsor:&lt;pre&gt;
+input your email address: rwg@uchicago.edu
+input your complete phone number: 312-804-0859
+input your sponsor&#39;s name: Rob Gardner
+input your sponsor&#39;s email address: rwg@uchicago.edu
+input your sponsor&#39;s phone number: 312-804-0859
+&lt;/pre&gt;
+   * Then, for the registration authority, choose OSG:&lt;pre&gt;Choose a registration authority to which you are affiliated.
+If nothing else applies, pick OSG.
+_Enter__this____for this registration authority
+	ANL	 Argonne National Lab
+	ESG	 Earth System Grid
+	ESnet	 DOE Science network
+	FNAL	 Fermilab host and service certificates
+	FusionGRID	 National Fusion Collaboratory Project
+	LBNL	 Berkeley Lab
+	LCG	 LHC Computing Grid Catchall
+	NERSC	 computer center
+	ORNL	 Oak Ridge National Lab
+	OSG	 Open Science Grid (choose this if nothing else applies)
+	PNNL	 Pacific Northwest National Lab
+(choose from left column): OSG&lt;/pre&gt;
+   * And for the VO, choose OSGEDU.
+   * You&#39;ll get an email when its approved, with a serial number (eg. 37709)
+   * Then retrieve it with: =cert-retrieve --serialnum 37709 --p12 usercert.p12=
+
+---++ PKCS12 format
+   * If you did not user the =--p12= option with the =cert-retrieve= command you can still generate a PKCS12 format file with the openssl command.
+   * You&#39;ll need a version of your certificate to insert into your browser.
+   * Do this: =openssl pkcs12 -export -in usercert.pem -inkey userkey.pem -out usercert.p12=
+   * Import the =usercert.p12= into your browser
+
+
+---++ Example host and http service certificate request
+   * Here is a (dryrun) example to request a host certificate (courtesy Steve Timm):
+&lt;verbatim&gt;
+$ cert-request --dryrun --agree --ou s --name &quot;Steven C Timm&quot; \
+      --host gc1-ce --email timm@fnal.gov --phone 630-840-8525 \
+      --reason &quot;Colombia Grid School&quot; --affiliation osg --vo osgedu -dir .
+&lt;/verbatim&gt;
+   * Remove the =-dryrun= and then the cert request will be submitted.
+   * To request an  httpd service, add =--service http=.
+
+
+---++ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+
+

@@ -1,0 +1,116 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;VO Packages&quot; }%*
+%TOC{depth=&quot;2&quot;}%
+
+---+ v32
+
+---++ HCC
+The HCC VO was added.
+[[https://ticket.grid.iu.edu/goc/viewer?id=8125][GOC ticket 8125]]
+
+---+++ vomses files changes
+Added
+&lt;verbatim&gt;
+&quot;hcc&quot; &quot;hcc-voms.unl.edu&quot; &quot;15000&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=http/hcc-voms.unl.edu&quot; &quot;hcc&quot;
+&lt;/verbatim&gt;
+
+---+++ edg_mkgridmap.conf changes
+Added 
+&lt;verbatim&gt;
+#USER-VO-MAP hcc HCC - 43 - David Swanson (dswanson@cse.unl.edu)
+group vomss://hcc-voms.unl.edu:8443/voms/hcc hcc
+&lt;/verbatim&gt;
+
+---+++ GUMS Config Changes
+Added 
+&lt;verbatim&gt;
+&lt;!-- 43 HCC --&gt;
+
+&lt;groupMapping name=&#39;hcc&#39; accountingVo=&#39;hcc&#39; accountingDesc=&#39;HCC&#39;&gt;
+    &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+    url=&#39;https://hcc-voms.unl.edu:8443/voms/hcc/services/VOMSAdmin&#39;        
+    persistenceFactory=&#39;mysql&#39;        
+    name=&#39;hcc&#39;    voGroup=&quot;/hcc&quot;    
+    sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;    
+    sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;    
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39;
+    groupName=&#39;hcc&#39; /&gt;
+&lt;/groupMapping&gt;
+
+&lt;/verbatim&gt;
+
+Plus hcc to hostGroup className.
+
+---+++ UNIIX Accounts
+Add:  hcc
+
+---++ DOSAR
+The DOSAR VOMS is changing addresses. [[https://ticket.grid.iu.edu/goc/viewer?id=8193][GOC ticket 8193]]
+
+---+++ vomses files changes
+Replaced 
+&lt;verbatim&gt;
+&quot;dosar&quot; &quot;thegrid.dpcc.uta.edu&quot; &quot;15000&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=thegrid.dpcc.uta.edu&quot; &quot;dosar&quot;
+&lt;/verbatim&gt;
+with
+&lt;verbatim&gt;
+&quot;dosar&quot; &quot;voms.dosar.org&quot; &quot;15000&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=http/voms.dosar.org&quot; &quot;dosar&quot;
+&lt;/verbatim&gt;
+
+---+++ edg_mkgridmap.conf changes
+Replaced 
+&lt;verbatim&gt;
+# USER-VO-MAP dosar DOSAR -- 14 -- Patrick McGuigan (mcguigan@cse.uta.edu)    
+group vomss://thegrid.dpcc.uta.edu:8443/edg-voms-admin/dosar?/dosar dosar
+&lt;/verbatim&gt;
+with
+&lt;verbatim&gt;
+# USER-VO-MAP dosar DOSAR -- 14 -- Horst Severini (hs@nhn.ou.edu)
+group vomss://voms.dosar.org:8443/voms/dosar  dosar
+&lt;/verbatim&gt;
+
+---+++ GUMS Config Changes
+Replaced
+&lt;verbatim&gt;
+&lt;groupMapping name=&quot;dosar&quot; accountingVo=&quot;dosar&quot; accountingDesc=&quot;DOSAR&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://thegrid.dpcc.uta.edu:8443/edg-voms-admin/dosar/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;dosar-admin&quot; 
+    voGroup=&quot;/dosar&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&quot;true&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;dosar&quot;/&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+with
+&lt;verbatim&gt;
+&lt;groupMapping name=&#39;dosar&#39; accountingVo=&#39;dosar&#39; accountingDesc=&#39;DOSAR&#39;&gt;
+    &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+    url=&#39;https://voms.dosar.org:8443/voms/dosar/services/VOMSAdmin&#39;
+    persistenceFactory=&#39;mysql&#39;
+    name=&#39;dosar&#39;
+    voGroup=&quot;/dosar&quot;
+    sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+    sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;
+    matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&#39;true&#39; /&gt;
+    &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39; groupName=&#39;dosar&#39; /&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+---++ !DayaBay
+
+---+++ GUMS Config Changes
+
+Replaced
+&lt;verbatim&gt;
+voGroup=&quot;/DayaBay&quot;
+&lt;/verbatim&gt;
+with
+&lt;verbatim&gt;
+voGroup=&quot;/dayabay&quot; 
+&lt;/verbatim&gt;
+
+-- Main.RobQ - 24 Mar 2010%BR%
+-- Main.JohnWeigand - 24 Mar 2010 - modified the dosar edg-mkgridmap.conf entry to include the new value (it was missing)

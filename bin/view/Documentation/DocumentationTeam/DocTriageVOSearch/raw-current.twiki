@@ -1,0 +1,16 @@
+---+ VO Document Triage Search
+%CALC{&quot;$SET( row_no, 0 )&quot;}%
+%CALC{&quot;$SET( increment, $NOEXEC($SETM(row_no, + 1)$GET(row_no)))&quot;}%
+
+---++ List of VO Documents in Documentation Web
+%SEARCH{ search=&quot;VO|Virtual;!Meeting&quot; scope=&quot;topic&quot; web=&quot;Documentation&quot; excludetopic=&quot;*LeftBar*,*Meet*,*Web*&quot; regex=&quot;on&quot; nosearch=&quot;on&quot; nototal=&quot;on&quot; header=&quot;| *No.* | *Topic - !$web* |  *Modifier* | *Date* | *Comments* |&quot; format=&quot;| $percntCALC{\&quot;$EXEC($GET(increment))\&quot;}$nop% | [[$web.$topic]] | $wikiusername | $percntCALC{\&quot;$FORMATTIME($TIME($date), $year-$month)\&quot;}$nop% |   |&quot; }%
+
+---++ List of VO Documents in !ReleaseDocumentation Web
+%SEARCH{ search=&quot;VO|Virtual;!Meeting&quot; scope=&quot;topic&quot; web=&quot;ReleaseDocumentation&quot; excludetopic=&quot;*LeftBar*,*Meet*,*Web*&quot; regex=&quot;on&quot; nosearch=&quot;on&quot; nototal=&quot;on&quot; header=&quot;| *No.* | *Topic - !$web* |  *Modifier* | *Date* | *Comments* |&quot; format=&quot;| $percntCALC{\&quot;$EXEC($GET(increment))\&quot;}$nop% | [[$web.$topic]] | $wikiusername | $percntCALC{\&quot;$FORMATTIME($TIME($date), $year-$month)\&quot;}$nop% |  |&quot; }%
+
+---++List of Documents in VO Web
+%TABLE{ sort=&quot;on&quot; headeralign=&quot;center, left, left, left, left, left&quot; dataalign=&quot;right, left, left, left, left, left&quot; columnwidths=&quot;3%, 20%, 10%, 5%, 20%, 32%&quot;}%
+%SEARCH{ search=&quot;^*&quot; scope=&quot;topic&quot; web=&quot;VirtualOrganizations&quot; excludetopic=&quot;*LeftBar*,*Meet*,*Web*,*Validation*,*Minutes*,*SiteVal*,*Stakehold*,*Survey*&quot; regex=&quot;on&quot; nosearch=&quot;on&quot; nototal=&quot;on&quot; header=&quot;| *No.* | *Topic - !$web* |  *Modifier* | *Date* | *Comments* |&quot; format=&quot;| $percntCALC{\&quot;$EXEC($GET(increment))\&quot;}$nop% | [[$web.$topic]] | $wikiusername | $percntCALC{\&quot;$FORMATTIME($TIME($date), $year-$month)\&quot;}$nop% |  |&quot; }%
+
+-- Main.JamesWeichel - 11 Dec 2009
+

@@ -1,0 +1,154 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Jeff Dost
+   * Neha Sharma
+   * Alex Sim
+   * Doug Strain
+   * Tanya Levshina
+
+
+---+++ Status report
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* Support
+  - support for STAR data delivery from PDSF to BNL via bestman full mode
+  - support for &quot;srm-copy -f&quot; for LIGO case
+    * support implementation for more synchronized srm requests and file 
+         transfers between sources and targets.
+    * checking on concurrency management, connection timeout handing, 
+         and retry handling for multiple files in a request
+  - write-up use cases from STAR data delivery
+&lt;/pre&gt;
+Jeff:
+&lt;pre class=&quot;screen&quot;&gt;
+-obtained Abhishek&#39;s script used to update the osg hadoop repository 
+
+-tried a test run of Abhishek&#39;s script and it failed, suspect its an rsync server 
+permission problem on the caltech side, waiting for Michael to reply 
+
+-asked Michael and Brian about bestman rpm status, they will give me instructions 
+on how to package the latest versions
+&lt;/pre&gt;
+
+Doug
+&lt;pre class=&quot;screen&quot;&gt;
+- RSV: srmtester and srmclients probes in ITB testing
+- RSV for pigeon: in ITB testing.
+- GlueX: problem solved, root cause was a network/firewall configuration issue.  Pigeon is now running.
+- Pigeon: presentation for VO meeting.
+&lt;/pre&gt;
+Neha
+&lt;pre class+&quot;screen&quot;&gt;
+-sevalidation testsuite: added support for following:
+    made logs accessible via apache
+    external configuration file to specify log/vdt locations. 
+    more options can be added.
+    using existing configuration (choose by id, not hostname) displaying request id on top of results page 
+    so user knows which logs to look at 
+    displaying proper (success/failure) status code for each request 
+currently working on:
+    - troubleshooting hibernate transaction exception when adding new request using existing configuration
+    - modifying extracting space token logic for &quot;dcache&quot; based SEs -compiled
+      information about usage of gPlazma plug-ins from SE admins and sent to DESY
+&lt;/pre&gt;
+Tanya
+&lt;pre class=&quot;screen&quot;&gt;
+      OSG-ATLAS-Xrootd meeting
+      meeting with Ruth and Gabriele
+      several meetings with LIGO, troubleshooting problems
+
+      prepared a lecture for OSG School in Brazil, have added Squid exercises and lcg , lfc commands
+      reviewed Marko Slyz&#39;s presentation about LSST for OSG School in Brazil
+      discussed GlueX requirements for storage
+      reviewed Doug&#39;s presentation for VO Forum
+&lt;/pre&gt;
+
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+Hadoop rpms progress 
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Jeff has received the rsync script from Abhishek. It is failing because of some authorization issues at CIT. Michael is working to fix that problem. !BeStMan rpms are &quot;old&quot; in production distribution, Jeff is talking to Brian and Michael to get instructions how to build bestman rpms. Jeff will install bestman/gridftp on the namenode of his small teststand in order to start testing. The additional nodes are still not available. Jeff will come up with proposal how to rearrange Hadoop documentations on OSG twiki. 
+
+---++ Second agenda Item
+&lt;!-- DESCRIPTION --&gt;
+LIGO Status
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+   1. It was established that the several crashes of LIGO submission node was caused by absence of throttling.  
+   1. Robert has fixed throttling , now the # of simultaneous srm-copy commands has been set to 4. He has also increased RAM to 6 GB.
+   1. Tanya has advised to increase concurrency. Britta has done several tests copying 5,000 16MB files from LDG to OUHEP with concurrency from 1 to 5. She has also done several transfer tests from LDG -&gt; Nebraska. So total transfer time with concurrency 5 is less then 2.5 hours while the transfer with concurrency 1 is about 9 hours. 
+   1. We have seen some errors from grdiftp transfer which cause is hard to understand. It doesn&#39;t correlate with the cumber of concurrent transfers. Alex thinks that these kind of errors could indicate the heavy load on the gridftp server or the problem with the number of opened ports on the submission node. Most of the failed transfers have been successful after several retries performed by srm-copy command, though not always. We will have full statistic by next meeting.
+   1. !BeStMan developers are working on making srm-copy -f command more efficient, they hope to release it for testing next week.
+    
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+RSV storage/srmtester/pigeon probes status 
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+All RSV probes in VDT. Doug will start working on documentation. Neha will be the tester and Tanya will review the doc.
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+pigeon installation by GlueX, SBGrid, discussion of upcoming talk for VOs 
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Network/firewall configuration issue has been fixed at UCONN, so now discovery tools/pigeon are working fine. Richard Jones has created several tickets based on the Pigeon output running on GlueX submission node: 
+   1. https://ticket.grid.iu.edu/goc/viewer?id=9679
+   1. https://ticket.grid.iu.edu/goc/viewer?id=9680
+   1. https://ticket.grid.iu.edu/goc/viewer?id=9681
+   1. https://ticket.grid.iu.edu/goc/viewer?id=9682
+
+Doug will present Pigeon tools at VO Forum meeting tomorrow.
+
+---++ Fifth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Tests suite rework status
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Neha was able to spent sometime working on the test suite improvements (see status report).
+
+---++ Sixth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Tickets
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+++++++++++++
+New tickets
+++++++++++++
+
+Closed:
+
+23 - OSG Storage: dCache: Read Preference Tuning Need to follow up:
+
+24 - OSG Storage: dCache: pnfsDump-1.0.21-1 rpm not working with 1.9.5-8
+
+++++++++++++
+Old tickets
+++++++++++++
+
+Follow up in progress:
+
+9142 - Resource Specific Issue on UConn-OSG_SE
+
+No update:
+
+9563 - OSG Storage: SRM Clients Interoperability 20 - OSG Storage: Bestman: Defective Credential Error
+
+22 - OSG Storage: srm-copy: Incorrect failure exit code generated with &quot;-f command -3partycopy&quot; options
+
+9073 - OSG Storage:  Summary of bestman-g issues/requests from US ATLAS
+
+8785 - OSG Storage: dCache: Issues upgrading dCache at UIUC using vdt-dcache package
+
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 10 Dec 2010

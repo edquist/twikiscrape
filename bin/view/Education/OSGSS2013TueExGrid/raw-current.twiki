@@ -1,0 +1,94 @@
+---+ 2013 OSG User School - Using directly the Grid
+
+Time to spend on this: about 1 hour (i.e. until 5pm)
+
+We will use [[OSGSS2013TueGlideinSetup][the DHTC submit node]] for this exercise, too.
+
+---+++ Motivation
+
+You may wonder why this exercise is needed at all.
+After all, Igor told you that DHTC is normally used through an overlay system.
+
+However, there may be times when you get access to a Grid site that your overlay infrastructure does (yet) not support.
+In those cases, it might be convenient to start using the Grid resources through direct submission.
+It is likely be a little work to get it to work, but the payout may just be big enough to be worth the pain.
+
+---+++ Simulating a Dynamical billiard
+
+In this exercise session, we will try to find the best way to shot a billiard ball in a [[http://en.wikipedia.org/wiki/Dynamical_billiards][Dynamical Billiard]].
+This problem is particularly interesting since it is by definition a chaotic system;
+i.e. a very small change in the ball&#39;s initial condition will result in a completely different result.
+
+We will be working with a billiard table that has 16 round obstacles on it. The system is idealized, with the ball being point-like.
+We will start from a fixed starting point (25,200) and will try to find the best angle that results in the ball ending in the upper right corner.&lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/billiard.gif&quot; alt=&quot;billiard.gif&quot; width=&#39;1001&#39; height=&#39;401&#39; /&gt;
+
+We will approach the problem as a parameter sweep; i.e. we will try out all the possible angles and see how the ball behaves. 
+In order to finish in a reasonable amount of time, we will discretize the sweep in 10^-4 of a degree. 
+
+The library that calculates the number of bounces a ball performs before reaching the target is located in:
+&lt;pre class=&quot;screen&quot;&gt;
+/share/sim1/exe/sim.py
+&lt;/pre&gt;
+
+A tool that will run a parameter sweep is in 
+&lt;pre class=&quot;screen&quot;&gt;
+/share/sim1/exe/sweepsim.py
+&lt;/pre&gt;
+with the syntax being
+&lt;pre class=&quot;screen&quot;&gt;
+sweepsim.py x y minangle maxangle steps
+&lt;/pre&gt;
+
+You can also try your luck by hand by running
+&lt;pre class=&quot;screen&quot;&gt;
+/share/sim1/exe/sweepsim.py
+&lt;/pre&gt;
+
+This later tool will also create a picture of the process, named &quot;out.png&quot;
+&lt;pre class=&quot;screen&quot;&gt;
+runsim.py -graph x y angle
+&lt;/pre&gt;
+
+For fun, try out angles 70.254, 70.2545 and 70.255 (with x=25 y=200).&lt;br&gt;
+(possibly while waiting for the results of the complete sweep... see below)
+
+PS: It takes close to nothing to run a single test, but it takes about a minute to try out 10k different angles.
+
+---+++ Condor-G jobs
+
+We will use Condor-G to submit jobs to the School&#39;s CE.&lt;br&gt;
+(the DHTC overlay you were using in the morning is not going there)
+
+Condor-G jobs are very similar to regular HTCondor jobs, but instead of being &lt;b&gt;vanilla&lt;/b&gt; they are &lt;b&gt;grid&lt;/b&gt; jobs.
+You will also have to explicitly specify which CE you want to go.
+
+For this exercise, we will use:
+&lt;pre class=&quot;screen&quot;&gt;
+universe = grid
+grid_resource=gt5 osg-ss-ce.chtc.wisc.edu/jobmanager-condor
+&lt;/pre&gt;
+
+&lt;b&gt;Note:&lt;/b&gt; Unlike vanilla jobs, gird jobs will not automatically return the created files; 
+you would need to explicitly [[http://research.cs.wisc.edu/htcondor/manual/v8.0/condor_submit.html#man-condor-submit-transfer-output-files][provide a list]] to HTCondor.
+This will however not be a problem for us, since we will return all output in the stdout.
+
+You should also have a valid proxy pointed by
+&lt;pre class=&quot;screen&quot;&gt;
+X509_USER_PROXY
+&lt;/pre&gt;
+
+If you want to just cut-and-paste, create a new directory, copy in
+&lt;pre class=&quot;screen&quot;&gt;
+/share/sim1/condor/grid.condor
+&lt;/pre&gt;
+and submit it. You should get your results back in about 15 minutes.&lt;br&gt;
+(I would however recommend you try to understand what it is doing first)
+
+Once submitted, monitor you job as you have done in the past two days. Look also in the log file.&lt;br&gt;
+How is monitoring different?
+
+PS: Don&#39;t forget to create a picture of the angle with the least bounces!
+
+-- Main.IgorSfiligoi 
+

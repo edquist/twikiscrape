@@ -1,0 +1,188 @@
+-- Main.DanFraser - 01 May 2009
+---++ Action Items (%BLUE% results of discussion %ENDCOLOR%)
+   * D0, Nanohub, Engage submitting jobs to CMS sites that are terminating and/or suspending jobs. Need to understand the circumstances for these and find out what is happening. Abhishek to contact GLOW &amp; San Diego and report back with more detail.
+%BLUE% 
+   * Opportunistic applications need to be prepared for job eviction -- this is an OSG principle.
+   * Nanohub&#39;s Steve Clark coming to Fermi to discuss more on Thursday.
+%ENDCOLOR%
+   * Atlas -- Throughput good but hitting Condor bug involving GridMon and logfiles that are too old. (Xin working with Jamie, needs to report back with update)
+%BLUE%
+   * There is a long term plan in place to improve Condor-G performance, Xin to make sure he gets what he needs from Jamie.
+   * http://condor-wiki.cs.wisc.edu/index.cgi/tktview?tn=429 
+%ENDCOLOR%
+   * LIGO -- Switched E@H to GT2, but now hitting GT2 job submission limits. Need to discuss a solution approach/plan. (Britta,Kent,Dan)
+%BLUE%
+      * Will be investigating further as to cause of failures.
+%ENDCOLOR%
+   * LIGO -- Problem with job status at CIT_CMS_T2. New ticket opened: &#39;https://oim.grid.iu.edu/gocticket/viewer?id=6763&#39; (Britta) 
+   * D0 still affected by LSF/Globus Gatekeeper bug -- Alain to keep pinging Globus Tickets: https://oim.grid.iu.edu/gocticket/viewer?id=6489 and http://bugzilla.globus.org/bugzilla/show_bug.cgi?id=6688
+%BLUE%
+   * Bug fix was submitted by Globus. Globus speculates that the problematic error code could still be seen occasionally. More testing needed to determine if the bug is completely fixed.
+%ENDCOLOR%
+---++ Attendees:
+   * Xin, Britta, Mats, Suchandra, Burt, Abhishek, Rob Q., Mine, Chander, Miron, Dan
+---++ CMS (Burt)
+CMS ran 153 khours/day at 92% success.  CPU/wallclock was 67% -- it seems to be uniformly low as opposed to concentrated at a particular site (although GLOW is much lower as always).
+
+A follow-up on last week&#39;s discussion of LIGO GRAM2 jobs overloading gatekeepers -- we&#39;ll speak to Nebraska to get Brian Moe the specifics, but I think the problem is understood.
+
+Our Tier 2 admins are keeping an eye on their individual sites and are starting to implement measures to protect themselves.  Unfortunately the only tool really available is turning off submissions for a particular VO outright.
+---++ Atlas (Armen &amp; Xin)
+
+During the last week US sites were running MC simulation jobs. The 
+production was quite stable at the level of 6k running jobs.
+
+From Gratia report: USATLAS sites ran 903K jobs, with CPU/Walltime ratio of 85%. 
+
+From World-wide Panda production report (real jobs) : 
+   * completed successfully 643,635 managed MC production, validation and reprocessing jobs
+   * average ~91,947 jobs per day
+   * failed   163,191  jobs
+   * average efficiency:
+      * jobs     - 79.8%
+      * walltime - 93.5%
+
+The CPU efficiency is higher last week because the reprocessing exercise has stopped. 
+
+No particular site issues to report.
+
+Panda server setup at CERN : Beginning of the next week (May 11) Panda for US clouds will migrate to
+Oracle database.
+
+Condor team provided us with a new grid monitor binary, which is running in our production now. 
+
+
+---++ LIGO (Britta)
+
+Recent Average Credit (RAC):79,602.20066 (+ 20,000)
+E@H rank based on RAC: 7 (+3)
+E@H rank based on accumulated Credits: 39 (+0)
+
+
+   Current week&#39;s total usage: 3 users utilized 17 sites;
+
+     8758 jobs total (4193 / 4565 = 47.9% success);
+
+     37775.1 wall clock hours total (33779.2 / 3995.9 = 89.4% success);
+
+
+---++++ Previous week&#39;s total usage: 3 users utilized 18 sites;
+
+     6548 jobs total (4498 / 2050 = 68.7% success);
+
+     34851.6 wall clock hours total (30031.3 / 4820.3 = 86.2% success);
+
+---+++ Gram was down on the submit host (04/27, 04/28)
+       
+           cause unknown
+  
+           fixed through OSG stack update
+
+---+++ 50 % Job success rate:
+
+   - CIT_CMS_T2- 100% fail 04/30 - 05/04
+ 
+            Taken off submit list 05/04
+
+   - SPRACE 95% fail 04/30 - 05/04
+     
+            Taken off submit list 05/04
+   
+   - MIT_CMS 87% fail 04/30 - 05/04
+   
+            Taken off submit list 05/04
+
+Eviction policies at some CMS sites :
+  
+    Active e-mail thread Robert &lt;--&gt; Michael Thomas
+   
+    CIT_CMS_T2 GOC ticket open
+
+
+
+---++ Site Coordination, Integration (Suchandra)
+   * Currently in planning stages of OSG 1.2 release
+      * [[https://twiki.grid.iu.edu/bin/view/Trash/Trash/Trash/Trash/SoftwareTools/OSG12Plan][Current plan]]
+      * Initial VTB testing will start next week
+      * Biggest changes process improvements and changes to packages to help with future updates
+      *  Also adds support of Debian Lenny for LIGO and testing dcache 1.92.5 release
+   * The latest vo package update was tested before the goc release
+   * Planning for the site admins meeting is currently ongoing
+   * The campfire site is being used to help admins with upgrade issues and will be used for vtb testing coordination as well
+
+---++ Engagement (Mats)
+
+
+------------------------------------------------------------------------
+     | VO             | # of Jobs | Wall Dur. | Cpu / Wall |      Delta
+------------------------------------------------------------------------
+  9  | engage         |     2,266 |     9,326 |       59.6 |         16
+
+
+Another slow week for Engagement. We have figured out that the low efficiency
+is due to Blast jobs against large databases. These jobs are doing a lot of
+I/O and lower CPU time / wall time is expected.
+
+
+
+---++ Metrics (Brian)
+
+
+---++ Virtual Organizations Group (Abhishek)
+
+   * D0 
+      * D0 MC production led to an average consumption of 120,000 wall hours per day, at 68% job, 78% wall, 65% CPU:wall efficiencies. 
+      * D0 Event production reached a peak rate of 12.3 million events per week. This is a new peak for the past year.
+      * High failures were noted with a new cluster at UNL site; now resolved. 
+      * Related to OSG, there are two lingering problems: (a) Long-lived D0 jobs are expunged at the CMS sites, likely due to the recently enforced policy on maximum wall clock time. (b) A bug which was uncovered in Globus LSF Manager; affecting OU and TTU sites. Work is ongoing between GOC, VDT and Globus. A partial fix is now in place. URLs - https://oim.grid.iu.edu/gocticket/viewer?id=6489 and http://bugzilla.globus.org/bugzilla/show_bug.cgi?id=6688
+
+   * OSG-TeraGrid Gateway
+      * D0 made a first successful small-scale submission using Condor-G through the gateway, with job execution on !TeraGrid site. 
+      * D0 management is considering to use the gateway at a higher scale.
+
+   * ALICE  
+      * Scalability and stress-testing exercise of VO-Box is ongoing on OSG site at NERSC/LBL. Using EU team&#39;s recommendation, target is 200 jobs with local data access sustained over a week. During last 2 weeks, peak rates of nearly 100 jobs per day (ALICE view) with an equivalent of 1200 wall hours per day (OSG view) were achieved.
+
+   * !CompBioGrid
+      * Site deployment ongoing; recent problems are related to submit side packages, PBS jobs, GIP reporting. Most problems are due to the mixed topology of the site: Windows filesystems exported and in use on Linux systems, with OSG software stack on top. 
+      * We have recommended !CompBioGrid to start a blog, to get a more coherent expression of issues. No recent update.
+
+   * !IceCube
+      * A few members have started to attend weekly VO forum. !IceCube is planning to expand production to other sites besides GLOW; and have asked for more guidance on data management solutions available on OSG sites at-large. Storage need is 14 GB total persistent, and 1-2 GB per job transient, at a site. 
+      * Britta/VO-Group and Mats/Trash/Engagement are helping !IceCube understand GFTP use on OSG with $osg_app, $osg_data, $osg_wn_tmp. If needs exceed these legacy mechanisms, we will try to get !IceCube started with SRM based persistent storage.
+
+   * VORS deprecation
+      * !Fermilab-VO/FermiGrid has come to heavily rely on VORS API. Fermilab-VO has conveyed hesitation toward VORS deprecation, unless all features and programmatic API of VORS are fully replaceable by the new combination of !MyOSG/OIM/RSV. Meeting at FNAL to discuss this on May 6. 
+      * Other known dependents on VORS are !NYSGrid, !SBGrid, STAR. 
+      * VO Group and GOC have agreed that a short document listing the new functionality/API, is a prerequisite to collect more informed feedback from the affected VOs. 
+      * nanoHUB has conveyed a need to have an XML parser to !MyOSG/OIM metadata.
+
+   * Matters related to Site Preemption Policy
+      * Production of at-large VOs is affected by job suspensions related to site preemption at LHC sites. 
+      * At least 3 VOs - D0, Engage, nanoHUB, (also LIGO) - have pointed out that each&#39;s running jobs are sometimes suspended or evicted, during the job startup, at CMS sites. 
+      * E.g., at Caltech, GLOW, UCSD. Unofficial estimates of CMS sites indicate a 36-hours wall clock limit and a 2-weeks queue time limit. However, problem may not be directly related to newly enforced policies of CMS; each sites decides its own.
+      * Need to discuss more precise ways for sites to declare these policies, and/or for VOs to checkpoint the jobs. 
+      * Britta has started a ticket, discussing with Caltech. URL - https://oim.grid.iu.edu/gocticket/viewer?id=6763
+
+   * GPN
+      * David has expressed interest in attending the weekly VO forums.
+
+   * GROW
+      * Bringing up a local site. Currently deploying a small local SE, worth 3TB.
+      * Will convey if help from !Trash/Trash/CampusGrids is needed.
+
+   * nanoHUB
+      * A !F2F technical meeting on May 7, at FNAL.
+      * An item out-of-scope of !TaskForce but can be important is Multi-gatekeeper handling: Difficulty to evaluate status of a site with multiple gatekeepers. There is a need to advertise {gk1 OR gk1} model so that remote VO does not erroneously evaluate site as {gk1 AND gk2}. 
+      
+---++ Grid Operations Center (Rob Q.)
+   * New VO Package Released
+   * At this point no site have upgraded to OSG 1.0.1
+      * Caltech is bringing on some new resources soon that will be 1.0.1
+   * New !NEBioMed VO Registered
+      * Working toward ET Approval
+   * Ticket Exchange was broken this morning due to GRNOC maintenance that caused an address change
+   * Installed Capacity will be available very soon for Tier 2 Coordinators to test
+ 
+
+---++ Security (Mine)

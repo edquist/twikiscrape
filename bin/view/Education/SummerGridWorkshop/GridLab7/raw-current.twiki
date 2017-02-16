@@ -1,0 +1,1065 @@
+&lt;html&gt;
+
+&lt;head&gt;
+&lt;title&gt;Student notes for VDS tutorial&lt;/title&gt;
+&lt;style&gt;
+.transcript
+{
+    background-color: #FFFFBA;
+    border: thin solid #02007F;
+    padding: 3pt;
+    width: auto;
+}
+  .in {color:#0000FF; font-weight: bold;}
+  .out {color:#006600;}
+&lt;/style&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;h1&gt;Student notes for VDS tutorial&lt;/h1&gt;
+
+&lt;h2&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;These are the student notes for the VDS tutorial at TeraGrid &#39;06. They
+are designed to be used in conjunction with instructor presentation and
+support.&lt;/p&gt;
+
+&lt;p&gt;The tutorial is structured as four chapters of 45 minutes each. Each
+chapter will consist of a presentation by the instructors, and then 
+time to work on the exercises in this file.&lt;/p&gt;
+
+&lt;p&gt;You will see two styles of machine text here:&lt;/p&gt;
+&lt;pre class=&quot;in transcript&quot;&gt;Text like this is input that you should type.&lt;/pre&gt;
+&lt;pre class=&quot;out transcript&quot;&gt;Text like this is the output you should get.&lt;/pre&gt;
+
+&lt;p&gt;For example:&lt;/p&gt;
+
+&lt;p class=&quot;transcript&quot;&gt;
+&lt;code&gt;&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;date&lt;/span&gt;&lt;br /&gt;
+&lt;span class=&quot;out&quot;&gt;Wed May 31 11:54:58 BST 2006&lt;/span&gt;&lt;/code&gt;
+&lt;/p&gt;
+
+&lt;h2&gt;Chapter 1: Basic usage&lt;/h2&gt;
+
+&lt;p&gt;The exercises in this chapter will familiarize you with basic use
+of the VDS and with the physics example code that we will be using in
+later exercises.&lt;/p&gt;
+
+&lt;p&gt;You will need to log into the tutorial machine, using an ssh client and 
+the login name and password supplied separately.&lt;/p&gt;
+
+&lt;p&gt;On Linux or Mac OS X, open a terminal window and type:&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;ssh vdsuser-9999@skynet-login.isi.edu&lt;/span&gt;
+[welcome message]
+&lt;span class=&quot;out&quot;&gt;vdsuser-3@skynet-login:~$&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;On Windows, 
+   &lt;a href=&quot;http://www.chiark.greenend.org.uk/~sgtatham/putty/&quot;&gt;PuTTY&lt;/a&gt; 
+   is recommended as an ssh client.&lt;/p&gt;
+
+
+&lt;p&gt;Files for each exercise are stored in subdirectories:&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;ls&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;
+BIGGERVDL    PROBINTRO    SIMPLEVDL    VDLINTRO
+COMPOUNDVDL  GRIDINTRO    QuarkCode    &lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;You may also see some other files here.&lt;/p&gt;
+
+&lt;h3&gt;Exercise 1.1: VDLINTRO&lt;/h3&gt;
+
+&lt;p&gt;In this exercise, you will use the VDL tools to generate a very simple
+&#39;Hello World&#39; message.&lt;/p&gt;
+
+&lt;p&gt;There is only one file for this exercise, located in the 
+   &lt;code&gt;VDLINTRO/&lt;/code&gt; subdirectory.
+&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd VDLINTRO/&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;ls&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;helloworld.vdl&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;helloworld.vdl&lt;/code&gt; is a VDL (Virtual Data Language file) which
+defines one &lt;em&gt;transformation&lt;/em&gt; (like a function definition), and one
+&lt;em&gt;derivation&lt;/em&gt; (like a function call). &lt;br /&gt;
+
+The transformation defined here takes a message and outputs it to a file.&lt;br /&gt;
+The derivation defined here calls this transformation, with a specific
+message (hello world!) and a specific output file.&lt;/p&gt;
+
+&lt;p&gt;The first step in running helloworld is to compile the VDL file into an
+&lt;em&gt;abstract DAG&lt;/em&gt; (or &lt;em&gt;DAX&lt;/em&gt;). Use the vdlc command for this:&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vdlc helloworld.vdl &lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;20060531T145705.890: [app] using label &quot;helloworld&quot;
+20060531T145705.891: [app] using output file &quot;helloworld.dax&quot;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;An abstract DAG has been generated and output in XML format into 
+&lt;code&gt;helloworld.dax&lt;/code&gt;. Open &lt;code&gt;helloworld.dax&lt;/code&gt; in a file
+viewer:&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cat helloworld.dax&lt;/span&gt;
+
+&lt;/pre&gt;
+
+&lt;p&gt;Inside the DAX, you should see three sections.
+&lt;ol&gt;
+&lt;li&gt;list of all referenced files - this shows the input and output files 
+used by this workflow. In this case, there is only one file, the output 
+file &lt;code&gt;greeting.txt&lt;/code&gt;.
+&lt;/li&gt;
+
+&lt;li&gt;definition of all jobs - each job in the workflow. In this exercise,
+there is only one. The derivation specified in the VDL file has been converted
+into a single &amp;lt;job&amp;gt; element in the DAX.&lt;/li&gt;
+
+&lt;li&gt;list of control-flow dependencies - this section specifies a partial
+order in which jobs are to executed. As there is only one job in this 
+DAX, there is nothing here. In later exercises, you will see more 
+information here.&lt;/li&gt;
+
+&lt;/ol&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Now that you have your abstract DAG, you can run it through the 
+&lt;em&gt;planner&lt;/em&gt; to generate a plan for the workflow, using the
+&lt;code&gt;vds-plan&lt;/code&gt; command.
+&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vds-plan --pegasus -g QuarkCode --option pools=local --option output=local --option force helloworld.dax --base ./dags&lt;/span&gt;
+
+[...many lines of output...]
+&lt;span class=&quot;out&quot;&gt;
+2006.06.10 20:14:57.108 PDT: [INFO] Generating submit files for the concrete workflow (completed)
+2006.06.10 20:14:57.108 PDT: [INFO] Generating submit files for the cleanup workflow
+2006.06.10 20:14:57.114 PDT: [INFO] Generating submit files for the cleanup workflow (completed)
+2006.06.10 20:14:57.115 PDT: [INFO] Time taken to execute is 1.05 seconds
+
+I have concretized your abstract workflow. The workflow has been entered
+into the workflow database with a state of &quot;planned&quot;. The next step is 
+to start or execute your workflow. The invocation required is
+
+vds-run  /nfs/home/vdsuser-2/VDLINTRO/dags/QuarkCode/helloworld/run0007
+&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;The workflow has been planned. You can start it running by typing the
+command shown in the above output (note that the numbers will probably be
+different for you).&lt;/p&gt;
+
+&lt;p&gt;You can start it running using the &lt;code&gt;vds-run&lt;/code&gt; 
+command:&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vds-run  /nfs/home/vdsuser-2/VDLINTRO/dags/QuarkCode/helloworld/run0007&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;
+Checking all your submit files for log file names.
+This might take a while... 
+Done.
+-----------------------------------------------------------------------
+File for submitting this DAG to Condor           : helloworld-0.dag.condor.sub
+Log of DAGMan debugging messages                 : helloworld-0.dag.dagman.out
+Log of Condor library debug messages             : helloworld-0.dag.lib.out
+Log of the life of condor_dagman itself          : helloworld-0.dag.dagman.log
+
+Condor Log file for all jobs of this DAG         : /tmp/helloworld-037504.log
+Submitting job(s).
+Logging submit event(s).
+1 job(s) submitted to cluster 212.
+-----------------------------------------------------------------------
+&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;You can monitor which jobs are running using the &lt;code&gt;condor_q&lt;/code&gt; 
+command and by watching the jobstate log.&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;tail -f jobstate.log&lt;/span&gt;
+[...log information appears over time...]
+
+&lt;span class=&quot;out&quot;&gt;1150052758 INTERNAL *** DAGMAN_FINISHED ***
+1150052762 INTERNAL *** TAILSTATD_FINISHED 0 ***&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;You will know when your job is completed when the 
+&lt;code&gt;TAILSTATD_FINISHED&lt;/code&gt; message appears. If something has gone 
+wrong, you might see an error message instead.&lt;/p&gt;
+
+&lt;p&gt;When you job has completed, you can examine the results as follows.
+You will need to substitute your user number in twice, and the run number
+that you used above. Replace 2 below with your user number and 0005 with the
+run number.&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cat /nfs/scratch01/train&lt;/span&gt;02&lt;span class=&quot;in&quot;&gt;/QuarkCode/vdsuser-&lt;/span&gt;2&lt;span class=&quot;in&quot;&gt;/helloworld/run&lt;/span&gt;0005&lt;span class=&quot;in&quot;&gt;/greeting.txt&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;Hello World&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;and now you can see the greeting.&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cat greeting.txt&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;Hello World&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;Congratulations! You&#39;ve run your first VDL workflow.&lt;/p&gt;
+
+
+
+&lt;h3&gt;Exercise 1.2: PROBINTRO&lt;/h3&gt;
+
+&lt;p&gt;This exercise introduces the physics example code, taken from 
+QuarkNet. You will run some of the code by hand to analyse data
+and plot it on a graph. In later exercises, you will run the 
+same code but in other ways, taking advantage of VDS.&lt;/p&gt;
+
+&lt;p&gt;The QuarkNet code is written in PERL and kept in the &lt;code&gt;QuarkCode/&lt;/code&gt;
+subdirectory.&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;ls QuarkCode/&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;Combine.pl        Flux.pl           Plot.pl           Split.pl 
+CommonSubs.pl     Frequency.pl      RawAnalyze.pl     ThresholdTimes.pl 
+EventChoice.pl    Getopt            ShowerArgs.pl     WireDelay.pl 
+EventSearch.pl    Lifetime.pl       SingleChannel.pl  gps_data.pl 
+ExtraFunctions.pl Math              Sort.pl&lt;/span&gt;&lt;/pre&gt;
+
+&lt;p&gt;The data files which will be analysed have been collected from cosmic
+ray detectors at various sites around the US. Some of that is available in
+the &lt;code&gt;Data/&lt;/code&gt; subdirectory.&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;ls Data/&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;180
+180.2004.0819.0.raw
+180.2004.0819.0.raw.meta
+180.2004.0819.1.raw
+180.2004.0819.1.raw.meta&lt;/span&gt;
+[...]
+
+&lt;/pre&gt;
+
+&lt;p&gt;The commands to run are in the &lt;code&gt;PROBINTRO/&lt;/code&gt; subdirectory, 
+in a shell script called &lt;code&gt;manual.sh&lt;/code&gt;.  You can run the whole
+analysis by executing that shell script.&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd PROBINTRO&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;ls&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;manual.sh
+$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;./manual.sh&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;min max step num bin 0.01050 9.53400 0.95235 |10|10|
+numbins: 10 #bins: 10||
+DEBUG: 0.01050 9.53400 0.01050 9.53400
+$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;ls&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;gnuplotFitParam943  int-lifetimes  int-thresh-3  int-wire-2  manual.sh
+int-combined        int-params     int-thresh-4  int-wire-3  plot.png
+int-extra           int-sorted     int-thresh-5  int-wire-4
+int-extra-raw       int-thresh-1   int-thresh-6  int-wire-5
+int-freqs           int-thresh-2   int-wire-1    int-wire-6&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;The output graph is in plot.png. In addition, several intermediate files
+have been created - each step in the analysis created intermediate files
+that were then used by later steps.
+&lt;/p&gt;
+
+&lt;p&gt;To view the plot, you can copy &lt;code&gt;plot.png&lt;/code&gt; to your
+skynet webspace, and view it in your web browser:&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cp plot.png ~/public_html/probintro.png&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; 
+&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Point your web browser to:
+http://skynet-login.isi.edu/~vdsuser-9999/probintro.png&lt;/p&gt;
+
+&lt;h2&gt;Chapter 2: More advanced VDL&lt;/h2&gt;
+&lt;p&gt;In this chapter you will be introduced to more advanced VDL usage.&lt;/p.
+
+&gt;&lt;h3&gt;Exercise 2.1: SIMPLEVDL&lt;/h3&gt;
+
+&lt;p&gt;In this exercise, you will write your own VDL to run one step in the
+QuarkNet problem code, which takes the processed data and generates a graph.
+&lt;/p&gt;
+
+&lt;p&gt;You are provided with
+ &lt;ul&gt; &lt;li&gt;the input data files for this step, &lt;code&gt;simplevdl-extra&lt;/code&gt; and
+          &lt;code&gt;simplevdl-freqs&lt;/code&gt; (these are the same as 
+          some of the intermediate files that were generated in your
+          &lt;code&gt;PROBINTRO/&lt;/code&gt; 
+          directory). These have already been registered with the replica
+          location system (which you will see in greater depth in a later
+          exercise)&lt;/li&gt;
+
+      &lt;li&gt;a transformation definition that defines how to use Plot.pl from 
+          the &lt;code&gt;QuarkCode/&lt;/code&gt; directory to convert input data 
+          files into a graph, in &lt;code&gt;transform.vdl&lt;/code&gt;.&lt;/li&gt;
+ &lt;/ul&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Armed with these tools, you will need to write a derivation which 
+   uses the supplied transformation on the supplied data files to produce
+   the output graph.&lt;/p&gt;
+         
+&lt;p&gt;Instructions:
+
+&lt;ul&gt;
+  &lt;li&gt;move into the &lt;code&gt;SIMPLEVDL/&lt;/code&gt; directory, and create a file
+      called &lt;code&gt;simple.vdl&lt;/code&gt; using an editor of your choice.&lt;br /&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd SIMPLEVDL/&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vi simple.vdl&lt;/span&gt;
+
+&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;Add a DV line to the VDL file. You can use 
+    &lt;code&gt;VDLINTRO/helloworld.vdl&lt;/code&gt; as a syntax example, and if 
+    you get stuck the correct DV can be found in 
+    &lt;code&gt;SIMPLEVDL/cheat/simple.vdl&lt;/code&gt;.  You will need to define the
+    derivation to use these parameters, with your user number 
+    substituted in for USER:
+    &lt;pre&gt;
+        plot_caption=&quot;plot from bigger.vdl&quot;,
+        plot_extraFunctions=@{input:&quot;simplevdl-extra&quot;},
+        plot_highX=&quot;&quot;,
+        plot_highY=&quot;&quot;,
+        plot_highZ=&quot;&quot;,
+        plot_infile=@{input:&quot;simplevdl-freq&quot;},
+        plot_lowX=&quot;&quot;,
+        plot_lowY=&quot;&quot;,
+        plot_lowZ=&quot;&quot;,
+        plot_outfile_param=@{output:&quot;simplevdl-USER-param&quot;},
+        plot_outfile_image=@{output:&quot;simpleVDL-USER.png&quot;},
+        plot_plot_type=&quot;3&quot;,
+        plot_title=&quot;bigger VDL plot&quot;,
+        plot_xlabel=&quot;xlabel&quot;,
+        plot_ylabel=&quot;ylabel&quot;,
+        plot_zlabel=&quot;&quot; 
+    &lt;/pre&gt;
+
+
+&lt;/li&gt;
+
+&lt;li&gt;Now try compiling, planning and running your workflow:
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vdlc simple.vdl transform.vdl&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;20060609T152414.181: [app] using label &quot;simple&quot;
+20060609T152414.182: [app] using output file &quot;simple.dax&quot;
+$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vds-plan --pegasus -g QuarkCode --option pools=local --option output=local --option force simple.dax --base ./dags&lt;/span&gt;
+[...]
+&lt;span class=&quot;out&quot;&gt;
+2006.06.09 19:18:14.059 PDT: [INFO] Time taken to execute is 1.029 seconds
+
+I have concretized your abstract workflow. The workflow has been entered
+into the workflow database with a state of &quot;planned&quot;. The next step is 
+to start or execute your workflow. The invocation required is
+
+vds-run  /nfs/home/vdsuser-2/SIMPLEVDL/dags/QuarkCode/simple/run0017
+
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vds-run /nfs/home/vdsuser-2/SIMPLEVDL/dags/QuarkCode/simple/run0017&lt;/span&gt;
+[...]
+
+&lt;span class=&quot;out&quot;&gt;
+I have started your workflow, committed it to DAGMan, and updated its
+state in the work database. A separate daemon was started to collect
+information about the progress of the workflow. The job state will soon
+be visible. Your workflow runs in base directory
+
+cd /nfs/home/vdsuser-2/SIMPLEVDL/dags/QuarkCode/simple/run0017
+&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd /nfs/home/vdsuser-2/SIMPLEVDL/dags/QuarkCode/simple/run0017&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;tail -f tailstatd.log&lt;/span&gt;
+[... output over time ...]
+&lt;span class=&quot;out&quot;&gt;20060611T122510.413 [172]: DAGMan finished with exit code 0
+20060611T122510.413 [173]: processed chunk of 1094 byte
+# updated state in workman
+20060611T122510.416 [173]: skipping plots
+20060611T122510.416 [173]: finishing, exit with 0
+20060611T122510.418 [173]: copied common log to /nfs/home/vdsuser-2/SIMPLEVDL/dags/QuarkCode/simple/run0017
+&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; cd /nfs/scratch01/train02/QuarkCode/vdsuser-2/simple/run0017/&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cp simplevdl-myuser9999.png ~/public_html/&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Now go to http://skynet-login.isi.edu/~vdsuser-99999/simplevdl-myuser9999.png
+&lt;/li&gt;
+
+&lt;/ul&gt;
+&lt;/p&gt;
+
+&lt;h3&gt;Exercise 2.2: BIGGERVDL&lt;/h3&gt;
+
+&lt;p&gt;In this exercise, you will expand the VDL used in the SIMPLEVDL exercise
+to include everything necessary to run the whole problem code (as seen in 
+the PROBINTRO exercise).&lt;/p&gt;
+
+&lt;p&gt;We introduce several more transformations, and make derivations to 
+process the raw input data into a graph.&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd ~/BIGGERVDL&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;ls&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;derivations.vdl     transformations.vdl&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;less transformations.vdl&lt;/span&gt;
+
+[...observe the new transformations...]
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vdlc derivations.vdl transformations.vdl&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;20060610T111452.577: [app] using label &quot;derivations&quot;
+20060610T111452.578: [app] using output file &quot;derivations.dax&quot;&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vds-plan --pegasus -g QuarkCode --option pools=local --option output=local --option force derivations.dax --base ./dags&lt;/span&gt;
+[...]
+&lt;span class=&quot;out&quot;&gt;I have concretized your abstract workflow. The workflow has been entered
+into the workflow database with a state of &quot;planned&quot;. The next step is 
+to start or execute your workflow. The invocation required is
+
+vds-run  /nfs/home/vdsuser-2/BIGGERVDL/dags/QuarkCode/derivations/run0004
+&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vds-run  /nfs/home/vdsuser-2/BIGGERVDL/dags/QuarkCode/derivations/run0004&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;
+I have started your workflow, committed it to DAGMan, and updated its
+state in the work database. A separate daemon was started to collect
+information about the progress of the workflow. The job state will soon
+be visible. Your workflow runs in base directory
+
+cd /nfs/home/vdsuser-2/BIGGERVDL/dags/QuarkCode/derivations/run0004
+&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd /nfs/home/vdsuser-2/BIGGERVDL/dags/QuarkCode/derivations/run0004&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;tail -f tailstatd.log&lt;/span&gt;
+[...wait...]
+&lt;span class=&quot;out&quot;&gt;20060611T200900.583 [500]: DAGMan finished with exit code 0
+20060611T200900.583 [501]: processed chunk of 1095 byte
+# updated state in workman
+20060611T200900.585 [501]: skipping plots
+20060611T200900.585 [501]: finishing, exit with 0
+20060611T200900.588 [501]: copied common log to /nfs/home/vdsuser-2/BIGGERVDL/dags/QuarkCode/derivations/run0004
+
+$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd /nfs/scratch01/train02/QuarkCode/vdsuser-2/derivations/run0004&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cp bigger.png ~/public_html/&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h3&gt;Exercise 2.3: COMPOUNDVDL&lt;/h3&gt;  
+
+&lt;p&gt;In this exercise, you will combine the transforms of the previous
+BIGGERVDL exercise into a single compound transform. When you have 
+done this, you will be able to invoke the entire analysis process using 
+a single derivation.
+&lt;/p&gt;
+
+&lt;p&gt;The files for this exercise are in the &lt;code&gt;COMPOUNDVDL/&lt;/code&gt;
+directory.&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd COMPOUNDVDL/&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;ls&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;compound.vdl  transformations.vdl&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;The most interesting file here is &lt;code&gt;compound.vdl&lt;/code&gt;. This 
+takes the various different transformations that we did separately in 
+the previous exercise, and makes a single transform.&lt;/p&gt;
+
+&lt;p&gt;Then instead of specifying many derivations, we can specify just a 
+single derivation to run the whole analysis.&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vdlc compound.vdl transformations.vdl&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;20060531T121629.999: [app] using label &quot;compound&quot;
+20060531T121630.011: [app] using output file &quot;compound.dax&quot;&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;At this point, a file called &lt;code&gt;compound.dax&lt;/code&gt; should have 
+been generated. Look inside and see that it is very similar to
+
+&lt;code&gt;biggervdl.dax&lt;/code&gt;, the DAX file from the BIGGERVDL exercise.
+&lt;/p&gt;
+
+&lt;p&gt;Now plan and run the workflow:&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vds-plan --pegasus -g QuarkCode --option pools=local --option output=local --option force compound.dax --base ./dags
+&lt;/span&gt;
+[...] &lt;span class=&quot;out&quot;&gt;
+2006.06.11 17:22:28.471 PDT: [INFO] Time taken to execute is 1.091 seconds
+
+I have concretized your abstract workflow. The workflow has been entered
+into the workflow database with a state of &quot;planned&quot;. The next step is 
+to start or execute your workflow. The invocation required is
+
+vds-run  /nfs/home/vdsuser-2/COMPOUNDVDL/dags/QuarkCode/compound/run0002&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vds-run /nfs/home/vdsuser-2/COMPOUNDVDL/dags/QuarkCode/compound/run0002&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;I have started your workflow, committed it to DAGMan, and updated its
+state in the work database. A separate daemon was started to collect
+information about the progress of the workflow. The job state will soon
+be visible. Your workflow runs in base directory
+
+cd /nfs/home/vdsuser-2/COMPOUNDVDL/dags/QuarkCode/compound/run0002&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd /nfs/home/vdsuser-2/COMPOUNDVDL/dags/QuarkCode/compound/run0002&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;$ tail -f tailstatd.log &lt;/span&gt;
+
+[...wait...]
+&lt;span class=&quot;out&quot;&gt;20060611T172658.603 [327]: DAGMan finished with exit code 0
+20060611T172658.603 [328]: processed chunk of 1095 byte
+# updated state in workman
+20060611T172658.606 [328]: skipping plots
+20060611T172658.606 [328]: finishing, exit with 0
+20060611T172658.609 [328]: copied common log to /nfs/home/vdsuser-2/COMPOUNDVDL/dags/QuarkCode/compound/run0002&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd /nfs/scratch01/train02/QuarkCode/vdsuser-2/compound/run0002/&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cp vdsuser-2-plot.png ~/public_html/&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;Now you can observe your plot in a web browser, at 
+http://skynet-login.isi.edu/vdsuser-9999/vdsuser-9999-plot.png&lt;/p&gt;
+
+&lt;h2&gt;Chapter 3: Running on the GRID using Pegasus&lt;/h2&gt;
+
+&lt;p&gt;In this chapter you will be introduced to running the abstract
+workflow generated through Pegasus on the Teragrid. You will take a
+variant of the compound dax generated in the previous exercises and
+run it on the GRID.&lt;/p&gt;
+
+&lt;p&gt; All the exercises in this Chapter will be run from the $HOME/PEGASUS/
+directory. All the files that are required reside in this sub
+directory &lt;/p&gt;  
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd $HOME/PEGASUS&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; 
+
+&lt;/span&gt;
+&lt;/pre&gt;
+
+&lt;h3&gt;Exercise 3.1 SETTING UP THE REPLICA CATALOG (RLS)&lt;/h3&gt;
+&lt;p&gt;In this exercise you will insert entries into the Replica Catalog.
+The replica catalog that we use is GLOBUS RLS. &lt;/p&gt;
+
+&lt;p&gt; A Replica Catalog maintains the lfn to pfn mapping for the input
+files of your workflow. Pegasus queries it to determine the locations
+of the raw input data files required by the workflow. Additionally,
+all the materialized data is registered into RLS for data reuse later
+on.  &lt;/p&gt;
+
+&lt;p&gt;You can use the &lt;code&gt;rc-client&lt;/code&gt; command to insert , query
+and delete from the replica catalog.&lt;/p&gt;
+
+&lt;p&gt;The input data to be used for your workflow resides in the
+$HOME/Data directory. We are going to insert entries into the replica
+catalog that point to the files in this directory.&lt;/p&gt;
+
+
+&lt;p&gt;The instructors have provided:
+ &lt;ul&gt; &lt;li&gt; A file replicas.in, the input data file
+ for the rc-client that  contains the mappings that need to be
+ populated in the RLS.&lt;/li&gt; 
+ &lt;/ul&gt;
+&lt;/p&gt;
+     
+
+&lt;p&gt;You will need to write some things yourself, by following the instructions
+below:
+&lt;ul&gt;
+&lt;!--
+&lt;li&gt;Copy the template file to a file (replicas.in) in the PEGASUS subdirectory.&lt;/li&gt;
+&lt;li&gt;Do @USER@ substitution on the copied file. Replace @USER@ with your
+username of the form vdsuser-X.&lt;/li&gt;
+--&gt;
+&lt;li&gt;Insert the entries in the RLS and verify if they are correctly inserted&lt;/li&gt;
+
+&lt;/ul&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Instructions:
+&lt;ul&gt;
+&lt;!--
+  &lt;li&gt;copy the template file. Run the perl command ( &lt;b&gt;perl -pi -e
+  &#39;s/\@USER\@/XXX/g&#39; replicas.in &lt;/b&gt;) substituting XXX  with your
+  username.&lt;br /&gt; 
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cp replicas.in.template replicas.in&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;perl -pi -e &#39;s/\@USER\@/vdsuser-4/g&#39; replicas.in&lt;/span&gt;
+&lt;/pre&gt;
+
+  &lt;/li&gt;
+--&gt;
+  &lt;li&gt;Let us see what the file looks like.
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cat replicas.in&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;vdsuser-4_180.2004.1014.0.raw gsiftp://skynet-login.isi.edu/nfs/home/vdsuser-4/Data/180.2004.1014.0.raw pool=&quot;isi_skynet&quot;&lt;/span&gt; 
+&lt;span class=&quot;out&quot;&gt;vdsuser-4_180.2004.1014.2.raw gsiftp://skynet-login.isi.edu/nfs/home/vdsuser-4/Data/180.2004.1014.2.raw pool=&quot;isi_skynet&quot;&lt;/span&gt; 
+
+&lt;span class=&quot;out&quot;&gt;vdsuser-4_180.2004.1017.1.raw gsiftp://skynet-login.isi.edu/nfs/home/vdsuser-4/Data/180.2004.1017.1.raw pool=&quot;isi_skynet&quot;&lt;/span&gt; 
+&lt;span class=&quot;out&quot;&gt;vdsuser-4_180.2005.0126.0.raw gsiftp://skynet-login.isi.edu/nfs/home/vdsuser-4/Data/180.2005.0126.0.raw pool=&quot;isi_skynet&quot;&lt;/span&gt; 
+&lt;span class=&quot;out&quot;&gt;vdsuser-4_180.2005.0926.0.raw gsiftp://skynet-login.isi.edu/nfs/home/vdsuser-4/Data/180.2005.0926.0.raw pool=&quot;isi_skynet&quot;&lt;/span&gt; 
+&lt;span class=&quot;out&quot;&gt;vdsuser-4_180.2005.0126.1.raw gsiftp://skynet-login.isi.edu/nfs/home/vdsuser-4/Data/180.2005.0126.1.raw pool=&quot;isi_skynet&quot;&lt;/span&gt; 
+&lt;span class=&quot;out&quot;&gt;vdsuser-4_180.geo gsiftp://skynet-login.isi.edu/nfs/home/vdsuser-4/Data/180/180.geo pool=&quot;isi_skynet&quot;&lt;/span&gt; 
+&lt;/pre&gt;
+
+&lt;/li&gt;
+
+&lt;li&gt; Now we are ready to run &lt;code&gt;rc-client&lt;/code&gt; and populate the
+data. Since each of you have uniques lfn&#39;s that are being registered,
+all the 7 entries should be successfully registered.
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;rc-client --insert replicas.in&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;#Successfully worked on    : 7 lines&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;#Worked on total number of : 7 lines.&lt;/span&gt; 
+&lt;/pre&gt;
+&lt;/li&gt;
+
+&lt;li&gt; Now the entries have been successfully inserted into the LRC. We
+should confirm whether the mappings have propogated to the RLI or
+not. Let us wait about 30 seconds and then query the replica catalog
+for a particular lfn. &lt;br/&gt;
+Run &lt;br/&gt;
+
+&lt;b&gt;rc-client lookup @USER@_180.geo&lt;/b&gt; where @USER@ is replaced by your username e.g vdsuser-4
+&lt;/li&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;rc-client lookup vdsuser-4_180.geo&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;vdsuser-4_180.geo gsiftp://skynet-login.isi.edu/nfs/home/vdsuser-4/Data/180/vdsuser-4_180.geo pool=&quot;isi_skynet&quot;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt; Congratulations!! You have the replica catalog setup correctly for
+use. This is the catalog which you will tinker with most, while
+running Pegasus.&lt;/p&gt;
+
+
+&lt;h3&gt;Exercise 3.2 SETTING UP THE SITE CATALOG AND THE TRANSFORMATION&lt;/h3&gt;
+&lt;p&gt;In this exercise you will setup your Site Catalog and the
+Transformation Catalog.&lt;/p&gt;
+
+&lt;p&gt;The transformation catalog maintains information about where the
+application code resides on the grid. In our case, it contains the
+locations where the QuarkCode is installed on the various Teragrid
+sites.&lt;/p&gt;
+
+&lt;p&gt; The site catalog contains information about the layout of your
+grid where you want to run your workflows. In our case it contains
+site information about the various Teragrid sites. For each site
+information like workdirectories, jobmanagers to use, gridftp servers
+to use and other site wide information like environment variables to
+be set is maintained.
+&lt;/p&gt;
+
+&lt;p&gt;
+&lt;ul&gt;
+&lt;li&gt;You can use the &lt;code&gt;vds-get-sites&lt;/code&gt; command to generate a
+site catalog and a transformation catalog to be used.
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;vds-get-sites -t $HOME/my.tc.data -s $HOME/my.sites.xml --default-rls rlsn://smarty.isi.edu&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# using default transformation mappings.&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# assembling information for grid &quot;tg&quot;.&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# using URI dbi:SQLite2:dbname=/nfs/software/vds/default/contrib/OurGrids/tg.db&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# processing isi-skynet, 93 CPUs&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# processing tg_ncsa, 10 CPUs&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# processing tg_uc, 10 CPUs&lt;/span&gt;
+
+&lt;span class=&quot;out&quot;&gt;# processing tg_sdsc, 10 CPUs&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# adding myself as local site&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# dumping catalogs...&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# dumping SC into my.sites.xml...&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# backup /nfs/home/vdsuser-4/tc.data&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# -&gt; /nfs/home/vdsuser-4/tc.data.0&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;# dumping TC into /nfs/home/vdsuser-4/tc.data..&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;/p&gt;
+
+&lt;p&gt;The instructors have provided:
+ &lt;ul&gt; &lt;li&gt; A ready site catalog(sites.xml) in the
+ $HOME directory.&lt;/li&gt; 
+ &lt;li&gt; A ready transformation catalog (tc.data) in the
+ $HOME directory.
+ &lt;/ul&gt;
+&lt;/p&gt;
+     
+&lt;p&gt;You can look at them to have an idea as to what they look like. But
+for now we will move ahead and plan your workflow through Pegasus. We
+need to get running on the GRID fast :). Time is short!!
+
+&lt;/p&gt;
+
+
+&lt;h3&gt;Exercise 3.3 Running &lt;code&gt;vds-plan&lt;/code&gt; to generate concrete workflow (condor
+submit files) and &lt;code&gt;vds-run&lt;/code&gt; to submit the workflow to a grid resource&lt;/h3&gt; 
+
+&lt;p&gt;In this exercise we are going to run &lt;code&gt;vds-plan&lt;/code&gt;to generate a
+concrete workflow from the abstract workflow (compound.dax). The
+concrete workflow generated, are condor submit files that are
+submitted to remote grid resources using Condor DAGMan and
+CondorG. Then we will submit the workflow to the grid using
+&lt;code&gt;vds-run&lt;/code&gt; 
+&lt;/p&gt;
+
+&lt;p&gt;Firstly, we are slightly going to change the compound.dax that was
+generated in earlier steps. The changes which we will be doing are to
+ensure that each of yours DAX refers to unique lfns. This way you
+cannot clobber your fellow students runs.&lt;/p&gt;
+
+&lt;p&gt;The instructors have provided:
+ &lt;ul&gt; &lt;li&gt; A dax (compound.dax) in the $HOME/PEGASUS
+ directory. This dax has filenames with starting with your userid.
+     &lt;/li&gt; 
+ &lt;/ul&gt;
+&lt;/p&gt;
+
+     
+&lt;p&gt;You will need to write some things yourself, by following the instructions
+below:
+&lt;ul&gt;
+&lt;!--
+&lt;li&gt;Copy the template file (compound.dax.template) to another file
+(compound.dax) in the PEGASUS subdirectory.&lt;/li&gt; 
+&lt;li&gt;Do @USER@ substitution on the copied file. Replace @USER@ with your
+username of the form vdsuser-X for e.g vdsuser-4&lt;/li&gt;
+--&gt;
+&lt;li&gt;Run vds-plan to generate the condor submit files out of the dax.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Instructions:
+&lt;ul&gt;
+&lt;!--
+  &lt;li&gt;copy the template file. Run the perl command ( &lt;b&gt;perl -pi -e
+  &#39;s/\@USER\@/XXX/g&#39; compound.dax &lt;/b&gt;) substituting XXX  with your
+  username.&lt;br /&gt; 
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cp compound.dax.template compound.dax&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;perl -pi -e &#39;s/\@USER\@/vdsuser-4/g&#39; compound.dax&lt;/span&gt;
+&lt;/pre&gt;
+
+  &lt;/li&gt;
+
+--&gt;
+  &lt;li&gt;Let us see what the dax looks like.
+
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;more compound.dax&lt;/span&gt;
+
+&lt;/pre&gt;
+
+&lt;/li&gt;
+
+  &lt;li&gt; Let us run vds-plan on the compound.dax. Now with slightly more
+  options than before. You need to replace @GRIDSITE@ with any one of the
+  following &lt;br/&gt;
+            isi_skynet&lt;br/&gt;
+       sdsc_tg&lt;br/&gt;
+       uc_tg&lt;br/&gt;
+
+  &lt;pre class=&quot;transcript&quot;&gt;
+  &lt;span class=&quot;out&quot;&gt;$&lt;/span&gt;vds-plan --pegasus  --base ./dags --option pools=@GRIDSITE@ --option output=local --option force compound.dax &lt;/span&gt;
+  &lt;/pre&gt;
+
+  &lt;p&gt;
+  The above command says that we need to plan the compound.dax using
+  pegasus on the grid site @GRIDSITE@. The output data needs to be
+  transferred back to the local submit host (i.e
+  skynet-login.isi.edu). In addition we want the condor submit files
+  to be generated in a directory structure whose base is ./dags/grid.
+  &lt;/p&gt;
+
+ 
+  Here is the output of vds-plan running on site isi_skynet.
+  &lt;pre class=&quot;transcript&quot;&gt;
+
+  &lt;span class=&quot;out&quot;&gt;$&lt;/span&gt;vds-plan --pegasus  --base ./dags --option pools=isi_skynet --option output=local --option force  compound.dax &lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;# Warning: relative base directory ./dags&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;2006.06.09 20:42:50.707 PDT: [INFO] Parsing of the DAX&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;2006.06.09 20:42:51.217 PDT: [INFO] Parsing of the DAX (completed)&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;2006.06.09 20:42:51.238 PDT: [INFO] Parsing the site catalog&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;2006.06.09 20:42:51.316 PDT: [INFO] Parsing the site catalog (completed)&lt;/span&gt;
+
+  &lt;span class=&quot;out&quot;&gt;2006.06.09 20:42:51.687 PDT: [INFO] Querying Replica Catalog&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;2006.06.09 20:42:51.697 PDT: [INFO] Querying Replica Catalog (completed)&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;2006.06.09 20:42:51.697 PDT: [INFO] Doing site  selection&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;[..]&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;2006.06.09 20:42:51.7I have concretized your  abstract workflow. The workflow has been entered&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;into the workflow database with a state of
+  &quot;planned&quot;. The next step is to start or execute your workflow. The
+  invocation required is &lt;/span&gt;
+
+  &lt;span class=&quot;out&quot;&gt;vds-run  /nfs/home/vdsuser-4/tutorial/master/PEGASUS/dags/ivdgl1/QuarkCode/run0001&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;
+  &lt;/pre&gt;
+
+  &lt;/li&gt;
+
+  &lt;li&gt; Now run vds-run as mentioned in the output of vds-plan on the compound.dax.
+
+  &lt;pre class=&quot;transcript&quot;&gt;
+  &lt;span class=&quot;out&quot;&gt;$&lt;/span&gt;vds-run /nfs/home/@USER@/tutorial/master/PEGASUS/dags/ivdgl1/QuarkCode/runXXX&lt;/span&gt;
+
+  &lt;span class=&quot;out&quot;&gt;[..]&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;# parsing properties in /nfs/home/vdsuser-4/.wfrc...&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;# slurped /nfs/home/vdsuser-4/tutorial/master/PEGASUS/dags/grid/ivdgl1/QuarkCode/run0001/braindump.txt&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;I have started your workflow, committed it to DAGMan, and updated its&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;state in the work database. A separate daemon was started to collect&lt;/span&gt;
+
+  &lt;span class=&quot;out&quot;&gt;information about the progress of the workflow. The job state will soon&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;be visible. Your workflow runs in base directory&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;&lt;/span&gt;
+  &lt;span class=&quot;out&quot;&gt;cd /nfs/home/vdsuser-4/tutorial/master/PEGASUS/dags/ivdgl1/QuarkCode/run0001&lt;/span&gt;
+  &lt;/pre&gt;
+
+  The above command submits the workflow to Condor
+  DAGMAN/CondorG. After submittting it starts a monitoring daemon
+  tailstatd that parses the condor log files to update the status of
+  the jobs and push it in a work database.
+  &lt;/li&gt;
+
+&lt;/ul&gt;
+
+
+ &lt;h3&gt;Exercise 3.4 Tracking the progress of the workflow and debugging
+ the workflows.&lt;/h3&gt;
+
+&lt;p&gt;In this exercise we are going to list ways to track your workflow,
+and give some debugging hints when something goes wrong.
+&lt;/p&gt;
+
+&lt;p&gt;We will change into the directory, that was mentioned by the
+vds-run command.&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cd /nfs/home/@USER@/tutorial/master/PEGASUS/dags/ivdgl1/QuarkCode/run000X&lt;/span&gt;
+
+&lt;/pre&gt;
+
+&lt;p&gt;In this directory you will see a whole lot of files. That should
+not scare you. Unless things go wrong, you need to look at just a very
+few number of files to track the progress of the workflow&lt;/p&gt;
+
+&lt;p&gt;At the first go you should be concerned with only one file&lt;/p&gt;
+&lt;ul&gt;
+ &lt;li&gt;
+ jobstate.log
+ &lt;/p&gt; This is the output file of the monitoring daemon that is parsing
+ all the condor log files to determine the status of the
+ jobs. It logs the events seen by Condor into a more readable form for
+ us.
+ &lt;/p&gt;
+
+ &lt;pre class=&quot;transcript&quot;&gt;
+
+ &lt;span class=&quot;out&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;in&quot;&gt;more jobstate.log&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911774 INTERNAL *** TAILSTATD_STARTED ***&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911773 INTERNAL *** DAGMAN_STARTED ***&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911773 QuarkCode_0_pegasus_concat UN_READY - - -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911773 Plot_ID000008 UN_READY - - -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911773 Lifetime_ID000005 UN_READY - - -&lt;/span&gt;
+
+ &lt;span class=&quot;out&quot;&gt;1149911773 WireDelay_ID000002 UN_READY - - -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911773 rc_tx_WireDelay_ID000002_0 UN_READY - - -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;[..]&lt;/span&gt;
+ &lt;/pre&gt;
+
+ &lt;p&gt;
+ In the starting of the jobstate.log, when the workflow has just
+ started running you will see a lot of entries with status
+ UN_READY. That designates that DAGMan has just parsed in the .dag
+ file and has not started working on any job as yet. Initially all the
+ jobs in the workflow are listed as UN_READY
+ &lt;/p&gt;
+
+
+ &lt;p&gt; After sometime you will see entries in jobstate.log, that shows a
+ job is being executed etc &lt;/p&gt;
+
+ &lt;pre class=&quot;transcript&quot;&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911774 QuarkCode_0_isi_skynet_cdir SUBMIT 264.0 isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911789 QuarkCode_0_isi_skynet_cdir EXECUTE 264.0 isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911789 QuarkCode_0_isi_skynet_cdir GLOBUS_SUBMIT 264.0 isi_skynet -&lt;/span&gt;
+
+ &lt;span class=&quot;out&quot;&gt;1149911789 QuarkCode_0_isi_skynet_cdir GRID_SUBMIT 264.0 isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911794 QuarkCode_0_isi_skynet_cdir JOB_TERMINATED 264.0 isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911794 QuarkCode_0_isi_skynet_cdir POST_SCRIPT_STARTED - isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911799 QuarkCode_0_isi_skynet_cdir POST_SCRIPT_TERMINATED 264.0 isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149911799 QuarkCode_0_isi_skynet_cdir POST_SCRIPT_SUCCESS - isi_skynet -&lt;/span&gt;
+ &lt;/pre&gt;
+
+ &lt;p&gt;
+ The above shows the create dir job being submitted and then executed
+ on the grid. In addition it lists that job is being run on the grid
+ site &lt;code&gt;isi_skynet&lt;/code&gt; The various states of the job while it
+ goes through submission to execution to postprocessing are in UPPERCASE.
+ &lt;p&gt;
+
+ &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;br/&gt;
+
+&lt;p&gt; To see which job of yours is being executed, you can also use
+condor_q. By default condor_q list all the jobs on the submit
+host. However, we are just interested in our own respective jobs. So
+we will use some classad magic to narrow the results.&lt;/p&gt;
+
+&lt;p&gt; Run command &lt;b&gt; condor_q -const &#39;(Owner == &quot;@USUER@&quot;)&#39;&lt;/b&gt; with
+@USER@ replaced by the username.
+
+ &lt;pre class=&quot;transcript&quot;&gt;
+ &lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; condor_q -const &#39;(Owner == &quot;vdsuser-4&quot;)&#39;&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;252.0   vdsuser-4       6/9  17:04   0+00:11:21 R  0   9.8  condor_dagman -f -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;260.0   vdsuser-4       6/9  17:15   0+00:00:00 I  0   9.8  kickstart -n Quark&lt;/span&gt;
+
+ &lt;/pre&gt;
+
+ &lt;p&gt; The above indicates that currently we have two jobs running&lt;/p&gt;
+ &lt;br/&gt;
+
+ &lt;p&gt;
+ Keep a lookout on the condor_q to track whether a workflow is running
+ or not. If you do not see any of your job in the condor_q for
+ sometime (say 30 seconds), we know the workflow has finished. We need
+ to wait, as there might be delay in CondorDAGMAN releasing the next
+ job into the queue after a job has finished successfully.&lt;/p&gt;
+
+
+ &lt;p&gt;If condor_q is empty, then either your workflow has &lt;/br&gt;
+     - successfully completed&lt;/br&gt;
+     - stopped midway due to non recoverable error&lt;/br&gt;
+ &lt;/p&gt;
+
+
+ &lt;ul&gt;
+ &lt;li&gt; Successfully Completed
+ &lt;p&gt; Let us again look at the jobstate.log. This time we need to look
+ at the last few lines of jobstate.log&lt;/p&gt;
+
+ &lt;pre class=&quot;transcript&quot;&gt;
+ &lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; tail jobstate.log&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149894263 new_rc_tx_Plot_ID000008_0 POST_SCRIPT_TERMINATED 248.0 local -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149894263 new_rc_tx_Plot_ID000008_0 POST_SCRIPT_SUCCESS - local -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149894268 new_rc_register_Plot_ID000008 SUBMIT 249.0 local -&lt;/span&gt;
+
+ &lt;span class=&quot;out&quot;&gt;1149894273 new_rc_register_Plot_ID000008 EXECUTE 249.0 local -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149894273 new_rc_register_Plot_ID000008 JOB_TERMINATED 249.0 local -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149894273 INTERNAL *** DAGMAN_FINISHED ***&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149894274 INTERNAL *** TAILSTATD_FINISHED 0 ***&lt;/span&gt;
+ &lt;/pre&gt;
+
+ &lt;p&gt;
+
+ Looking at the last two lines we see that DAGMAN finshed, and
+ tailstatd finished successfully with a status 0. This means workflow
+ ran successfully. Congratulations you ran your workflow on the grid successfully.
+ &lt;/p&gt;
+
+ &lt;p&gt;
+ The output plot generated by the workflow is &lt;code&gt;.png file&lt;/code&gt; that resides
+ in the directory &lt;b&gt;/nfs/storage01/trainXX/vdsuser-Y_plot.png&lt;/b&gt; where
+ XX is the 2 digit version of Y.  for e.g if user is vdsuser-4 then
+ the path will be /nfs/storage01/train04/vdsuser-4_plot.png
+ &lt;/p&gt;
+ &lt;p&gt;To view the plot, you can copy &lt;code&gt;vdsuser-Y_plot.png&lt;/code&gt; to your
+skynet webspace, and view it in your web browser:&lt;/p&gt;
+
+&lt;pre class=&quot;transcript&quot;&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cp /nfs/storage01/train04/vdsuser-4_plot.png ~/public_html/newplot.png&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; 
+&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Point your web browser to:
+http://skynet-login.isi.edu/~@USER@/newplot.png where @USER@ is your
+userid&lt;/p&gt; 
+&lt;/li&gt;
+
+&lt;li&gt; Unsuccessfully Completed (Workflow execution stopped midway)
+ &lt;p&gt; Let us again look at the jobstate.log. Again we need to look
+ at the last few lines of jobstate.log&lt;/p&gt;
+
+ &lt;pre class=&quot;transcript&quot;&gt;
+ &lt;span class=&quot;out&quot;&gt;$&lt;/span&gt; tail jobstate.log&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149912756 Frequency_ID000006 SUBMIT 277.0 isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149912766 Frequency_ID000006 GLOBUS_SUBMIT 277.0 isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149912766 Frequency_ID000006 GRID_SUBMIT 277.0 isi_skynet -&lt;/span&gt;
+
+ &lt;span class=&quot;out&quot;&gt;1149912861 Frequency_ID000006 EXECUTE 277.0 isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149912901 Frequency_ID000006 JOB_TERMINATED 277.0 isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149912901 Frequency_ID000006 POST_SCRIPT_STARTED - isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149912906 Frequency_ID000006 POST_SCRIPT_TERMINATED 277.0 isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149912906 Frequency_ID000006 POST_SCRIPT_FAILURE 1 isi_skynet -&lt;/span&gt;
+ &lt;span class=&quot;out&quot;&gt;1149912906 INTERNAL *** DAGMAN_FINISHED ***&lt;/span&gt;
+
+ &lt;span class=&quot;out&quot;&gt;1149912911 INTERNAL *** TAILSTATD_FINISHED 1 ***&lt;/span&gt;
+ &lt;/pre&gt;
+
+  &lt;p&gt;
+ Looking at the last two lines we see that DAGMAN finshed, and
+ tailstatd finished unsuccessfully with a status 1.
+ &lt;/p&gt;
+
+ &lt;p&gt;
+ We can easily determine which job failed. It is Frequency_ID000006 in
+ this case.&lt;br/&gt;
+
+ To determine the reason for failure we need to look at
+ it&#39;s kickstart output file which is $JOBNAME.out i.e
+ &lt;a href=&quot;http://skynet-login.isi.edu/~vdsuser-4/Frequency_ID000006.out&quot;&gt;Frequency_ID000006.out&lt;/a&gt;
+ &lt;br/&gt;
+ Looking at it&#39;s output we see it failed because of a perl library not
+ installed on isi_skynet!.
+ &lt;/p&gt;
+
+ &lt;p&gt;
+  We correct that and submit the workflow again.
+  &lt;/p&gt;
+
+ &lt;/li&gt;
+
+ &lt;/ul&gt;
+
+&lt;pre&gt;
+The End
+&lt;/pre&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+-- Main.MichaelWilde - 15 Jun 2006
+

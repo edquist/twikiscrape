@@ -1,0 +1,265 @@
+---+ Glidein for the users - Hands-on Session, Wednesday July 21st, 2010 
+
+This session will give you hands-on experience in using the glideinWMS as a user.
+
+---++ Local setup
+
+As with all the other hands-on exercises, we will be using *submit03.ncc.unesp.br* to submit and monitor our jobs.
+
+However, we will use *a different Condor instance running on that same machine*.
+The reason for having a different instance is due to the security requirements
+of having a Condor pool spread across the WAN.
+Interested students can talk to me to get a more detailed information,
+for all the others, you just need to make sure you point to the right Condor installation.
+
+To use the proper Condor instance, please run:
+&lt;pre class=&quot;screen&quot;&gt;
+$ source /opt/glidecondor/condor.sh 
+&lt;/pre&gt;
+
+At any given point, you can check you are using the right one by using:
+&lt;pre class=&quot;screen&quot;&gt;
+$ which condor_submit
+/opt/glidecondor/bin/condor_submit
+$ echo $CONDOR_CONFIG
+/opt/glidecondor/etc/condor_config
+&lt;/pre&gt;
+
+---++ The work environment
+
+As mentioned in the lecture, the glideinWMS environment looks almost exactly like a regular, local Condor pool.
+
+It just does not have any resources attached unless you ask for them;
+try
+&lt;pre class=&quot;screen&quot;&gt;
+condor_status
+&lt;/pre&gt;
+
+The glideinWMS will submit glideins on your behalf when you will need them.
+But you may need to tell it what are your needs (but more on this later on).
+
+---++ Generic jobs
+
+Let&#39;s start with a very generic job;&lt;br&gt;
+a variation of the basic Condor jobs Alain introduced you to.
+
+Let us [[http://www.stealthcopter.com/blog/2009/09/python-calculating-pi-using-random-numbers/][calculate Pi using the monte carlo method]];&lt;br&gt;
+create a file called *pi.py* containing:
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/env python
+from random import *  
+from math import sqrt,pi  
+from sys import argv
+inside=0  
+n=int(argv[1])
+for i in range(0,n):  
+    x=random()  
+    y=random()  
+    if sqrt(x*x+y*y)&lt;=1:  
+        inside+=1  
+pi_prime=4.0*inside/n  
+print pi_prime, pi-pi_prime
+&lt;/pre&gt;
+and make it executable.
+
+Try to run it:
+&lt;pre class=&quot;screen&quot;&gt;
+./pi.py 1000000
+&lt;/pre&gt;
+The first number is the approximation of pi, while the second one is how far from the real Pi it is.
+
+Repeat a couple of times.
+As you can see, the result changes every time.
+
+Now, lets submit it as a Condor job;
+or better to say, as a bunch of Condor jobs.
+
+These jobs should run everywhere, so no need to specify any requirement:
+&lt;pre class=&quot;file&quot;&gt;
+Universe   = vanilla
+Executable = pi.py
+Arguments  = 10000000
+Requirements = (Arch=!=&quot;&quot;)
+Log        = job.$(Cluster).log
+Output   = job.$(Cluster).$(Process).out
+Error      = job.$(Cluster).$(Process).err
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+Queue 100
+&lt;/pre&gt;
+
+Submit the above.
+
+Now sit back and relax... Condor+glideinWMS will take care of everything else... 
+after a few minutes we just look at the outputs and see the different results.
+
+So run &lt;tt&gt;condor_q&lt;/tt&gt; and &lt;tt&gt;condor_status&lt;/tt&gt; from time to time, until the jobs are done.
+
+What do you see?
+
+---++ Understanding where jobs are running
+
+While your jobs can run everywhere, you may still want to know where they actually ran;
+either becuase you want to know who to thank for the CPUs you were consuming,
+or to debug problems you had with your program (unlikely in this case... but one never knows).
+
+So let us add a couple additional attributes to the submit file:
+&lt;pre class=&quot;file&quot;&gt;
+Universe   = vanilla
+Executable = pi.py
+Arguments  = 50000000
+Requirements = (Arch=!=&quot;&quot;)
+Log        = job.$(Cluster).log
+Output   = job.$(Cluster).$(Process).out
+Error      = job.$(Cluster).$(Process).err
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
++JOB_Site = &quot;$$(GLIDEIN_Site:Unknown)&quot;
++JOB_Gatekeeper = &quot;$$(GLIDEIN_Gatekeeper:Unknown)&quot;
+Queue 100
+&lt;/pre&gt;
+
+Now submit the job cluster.
+
+Now monitor the running jobs with
+&lt;pre class=&quot;screen&quot;&gt;
+condor_q `id -un` -const &#39;JobStatus==2&#39; -format &#39;%d.&#39; ClusterId -format &#39;%d &#39; ProcId -format &#39;%s\n&#39; MATCH_EXP_JOB_Site
+&lt;/pre&gt;
+
+What do you see?
+
+For completed jobs, you can use
+&lt;pre class=&quot;screen&quot;&gt;
+condor_history JOB_ID -format &#39;%d.&#39; ClusterId -format &#39;%d &#39; ProcId -format &#39;%s\n&#39; MATCH_EXP_JOB_Site
+&lt;/pre&gt;
+
+Similarly, you can monitor where the available resources are by using:
+&lt;pre class=&quot;screen&quot;&gt;
+condor_status -format &quot;%-40s\t&quot; Name -format &quot;%s\t&quot; GLIDEIN_Site -format &quot;%s\n&quot; State
+&lt;/pre&gt;
+
+---++ BLAST jobs
+
+Let us now run a set of BLAST jobs, similarly the way you did yesterday. Prepared files can be found under /opt/workshop. Copy the directory to your home directory:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ cp -r /opt/workshop/glideinwms-exercises ~/
+&lt;/pre&gt;
+
+You should now have a directory under your home directory called &quot;glideinwms-exercises&quot;
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ cd ~/glideinwms-exercises/blast/
+$ ls
+&lt;/pre&gt;
+
+
+BLAST jobs will however not run everywhere... only a subset of Grid site have BLAST installed.
+
+So we need to tell the glideinWMS backend we want to run only on sites with BLAST installed.
+In this particular glideinWMS installation, we do this by adding this attribute (already in the blast.submit file):
+
+&lt;pre class=&quot;file&quot;&gt;
++NeedBLAST=True
+&lt;/pre&gt;
+
+Moreover, we have to tell the Negotiator that we want the jobs only to run on sites that support BLAST;
+while we may not be requesting glideins on sites without BLAST, someone else might, and we do not want to run there.
+
+The glideins in this setup will be publishing the HasBLAST attribute:
+
+&lt;pre class=&quot;file&quot;&gt;
+Requirements=(Arch=!=&quot;&quot;) &amp;&amp; (HasBLAST=?=True)
+&lt;/pre&gt;
+
+Submit the jobs with condor_submit.
+
+Note that the blast.submit and blast-wrapper are now again simple (unlike the OSGMM ones).
+
+Did the jobs run slower or faster than the Condor-G / OSGMM jobs?
+
+
+---++ Mixing them up
+
+Let&#39;s now consider what happens when you have jobs with different requirements.
+
+Submit a few clusters of BLAST jobs, and a few of the Pi jobs, possibly intermixing them.
+
+In which order did the jobs run?
+
+
+---++ NASA IPAC Montage Example
+
+This is a real world workflow used to combine images from for example the Hubble telescope to a single image. The workflow takes in the inputs for a specified area, 0.5 degrees by 0.5 degrees in this case, reprojects the images, checks how they overlap, runs a background model to make the images match up, applies the background diffs, and then tiles the images together.
+
+The workflow is generated by the [[http://pegasus.isi.edu][Pegasus]] workflow system. Input is an abstract description of the workflow, a couple of catalogs describing files and site information. Pegasus then maps the workflow to the resource and generates the DAG and all the needed submit files.
+
+This example is using a ./submit script to wrap the Pegasus submit command. To kick of a workflow, run:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ cd ~/glideinwms-exercises/montage
+./submit
+&lt;/pre&gt;
+
+A timestamped work directory has been generated, and inside of that, there is another directory starting with your username. Cd in to that directory:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ cd 2010-12-08_003519/
+$ cd rynge.2010-12-08_003519
+&lt;/pre&gt;
+
+Let&#39;s see how many submit files we have:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ ls *.sub | wc -l
+300
+&lt;/pre&gt;
+
+Just like a normal DAG, you can use *condor_q -dag* and *condor_status* to monitor your jobs. You can also use *pegasus-analyze* from within that work directory, and it will give you some information on for example failed jobs:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ pegasus-analyze
+
+************************************Summary*************************************
+
+ Total jobs         :    299 (100.00%)
+ # jobs succeeded   :      0 (0.00%)
+ # jobs failed      :      0 (0.00%)
+ # jobs unsubmitted :    298 (99.67%)
+ # jobs unknown     :      1 (0.33%)
+
+*****************************Unknown jobs&#39; details******************************
+
+=======================create_dir_montage_0_GridUNESP_SP========================
+
+ last state: SUBMIT
+       site: GridUNESP_SP
+submit file: /home/rynge/exercises-tests/glideinwms-exercises/montage/2010-12-08_003840/rynge.2010-12-08_003840/create_dir_montage_0_GridUNESP_SP.sub
+output file: /home/rynge/exercises-tests/glideinwms-exercises/montage/2010-12-08_003840/rynge.2010-12-08_003840/create_dir_montage_0_GridUNESP_SP.out
+ error file: /home/rynge/exercises-tests/glideinwms-exercises/montage/2010-12-08_003840/rynge.2010-12-08_003840/create_dir_montage_0_GridUNESP_SP.err
+
+---------------------create_dir_montage_0_GridUNESP_SP.out----------------------
+
+
+---------------------create_dir_montage_0_GridUNESP_SP.err----------------------
+
+
+**************************************Done**************************************
+
+&lt;/pre&gt;
+
+
+Unknown in this case is a good thing. It just means that Pegasus does not know much about the job yet as it hasn&#39;t started.
+
+Take a look at the *montage-0.dag*. 
+
+Once the workflow is done, you should have a couple of FITS files and a JPG in the directory one level up.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ cd ../
+$ ls -lh *.jpg *.fits
+&lt;/pre&gt;
+
+Open the JPG in an image viewer and take a look at the result!
+
+-- Main.MatsRynge - 03 Dec 2010

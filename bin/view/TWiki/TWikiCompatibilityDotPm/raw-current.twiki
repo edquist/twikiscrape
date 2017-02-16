@@ -1,0 +1,100 @@
+---+ Package =TWiki::Compatibility=
+
+Support for compatibility with old TWiki versions. Packaged
+separately because 99.999999% of the time this won&#39;t be needed.
+
+=end
+
+sub _upgradeCategoryItem {
+    my ( $catitems, $ctext ) = @_;
+    my $catname = &#39;&#39;;
+    my $scatname = &#39;&#39;;
+    my $catmodifier = &#39;&#39;;
+    my $catvalue = &#39;&#39;;
+    my @cmd = split( /\|/, $catitems );
+    my $src = &#39;&#39;;
+    my $len = @cmd;
+    if( $len &lt; &#39;2&#39; ) {
+        # FIXME
+        return ( $catname, $catmodifier, $catvalue )
+    }
+    my $svalue = &#39;&#39;;
+
+    my $i;
+    my $itemsPerLine;
+
+    # check for CategoryName=CategoryValue parameter
+    my $paramCmd = &#39;&#39;;
+    my $cvalue = &#39;&#39;; # was$query-&gt;param( $cmd[1] );
+    if( $cvalue ) {
+        $src = &quot;&lt;!----&gt;$cvalue&lt;!----&gt;&quot;;
+    } elsif( $ctext ) {
+        foreach( split( /\r?\n/, $ctext ) ) {
+            if( /$cmd[1]/ ) {
+                $src = $_;
+                last;
+            }
+        }
+    }
+
+    if( $cmd[0] eq &#39;select&#39; || $cmd[0] eq &#39;radio&#39;) {
+        $catname = $cmd[1];
+        $scatname = $catname;
+        #$scatname =~ s/[^a-zA-Z0-9]//g;
+        my $size = $cmd[2];
+        for( $i = 3; $i &lt; $len; $i++ ) {
+            my $value = $cmd[$i];
+            $svalue = $value;
+            if( $src =~ /$value/ ) {
+               $catvalue = $svalue;
+            }
+        }
+
+    } elsif( $cmd[0] eq &#39;checkbox&#39; ) {
+        $catname = $cmd[1];
+        $scatname = $catname;
+        #$scatname =~ s/[^a-zA-Z0-9]//g;
+        if( $cmd[2] eq &#39;true&#39; || $cmd[2] eq &#39;1&#39; ) {
+            $i = $len - 4;
+            $catmodifier = 1;
+        }
+        $itemsPerLine = $cmd[3];
+        for( $i = 4; $i &lt; $len; $i++ ) {
+            my $value = $cmd[$i];
+            $svalue = $value;
+            # I18N: FIXME - need to look at this, but since it&#39;s upgrading
+            # old forms that probably didn&#39;t use I18N, it&#39;s not a high
+            # priority.
+            if( $src =~ /$value[^a-zA-Z0-9\.]/ ) {
+                $catvalue .= &quot;, &quot; if( $catvalue );
+                $catvalue .= $svalue;
+            }
+        }
+
+    } elsif( $cmd[0] eq &#39;text&#39; ) {
+        $catname = $cmd[1];
+        $scatname = $catname;
+        #$scatname =~ s/[^a-zA-Z0-9]//g;
+        $src =~ /&lt;!----&gt;(.*)&lt;!----&gt;/;
+        if( $1 ) {
+            $src = $1;
+        } else {
+            $src = &#39;&#39;;
+        }
+        $catvalue = $src;
+    }
+
+    return ( $catname, $catmodifier, $catvalue )
+}
+
+
+
+%TOC%
+---++ StaticMethod *upgradeCategoryTable* &lt;tt&gt;($session,$web,$topic,$meta,$text) -&gt; $text&lt;/tt&gt;
+
+Upgrade old style category table
+
+May throw TWiki::OopsException
+
+
+

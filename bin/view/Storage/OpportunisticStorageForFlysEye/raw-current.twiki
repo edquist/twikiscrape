@@ -1,0 +1,127 @@
+---+!! *&lt;noop&gt;Opportunistic Storage For Fly&#39;s Eye*
+%TOC%
+
+---+++++ Purpose
+The Fly&#39;s Eye experiment is dealing with search for Highly Energetic Dispersed Radio Transients using the Allen Telescope Array. The collected  data is stored in 36 GB (58 minute) .pcap ethernet capture files on tapes on a remote high performance storage system. Pointers to data files are stored in a !MySQL database.
+
+The Fly&#39;s Eye representatives have asked for 20TB of OSG storage for 1 year in order to do event processing. We are trying to come up with &quot;formal&quot; request procedure within OSG to iron out a workable procedure going forward. We have asked Fly&#39;s Eye representative the following answers in order to better understand their needs and try to help them with workflow setup for OSG.
+
+---+++++ The Use Case
+---++++++ Questions and Answers
+
+&lt;b&gt;&lt;i&gt;How much space total do you need for your data?&lt;/i&gt;&lt;/b&gt;
+ 
+20TB of data in total
+
+&lt;b&gt;&lt;i&gt;For how long do you want to keep this data in storage?&lt;/i&gt;&lt;/b&gt;
+
+For a year
+
+&lt;b&gt;&lt;i&gt;How much data is read by individual analysis job?&lt;/i&gt;&lt;/b&gt;
+
+An individual  analysis job requires about 36GB. 
+
+&lt;b&gt;&lt;i&gt;How the input data for an individual job subdivided into individual files?&lt;/i&gt;&lt;/b&gt; 
+
+Our 36 GB files are subdivided into about 250 individual files for analysis,usually processed serially (but these could all be processed in parallel).
+
+&lt;b&gt;&lt;i&gt;How many files of what average/ minimum /maximum size make up a 36GB chunk? Is there any required directory hierarchy involved?&lt;/i&gt;&lt;/b&gt; 
+
+ Each file bloats in size by a factor of 4 during subdivision (8 bit  int -&gt;32 bit float).  There isn&#39;t any required directory hierarchy, per say.
+
+&lt;b&gt;&lt;i&gt;Are the input file(s) read generally sequentially and constantly  throughout the job or is the access more &quot;bursty&quot; or random?&lt;/i&gt;&lt;/b&gt;
+
+Bursty.  Usually we take a 36 GB file, extract ~50 individual files (first 10 minutes of one hour of data), process serially, extract 50 more files (next 10 minutes), process serially, etc...  If we had enough scratch,  it would be more efficient to just extract all 250 files at once.
+
+&lt;b&gt;&lt;i&gt;If necessary, could the 20TB be spread across multiple sites (with suitable adaptation to the data marshaling for a job)? Do you have anything  like a data catalog?&lt;/i&gt;&lt;/b&gt;
+
+Yes, we have a data catalog.  The 20 TB could certainly be spread across multiple sites, although it would be most efficient programming-wise if we had a uniform method of access.
+
+&lt;b&gt;&lt;i&gt;How long it takes to run each job?&lt;/i&gt;&lt;/b&gt;
+
+The wall time for the jobs is very consistent,  but will of course depend on the compute power of the node.  24 hours on a fast  node, 48 on a slow one.
+
+&lt;b&gt;&lt;i&gt;What is the limiting factor here: I/O or CPU capability? Can your jobs be split easily into smaller components or is this already the smallest division possible?&lt;/i&gt;&lt;/b&gt;
+
+It&#39;s most convenient for us to split on file boundaries (36 GB files). The jobs themselves are embarrassingly parallel, and could be subdivided ad nauseum.
+
+&lt;b&gt;&lt;i&gt;What kind of output data do you produce, and how much per job?&lt;/i&gt;&lt;/b&gt;
+
+Approximately 1GB of event data per job, formatted as mysql insert queries.
+
+&lt;b&gt;&lt;i&gt;To where would you ship the output data for interactive access, or would we need to make arrangements?&lt;/i&gt;&lt;/b&gt;
+
+We have facilities (mysql servers w/ sufficient disk space) to ship output data.
+
+&lt;b&gt;&lt;i&gt;What is your projected timescale for this operation? Are there  any &quot;drop dead&quot; deadlines?&lt;/i&gt;&lt;/b&gt;
+
+No drop-dead deadlines.
+
+&lt;b&gt;&lt;i&gt;Do you require access to the input data on OSG beyond the initial reprocessing exercise?&lt;/i&gt;&lt;/b&gt;
+
+Yes, it would be most useful to us if we had a reasonably static place to keep our data.  Storage of the 20 TB, in an accessible location, is our primary issue.  We understand that disk space isn&#39;t yours to promise.
+
+---+++++ Initial Participating Sites
+
+These sites have agreed to support Fly&#39;s Eye so far:
+
+   * Omaha, Nebraska - 5TB of storage space
+   * Lincoln, Nebraska - 5TB of storage space
+
+
+-- Main.TanyaLevshina - 30 Dec 2009
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = TanyaLevshina 
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = VOManager
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Planning
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %NO%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %NO%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = 
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %NO%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = 
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %NO%
+############################################################################################################
+--&gt;
+

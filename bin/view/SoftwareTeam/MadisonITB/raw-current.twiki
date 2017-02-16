@@ -1,0 +1,240 @@
+&lt;style type=&quot;text/css&quot;&gt;pre em { color: red; font-weight: normal; font-style: normal; }&lt;/style&gt;
+
+---+ Software/Release Team ITB Site Design
+
+%TOC{depth=&quot;2&quot;}%
+
+---++ Madison ITB Machines
+
+All physical hosts are located in 3370A in the VDT rack.
+
+| *Host* | *Purpose* | *OS* | *Arch* | *CPU Model* | *CPUs* | *RAM* | *Storage* | *Notes* |
+| %RED%itb-data1%ENDCOLOR% | worker node | SL 6.3 | x86 64-bit | Celeron G530 2.4Ghz | 2 / 2 | 8 GB | 750 GB &amp;times; 2 (SW RAID 1) | planned as HDFS data node |
+| %RED%itb-data2%ENDCOLOR% | worker node | SL 6.3 | x86 64-bit | Celeron G530 2.4Ghz | 2 / 2 | 8 GB | 750 GB &amp;times; 2 (SW RAID 1) | planned as HDFS data node |
+| %RED%itb-data3%ENDCOLOR% | worker node | SL 5.8 | x86 64-bit | Celeron G530 2.4Ghz | 2 / 2 | 8 GB | 750 GB &amp;times; 2 (SW RAID 0) | planned as HDFS data node |
+| %RED%itb-data4%ENDCOLOR% | worker node | SL 6.3 | x86 64-bit | Xeon E3-1220 3.10GHz | 2 / 4 | 8 GB | 750 GB &amp;times; 2 (SW RAID 1) | planned as !XRootD data node |
+| %RED%itb-data5%ENDCOLOR% | worker node | SL 6.3 | x86 64-bit | Xeon E3-1220 3.10GHz | 2 / 4 | 8 GB | 750 GB &amp;times; 2 (SW RAID 1) | planned as !XRootD data node |
+| %RED%itb-data6%ENDCOLOR% | worker node | SL 5.8 | x86 64-bit | Xeon E3-1220 3.10GHz | 2 / 4 | 8 GB | 384 GB in /var/lib/condor/execute | planned as !XRootD data node |
+| itb-host-1 | KVM host | SL 7.3 | x86 64-bit | Xeon E5-2450 2.10GHz | 16 / 32 | 64 GB | 1 TB &amp;times; 4 (HW RAID 5) | |
+| &amp;nbsp;&amp;middot;&amp;nbsp; itb-ce1 | HTCondor-CE, CM | SL 6.8 | x86 64-bit | VM | 4 | 6 GB | 192 GB | |
+| &amp;nbsp;&amp;middot;&amp;nbsp; %RED%itb-glidein%ENDCOLOR% | !GlideinWMS VO frontend? | SL 6.3 | x86 64-bit | VM | 3 | 6 GB | 50 GB | |
+| &amp;nbsp;&amp;middot;&amp;nbsp; %RED%itb-gums-rsv%ENDCOLOR% | GUMS, RSV | SL 6.3 | x86 64-bit | VM | 3 | 6 GB | 50 GB | |
+| &amp;nbsp;&amp;middot;&amp;nbsp; %BLUE%itb-hdfs-name1%ENDCOLOR% | &amp;mdash; (so far) | SL ? | x86 64-bit | VM | 4 | 6 GB | 192 GB | |
+| &amp;nbsp;&amp;middot;&amp;nbsp; %RED%itb-hdfs-name2%ENDCOLOR% | &amp;mdash; (so far) | SL 6.3 | x86 64-bit | VM | 3 | 6 GB | 50 GB | |
+| &amp;nbsp;&amp;middot;&amp;nbsp; %RED%itb-se-hdfs%ENDCOLOR% | &amp;mdash; (so far) | SL 6.3 | x86 64-bit | VM | 3 | 6 GB | 50 GB | |
+| &amp;nbsp;&amp;middot;&amp;nbsp; %RED%itb-se-xrootd%ENDCOLOR% | &amp;mdash; (so far) | SL 6.3 | x86 64-bit | VM | 3 | 6 GB | 50 GB | |
+| &amp;nbsp;&amp;middot;&amp;nbsp; itb-submit | HTCondor submit | SL 6.8 | x86 64-bit | VM | 4 | 6 GB | 192 GB | |
+| &amp;nbsp;&amp;middot;&amp;nbsp; %BLUE%itb-xrootd%ENDCOLOR% | &amp;mdash; (so far) | SL ? | x86 64-bit | VM | 4 | 6 GB | 192 GB | |
+| itb-host-2 | worker node | SL 6.8 | x86 64-bit | Xeon E5-2450 2.10GHz | 16 / 32 | 64 GB | 352 GB in $(EXECUTE) | |
+| itb-host-3 | worker node | SL 7.3 | x86 64-bit | Xeon E5-2450 2.10GHz | 16 / 32 | 64 GB | 352 GB in $(EXECUTE) | |
+
+(Data last updated 2017-02-03 by Tim C. %RED%Red%ENDCOLOR% indicates a host that has yet to be rebuilt; %BLUE%Blue%ENDCOLOR% is rebuilt but currently off.)
+
+
+---++ ITB Goals, Revisited 2016-11-03
+
+Roughly in order of priority, at least for the top few items.
+
+   * Test pre-release builds of HTCondor and HTCondor-CE in an OSG context
+      * Install software and run jobs as soon as possible after a pre-release
+      * An implementation idea: Maybe have more than one CE and/or HTCondor instance? One for &amp;ldquo;production&amp;rdquo; and one for rapid testing
+   * Add the ability to create and control job pressure locally
+      * Run all the time? Some of the time? Most of the time, but be able to drain or spike on demand?
+      * Maybe add a VO front-end?
+   * Review and significantly tighten firewall rules on ITB hosts
+   * Add HTCondor-CE-Bosco to the overall site plan, so that we can test it, too
+   * Test the OSG stack before release (i.e., updates out of osg-prerelease)
+   * Have a mix of EL6 and EL7 execute hosts and user jobs to test EL&amp;nbsp;6&amp;rarr;7 migration
+   * Test other batch systems
+      * Slurm
+      * PBS, in some flavor
+      * LSF and SGE usage is waning in the field, so they are lowest priority
+   * Add other types of hosts (e.g., VO frontend, storage, RSV, squid, etc.)
+      * Current HDFS/XRootD nodes could be repurposed or we could spin up new VMs on =itb-host-1=
+      * We could potentially run our own factory in the future
+   * Investigate whether there is a way to switch easily between ITB and production pilots and payloads
+   * Test large-customer specific workflows (e.g., LIGO)
+   * Investigate monitoring/testing setup for site verification
+      * Ask sites (e.g., UNL) for their solutions
+   * Flexible site installation
+      * Configuration management for production and/or base hosts (logins, ntpd, repo RPMs, etc.)
+      * Determine upgrade procedure: do we upgrade the hosts in place with the option of reverting to production images or do we hotswap production machines with freshly installed testing machines
+
+
+---++ Configuration
+
+Basic host configuration is handled by Ansible and a local Git repository of playbooks.
+
+---+++ Git Repository
+
+The authoritative Git repository for Madison ITB configuration is =gitolite@git.chtc.wisc.edu:osgitb=. Clone the repository and push validated changes back to it.
+
+---+++ Ansible
+
+The =osghost= machine has Ansible 2.2.0.0 installed via RPM. Use other hosts and versions at your own risk.
+
+---++++ Common Ansible commands
+
+*Note:*
+   * For critical passwords, see Tim C. or other knowledgeable Madison OSG staff in person.
+   * All commands below are meant to be run from the =osgitb= directory from Git.
+
+To run Ansible for the first time on a new machine:
+
+&lt;pre class=&quot;screen&quot;&gt;ansible-playbook secure.yml -i inventory -u root -k --ask-vault-pass -f 20 -l &lt;em&gt;HOST-PATTERN&lt;/em&gt;
+ansible-playbook site.yml -i inventory -u root -k --ask-vault-pass -f 20 -l &lt;em&gt;HOST-PATTERN&lt;/em&gt;&lt;/pre&gt;
+
+The &lt;em&gt;HOST-PATTERN&lt;/em&gt; can be a glob-like pattern or a regular expression that matches host names in the inventory file; see Ansible documentation for details.
+
+After initial successful runs of both playbooks, subsequent runs should replace the =-u root -k= part with =-bK= to use your own login and =sudo=. For example:
+
+&lt;pre class=&quot;screen&quot;&gt;ansible-playbook secure.yml -i inventory -bK --ask-vault-pass -f 20 -l &lt;em&gt;HOST-PATTERN&lt;/em&gt;
+ansible-playbook site.yml -i inventory -bK -f 20 &lt;em&gt;[ -l HOST-PATTERN ]&lt;/em&gt;&lt;/pre&gt;
+
+Omit the =-l= option to apply configuration to all hosts.
+
+If you have your own playbook to manage personal configuration, run it as follows:
+
+&lt;pre class=&quot;screen&quot;&gt;ansible-playbook &lt;em&gt;PLAYBOOK-PATH&lt;/em&gt; -i inventory -f 20 &lt;em&gt;[ -l HOST-PATTERN ]&lt;/em&gt;&lt;/pre&gt;
+
+---++++ Adding host and other certificates
+
+(This is in very rough form, but the key bits are here.)
+
+   1. Ask Mat to get new certificates&amp;nbsp;&amp;mdash; be sure to think about =http=, =rsv=, and other service certificates
+   1. Wait for Mat to tell you that the new certificates are in =/p/condor/home/certificates=
+   1. =scp -p= the certificate(s) (&lt;code&gt;*cert.pem*&lt;/code&gt; and &lt;code&gt;*key.pem&lt;/code&gt;) to your home directory on =osghost= or whatever machine you use for Ansible
+   1. Find the corresponding certificate location(s) in the Ansible =roles/certs/files= directory
+   1. =cp -p= the certificate files over the top of the existing Ansible ones (or create new, equivalent paths)
+   1. Run =ansible-vault encrypt FILE(S)= to encrypt the files&amp;nbsp;&amp;mdash; get the Ansible vault password from Tim&amp;nbsp;C. if you need it
+   1. Verify permissions, contents (you can =cat= the encrypted files), etc.
+   1. Apply the files with something like =ansible-playbook secure.yml -i inventory -bK -f 20 -t certs=
+   1. Commit changes (now or after applying)
+   1. Push changes to origin
+
+---++++ Doing yum updates
+
+   1. Check to see if updates are needed and, if so, what would be updated: &lt;pre class=&quot;screen&quot;&gt;ansible &lt;em&gt;[ HOST | GROUP ]&lt;/em&gt; -i inventory -bK -f 20 -m command -a &#39;yum check-update&#39;&lt;/pre&gt;\
+       &lt;p&gt;You can name a single =HOST= or an inventory =GROUP= (such as the handy =current= group); with a group, you can further restrict the hosts with a =-l= option.&lt;/p&gt;\
+       &lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; =yum check-update= exits with status code =100= when it succeeds in identifying packages to update; presumably, Ansible will show these results as failures.&lt;/p&gt;
+   1. Review the package lists to be updated and decide whether to proceed with all updates or limited ones
+   1. Do updates (cat: =ansible= command to come when I actually do this)
+
+---++ Monitoring
+
+---+++ HTCondor-CE View
+
+Once we sort out our firewall rules, pilot, VO, and schedd availability graphs should be available [[http://itb-ce1.chtc.wisc.edu:59619][here]] through HTCondor-CE View.
+
+---+++ Tracking payload jobs via Kibana
+
+At this time, the easest way to verify that payload jobs are running within the glideinWMS pilots is to track their records via &lt;literal&gt;&lt;a href=&quot;https://gracc.opensciencegrid.org/kibana/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now%2Fw,mode:quick,to:now%2Fw))&amp;_a=(columns:!(_source),index:%27gracc.osg-itb.raw-*%27,interval:auto,query:(query_string:(analyze_wildcard:!f,query:%27*%27)),sort:!(EndTime,desc))&quot;&gt;Kibana&lt;/a&gt;&lt;/literal&gt;. To view all payload jobs that have run on our ITB site in the past week, use &lt;literal&gt;&lt;a href=&quot;https://gracc.opensciencegrid.org/kibana/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now%2Fw,mode:quick,to:now%2Fw))&amp;_a=(columns:!(ProbeName),index:%27gracc.osg-itb.raw-*%27,interval:auto,query:(query_string:(analyze_wildcard:!f,query:%27ResourceType:%20Payload%20AND%20ProbeConfig:%20%22condor:itb-ce1.chtc.wisc.edu%22%27)),sort:!(EndTime,desc))&quot;&gt;this query&lt;/a&gt;&lt;/literal&gt;. 
+
+---++ Making a New Virtual Machine on itb-host-1
+
+For this procedure, you will need login access to the CHTC Cobbler website, which is separate from other CHTC logins. If you do not have an account, request one from the CHTC system administrators.
+
+   1. If this is a new host (combination of MAC address, IP address, and hostname), set up host with CHTC Infrastructure
+      1. Pick a MAC address, starting with =00:16:3e:= followed by three random octets (e.g., =00:16:3e:f7:29:ee=)
+      1. Email htcondor-inf@cs.wisc.edu with a request for a new OSG ITB VM, including the chosen MAC address
+      1. Wait to receive the associated IP address for the new host
+   1. Create or edit the Cobbler system object for the host
+      1. Access https://cobbler-widmir.chtc.wisc.edu/cobbler_web
+      1. In the left navigation area, under “Configuration”, click the “Systems” link
+      1. For a new host, click the “Create New System” button; for an existing host, filter by “Name” for the fully qualified hostname then click “Edit” to the right of the entry
+      1. In the *first* “General” section: select a “Profile” of “Scientific_6_8_osg_vm” or “Scientific_7_2_osg_vm”
+      1. In the *second* “General” section, check the “Netboot Enabled” checkbox
+      1. In the “Networking (Global)” section, set “Hostname” to the fully qualified hostname for the virtual machine
+      1. In the “Networking” section, select the “eth0” interface to edit, and set the “MAC Address”, “IP Address”, and “DNS Name” fields for the host
+      1. Click the “Save” button
+      1. In the left navigation area, under “Actions”, click the “Sync” link
+   1. Log in to =itb-host-1= and become =root=
+   1. Create the libvirt definition file
+      1. Create a new XML file named after the desired hostname (e.g., =itb-ce2.xml=) and copy in the template below
+      1. Replace ={{ HOSTNAME }}= with the fully qualified hostname of the new virtual host
+      1. Replace ={{ MAC_ADDRESS }}= with the MAC address of the new virtual host (from above)
+      1. If desired, edit other values in the XML definition file; ask CHTC Infrastructure for help, if needed
+      1. Save the XML file
+      1. Create a new, empty disk image for the virtual host, in its correct location (as specified in the XML file):&lt;pre class=&quot;screen&quot;&gt;truncate -s 192G /var/lib/libvirt/images/&lt;em&gt;HOSTNAME&lt;/em&gt;.dd
+chown qemu:qemu /var/lib/libvirt/images/&lt;em&gt;HOSTNAME&lt;/em&gt;.dd&lt;/pre&gt;
+      1. Load the new host definition into libvirt:&lt;pre class=&quot;screen&quot;&gt;virsh define XML-FILE&lt;/pre&gt;
+   1. Install the new machine
+      1. Start the virtual machine:&lt;pre class=&quot;screen&quot;&gt;virsh start HOSTNAME&lt;/pre&gt;\
+       &lt;p&gt;At this time, the machine will boot over the network, and Cobbler will install and minimally configure the OS, then reboot the now-installed machine. This whole process takes 15–20 typically. You may be able to ssh into the machine during the install process, but there is no need to monitor or interfere.&lt;/p&gt;
+      1. Once the machine is available (which you can only guess at), ssh in and verify that the machine basically works
+      1. Immediately run Ansible on the machine, first with the =secure.yml= playbook, then the =site.yml= one (see above)
+      1. Log in to the machine and look around to make sure it seems OK
+      1. When things look good, tell virsh to start the virtual machine when the host itself starts:&lt;pre class=&quot;screen&quot;&gt;virsh autostart HOSTNAME&lt;/pre&gt;
+
+---+++ Libvirt VM Template
+
+&lt;pre class=&quot;file&quot;&gt;
+&amp;lt;domain type=&#39;kvm&#39;&amp;gt;
+
+  &amp;lt;name&amp;gt;{{ HOSTNAME }}&amp;lt;/name&amp;gt;
+
+  &amp;lt;memory unit=&#39;GiB&#39;&amp;gt;6&amp;lt;/memory&amp;gt;
+  &amp;lt;vcpu&amp;gt;4&amp;lt;/vcpu&amp;gt;
+  &amp;lt;os&amp;gt;
+    &amp;lt;type&amp;gt;hvm&amp;lt;/type&amp;gt;
+    &amp;lt;boot dev=&#39;network&#39;/&amp;gt;
+    &amp;lt;boot dev=&#39;hd&#39;/&amp;gt;
+    &amp;lt;bios useserial=&#39;yes&#39; rebootTimeout=&#39;0&#39;/&amp;gt;
+  &amp;lt;/os&amp;gt;
+  &amp;lt;features&amp;gt;
+    &amp;lt;acpi/&amp;gt;
+    &amp;lt;apic/&amp;gt;
+    &amp;lt;pae/&amp;gt;
+  &amp;lt;/features&amp;gt;
+
+  &amp;lt;devices&amp;gt;
+
+    &amp;lt;emulator&amp;gt;/usr/libexec/qemu-kvm&amp;lt;/emulator&amp;gt;
+
+    &amp;lt;disk type=&#39;file&#39; device=&#39;disk&#39;&amp;gt;
+      &amp;lt;source file=&#39;/var/lib/libvirt/images/{{ HOSTNAME }}.dd&#39;/&amp;gt;
+      &amp;lt;target dev=&#39;vda&#39; bus=&#39;virtio&#39;/&amp;gt;
+    &amp;lt;/disk&amp;gt;
+
+    &amp;lt;interface type=&#39;bridge&#39;&amp;gt;
+      &amp;lt;mac address=&#39;{{ MAC_ADDRESS }}&#39;/&amp;gt;
+      &amp;lt;source bridge=&#39;br0&#39;/&amp;gt;
+      &amp;lt;model type=&#39;virtio&#39;/&amp;gt;
+    &amp;lt;/interface&amp;gt;
+
+    &amp;lt;serial type=&#39;pty&#39;&amp;gt;
+      &amp;lt;target port=&#39;0&#39;/&amp;gt;
+    &amp;lt;/serial&amp;gt;
+    &amp;lt;console type=&#39;pty&#39;&amp;gt;
+      &amp;lt;target type=&#39;serial&#39; port=&#39;0&#39;/&amp;gt;
+    &amp;lt;/console&amp;gt;
+
+    &amp;lt;graphics type=&#39;vnc&#39; autoport=&#39;yes&#39; listen=&#39;127.0.0.1&#39;/&amp;gt;
+
+  &amp;lt;/devices&amp;gt;
+&amp;lt;/domain&amp;gt;
+&lt;/pre&gt;
+
+---++ Archive
+
+Archived Madison ITB notes are on [[MadisonItbArchive][another page]].
+
+---+++ Old Puppet information &amp;mdash; now obsolete and awaiting decommissioning ([[https://jira.opensciencegrid.org/browse/SOFTWARE-2559][SOFTWARE-2559]])
+
+Configuration is managed by Puppet using the UW Center for High-Throughput Computing&#39;s Puppet server on =wid-service-1.chtc.wisc.edu=. See [[MadisonITBInstanceConfiguration]] for details.
+
+---+++ New Puppet ideas &amp;mdash; now obsolete and not implemented
+
+   * We maintain and build our own current (4.x) Puppet RPMs (including dependencies) for EL&amp;nbsp;6 and EL&amp;nbsp;7 based on Fedora SRPMs&amp;nbsp;&amp;mdash; this looks very doable
+   * We run a Puppet Master on =osghost= or, if absolutely necessary, on a VM on =osghost=
+   * Firewall rules will limit Puppet client access to the Puppet Master to a minimal range of IP addresses
+   * We use public Puppet classes wherever possible (e.g., NTP from Puppet Labs)
+   * When necessary, we write and maintain simple-as-possible Puppet classes for basic machine setup
+   * Goals for automated configuration management:
+      * Manage the system clock (i.e., a properly configured NTP daemon)
+      * Manage a set of local user accounts, groups, and public SSH keys
+      * Manage a =sudoers= file for local user accounts
+      * Manage firewall rules
+      * Install a basic set of common tools (nominations: vi, emacs)
+   * In the meantime, we will write, maintain, and apply documentation to make these changes manually
+

@@ -1,0 +1,90 @@
+---+!! *&lt;nop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+%STARTINCLUDE%
+%EDITTHIS%
+%BR%
+---+++ Rules for topics and template
+   * All topics have a *bold heading* at Level 1 (=---+*&lt;nop&gt;Title*=) and first letters of words are capitalized (eg. Rules For Formatting Documents).
+   * The level one heading is taken as its twiki topic name, separated into words (e.g., !MyTopic becomes My Topic). Choose the twiki name carefully!
+   * All level two sections should be in title case.  Eg: =---++ Details on the Installation= (except for proper nouns)
+   * All sections (level three and below) have the first word capitalized, the rest lower case.  Eg: =---+++ Details on the installation= (except for proper nouns)
+   * Exclude from the TOC all sections level three and below (=---+++=, =---++++=, etc.).  To accomplish this,  use !%TOC{depth=&quot;2&quot;}%
+   * Include COMPLETE, RESPONSIBLE, and REVIEW directives at the bottom. 
+   * [[Trash.ReleaseDocumentationExampleMainTopic]] for a main topic *not likely* to be used with =STARTINCLUDE/STOPINCLUDE= so as to be included in other topics.
+   * [[ExampleTopicInclude]] for a topic likely to included in other topics, so =STARTINCLUDE/STOPINCLUDE= and =EDITTHIS= directives are used.
+   * [[Trash.ReleaseDocumentationExampleCompositeDocument]] what a composite document of includes should look like.
+   * Wherever possible [[https://twiki.grid.iu.edu/twiki/bin/view/TWiki/TextFormattingRules][TWiki editing]] should be used rather than raw HTML.
+   * Avoid nested INCLUDES.
+   * Here is the WebTopicEditTemplate for newly created pages in this twiki, which are assumed to be included in other topics.
+   * For content that is OSG 1.2 specific, use the *STARTOSG12* variable to before the content and *ENDOSG12* after the content.  E.g. =%&lt;nop&gt;STARTOSG12% OSG 1.2 content %&lt;nop&gt;ENDOSG12%=.  You need to place a space between the =%&lt;nop&gt;STARTOSG12%= tag and the content.
+
+---+++ Screen Views
+Many documents refer to unix commands, output from a script, a set of lines that should be edited in a file (like a configuration file), or a program listing.  These should be set off in a standard way as follows:
+
+For a set of commands that can be copied and input or a dump of the screen results from running a script uses a &quot;screen&quot; view:
+&lt;verbatim&gt;
+&lt;pre class=&quot;screen&quot;&gt;
+command 1
+command 2
+&lt;/pre&gt;
+&lt;/verbatim&gt;
+which looks like:
+&lt;pre class=&quot;screen&quot;&gt;
+command 1
+command 2
+&lt;/pre&gt;
+---+++ File View
+For a set of lines in a file to be edited or the contents of a file uses a &quot;file&quot; view:
+&lt;verbatim&gt;
+&lt;pre class=&quot;file&quot;&gt;
+line 1
+line 2
+&lt;/pre&gt;
+&lt;/verbatim&gt;
+which looks like:
+&lt;pre class=&quot;file&quot;&gt;
+line 1
+line 2
+&lt;/pre&gt;
+
+---+++ Variables
+See WebPreferences for settings of the following variables.
+
+   * OSG release variable: *%&lt;nop&gt;OSG_VERSION%* = %OSG_VERSION%
+   * ITB release variable: *%&lt;nop&gt;ITB_VERSION%* = %ITB_VERSION%
+   * VDT release variable: *%&lt;nop&gt;VDT_VERSION%* = %VDT_VERSION%
+   * Release variable, according to cache (ITB or OSG): *%&lt;nop&gt;VERSION%* = %VERSION%
+   * VDT cache variable: *%&lt;nop&gt;VDT_CACHE%* = %VDT_CACHE%
+   * ITB/OSG cache/grid variable: *%&lt;nop&gt;CACHE%* = %CACHE%
+      * Use the  *%&lt;nop&gt;CACHE%* variable as a generic reference for either &quot;ITB&quot; or &quot;OSG&quot; *caches*, *grids*, etc.  It automatically expands to &quot;ITB&quot; if its in the Trash/Trash/Integration web, or to &quot;OSG&quot; if its in the production release documentation web.
+   * Refer to the cache/version combination that you&#39;re using, e.g, %CACHE% %VERSION%, with a space in between, as %BR% %BLUE% %&lt;nop&gt;CACHE% %&lt;nop&gt;VERSION% %ENDCOLOR%
+   * Full URL to base of VDT Documentation for current release *%&lt;nop&gt;VDT_DOCS_URL%*: %VDT_DOCS_URL%
+   * Full URL to VDT Cache for this release: *%&lt;nop&gt;VDT_CACHE_URL%*: %VDT_CACHE_URL%
+   * Full URL to OSG Cache (ITB or Production) for this release *%&lt;nop&gt;OSG_CACHE_URL%*: %OSG_CACHE_URL%
+   * Pacman version: *%&lt;nop&gt;PACMAN_VERSION%*: %PACMAN_VERSION%
+
+---+++ Warnings and Notes
+   * See Documentation.DocWarningsAndNotes
+
+---+++ Reviewing tools
+
+   * See Trash.ReleaseDocumentationReviewStatus.
+
+---+++ Comments
+A comment section (like the one below) should be added at the bottom of each page using a code like:
+&lt;pre&gt;
+---++ *Comments*
+%&lt;nop&gt;COMMENT{type=&quot;tableappend&quot;}%
+&lt;/pre&gt;
+
+%STOPINCLUDE%
+
+%BR%
+%COMPLETE3% %BR%
+%RESPONSIBLE% Main.RobGardner %BR%
+%REVIEW% Main.RobGardner -  05 Jun 2008 %BR%
+%REVCOM%   %BR%
+%REVFLAG%  %Y%  %BR%
+
+---+++ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%

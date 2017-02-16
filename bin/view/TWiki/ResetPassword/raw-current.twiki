@@ -1,0 +1,41 @@
+---+ %MAKETEXT{&quot;Reset Password&quot;}%
+%STARTINCLUDE%
+__%MAKETEXT{&quot;Remember your password?&quot;}%__ %MAKETEXT{&quot;Use [_1] instead.&quot; args=&quot;ChangePassword&quot;}% %MAKETEXT{&quot;Otherwise, use this form to get a new one e-mailed to you.&quot;}%
+
+
+
+&lt;form name=&quot;resetpasswd&quot; action=&quot;%SCRIPTURLPATH{&quot;resetpasswd&quot;}%/%MAINWEB%/%HOMETOPIC%&quot; method=&quot;post&quot;&gt;
+&lt;div class=&quot;twikiFormSteps&quot;&gt;
+&lt;div class=&quot;twikiFormStep&quot;&gt;
+
+%IF{
+  &quot;context passwords_modifyable&quot;
+  then=&quot;&lt;strong&gt;%MAKETEXT{&quot;After submitting this form, you will receive an e-mail with your new, *system-generated* password, and a link to a page where you can change it.&quot;}%&lt;/strong&gt;&quot;
+  else=&quot;&lt;strong&gt;%MAKETEXT{&quot;Sorry, the password system is currently read only, please contact [_1]&quot; args=&quot;%WIKIWEBMASTER%&quot;}%&lt;/strong&gt;&quot;
+}%
+&lt;!--
+      * Set NOTMODIFYABLE = %IF{&quot;context passwords_modifyable&quot; then=&quot;&quot; else=&quot;DISABLED&quot;}%
+--&gt;
+
+%X% %MAKETEXT{&quot;you *must* have at least one valid registered e-mail to be able to reset your password. If none of your registered e-mail addresses is valid, and you have forgotten your password, contact [_1].&quot; args=&quot;%WIKIWEBMASTER%&quot;}%
+&lt;/div&gt;
+&lt;div class=&quot;twikiFormStep&quot;&gt;
+%TABLE{databg=&quot;transparent&quot; tableborder=&quot;0&quot; tablerules=&quot;none&quot;}%
+|%MAKETEXT{&quot;Fields marked [_1] are required&quot; args=&quot;=&lt;font color=&#39;red&#39;&gt;**&lt;/font&gt;=&quot;}% ||
+|  %MAKETEXT{&quot;Your [_1].LoginName&quot; args=&quot;%TWIKIWEB%&quot;}%: | &lt;input %NOTMODIFYABLE% type=&quot;text&quot; name=&quot;LoginName&quot; value=&quot;%URLPARAM{&quot;username&quot; encode=&quot;entity&quot;}%&quot; size=&quot;40&quot; class=&quot;twikiInputField&quot; /&gt; =&lt;font color=&quot;red&quot;&gt;**&lt;/font&gt;= |
+&lt;/div&gt;&lt;!-- /twikiFormStep--&gt;
+&lt;div class=&quot;twikiFormStep twikiLast&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;action&quot; value=&quot;resetPassword&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;TopicName&quot; value=&quot;%TOPIC%&quot; /&gt;
+&lt;input %NOTMODIFYABLE% type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot; %MAKETEXT{&quot;Reset password&quot;}% &quot; /&gt;
+&lt;/div&gt;&lt;!-- /twikiFormStep--&gt;
+&lt;/div&gt;&lt;!-- /twikiFormSteps--&gt;
+&lt;/form&gt;
+
+&lt;div class=&quot;twikiHelp&quot;&gt;
+   * %ICON{info}% %MAKETEXT{&quot;[_1] has a list of other TWiki users&quot; args=&quot;%MAINWEB%.%WIKIUSERSTOPIC%&quot;}%
+   * %ICON{info}% %MAKETEXT{&quot;If you have any questions, please contact [_1]&quot; args=&quot;%WIKIWEBMASTER%&quot;}%
+&lt;/div&gt;
+%STOPINCLUDE%
+
+__%MAKETEXT{&quot;Related topics:&quot;}%__ ChangePassword, ChangeEmailAddress, UserToolsCategory, AdminToolsCategory

@@ -1,0 +1,87 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+----+  Using Chirp to transfer output from running jobs
+
+%TOC%
+
+---++ Goals
+
+   * This tutorial will show you how to get output from your application as it is running using Remote I/O tools. 
+
+---++ Transferring output while your job is running
+The HTCondor file transfer mechanism transfers only transfer files when a job is completed or while it is being evicted.  Sometimes, it&#39;s useful to get files from a running job while it&#39;s still running (e.g. checkpoint files).  This part of the tutorial will show how to transfer files while your job is still running.
+
+HTCondor integrates with a set of tools called [[http://www.cse.nd.edu/~ccl/software/parrot/][Parrot and Chirp]] that allows your job to transfer files back to the the submit node while the job is still running.  In order to do this, your submit files need to change slightly and you&#39;ll need to do a few more things in your job.  
+
+   1. First, you&#39;ll need to add the following to your submit file: \
+\
+&lt;pre class=&quot;file&quot;&gt;
++WantIOProxy = True
+&lt;/pre&gt;
+   2. Second, you&#39;ll need to transfer the =parrot_run=  binary with your file, you can do this by using a transfer_input_files command \
+\
+&lt;pre class=&quot;file&quot;&gt;
+transfer_input_files = /usr/bin/parrot_run
+&lt;/pre&gt;
+   3. Finally, you&#39;ll need to make sure that you save your file at =/chirp/CONDOR/= followed by the path on the submit node where the file should go.  E.g., if you want the ouput file to go to =/stash/user/username/job1/test=, the path should be =/chirp/CONDOR/stash/user/username/job1/test=. 
+   
+
+Let&#39;s try creating a few files in a job and transfer them while the job is running:
+
+   1. First log in to the OSG Connect submit node (login.osgconnect.net)
+   2. Create a directory for this tutorial : \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% mkdir chirp_tutorial
+%UCL_PROMPT_SHORT% cd chirp_tutorial
+&lt;/pre&gt;
+   3. Create a file named =job.sh= with the following: \
+\
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash
+echo &quot;test1&quot; &gt; checkpoint_file
+./parrot_run cp checkpoint_file $1/checkpoint_file1
+sleep 30
+echo &quot;test2&quot; &gt; checkpoint_file
+./parrot_run cp checkpoint_file $1/checkpoint_file2
+sleep 30
+echo &quot;test3&quot; &gt; checkpoint_file
+./parrot_run cp checkpoint_file $1/checkpoint_file3
+rm checkpoint_file
+&lt;/pre&gt;
+    4. Make the file executable: \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% chmod 755 job.sh
+&lt;/pre&gt;
+   5. Create a submit file (=chirp.submit=) with the following: \
+\
+&lt;pre class=&quot;file&quot;&gt;
+output        = job.out.$(Process)
+error         = job.error.$(Process)
+log           = job.log.$(Process)
+
+universe = vanilla
+executable = job.sh
+transfer_input_files = /usr/bin/parrot_run
++WantIOProxy = True
+arguments = /chirp/CONDOR/$ENV(PWD)
+queue 1
+&lt;/pre&gt;
+   5. Submit the job: \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% condor_submit chirp.submit
+&lt;/pre&gt;
+   5. While your job is running, you should see files named =checkpoint_file1=, =checkpoint_file2=, and =checkpoint_file3= appear in your submit directory.
+   5. You can also run =cat= or view the files to verify that they contain the string =test1=, =test2=, or =test3= 
+  
+As an exercise, try modifying the submit file and script so that the checkpoint files are saved in =/stash/user/%RED%username%ENDCOLOR%/checkpoints= where %RED%username%ENDCOLOR% is replaced by your OSG Connect username.
+
+
+---++ Further information
+   * [[https://htcondor-wiki.cs.wisc.edu/index.cgi/wiki?p=HowToChirpRemoteIo][Using Condor with Parrot/Chirp]]
+   * [[http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_chirp.html#65779][Manual for condor_chirp]]

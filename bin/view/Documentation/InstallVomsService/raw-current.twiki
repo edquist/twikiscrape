@@ -1,0 +1,175 @@
+%LINKCSS%
+
+---+!! This document has been replaced by Documentation/Release3.InstallVoms in the new Release3 Web
+
+---+!! %SPACEOUT{ &quot;%TOPIC%&quot; }%
+%TOC%
+---+ Introduction
+&lt;!-- conventions used in this document
+   * Local UCL_HOST = %URLPARAM{&quot;INPUT_HOST&quot; encode=&quot;quote&quot; default=&quot;voms&quot;}%
+--&gt;
+The Virtual Organization Membership Service (VOMS - https://twiki.cnaf.infn.it/cgi-bin/twiki/view/VOMS/WebHome) has three main parts:
+    MySQL database which is a persistent repository for VO membership information,
+    VOMS admin which provides the Web UI/services to maintain the VO membership. This requires Tomcat.
+    VOMS server, a daemon process which services the voms-proxy-init requests. 
+---+ Requirements
+   * Pristine node
+   * Root access
+   * OS is Scientific Linux 32 or 64 bit&lt;br&gt;In theory it should work on Red Hat Enterprise Linux 5 or !CentOS 5 but we have not yet tested there.
+   * Host certificate
+   * Testing Requirements:
+      * The Subject and Issuer of a voms admin certificate (it could be your certificate)
+      * Access to your own certificate if you want to create your  voms proxy 
+      * Your certificate uploaded into a browser if you want to test voms-admin WEB UI
+---+ Install
+%INCLUDE{&quot;InstallVDTRepo&quot; headingoffset=&quot;1&quot;}%
+%INCLUDE{&quot;Trash.Documentation_Release3InstallCACerts&quot; headingoffset=&quot;1&quot;}%
+%STARTSECTION{&quot;InstallOSGVomsRPMs&quot;}%
+Install OSG-VOMS:
+   1. Enable OSG repos by editing ==/etc/yum.repos.d/osg-testing.repo==:&lt;pre class=&quot;file&quot;&gt;
+[osg-testing]
+name=OSG Software for Enterprise Linux 5 - Testing - $basearch 
+mirrorlist=http://repo.grid.iu.edu/mirror/osg-testing/$basearch
+failovermethod=priority
+priority=98
+enabled=%RED%1%ENDCOLOR%
+#gpgcheck=1
+#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+&lt;/pre&gt;
+   1. Install osg-voms:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install osg-voms
+&lt;/pre&gt;
+   1. Install  xml-commons-apis:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install xml-commons-apis
+&lt;/pre&gt;
+%ICON{warning}%from https://twiki.cern.ch/twiki/bin/view/EMI/VOMSystemAdministratorGuide
+Manually install xml-commons-apis libraries (after having installed the right metapackage for your installation), as the ones provided by the JRE cause warnings when starting/stopping tomcat:
+%ENDSECTION{&quot;InstallOSGVomsRPMs&quot;}%
+%STARTSECTION{&quot;ConfigureMysqlSrever&quot;}%
+---+ !MySQL Database
+Before you will be able configure VOMS you will need to have access to !MySQL database.  The !MySQL software is installed with the =osg-voms= package. By default it will be using port 3306 and will not have password for ==root==. If you want to modify port you will need to edit ==/etc/my.cnf== file and add a new port:&lt;pre class=&quot;file&quot;&gt;
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+port=%RED%MYSQL_PORT_NUMBER%ENDCOLOR%
+&lt;/pre&gt;  It is not necessary to change the port number if you don&#39;t want to.  It is also wise to set password for ==root== user. Run the following command to set the password:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /etc/init.d/mysqld start
+%UCL_PROMPT_ROOT% mysqladmin -u root password %RED%top_secret%ENDCOLOR%
+&lt;/pre&gt; 
+%ENDSECTION{&quot;ConfigureMysqlSrever&quot;}%
+---+ Configure
+%STARTSECTION{&quot;PrepareServiceCertificates&quot;}%
+Now, you can create database and configure VOMS-core and VOMS-admin:
+   1. VOMS-core daemon is running as user ==voms==. You will need to have a pair of service or host certificate for this user. You need to do the following:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% cd /etc/grid-security
+%UCL_PROMPT_ROOT% cp http/httpcert.pem voms/vomscert.pem
+%UCL_PROMPT_ROOT% cp http/http.pem voms/vomskey.pem
+%UCL_PROMPT_ROOT% chown -R voms.voms voms
+&lt;/pre&gt;
+   1. tomcat service is running as user ==tomcat==. %ICON{warning}% If you already have service certificate in ==/etc/grid-security/http== directory make sure that they belong to ==tomcat== and have right permission. If you don&#39;t  have a pair of service you may do the following:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% cd /etc/grid-security
+%UCL_PROMPT_ROOT% mkdir /etc/grid-security/http
+%UCL_PROMPT_ROOT% cp hostcert.pem http/httpcert.pem
+%UCL_PROMPT_ROOT% cp hostkey.pem http/httpkey.pem
+%UCL_PROMPT_ROOT% chown -R tomcat.tomcat http
+&lt;/pre&gt;
+
+%ENDSECTION{&quot;PrepareServiceCertificates&quot;}%
+   1. Run ==voms-admin-configure== script:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% voms-admin-configure install --dbtype mysql --vo %RED%VO_NAME%ENDCOLOR% \
+    --createdb --deploy-database  --dbauser root  --dbapwd %RED%MYSQL_ROOT_PASSD%ENDCOLOR% \
+    --dbusername  admin-%RED%VO_NAME%ENDCOLOR% --dbpassword %RED%secret %ENDCOLOR% \
+    --port %RED%VOMS_PORT%ENDCOLOR%  --mail-from %RED%email%ENDCOLOR% --smtp-host %RED%smtp.domain%ENDCOLOR% \
+    --sqlloc /usr/lib%RED%64%ENDCOLOR%/voms/libvomsmysql.so --cert /etc/grid-security/voms/vomscert.pem \
+    --key  /etc/grid-security/voms/vomskey.pem --read-access-for-authenticated-clients 
+&lt;/pre&gt; For example::&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% voms-admin-configure install --dbtype mysql --vo test1 --createdb \
+     --deploy-database --dbauser root --dbapwd  top_secret \
+     --dbusername admin_test1 --dbpassword secret 
+     --port 15001 --mail-from tlevshin@fnal.gov --smtp-host smtp.fnal.gov \
+     --sqlloc /usr/lib64/voms/libvomsmysql.so --cert /etc/grid-security/voms/vomscert.pem \
+     --key  /etc/grid-security/voms/vomskey.pem --read-access-for-authenticated-clients 
+&lt;/pre&gt;
+   1. Now, you need add a local admin:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /usr/sbin/voms-db-deploy.py add-admin --vo %RED%VO_NAME%ENDCOLOR%  \
+        --dn  %RED%HOST_CERT_SUBJECT%ENDCOLOR% \
+        --ca %RED%HOST_CERT_ISSUER%ENDCOLOR% 
+&lt;/pre&gt;For example::&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /usr/sbin/voms-db-deploy.py add-admin --vo test1 \
+     --dn /DC=org/DC=doegrids/OU=Services/CN=fermicloud002.fnal.gov \
+     --ca &quot;/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1&quot;
+&lt;/pre&gt;
+%STARTSECTION{&quot;ConfigureTrustManager&quot;}%
+   1. You have to configure tomcat in order to enable EMI trustmanager:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /var/lib/trustmanager-tomcat/configure.sh
+Info: using default install root: /
+Info: using default configuration file: //var/lib/trustmanager-tomcat/config.properties
+Info: using default configuration directory: //var/lib/trustmanager-tomcat
+Info: you can clean up using the following commands
+      mv -f /etc/tomcat5/server.xml.old-trustmanager /etc/tomcat5/server.xml
+      rm -f /usr/share/tomcat5/server/lib/bcprov*.jar
+      rm -f /usr/share/tomcat5/server/lib/log4j*.jar
+      rm -f /usr/share/tomcat5/server/lib/trustmanager-*.jar
+      rm -f /etc/tomcat5/log4j-trustmanager.properties
+      rm -f //var/lib/trustmanager-tomcat/server.xml
+&lt;/pre&gt;
+
+%ENDSECTION{&quot;ConfigureTrustManager&quot;}%
+
+%STARTSECTION{&quot;StartVOMSServices&quot;}%
+---+ Start
+   1. You need updated CRL before you can use voms, so do&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% fetch-crl
+&lt;/pre&gt;
+
+   1. Start voms server&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service voms start
+&lt;/pre&gt;
+   1, Start tomcat:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service tomcat5 start
+&lt;/pre&gt;
+   1. Start voms-admin:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service voms-admin start
+&lt;/pre&gt;
+%ENDSECTION{&quot;StartVOMSServices&quot;}%
+---+ Test
+---++ Voms-admin test
+Add member(yourself) to VO. Do the following:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% voms-admin --vo %RED%VO_NAME%ENDCOLOR% --host %RED%HOST_NAME%ENDCOLOR% \
+       --nousercert create-user %RED%USER_CERT_SUBJECT%ENDCOLOR% %RED%USRT_CERT_ISSUER%ENDCOLOR% \
+       %RED%USER_COMMON_NAME%ENDCOLOR% %RED%email%ENDCOLOR% 
+&lt;/pre&gt; For example:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% voms-admin --vo test1 --host fermicloud002 --nousercert create-user \
+   &quot;/DC=org/DC=doegrids/OU=People/CN=Joe Doe 12345&quot; &quot;/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1&quot; 
+   &quot;Joe Doe&quot; jdoe@fnal.gov
+&lt;/pre&gt;Assign VOAdmin role to yourself. Do the following:&lt;pre class=&quot;rootscreen&quot;&gt;
+voms-admin --vo %RED%VO_NAME%ENDCOLOR% --host %RED%HOST_NAME%ENDCOLOR% \
+    --nousercert assign-role  %RED%/VO_NAME%ENDCOLOR%  VO-Admin  \
+      %RED%USER_CERT_SUBJECT%ENDCOLOR% %RED%USRT_CERT_ISSUER%ENDCOLOR% 
+&lt;/pre&gt;For example:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% voms-admin --vo test1 --host fermicloud002 --nousercert assign-role /test1   VO-Admin  \
+   &quot;/DC=org/DC=doegrids/OU=People/CN=Joe Doe 12345&quot; &quot;/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1&quot; &lt;/pre&gt;Check !WebUI by accessing ==https://%RED%hostname%ENDCOLOR%:8443/vomses==
+---++ Voms-core test:
+Use ==voms-proxy-init== to generate proxy. Login as user, create ==vomses== file:&lt;pre class=&quot;file&quot;&gt;
+&quot;%RED%alias%ENDCOLOR%&quot; &quot;%RED%HOST_NAME%ENDCOLOR%&quot; &quot;%RED%PORT%ENDCOLOR%&quot; &quot;%RED%HOST DN%ENDCOLOR%&quot; &quot;%RED%VO_NAME%ENDCOLOR%&quot;
+&lt;/pre&gt; For example:
+&lt;pre class=&quot;file&quot;&gt;
+&quot;test1&quot; &quot;fermicloud002.fnal.gov&quot; &quot;15001&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=fermicloud002.fnal.gov&quot; &quot;test1&quot;
+&lt;/pre&gt; Generate voms proxy&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% voms-proxy-init -voms %RED%VO_NAME%ENDCOLOR% -vomses ~/vomses
+&lt;/pre&gt;
+%STARTSECTION{&quot;StopVOMSServices&quot;}%
+---+ Stop
+   1. Stop voms server&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service voms stop
+&lt;/pre&gt;
+   1. Stop voms-admin:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service voms-admin stop
+&lt;/pre&gt;
+   1. Stop tomcat:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service tomcat5 stop
+&lt;/pre&gt;
+%ENDSECTION{&quot;StopVOMSServices&quot;}%
+
+---+ References
+   1. [[https://twiki.cern.ch/twiki/bin/view/EMI/EMIVomsAdminUserGuide261][VOMS Admin EMI Guide]]

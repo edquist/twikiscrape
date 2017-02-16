@@ -1,0 +1,63 @@
+---+ OSG Software Component: Gratia
+
+---++ Purpose
+
+[[Accounting.WebHome][Gratia]] is an accounting system. It records information about jobs and data transfers. Gratia helps us understand the activity on OSG. For example:
+
+   * http://display.grid.iu.edu/
+   * http://gratiaweb.grid.iu.edu/gratia/
+
+Gratia comes in three main parts:
+
+   * *Gratia probes:* individual software components that collect, format, and forward information from different sources. There are 15–20 probes, written in Python and Perl, one for each activity that can be probed. For instance, there are separate probes for HTCondor, PBS, and Sun Grid Engine. They share some common functionality (contained in libraries), particularly a reliable upload functionality.
+
+   * *Gratia service:* collects information from one or more probes. There is a special Gratia protocol that is used to upload probe data to a Gratia service. Most OSG sites upload directly to a Gratia service located at Fermilab, but for local accounting purposes, a few sites (e.g., UNL, UCSD) run a local Gratia service, which in turn forwards the data to the central Gratia service.
+
+   * *Gratia reporting:* generates email reports (daily, weekly, etc.) from Gratia data.
+
+See the Packaging section below for the somewhat confusing Subversion directory, and source and binary package names.
+
+---++ Usage
+
+---++ Source
+
+The core Gratia software comes from the OSG, and Tanya Levshina is in charge of the Gratia project. The probes come from OSG and a variety of other contributors.
+
+Tanya and the Gratia development team are responsible for cutting releases and for some of the software itself: the common libraries, the services, !gLExec probe, psacct probe.
+
+The OSG Software Team owns several of the probes:
+
+| *Probe* | *Owner* |
+| bdii-status | |
+| condor | |
+| !dCache-transfer | |
+| !dCache-storage | |
+| metric (transfers data to the Gratia service?) | |
+| pbs-lsf | Suchandra |
+| sge | Suchandra |
+| xrootd-transfer | Neha |
+| xrootd-storage | Neha |
+| hadoop-storage | |
+| gridftp-transfer | Neha |
+
+See [[Accounting.GratiaProbes][the main Gratia probe table]] in the Accounting area for more details.
+
+---++ Packaging
+
+*Repository:* OSG.
+
+%TABLE{sort=&quot;off&quot;}%
+| *SVN Directory* | *Source Package* | *Binary Package(s)* | *Notes* |
+| =gratia-probe= | =gratia-probe= | =gratia-probe-*= | There are over 20 binary RPMs for the probes.&lt;br/&gt;Tanya always does the build of =gratia-probe=. |
+| =gratia-reporting= | =gratia-reporting= | =gratia-reporting= | Just the email part of the reporting, not web. |
+| =gratia-service= | =gratia= | &lt;code&gt;gratia-reporting-web&lt;/code&gt;&lt;br/&gt;&lt;code&gt;gratia-service&lt;/code&gt; | This is the main Gratia server package. |
+| &lt;code style=&quot;color: red;&quot;&gt;gratia&lt;/code&gt; | &lt;code style=&quot;color: red;&quot;&gt;gratia-service&lt;/code&gt; | &lt;code style=&quot;color: red;&quot;&gt;gratia-service&lt;/code&gt; | %RED%This is old, abandoned, and really badly named. Do not use.%ENDCOLOR% |
+
+
+---++ History
+
+The core Gratia software was developed at Fermilab by Philippe Canal and his team in collaboration with the University of Nebraska Lincoln.
+
+---++ Future
+
+There are no major problems with the Gratia probes, but they are updated somewhat regularly as minor problems are fixed.

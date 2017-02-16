@@ -1,0 +1,33 @@
+---++OSG Accounting Services - Gratia - Rebuilding from source RPM.
+
+If you wish to re-build from the source RPM (say for a particular architecture or software environment or with a different default base prefix to obviate the need for the =--relocate= option), then:
+
+&lt;ol&gt;
+&lt;li&gt;Optionally set a non-root build area for your RPMS by building a replica tree of =/usr/src/redhat= in your own area and creating a file =~/.rpmmacros= that contains the line:
+&lt;pre&gt;
+%_topdir &amp;lt;my-rpmbuild-dir&amp;gt;
+&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;The following macro definitions may be used on the =rpmbuild= command line:
+      $ &lt;tt&gt;--define=&#39;config_itb 1&#39;&lt;/tt&gt;: =ProbeConfig= files for new installs will have defaults suitable for ITB nodes.
+      $ &lt;tt&gt;--define=&#39;vdt_loc /usr/local/vdt&#39;&lt;/tt&gt;: Specify a different location for the VDT install.
+      $ &lt;tt&gt;--define=&#39;default_prefix /usr/local/vdt/gratia&#39;&lt;/tt&gt;: Specify a different location for the gratia installation (not necessary if &lt;tt&gt;default_prefix = %{vdt_loc}/gratia&lt;/tt&gt;).
+      $ &lt;tt&gt;--define=&#39;site_name &amp;lt;pretty-site-name&amp;gt;&#39;&lt;/tt&gt;: Specify a particular site name rather than picking from VDT configuration or leaving generic.
+      $ &lt;tt&gt;--define=&#39;meter_name &amp;lt;meter-name&amp;gt;&#39;&lt;/tt&gt;: Specify a particular probe name rather than building from =uname -n= (most appropriate for the ps-accounting probe which needs to be installed on all worker nodes).
+      $ &lt;tt&gt;--define=&#39;python python&#39;&lt;/tt&gt;: Pick up python from the path and remove the requirement on the version number of the system&#39;s python RPM; OR
+      $ &lt;tt&gt;--define=&#39;python /my/path/to/python&#39;&lt;/tt&gt;: Hard-code a python path into the RPM.
+&lt;/li&gt;
+ 
+&lt;li&gt;%RED%&lt;strong&gt;Two&lt;/strong&gt;%ENDCOLOR% build commands are required: one for the non-architecture-specific RPMS, and one for the local architecture. A suitable composite command could be:
+&lt;verbatim&gt;
+for arch_arg in &quot;&quot; &quot;--target=noarch&quot;; do
+  rpmbuild &lt;defines&gt;; $arch_arg --rebuild &lt;src-rpm&gt;
+done
+&lt;/verbatim&gt;
+Note that upgrades leave existing configuration files untouched.
+&lt;/li&gt;
+&lt;/ol&gt;
+
+
+
+-- Main.ChrisGreen - 20 Nov 2008

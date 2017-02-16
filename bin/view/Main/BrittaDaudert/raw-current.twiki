@@ -1,0 +1,559 @@
+%TOC%
+
+---++ My Links
+
+   * %TWIKIWEB%.ATasteOfTWiki - view a short introductory presentation on TWiki for beginners
+   * %TWIKIWEB%.WelcomeGuest - starting points on TWiki
+   * %TWIKIWEB%.TWikiUsersGuide - complete TWiki documentation, Quick Start to Reference
+   * Sandbox.%HOMETOPIC% - try out TWiki on your own
+   * Sandbox.%TOPIC%Sandbox - just for me
+
+---++ My Personal Data
+
+Note: if personal data is being stored using a secret database, then it is only visible to the user and to administrators.
+
+| E-mail | %USERINFO{&quot;%TOPIC%&quot; format=&quot;$emails&quot;}% |
+
+---++ My Personal Preferences
+
+Uncomment preferences variables to activate them (remove the #-sign). Help and details on preferences variables are available in %TWIKIWEB%.%WIKIPREFSTOPIC%.
+
+   * Show tool-tip topic info on mouse-over of %TWIKIWEB%.WikiWord links, on or off:
+      * #Set LINKTOOLTIPINFO = off
+   * Horizontal size of text edit box:
+      * #Set EDITBOXWIDTH = 70
+   * Vertical size of text edit box:
+      * #Set EDITBOXHEIGHT = 22
+   * Style of text edit box. =width: 99%= for full window width (default), =width: auto= to disable.
+      * #Set EDITBOXSTYLE = width: 99%
+   * Write protect your home page: (set it to your %TWIKIWEB%.WikiName)
+      * #Set ALLOWTOPICCHANGE = Main.BrittaDaudert
+
+---++ Related Topics
+
+   * %TWIKIWEB%.ChangePassword for changing your password
+   * %TWIKIWEB%.ChangeEmailAddress for changing your email address
+   * %MAINWEB%.%WIKIUSERSTOPIC% has a list of other TWiki users
+   * %TWIKIWEB%.UserDocumentationCategory is a list of TWiki user documentation
+   * %TWIKIWEB%.UserToolsCategory lists all TWiki user tools
+
+---++ File Transfer Documentation
+
+&lt;!-- some useful variable definitions
+   * Local LINK_LIGO = [[http://www.ligo.caltech.edu/][LIGO]]
+   * Local LINK_LIGO_DG = [[https://www.lsc-group.phys.uwm.edu/lscdatagrid/][LIGO Data Grid]]
+   * Local LINK_RLS = [[http://www.globus.org/toolkit/data/rls/][RLS]]
+   * Local LINK_PEGASUS = [[http://pegasus.isi.edu/][Pegasus]]
+   * Local LINK_MD5SUM = [[http://en.wikipedia.org/wiki/Md5sum][md5sum]]
+   * Local LDF_GPS_START = 940000000
+   * Local LDF_GPS_END = 940100000
+   * Local LDF_GPS_OUT = BinaryInspiral/var/gsiftp.loc
+   * Local SCRIPT_MD5_OUT = gsiftp.%LDG_HOST_FQDN%.md5
+   * Local SUBMISSION_HOST = osg-job
+   * Local SUBMISSION_HOST_FQDN = osg-job
+   * Local SUBMISSION_USER = ligo
+   * Local SUBMISSION_HOME = /home/%SUBMISSION_USER%
+   * Local LDG_HOST = ldas-grid
+   * Local LDG_HOST_FQDN = ldas-grid.ligo.caltech.edu
+   * Local LDG_USER = user
+   * Local LDG_HOME = /home/%LDG_USER%
+--&gt;
+
+---+++ About this Document
+
+This document is written for %LINK_LIGO% users of the %LINK_OSG%. It contains instructions to transfer _gravitational wave files_ from the %LINK_LIGO_DG% to the Open Science Grid. 
+
+---+++ Introduction
+
+Data collected by the Gravitational Wave Observatories is partitioned into files of 16 MByte each. The files are hosted on the %LINK_LIGO_DG% and need to be transferred to the Open Science Grid for analysis. A %LINK_GLOSSARY_SE% provided by the Open Science Grid will be the destination for the transferred files.
+
+The integrity of the transferred data files is assured by comparing the %LINK_MD5SUM% of each file after the transfer completed with _its_ md5sum on the LIGO Data Grid. The new  address of the file is stored into the %LINK_RLS% catalog at Caltech after each successful transfer. The purpose of the RLS catalog is to serve the storage location of gravitational wave files on the Open Science Grid to the %LINK_PEGASUS% work flow once they are required.
+
+---+++ Requirements
+
+Before you proceed make sure to meet following requirements:
+
+   * possession of a [[ReleaseDocumentation/GetGridCertificates][Grid Certificate]] and a valid %LINK_GLOSSARY_VOMS_PROXY% on a _submission host_ of your choice
+   * ability to login via _gsissh_ to the %LINK_LIGO_DG%, such as =ldas-grid.ligo.caltech.edu= from the _submission host_
+   * =svn= to checkout the required software
+   * =python= to run the executables
+   * a recent %LINK_PEGASUS% installation
+
+To check if you are authorized to login to the LIGO Data Grid, execute on your submission host:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% ~]$ gsissh -p 22 %LDG_HOST_FQDN%
+Last login: Wed Aug 11 09:13:03 2010 from osg-job.ligo.caltech.edu
+Welcome to LIGO Caltech
+[%LDG_USER%@%LDG_HOST% ~]$
+&lt;/pre&gt;
+
+---+++ Software Installation
+
+A recent version of %LINK_PEGASUS% is required on the _submission host_. Please [[http://pegasus.isi.edu/wms/download.php][download]] the binary distribution for your platform from the Pegasus web page: 
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% ~]$ wget http://pegasus.isi.edu/wms/download/pegasus-binary-2.4.3-x86_64_rhel_5.tar.gz
+[%SUBMISSION_USER%@%SUBMISSION_HOST% ~]$ tar -zxf pegasus-binary-2.4.3-x86_64_rhel_5.tar.gz
+&lt;/pre&gt;
+
+The binary distribution provides =setup.sh= and =setup.csh= to setup the correct environment for your shell:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% ~]$ unset CLASSPATH
+[%SUBMISSION_USER%@%SUBMISSION_HOST% ~]$ export PEGASUS_HOME=/home/robert/pegasus-2.4.3
+[%SUBMISSION_USER%@%SUBMISSION_HOST% ~]$ . $PEGASUS_HOME/setup.sh 
+&lt;/pre&gt;
+
+Additional software is provided by a subversion repository at Caltech. Please follow the steps below to checkout the software on your _submission host_ and the %LINK_LIGO_DG%.
+
+&lt;pre class=&quot;screen&quot;&quot;&gt;
+[%LDG_USER%@%LDG_HOST% ~]$ svn co --username=anonymous --password=&quot;&quot; svn://osg-vtb.ligo.caltech.edu/home/subversion/repos/BinaryInspiral/trunk BinaryInspiral
+Checked out revision 3550.
+&lt;/pre&gt;
+
+%TWISTY{%TWISTY_OPTS_OUTPUT%}%
+&lt;pre class=&quot;screen&quot;&quot;&gt;
+[%LDG_USER%@%LDG_HOST% ~]$ svn co --username=anonymous --password=&quot;&quot; svn://osg-vtb.ligo.caltech.edu/home/subversion/repos/BinaryInspiral/trunk BinaryInspiral
+A    BinaryInspiral/python-scripts
+A    BinaryInspiral/python-scripts/file-transfer-dax-generator.py
+A    BinaryInspiral/python-scripts/populate-rls.py
+A    BinaryInspiral/bin
+A    BinaryInspiral/bin/transfer.sh
+A    BinaryInspiral/bin/md5sum.sh
+A    BinaryInspiral/etc
+A    BinaryInspiral/etc/pegasus.properties
+A    BinaryInspiral/etc/site-local.xml
+Checked out revision 3553.
+&lt;/pre&gt;
+%ENDTWISTY%
+
+
+---+++ File Transfer Instructions
+
+This section requires that you completed the [[Main/BrittaDaudert#Software_Installation][software installation]] on the %LINK_LIGO_DG% and your submission host. The transfer process consists of three consecutive parts:
+
+   1 Generation of the input file for the %LINK_PEGASUS% work flow.
+   1 Transfer of the gravitational wave files from the %LINK_LIGO_DG% to the %LINK_OSG%.
+   1 Population of the %LINK_RLS% catalog with the new storage location for the files on the Open Science Grid.
+
+---++++ Instructions for the LIGO Data Grid
+
+Every instruction listed in this section has to be carried out on the %LINK_LIGO_DG%.
+
+---+++++ Generate the Input File
+
+The %LINK_PEGASUS% work flow requires several input files:
+
+   * a list of the storage locations for required gravitational wave files on a %LINK_GLOSSARY_GRIDFTP% server
+   * a list of %LINK_MD5SUM%s for each gravitational wave file
+
+First, we will use the =ligo-data-find= command on the %LINK_LIGO_DG% to create a list of storage locations for gravitational wave files. The =ligo-data-find= command requires the name of the _observatory_ where the data was taken and a _range of [[http://en.wikipedia.org/wiki/International_Atomic_Time][GPS times]]_. For example:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LDG_USER%@%LDG_HOST% BinaryInspiral]$ ligo_data_find --server 10.14.20.73:80 --observatory %RED%H%ENDCOLOR% --type %RED%H1_LDAS_C02_L2%ENDCOLOR% --gps-start-time 940000000 --gps-end-time 940000200 --url-type gsiftp --match archive
+gsiftp://ldas-cit.ligo.caltech.edu:15000/archive/frames/S6/LDAShoftC02/LHO/H-H1_LDAS_C02_L2-9400/H-H1_LDAS_C02_L2-940000000-128.gwf
+gsiftp://ldas-cit.ligo.caltech.edu:15000/archive/frames/S6/LDAShoftC02/LHO/H-H1_LDAS_C02_L2-9400/H-H1_LDAS_C02_L2-940000128-128.gwf
+&lt;/pre&gt;
+
+The =--show-observatories= command line option will print a list of available observatories. A _realistic_ analysis will require a larger GPS time range. We will first create a file for the *H* observatory:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LDG_USER%@%LDG_HOST% BinaryInspiral]$ ligo_data_find --server 10.14.20.73:80 --observatory %RED%H%ENDCOLOR% --type %RED%H1_LDAS_C02_L2%ENDCOLOR% --gps-start-time %LDF_GPS_START% --gps-end-time %LDF_GPS_END% --url-type gsiftp --match archive &gt; %LDF_GPS_OUT%
+&lt;/pre&gt;
+
+In the next step we will _append_ the results for the *L* and *V* observatories:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LDG_USER%@%LDG_HOST% BinaryInspiral]$ ligo_data_find --server 10.14.20.73:80 --observatory %RED%L%ENDCOLOR% --type %RED%L1_LDAS_C02_L2%ENDCOLOR% --gps-start-time %LDF_GPS_START% --gps-end-time %LDF_GPS_END% --url-type gsiftp --match archive &gt;&gt; %LDF_GPS_OUT%
+
+[%LDG_USER%@%LDG_HOST% BinaryInspiral]$ ligo_data_find --server 10.14.20.73:80 --observatory %RED%V%ENDCOLOR% --type %RED%HrecOnline%ENDCOLOR% --gps-start-time %LDF_GPS_START% --gps-end-time %LDF_GPS_END% --url-type gsiftp --match archive &gt;&gt; %LDF_GPS_OUT%
+&lt;/pre&gt;
+
+%WARNING% The execution of the command may consume a considerable amount of time, because some of the files lay be located on a tape which will be provided by the tape robot before they can be read! 
+
+The resulting file =%LDF_GPS_OUT%= should be roughly 20MByte in size depending on the GPS range specified:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LDG_USER%@%LDG_HOST% BinaryInspiral]$ ls -alh %LDF_GPS_OUT%
+-rw-rw-r-- 1 %LDG_USER% %LDG_USER% 20M Aug 11 10:55 %LDF_GPS_OUT%
+&lt;/pre&gt;
+
+---+++++ Compute MD5 Sums
+
+In order to assure data integrity during the file transfers, we will compute the %LINK_MD5SUM% for each file listed in =%LDF_GPS_OUT%=.
+
+---++++++ Using =md5sum.sh=
+
+The script is located in =BinaryInspiral/bin/md5sum.sh=. 
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LDG_USER%@%LDG_HOST% BinaryInspiral/bin]$./md5sum.sh --help
+Synopsis: Compute and verify MD5 sums for a list of files
+
+Usage   : ./md5sum.sh [options]
+
+Required arguments: 
+
+        Either of the two flags
+            -c                 compute md5ssum
+            -v                 verify  md5sum
+            -f &lt;file&gt;  the input file containing:
+                               1) gsifftp locations if flag is -c
+                               2)md5sums and gsiftp locations if flag is -v
+
+         Flag -v also requires
+
+            -d &lt;directory&gt;  directory, required with -v flag
+
+         Other options
+            -h                 display this message
+            -e &lt;file&gt;  the error file containing a list of files that do not exist or are empty or corrupted,
+                               defaults to &lt;input_file_name&gt;-timestamp.err
+            -o &lt;file&gt;  the output file used to store the computed MD5 sums and the gsiftp locations,
+                               defaults to &lt;input_file_name&gt;-time-stamp.md5
+
+&lt;/pre&gt;
+
+For example, if we would like to compute the md5sums of the files listed in the input file =%LDF_GPS_OUT%= , generated previously and store the results in the file
+=BinaryInspiral/var/%SCRIPT_MD5_OUT%=, we call md5sum.sh as follows:
+
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LDG_USER%@%LDG_HOST% BinaryInspiral]$ cd bin
+[%LDG_USER%@%LDG_HOST% bin]$ /bin/bash md5sum.sh  -c -f /archive/home/rengel/BinaryInspiral/var/gsiftp.loc -o BinaryInspiral/var/%SCRIPT_MD5_OUT%
+&lt;/pre&gt;
+
+The script will generate the output file in =BinaryInspiral/var/%SCRIPT_MD5_OUT%=. Each line of the file starts with a MD5 sum followed by the gsiftp location of the gravitational wave file:
+
+&lt;pre class=&quot;file&quot;&gt;
+779047bd6aa1c4ee88837575bfdeee4d gsiftp://ldas-cit.ligo.caltech.edu:15000/archive/frames/VSR2/HrecOnline/Virgo/V-HrecOnline-940/V-HrecOnline-940096000-4000.gwf
+&lt;/pre&gt;
+
+---++++ Instructions for the Submission Host
+
+All instructions listed in this section have to be carried out on your OSG submission host.
+
+---+++++ Adjust the Site Catalog
+
+The site catalog is a XML file that defines properties of some OSG sites and is used by Pegasus. It is located in =BinaryInspiral/etc/site-local.xml=. 
+
+The XML tag =site= with property =handle=&quot;local&quot;= is used as a default definition for your _submission host_. Please change it according to the configuration of your submission host before you proceed. Also verify that *ALL* directories specified for the sites you intend to use _exist_ and you have sufficient permissions to access them. Otherwise the work flow will fail.
+
+You may also need to change/add individual site entries. The information in this sample catalog may be outdated as this kind of information is quite dynamic. 
+You can find some of the information needed at MYOSG
+
+[[https://myosg.grid.iu.edu/about][Link to MYOSG]]
+
+Alternatively, you can use Pegasus to generate an up to date site catalog. Here we assume that Pegasus has been installed on your submission host. 
+
+&lt;pre class=&quot;screen&quot;&gt;
+pegasus-get-sites -Dpegasus.catalog.site.osgmm.collector.host=osg-itb.ligo.caltech.edu --vo ligo --sc ./sites-local.xml --source OSGMM --grid OSG
+&lt;/pre&gt;
+
+
+---+++++ Adjust the properties file (optional)
+
+The file pegasus.properties is the configuration file of the Pegasus work-flow planner. It is located in =BinaryInspiral/etc/pegasus.properties=.  There are many settings and options that can be used to fine tune the work-flow execution. The sample properties file in the svn repository is a very basic one. Please refer to the Pegasus documentation for more information on individual properties.
+
+[[http://pegasus.isi.edu/wms/docs/properties.html][Pegasus properties documentation]]
+ 
+---+++++ Transfer Input Files
+
+Transfer the file =BinaryInspiral/var/%SCRIPT_MD5_OUT%=  containing the %LINK_GLOSSARY_GRIDFTP% locations and corresponding MD5 sums to your _submission host_ using %HELP_GLOBUS_URL_COPY%:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% BinaryInspiral]$ globus-url-copy gsiftp://%LDG_HOST_FQDN%%LDG_HOME%/BinaryInspiral/var/%SCRIPT_MD5_OUT% file://%SUBMISSION_HOME%/BinaryInspiral/var/%SCRIPT_MD5_OUT%
+&lt;/pre&gt;
+
+---+++++ Generate the DAX
+
+The %LINK_PEGASUS% work flow to be executed on the %LINK_OSG% is represented by a &lt;b&gt;D&lt;/b&gt;irected &lt;b&gt;A&lt;/b&gt;cyclic &lt;b&gt;G&lt;/b&gt;raph or short *DAX*. In this section we will create a DAX requesting Pegasus to transfer the gravitational wave files from the %LINK_LIGO_DG% to the %LINK_OSG%. Hereby we will use the =BinaryInspiral/python-scripts/file-transfer-dax-generator.py= Python script:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% BinaryInspiral]$ python python-scripts/file-transfer-dax-generator.py --help
+usage:  file-transfer-dax-generator.py [options]
+	
+options:
+  -h, --help            show this help message and exit
+  -m MODE, --transfer-mode=MODE
+                        Transfer meachinism MODE can be srm-copy or guc
+                        (default)
+  -p PORT, --port=PORT  port number of SE, required if --transfer-mode=srm-
+                        copy
+  -z PRE, --pre=PRE     preamble, default: srm/v2/server?SFN= for all sites,
+                        required if --transfer-mode=srm-copy
+  -f FILE, --input-file=FILE
+                        Path to input file FILE containg phys file locations
+                        on LDG, required
+  -d DAX, --dax=DAX     Name of dax file to be created, required
+  -s SITE, --site=SITE  OSG site that the data is transferred to, required
+  -o HOSTNAME, --host-name=HOSTNAME
+                        Host name, i.e. gatekeeper of the OSG site
+                        corresponding to the SE, required
+  -b BASEDIR, --base-dir=BASEDIR
+                        Base directory on OSG site or SE to which the data is
+                        transferred to, required
+  -e EXECDIR, --exec-dir=EXECDIR
+                        Execution dir on OSG site, remote_initial dir for
+                        md5sum check dag jobs, required
+  -n NUMBER, --number-files=NUMBER
+                        Number of files to be transferred within one dax job,
+                        required
+  -t TRANSFER-EXECUTABLE, --transfer-executable=TRANSFER-EXECUTABLE
+                        Path to transfer executable transfer.sh, required
+  -c MD5SUM-EXECUTABLE, --md5sum-executable=MD5SUM-EXECUTABLE
+                        Path to transfer executable md5sum.sh, required
+  -r ERRORS, --error-file=ERRORS
+                        Error file name, error output file of md5sum check dag
+                        job, defaults: &amp;lt input_file_name&amp;gt -times-tamp.error
+  -u OUTPUT, --output-file=OUTPUT
+                        Output file name, output file of md5sum compute dag
+                        job, defaults to &amp;lt input_file_name&amp;gt -time-stamp.md5sum
+  -v, --version         Display version information and exit
+
+
+&lt;/pre&gt; 
+
+
+
+Every output file generated by =file-transfer-dax-generator.py= will be written to the current working directory. We will therefore change to =BinaryInspiral/var= before executing the Python script:
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% BinaryInspiral]$ cd var
+&lt;/pre&gt;
+
+Here are two examples of how to use the script.
+
+In example 1 we create a dax called Nebraska.dax that will describe a work-flow transferring the files listed in =%SUBMISSION_HOME%/BinaryInspiral/var/%SCRIPT_MD5_OUT%= into the Nebraska site via the gsiftp server red-gridftp1.unl.edu. The transfer mechanism is globus-url-copy. The files are transfered into the base directory /mnt/hadoop/user/ligo, the md5sum checks are executed in the same directory. Each transfer job in the dax is set up to transfer 100 files (-n 100). 
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% var]$ python ../python-scripts/file-transfer-dax-generator.py 
+-f  %SUBMISSION_HOME%/BinaryInspiral/var/%SCRIPT_MD5_OUT% -d Nebraska.dax -s Nebraska \ 
+-b /mnt/hadoop/user/ligo -e /mnt/hadoop/user/ligo -n 100 -t %SUBMISSION_HOME%/BinaryInspiral/bin/transfer.sh \
+-c %SUBMISSION_HOME%/BinaryInspiral/bin/md5sum.sh -o red-gridftp1.unl.edu
+&lt;/pre&gt;
+
+In example 2 we transfer the data via srm-copy into the Nebraska SE red-srm1.unl.edu:8443
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% var]$ python ../python file-transfer-dax-generator.py -f %SUBMISSION_HOME%/BinaryInspiral/var/%SCRIPT_MD5_OUT% -d Nebraska.dax -s Nebraska \
+-b /mnt/hadoop/user/ligo -e /mnt/hadoop/user/ligo -n 100 -t  %SUBMISSION_HOME%/BinaryInspiral/bin/transfer.sh \
+-c  %SUBMISSION_HOME%/BinaryInspiral/bin/md5sum.sh -o red-srm1.unl.edu -p 8443 -m srm-copy
+&lt;/pre&gt;
+
+
+No further output will be written to the terminal. The script generates several files in the current working directory.
+
+   * =Nebraska.dax= the *DAX* describing the Pegasus work flow
+   * =rc= a list of input files and their locations
+   * =gsiftp-%d.in= a list of gravitational waves files and their MD5 sums
+
+---+++++ Plan the work flow using =pegasus-plan=
+
+Here we assume that %LINK_PEGASUS% has been installed on your submission host. We will use =pegasus-plan= to plan the work flow, which requires several input files and parameters:
+
+   * =BinaryInspiral/etc/pegasus.properties= Pegasus properties file
+   * =BinaryInspiral/etc/site-local.xml= a definition of %LINK_GLOSSARY_SE%s on the Open Science Grid
+   * =Nebraska.dax= the *DAX* describing the work flow generated in the previous step
+   * =--dir= the directory is generated by the planner and contains the work flow
+   * =--relative-dir= a sub directory to ==-dir=
+
+&lt;pre class=&quot;screen&quot;&gt;&lt;code&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% var]$ pegasus-plan \&lt;/BR&gt;
+-Dpegasus.properties=../etc/pegasus.properties \&lt;/BR&gt;
+-Dpegasus.catalog.site.file=../etc/site-local.xml \&lt;/BR&gt;
+--dax Nebraska.dax \&lt;/BR&gt;
+--dir workflow \&lt;/BR&gt;
+--relative-dir submit \&lt;/BR&gt;
+-s Nebraska \&lt;/BR&gt;
+--nocleanup \&lt;/BR&gt;
+-f \&lt;/BR&gt;
+-o local&lt;/code&gt;
+...
+%RED%pegasus-run -Dpegasus.user.properties=%SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit/pegasus.7395923381172294127.properties --nodatabase %SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit%ENDCOLOR%
+&lt;/pre&gt;
+
+%TWISTY{%TWISTY_OPTS_OUTPUT%}%
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% var]$ pegasus-plan -Dpegasus.properties=../etc/pegasus.properties -Dpegasus.catalog.site.file=/home/robert/BinaryInspiral/etc/site-local.xml --dax Nebraska.dax --dir workflow --relative-dir submit -s Nebraska --nocleanup -f -o local
+2010.08.25 17:27:36.628 PDT: [INFO] event.pegasus.planner planner.version 2.4.3  - STARTED 
+2010.08.25 17:27:36.907 PDT: [ERROR]  **Parsing **   Line: 239
+[org.xml.sax.SAXParseException: s4s-att-invalid-value: Invalid attribute value for &#39;maxOccurs&#39; in element &#39;all&#39;. Recorded reason: cvc-enumeration-valid: Value &#39;2&#39; is not facet-valid with respect to enumeration &#39;(1)&#39;. It must be a value from the enumeration.]
+ 
+2010.08.25 17:27:36.911 PDT: [ERROR]  **Parsing **   Line: 123
+[org.xml.sax.SAXParseException: An internal error occurred while formatting the following message:
+ cos-all-limited.1.2: An &#39;all&#39; model group must appear in a particle with {min occurs} = {max occurs} = 1, and that particle must be part of a pair which constitutes the {content type} of a complex type definition.]
+ 
+2010.08.25 17:27:36.913 PDT: [ERROR]  **Parsing **   Line: 138
+[org.xml.sax.SAXParseException: An internal error occurred while formatting the following message:
+ cos-all-limited.1.2: An &#39;all&#39; model group must appear in a particle with {min occurs} = {max occurs} = 1, and that particle must be part of a pair which constitutes the {content type} of a complex type definition.]
+ 
+2010.08.25 17:27:36.991 PDT: [ERROR]  The tc text file %SUBMISSION_HOME%/pegasus-2.4.3/var/tc.data was not found 
+2010.08.25 17:27:36.991 PDT: [ERROR]  Considering it as Empty TC 
+2010.08.25 17:27:37.004 PDT: [INFO] event.pegasus.parse.dax dax.id %SUBMISSION_HOME%/BinaryInspiral/var/Nebraska.dax  - STARTED 
+2010.08.25 17:27:37.042 PDT: [INFO] event.pegasus.parse.dax dax.id %SUBMISSION_HOME%/BinaryInspiral/var/Nebraska.dax  - FINISHED 
+2010.08.25 17:27:37.125 PDT: [INFO] event.pegasus.refinement dax.id Nebraska.dax_0  - STARTED 
+2010.08.25 17:27:37.158 PDT: [INFO] event.pegasus.siteselection dax.id Nebraska.dax_0  - STARTED 
+2010.08.25 17:27:37.199 PDT: [INFO] event.pegasus.siteselection dax.id Nebraska.dax_0  - FINISHED 
+2010.08.25 17:27:37.223 PDT: [INFO]  Grafting transfer nodes in the workflow 
+2010.08.25 17:27:37.223 PDT: [INFO] event.pegasus.generate.transfer-nodes dax.id Nebraska.dax_0  - STARTED 
+2010.08.25 17:27:37.226 PDT: [ERROR]  Date Reuse Engine no longer tracks deleted leaf jobs. Returning empty list  
+2010.08.25 17:27:37.294 PDT: [INFO] event.pegasus.generate.transfer-nodes dax.id Nebraska.dax_0  - FINISHED 
+2010.08.25 17:27:37.322 PDT: [INFO] event.pegasus.generate.workdir-nodes dax.id Nebraska.dax_0  - STARTED 
+2010.08.25 17:27:37.325 PDT: [INFO] event.pegasus.generate.workdir-nodes dax.id Nebraska.dax_0  - FINISHED 
+2010.08.25 17:27:37.325 PDT: [INFO] event.pegasus.generate.cleanup-wf dax.id Nebraska.dax_0  - STARTED 
+2010.08.25 17:27:37.327 PDT: [INFO] event.pegasus.generate.cleanup-wf dax.id Nebraska.dax_0  - FINISHED 
+2010.08.25 17:27:37.327 PDT: [INFO] event.pegasus.refinement dax.id Nebraska.dax_0  - FINISHED 
+2010.08.25 17:27:37.412 PDT: [INFO]  Generating codes for the concrete workflow 
+2010.08.25 17:27:37.669 PDT: [ERROR]  Transfer of Executables in NoGridStart only works for staged computes jobs  
+2010.08.25 17:27:37.709 PDT: [ERROR]  /bin/ln: creating symbolic link `%SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit/Nebraska.dax-0.log&#39; to `/tmp/Nebraska.dax-03089918735782218610.log&#39;: File exists 
+2010.08.25 17:27:37.784 PDT: [INFO]  Generating codes for the concrete workflow -DONE 
+2010.08.25 17:27:37.784 PDT: [INFO]  Generating code for the cleanup workflow 
+2010.08.25 17:27:37.844 PDT: [ERROR]  Transfer of Executables in NoGridStart only works for staged computes jobs  
+2010.08.25 17:27:37.883 PDT: [ERROR]  /bin/ln: creating symbolic link `%SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit/cleanup/del_Nebraska.dax-0.log&#39; to `/tmp/del_Nebraska.dax-01048068268554597615.log&#39;: File exists 
+2010.08.25 17:27:37.898 PDT: [INFO]  Generating code for the cleanup workflow -DONE 
+2010.08.25 17:27:37.916 PDT: [INFO]  
+
+
+I have concretized your abstract workflow. The workflow has been entered 
+into the workflow database with a state of &quot;planned&quot;. The next step is 
+to start or execute your workflow. The invocation required is
+
+
+%RED%pegasus-run -Dpegasus.user.properties=%SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit/pegasus.7395923381172294127.properties --nodatabase %SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit%ENDCOLOR%
+
+ 
+2010.08.25 17:27:37.916 PDT: [INFO]  Time taken to execute is 1.283 seconds 
+2010.08.25 17:27:37.916 PDT: [INFO] event.pegasus.planner planner.version 2.4.3  - FINISHED 
+
+&lt;/pre&gt;
+%ENDTWISTY%
+
+Carefully check the output of =pegasus-plan= for the =pegasus-run= statement that we will execute next to _run_ the workflow and _hope for the best_.
+
+---+++++ Execute the work flow using =pegasus-run=
+
+The output of =pegasus-plan= contains the =pegasus-run= statements that we will execute to _run_ the work flow:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% var]$ pegasus-run -Dpegasus.user.properties=%SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit/pegasus.7395923381172294127.properties --nodatabase %SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit
+
+-----------------------------------------------------------------------
+File for submitting this DAG to Condor           : Nebraska.dax-0.dag.condor.sub
+Log of DAGMan debugging messages                 : Nebraska.dax-0.dag.dagman.out
+Log of Condor library output                     : Nebraska.dax-0.dag.lib.out
+Log of Condor library error messages             : Nebraska.dax-0.dag.lib.err
+Log of the life of condor_dagman itself          : Nebraska.dax-0.dag.dagman.log
+
+-no_submit given, not submitting DAG to Condor.  You can do this with:
+&quot;condor_submit Nebraska.dax-0.dag.condor.sub&quot;
+-----------------------------------------------------------------------
+Submitting job(s).
+Logging submit event(s).
+1 job(s) submitted to cluster 176033.
+
+I have started your workflow, committed it to DAGMan, and updated its
+state in the work database. A separate daemon was started to collect
+information about the progress of the workflow. The job state will soon
+be visible. Your workflow runs in base directory. 
+
+cd %SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit
+
+*** To monitor the workflow you can run ***
+
+pegasus-status -w Nebraska.dax-0 -t 20100825T172736-0700 
+or
+pegasus-status %SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit
+
+*** To remove your workflow run ***
+
+pegasus-remove -d 176033.0
+or
+pegasus-remove %SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit
+
+&lt;/pre&gt;
+
+---+++++ Monitor the work flow while it is running
+
+You can monitor the proper execution of your work flow using =pegasus-status=:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% var]$ pegasus-status %SUBMISSION_HOME%/BinaryInspiral/var/workflow/submit
+
+-- Submitter: %SUBMISSION_HOST_FQDN% : &lt;131.215.114.47:18561&gt; : %SUBMISSION_HOST_FQDN%
+ ID      OWNER/NODENAME   SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+176033.0   %SUBMISSION_USER%          8/25 17:43   0+00:02:47 R  0   7.3  condor_dagman -f -
+176034.0    |-create_dir_  8/25 17:44   0+00:02:10 C  0   0.0  dirmanager --creat
+&lt;/pre&gt;
+
+You can also follow the log file written to =BinaryInspiral/var/workflow/submit/Nebraska.dax-0.dag.dagman.out=:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% var]$ tail -f workflow/submit/Nebraska.dax-0.dag.dagman.out
+08/25 19:19:35     2       0        2       0       0         39        0
+08/25 19:19:40 Currently monitoring 1 Condor log file(s)
+08/25 19:19:40 Event: ULOG_JOB_TERMINATED for Condor Node untar_Nebraska.dax_0_local (176052.0)
+08/25 19:19:40 Node untar_Nebraska.dax_0_local job proc (176052.0) completed successfully.
+08/25 19:19:40 Node untar_Nebraska.dax_0_local job completed
+08/25 19:19:40 Number of idle job procs: 0
+08/25 19:19:40 Of 43 nodes total:
+08/25 19:19:40  Done     Pre   Queued    Post   Ready   Un-Ready   Failed
+08/25 19:19:40   ===     ===      ===     ===     ===        ===      ===
+08/25 19:19:40     3       0        1       0       0         39        0
+&lt;/pre&gt;
+
+---+++ RLS catalog population
+
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% BinaryInspiral]$ python python-scripts/populate-rls.py --help
+Wed Sep  8 09:45:29 2010
+usage:  populate-rls.py [options]
+   
+
+options:
+  -h, --help            show this help message and exit
+  -v, --version        display version information and exit
+  -d, --delete         delete entries from RLS catalog (rather than populating)
+  -f  FILE, --input-file= FILE
+                        use input file FILE
+  -r SE, --resource=SE
+                        use storage element SE
+  -p PORT, --port=PORT  use port number PORT
+  -m DIR, --mount-point=DIR
+                        use base dir DIR
+  -P POOL, --pool-name=POOL
+                        RLS catalogue pool attribute
+  -z PRE, --pre=PRE     preamble, default: srm/v2/server?SFN=
+  -s RLS, --rls-catalog=RLS
+                        RLS catalog to be populated: rlsn://devrandom.isi.edu
+  -r REPLICA, --replica=REPLICA
+                        Choose replica type to be queried: LRC or RLS, default
+                        LRC
+&lt;/pre&gt;
+
+The input file used in the population script is tha same as the file transfer input file. The host name is the name of the SE that the files are stored in. The rest should be clear.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%SUBMISSION_USER%@%SUBMISSION_HOST% BinaryInspiral]$ python python-scripts/populate-rls.py  \
+--input-file  %LDF_GPS_OUT% --host-name red-srm1.unl.edu --port 8443 \
+--base-dir /mnt/hadoop/user/ligo --pool-name Nebraska
+&lt;/pre&gt;
+
+This script will run through the files in the input file, determine if the files are already registered in the RLS catalog, if so, it will do nothing, if not, it will register the file in the catalog. Entries in the catalog look like this:
+
+&lt;pre class=&quot;screen&quot;&gt;
+V-HrecOnline-932264000-4000.gwf srm://red-srm1.unl.edu:8443/srm/v2/server?SFN= \ 
+/mnt/hadoop/user/ligo/frames/VSR2/HrecOnline/Virgo/V-HrecOnline-932/V-HrecOnline-932264000-4000.gwf \ 
+pool=&quot;Nebraska&quot;
+&lt;/pre&gt;
+
+If you made a mistake while populating the RLS catalog, for example a wrong mount-point option was given, you can delete the entries from the catalog by running the same script with added --delete option and re-populate afterwards.
+
+&lt;pre class=&quot;screen&quot;&gt;
+V-HrecOnline-932264000-4000.gwf srm://red-srm1.unl.edu:8443/srm/v2/server?SFN= \ 
+/mnt/hadoop/user/ligo/frames/VSR2/HrecOnline/Virgo/V-HrecOnline-932/V-HrecOnline-932264000-4000.gwf \ 
+pool=&quot;Nebraska&quot; --delete
+&lt;/pre&gt;
+
+

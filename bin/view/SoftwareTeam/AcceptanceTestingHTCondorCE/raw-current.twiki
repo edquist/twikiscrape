@@ -1,0 +1,51 @@
+---+ Acceptance Testing for HTCondor-CE (WIP)
+
+---++ Testing the CE Collector
+
+The CE Collector is a stripped-down version of !HTCondor-CE that contains mostly just the collector daemon and configs.
+It was introduced in htcondor-ce-1.6.
+The production CE Collectors run at the GOC, but you may want to set up your own for testing.
+
+   1. Make 2 VMs with the EPEL/OSG repos installed: one for the collector, and one for the CE
+
+---+++ Setting Up the Collector
+
+   1. Install =htcondor-ce-collector=
+   1. Create a file called =/etc/condor-ce/config.d/99-local.conf= that contains this line:&lt;pre class=&#39;file&#39;&gt;
+COLLECTOR.ALLOW_ADVERTISE_SCHEDD = $(COLLECTOR.ALLOW_ADVERTISE_SCHEDD), your_htcondor_ce_host.example.net&lt;/pre&gt;%BR%\
+      (with your_htcondor_ce_host replaced by the hostname the !HTCondor-CE VM)%BR%\
+      For !HTCondor 8.2.3, the &#39;COLLECTOR.&#39; prefix was not necessary (since COLLECTOR.ALLOW_ADVERTISE_SCHEDD was not defined by default), but by 8.2.6 it is
+   1. Run =service condor-ce-collector start=
+
+---+++ Setting Up the CE
+
+   1. Install =osg-htcondor-ce-condor= (replace condor with the batch system of your choice)
+   1. Ensure osg-configure &amp;gt;= 1.0.60-2 is installed
+   1. Configure your CE using osg-configure
+      1. You should use the [[Documentation.Release3.InstallHTCondorCE][HTCondor-CE Install Docs]] as a reference, although you can skip several of the steps
+      1. You can skip setting up Squid: set =enabled= to =True= and =location= to =UNAVAILABLE= in =01-squid.ini=
+      1. Set =htcondor_gateway_enabled= to =True= in =10-gateway.ini=
+      1. You probably don&#39;t need GUMS, but if you want it, use the Fermi GUMS server (set =gums_host= to =gums.fnal.gov= and =authorization_method= to =xacml= in 10-misc.ini)
+      1. To keep osg-configure from complaining about storage, edit =10-storage.ini=:
+         * Set =se_available= to =False=
+         * Set =app_dir= to =/osg/app_dir=
+         * Set =data_dir= to =/osg/data_dir=
+         * Do =mkdir -p /osg/app_dir/etc; mkdir -p /osg/data_dir; chmod 1777 /osg/app_dir{,/etc}=
+      1. Enable your batch system by setting =enabled= to =True= in =20-&amp;lt;batch system&amp;gt;.ini=
+      1. Set up the site info in =40-siteinfo.ini= ;  in particular, you&#39;ll need to set the =resource= and =resource_group= settings%BR%\
+         (you just need to pick a name; I concatenate my login name with the short host name and use that, e.g. matyasfermicloud001).%BR%\
+         You can also use the following settings:
+         * &lt;code&gt;group=OSG-ITB&lt;/code&gt;
+         * &lt;code&gt;sponsor=local&lt;/code&gt;
+         * &lt;code&gt;city=Batavia, IL&lt;/code&gt;
+         * &lt;code&gt;country=US&lt;/code&gt;
+         * &lt;code&gt;longitude=-88&lt;/code&gt;
+         * &lt;code&gt;latitude=41&lt;/code&gt;
+   1. Edit the file =/etc/osg/config.d/30-infoservices.ini= and set =ce_collectors= to the collector host
+   1. Run =osg-configure -dc=
+   1. Start up your batch system
+   1. Run =service condor-ce start=
+
+The CE will report to the collector host every five minutes.
+If you want to force it to send now, run =condor_ce_reconfig=.
+You should see your CE if you run =condor_ce_status -schedd= on the collector host.

@@ -1,0 +1,97 @@
+%TOC%
+
+---+!! Guide to using OSG for users of the TGYRO application.
+
+---++ Overview
+
+This guide is specifically aimed at enabling TGYRO users to take advantage of the Open Science Grid. It may look daunting at first, but a large fraction of these instructions only need to be followed once; yet more need to be done only once per year. There are two main sections: [[#Authorization_and_authentication][Authorization and authentication]] dealing with how to get the required access to run via the OSG, and [[#Running_TGYRO_jobs_on_the_OSG][Running TGYRO jobs on the OSG]] which tells you what you need to know to submit jobs to OSG sites and obtain the results.
+
+---++ Authorization and authentication.
+
+Perhaps the biggest difference from the methods for running TGYRO with which you are familiar is that one logs onto one machine, =engage-submit.renci.org= in order to submit jobs to any one of several sites. The authentication and authorization requirements of those sites are generally handled using X.509 certificates. The ones used are so-called, &quot;extended attribute&quot; certificates known as, &quot;VOMS proxies.&quot; These extended attributes encode information about your, &quot;Virtual Organization&quot; and, particular scientific purpose to enable sites to decide whether to allow you access and how to prioritize your usage with respect to everyone else.
+
+---+++ Obtaining an X.509 certificate (_once only_).
+
+The first thing one needs to do is obtain an X.509 certificate. If you do not already have an X.509 certificate of your own, you should obtain one from the DOE. In order to do this you should use a browser, preferably Mozilla Firefox.
+
+---++++ Ensure your browser recognizes and accepts DOE certificates.
+
+%INCLUDE{&quot;EngageNewUserGuide&quot; section=&quot;UpdateDOECAChain&quot;}%
+
+---++++ Apply for a personal certificate
+
+%INCLUDE{&quot;EngageNewUserGuide&quot; section=&quot;ApplyForDOECert&quot;}%
+
+---++++ Retrieve your personal certificate
+
+When your certificate has been successfully issued, you will receive an email that contains a link to a page containing all your certificate information. Open that page in your browser and click on &lt;font color=&quot;#993399&quot;&gt;Import Your Certificate&lt;/font&gt; button at the bottom of that page.
+
+---++++ Export your certificate for use in job submission.
+
+See the instructions on the [[http://www.doegrids.org/pages/cert-request.html#Globus][DOEGrids certificate page]].
+
+---+++ Join the Engage VO (_once only_).
+
+%INCLUDE{&quot;EngageNewUserGuide&quot; section=&quot;JoinTheEngageVO&quot;}%
+
+Specify your VO representative as, &quot;Christopher H. Green (Engage).&quot;
+
+Ensure that you specify:&lt;verbatim&gt;&lt;your-institute&gt; (TGYRO)&lt;/verbatim&gt;
+as your affiliation to ensure that your application gets routed appropriately.
+
+Be sure to follow immediately the instructions in the &quot;Phase I&quot; email you will receive in order for your application to progress.
+
+You and/or your institute&#39;s TGYRO / ITER representative may receive further inquiries, but you should normally receive an email notification that you have been admitted to the Engage VO within one business day. Follow the instructions therein to finalize your admittance to the VO.
+
+---+++ Obtain access to the central Engage VO submit node.
+
+Visit the RENCI [[https://access.renci.org/request][account request page]] and fill in the following information:
+
+   * RENCI contact: John !McGee
+   * RENCI contact e-email: mcgee@renci.org
+   * Please select &quot;Don&#39;t need one&quot; regarding: If you need to be added to the gridmap file please select the appropriate option. 
+   * Please give a short description of why you need this account: OSG via Chris Green.
+
+---+++ Renewing your DOEGrids certificate (_once per year only_).
+
+A few weeks before your certificate arrives you will start receiving emails warning you of the impending expiration of your certificate. In order to renew your certificate _at any time before it expires_, do the following:
+
+   1. Ensure you have your current certificate in your browser. For greatest ease use the same browser from which you requested the certificate in the first place; otherwise import from the backup you made (and kept, right?)
+   1. Visit http://www.doegrids.org/ and select the &quot;Certificate Renewal&quot; link from the left sidebar.
+   1. Follow the instructions. Your certificate will be automatically renewed and imported into your browser.
+   1. Follow the instructions [[#Export_your_certificate_for_use][above]].
+
+If your certificate has expired, you will need to [[#Apply_for_a_personal_certificate][request a new one]]. In the comments field, request that your certificate be issued with the same DN (including &quot;random&quot; number) as your existing one, and paste the DN in the comments field also. This can be obtained either from your browser or certificate handling utility or by executing the command from your submit node:&lt;verbatim&gt;openssl x509 -noout -in $HOME/.globus/usercert.pem -subject&lt;/verbatim&gt;
+
+---+++ Re-signing the VO Usage Policy (_once per year only_).
+
+Once per year, you should receive an email directing you to re-sign the Acceptable Use Policy, or AUP. Read and agree to abide by the AUP in order to continue membership of the Engage VO for another year.
+
+---+++ Obtain VOMS credentials for job submission (_prior to job submission but not more often than once per 24h_).
+
+%INCLUDE{&quot;EngageNewUserGuide&quot; section=&quot;InitUserProxyBasic&quot; EngageFqanExample=&quot;Engage:/Engage/Fusion/TGYRO&quot;}%
+
+---+++ Site-specific authorization steps (_once only per site_).
+
+Some sites require special steps to be taken to obtain access. These are listed below, along with the specific actions required.
+
+---+++ NERSC sites.
+
+You must be an authorized user of NERSC resources. If you are not, talk to your project management and follow your group&#39;s procedures to obtain access, and in particular, [[https://nim.nersc.gov/][NIM]] login abilities. Assuming this is done, access the [[https://nim.nersc.gov/][NIM]] site and look for the, &quot;Grid Certificates&quot; tab on the right of the main frame. Use the link provided to add your certificate to the list. You will need the information obtained by executing the following command on your grid submission node (the one onto which you [[#Export_your_certificate_for_use][placed your DOE certificate]]):
+&lt;verbatim&gt;openssl x509 -noout -in $HOME/.globus/usercert.pem -subject&lt;/verbatim&gt;
+
+---++ Running TGYRO jobs on the OSG.
+
+Before attempting to run jobs on the OSG, ensure first that you are able to [[#Obtain_access_to_the_central_Eng][log on to the current Engage submit host at RENCI]], NC, and that you are able to [[#Obtain_VOMS_credentials_for_job][obtain the correct user proxy]] from there. Then:
+
+   1. Ensure you have the correct environment for TGYRO job submission:&lt;pre&gt;. ~greenc/tgyro-suite/setup.sh&lt;/pre&gt;&lt;em&gt;or&lt;/em&gt;:&lt;pre&gt;source ~greenc/tgyro-suite/setup.csh&lt;/pre&gt;as appropriate.
+   1. Ensure you have a local top-level work directory (eg =~/mpi-work/tgyro=).
+   1. Generate your work area, either by importing or copying an older directory or by generating it from a template, eg:&lt;pre&gt;tgyro -g stest_1 -p ~/mpi-work/tgyro&lt;/pre&gt;
+   1. Submit your job as normal, eg:&lt;pre&gt;tgyro_bat -e stest_1 -n 4 -p ~/mpi-work/tgyro&lt;/pre&gt;Answer the questions as appropriate.
+   1. Monitor the progress of your job with =condor_q &amp;lt;user&amp;gt;= or =condor_q &amp;lt;job#&amp;gt;=.
+   1. Upon completion of the job, expand the results archive, =output_files.tar.bz2=.
+
+Submission of TGYRO jobs is still being improved, so please bookmark [[#Running_TGYRO_jobs_on_the_OSG][this section]] and check back regularly for news of any changes.
+
+If you are interested, here are some [[EngageTGYROTechnicalDetails][technical details]] of how the TGYRO system was adapted to run on the OSG.
+-- Main.ChrisGreen - 18 Sep 2009

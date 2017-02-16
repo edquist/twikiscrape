@@ -1,0 +1,117 @@
+
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Jeff Dost
+   * Neha Sharma
+   * Doug Strain
+   * Tanya Levshina
+
+
+---+++ Guests
+   * Suchandra Thapa
+
+---++ Status report
+&lt;!-- DESCRIPTION --&gt;
+Alex:&lt;pre class=&quot;screen&quot;&gt;
+  - Review proposal from EMI for SRM interop testing (S2)
+  - Support for STAR experiment on timed-out gridftp transfers (managed by bestman) from NERSC to BNL
+    fixed a bug on file lifetime affecting long-running file transfers (in full mode)
+  - bestman2 RPM configuration discussion for hadoop release
+  - bestman2 2.0.13 release candidate
+&lt;/pre&gt;
+
+Doug&lt;pre class=&quot;screen&quot;&gt;
+- Bestman packaging issues w/Hadoop (conversations with Brian &amp; Jeff about generalizing package)
+- Xrootd packaging for release candidates
+- Public Storage: FuseSRM
+&lt;/pre&gt;
+
+Jeff&lt;pre class=&quot;screen&quot;&gt;
+Hadoop 0.20 RPMs / Documentation
+- finished testing Brian&#39;s new bestman2 rpms, encountered no problems,
+created new bestman2 doc and noted relevant changes:
+https://twiki.grid.iu.edu/bin/view/Storage/Hadoop20SRM
+- updated gridFTP doc:
+https://twiki.grid.iu.edu/bin/view/Storage/Hadoop20GridFTP
+- began creating release doc for Hadoop 0.20 (work in progress)
+https://twiki.grid.iu.edu/bin/view/ReleaseDocumentation/Hadoop20Install
+&lt;/pre&gt;
+
+Neha&lt;pre class=&quot;screen&quot;&gt;
+- asked Igor to run stress tests against gridworks. results for lcg-ls worse than previous version.
+- went through mock material sent by doug
+- unsuccessful in getting a cloud vm up to set the mock environment..in progress
+- released vdt-dcache-3.0.7 in production
+&lt;/pre&gt;
+
+Tanya&lt;pre class=&quot;screen&quot;&gt;
+- installed bestman2.0.12 from rpm, tested configuration modification
+- discussed prima rpm packaging with Alain
+- discussed BeStMan2 client for ITB release
+- wrote a questionnaire for South America site admins in preparation for SE Installation Fest 
+- support
+&lt;/pre&gt;
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+!BeStMan2 rpm
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+We have installed and tested the !BeStMan2 rpm (on top of hdfs and disk). Now it is possible:
+   *  to do modification of parameters without manually changing ==bestman2.server==. The new configuration file is ==/etc/sysconfig/bestman2==. 
+   * start and stop bestman via service command and preserve stderr/stdout log. 
+
+Tanya has raised the concern that the well documented native configure script is replaced with not documented file that contains the list of env variables. Now, sys admins should manually modify two files (==bestman2.rc== and  ==/etc/sysconfig/bestman2==).  ==/etc/sysconfig/bestman2== doesn&#39;t contain any explanations. Hopefully, the newly released version of !BeStMan2 addresses these issues and allows to use configure script that modifies these two files. Doug will create rpm from the new release and see if it satisfies the requirements. 
+
+It looks like !BeStMan2 client and the switch that allows users to choose between this client and  srm-lbnl client were not included in  the current ITB release. Alain has promised to include it in the next ITB release.
+
+---++ Second agenda Item
+&lt;!-- DESCRIPTION --&gt;
+!Hadoop rpms
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Hadoop 0.20 rpms  are ready to be moved into stable repo. Jeff will need to test the upgrade procedure from hfds 0.19 to hdfs 0.20. Also, he is not sure how to test gratia transfer and storage probes and if any changes in documentation are needed. Tanya will test the probes. Jeff will continue to work on documentation. Tanya will review it and  Neha will be a tester. 
+
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+xrootd rc2
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Xrootd rc2 have not been released yet, It looks like several bugs have been fixed and tested but Luckasz is still waiting for Gerri Ganis to do the testing in ROOT.  As soon as rc2 is released Doug will built binaries rpms and update vdt repo.
+
+We installed prima rpm with gridftp-dsi-xrootd and updated doc. So, gridftp authorization could be done by contacting GUMS. Unfortunately, two configuration files have to be created manually from scratch and prima libs are still under /opt/vdt... and not linked to /usr/lib. We will discuss these issues with Alain.
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+vdt-dcache 3.0.7
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+New vdt-dcache (1.9.5-26 and gratia probes 1.07.02d-2) is released. The stress test results ran by Igor is slightly worse then the results from the previous version [[http://hepuser.ucsd.edu/twiki2/bin/view/UCSDTier2/DCTest][see historical results]]
+
+---++ Tickets
+++++++++++++
+New tickets
+++++++++++++
+
+Follow up in progress:
+
+10400 - srmcp command not working as expected
+
+++++++++++++
+Old tickets
+++++++++++++
+
+No Update
+
+42 - OSG Storage: Xrootd: Help with documentation and troubleshooting
+
+10160 - OSG-Storage: Resource Specific Issue on T2_Nebraska_OSG
+
+
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 26 May 2011

@@ -1,0 +1,97 @@
+---+ OSG Technology Area Meeting, 3 August 2015
+
+*Coordinates:* Conference: 857-216-4999, PIN: 32390; https://www.uberconference.com/osgcat
+
+*Attending:*  !BrianB, Carl, !DerekW, Edgar, Jeff, Marian, Mat, Suchandra, !TimT
+&lt;!-- !BrianB, !BrianL, Carl, Edgar, Jeff, !JohnH, Jose, Marian, Mat, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+!BrianB will be leaving for CERN on Friday and will be unavailable next week.
+
+---+++ Triage Duty
+   * This week: Carl
+   * Next week: !TimT
+   * 10 (+5) open tickets
+
+---+++ JIRA
+
+   * Open: 158 (-5)
+   * In Progress: 20 (-1)
+   * Ready for Testing: 17 (+14)
+   * Ready for Release: 2 (+2)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| August | 3.2.26 / 3.3.0 | 2015-07-27 | 2015-08-03 | 2015-08-11 | |
+| September | 3.2.27 / 3.3.1 | 2015-08-24 | 2015-08-31 | 2014-09-08 | Release a day after Labor Day |
+| October | 3.2.28 / 3.3.2 | 2015-09-28 | 2015-10-05 | 2014-10-13 | 5 week cycle |
+
+*Notes:* Additional “urgent” releases may be scheduled for the 4th Tuesday of each month. The *Testing* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+
+---++ OSG Software Team
+
+   * !BrianB has patches for two issues for Condor:
+      * The job router, upon restart, reconnects to the jobs it had already submitted, and will try to stage out the jobs to the local ce instead of the factory. \
+        This only affects restarts of the CE, and does not interrupt running pilots, so does not affect production. \
+        This fix needs to be applied to the CEs
+      * The way the factory queries the job status of the remote CE, it is done in the schedd process instead of forking, so CEs that have heavy loads and/or bad network connectivity to the factory, and other operations time out - so failures submitting jobs, etc. \
+        This affects MIT a lot, and they are capping opportunistic jobs heavily. \
+        This fix needs to be applied to the Factory
+   * Jeff and !BrianB will discuss upgrading the factory. \
+     They are willing to install a patched Condor from osg-testing, if we give them one. \
+     !TimT will have flightworthy review the patches; \
+     separately, OSG will apply the patches to the Condors we&#39;re shipping (both 8.2 and 8.3)
+   * Condor 8.3 still failing on EL5; !BrianB may have time to investigate
+   * GUMS upgrade causes failing tests; Carl and !BrianB debugging
+
+---+++ Activities
+Big projects:
+   * Support EL 7 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1541][SW-1541]])
+   * Start OSG 3.3 release series ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1846][SW-1846]])
+   * Documentation
+   * !StashCache ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1815][SW-1815]])
+   * HTCondor CE ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1813][SW-1813]])
+   * IPv6 evaluation ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1525][SW-1525]])
+   * Support, especially Clemson, Florida International (FIU), Georgia Tech
+
+
+---++ OSG Release Team
+---+++ Projects
+   * Would like people to start upgrading nodes on their sites to OSG 3.3. \
+     Follow the https://twiki.grid.iu.edu/bin/view/Documentation/Release3/OSGReleaseSeries page to upgrade
+   * Madison ITB site - Suchandra will start submitting jobs from the ITB factory; \
+     Mat should talk to infrastructure about getting some jobs from the GLOW VO
+   * August 11th Release - OSG 3.2.26 and OSG 3.3.0
+      * Tim Theisen is handling the [[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.3.0%2C%203.2.26%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][August 11th Release]]
+      * Package freeze today
+      * Packages will be promoted to pre-release as they clear testing
+
+%TABLE{sort=&quot;off&quot;}%
+| *3.2.26* | *Both* | *3.3.0* | *Total* | *Status* |
+| 0 (-5) | 0 (+0) | 0 (-1) | 0 (-6) | Open |
+| 0 (-2) | 0 (-3) | 1 (+0) | 1 (-5) | In Progress |
+| 11 (+11) | 1 (+1) | 5 (+5) | 17 (+17) | Ready for Testing |
+| 0 (+0) | 2 (+2) | 0 (+0) | 2 (+2) | Ready for Release |
+| 1 (+1) | 0 (-1) | 0 (+0) | 1 (+0) | Closed |
+| 12 (+5) | 3 (-1) | 6 (+4) | 21 (+7) | Totals |
+
+   * OSG 3.2.26
+      * !XRootD 4.2.2 -significant bug fixes
+      * osg-configure improvements
+      * certificate modernization
+   * OSG 3.3.0
+      * OSG 3.2.26 changes
+      * EL 7 - Worker Node only
+      * No RHEL 5 support
+
+---+++ Notes
+
+---++ OSG Investigations Team
+
+   * Progress in testing !StashCache - increasingly good test results w.r.t. concurrency and performance under load. \
+     Performance is so good it messes up the graphs
+   * OASIS progressing fine; \
+     Switching to some new storage targets in the ITB
+   * José working on making !AutoPyFactory use the Condor Python bindings

@@ -1,0 +1,15 @@
+---++ Install Instructions
+   1 Install rsv-vo-gwms package &lt;verbatim&gt;yum install rsv-vo-gwms --enablerepo=osg&lt;/verbatim&gt;
+   1 Set up a proxy file readable by rsv user and and with vo VOMS extension. It needs to be renewed outside of rsv (possible via a cron job). An example running in the rsv crontab would look like this:&lt;verbatim&gt;* */12 * * * /var/rsv/.globus/refresh_proxy.sh &lt;/dev/null &gt;/dev/null 2&gt; /dev/null&lt;/verbatim&gt; And the refresh_proxy script like:&lt;verbatim&gt;#!/bin/bash                                                                                                                                                   
+voms-proxy-init -cert /etc/grid-security/rsv/rsvcert.pem -key /etc/grid-security/rsv/rsvkey.pem -voms osg -out /etc/grid-security/rsv/mis.proxy -hours 72&lt;/verbatim&gt;
+   1 Modify file &lt;verbatim&gt;/etc/osg/config.d/30-rsv.ini&lt;/verbatim&gt;  and set &lt;verbatim&gt;enable_gratia = False&lt;/verbatim&gt; and the rsvcert and rsvkey paths &lt;verbatim&gt;service_cert&lt;/verbatim&gt;, &lt;verbatim&gt;service_key&lt;/verbatim&gt;, and &lt;verbatim&gt;user_proxy = etc/grid-security/rsv/mis.proxy&lt;/verbatim&gt; 
+   1 Run &lt;verbatim&gt; osg-configure -v&lt;/verbatim&gt; and then &lt;verbatim&gt; osg-configure -c&lt;/verbatim&gt;
+   1 Modify the file &lt;verbatim&gt;/etc/rsv/metrics/org.osg.local-gfactory-querying-local.conf&lt;/verbatim&gt; to adjust the constraints for the entries that you are interested in testing
+   1 Add file  &lt;verbatim&gt;/etc/condor-cron/config.d/98_public_interface.config&lt;/verbatim&gt; with the following contents: &lt;verbatim&gt;NETWORK_INTERFACE = REPLACE_ME_WITH_HOST_IP&lt;/verbatim&gt;
+   1 Start &lt;verbatim&gt;httpd, condor-cron, rsv&lt;/verbatim&gt; services. 
+   1 Run &lt;verbatim&gt; rsv-control --enable org.osg.local-gfactory-querying-local  --host fermicloud053.fnal.gov &lt;/verbatim&gt; where host can be localhost or the actual name of the node where rsv-vo-gwms is installed.
+   1 Run &lt;verbatim&gt;rsv-control --on org.osg.local-gfactory-querying-local  --host fermicloud053.fnal.gov &lt;/verbatim&gt; where host can be localhost or the actual name of the node where rsv-vo-gwms is installed
+
+
+-- Main.EdgarMauricioFajardoHernandez2 - 21 Jan 2015
+

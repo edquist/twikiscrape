@@ -1,0 +1,262 @@
+---+ Acceptance Testing for voms-admin-server
+
+---++ Install and configure voms-admin-server
+
+Install and configure voms-admin-server with the following script, entering =osg-testing= when prompted for the =REPO= and your own e-mail address when prompted for =EMAIL_FROM=:
+
+&lt;pre class=&#39;file&#39;&gt;
+#!/bin/bash
+
+# script vars #
+
+REPO= #osg-testing
+MYSQL_ROOT_PASSWORD=top_secret
+VO_NAME=TEST_VO
+VO_ALIAS=testvo
+MYSQL_DB_PASSWORD=secret
+DB_PORT=3306
+VOMS_PORT=15001
+EMAIL_FROM=edquist@cs.wisc.edu
+SMTP_HOST=smtp.fnal.gov
+
+svars=(
+  REPO MYSQL_ROOT_PASSWORD VO_NAME VO_ALIAS MYSQL_DB_PASSWORD
+  DB_PORT VOMS_PORT EMAIL_FROM SMTP_HOST
+)
+
+# functions #
+
+fail () { echo &quot;$@&quot; &gt;&amp;2; exit 1; }
+
+retry () {
+  local n=$1 delay=$2
+  shift 2
+  while (( n-- &gt;= 0 )); do
+    sleep $delay
+    &quot;$@&quot; &amp;&amp; return
+  done
+  return 1
+}
+
+cert () {
+  # cert {subject|issuer}
+  openssl x509 -in /etc/grid-security/hostcert.pem -noout -$1 | sed &quot;s/^$1= //&quot;
+}
+
+user_input_var () {
+  local __
+  # read -p &quot;$1=&quot; -ei &quot;${!1}&quot; &quot;$1&quot;
+  read -p &quot;$1= [${!1}] &quot; __
+  [[ $__ ]] &amp;&amp; eval $1=\$__
+  [[ ! ${!1} =~ [^-_a-zA-Z0-9.@] ]] || fail &quot;sorry, i don&#39;t like &#39;${!1}&#39;&quot;
+}
+
+stars () {
+  yes &#39;*&#39; | head -$1 | tr -d &#39;\n&#39;
+}
+
+SECTION () {
+  local s=$*
+  echo
+  echo &quot;******$(stars ${#s})******&quot;
+  echo &quot;****  $s  ****&quot;
+  echo &quot;******$(stars ${#s})******&quot;
+  echo
+}
+
+on_err () {
+  echo
+  echo &quot;Error running \&quot;$BASH_COMMAND\&quot; (line ${BASH_LINENO[0]})&quot;
+  read -p &quot;Continue? [y/N] &quot; &amp;&amp; [[ $REPLY = [yY]* ]] || exit 1
+}
+
+trap on_err ERR
+
+
+[[ $USER = root ]] || fail &quot;You probably mean to run this as root...&quot;
+
+case $1 in
+  -ok ) shift; OK=Y ;;
+esac
+# set script vars if on a tty #
+
+if [[ $OK != Y &amp;&amp; -t 0 &amp;&amp; -t 1 ]]; then
+  for x in ${svars[@]}; do
+    user_input_var $x
+  done
+  echo
+  for x in ${svars[@]}; do
+    echo &quot;$x=\&quot;${!x}\&quot;&quot;
+  done
+  echo
+  read -p &#39;OK? [y/N] &#39; &amp;&amp; [[ $REPLY = [yY]* ]] || exit 1
+fi
+
+HOST_CERT_SUBJECT=$(cert subject)
+HOST_CERT_ISSUER=$(cert issuer)
+
+EL_RELEASE=$(&lt;/etc/redhat-release)
+case $EL_RELEASE in
+  *&quot;release 5&quot;* ) EL=5 TOMCAT=tomcat$EL FETCH_CRL=fetch-crl3 ;;
+  *&quot;release 6&quot;* ) EL=6 TOMCAT=tomcat$EL FETCH_CRL=fetch-crl  ;;
+  * ) fail &quot;Bad redhat-release string: $EL_RELEASE&quot;
+esac
+
+
+SECTION Install the CA Certificates
+
+yum clean --enablerepo=\* expire-cache
+yum install -y osg-ca-certs
+
+SECTION Install VOMS
+
+yum install -y ${REPO:+--enablerepo=&quot;$REPO&quot;} osg-voms
+
+SECTION Configure MySQL Database 
+
+/etc/init.d/mysqld start
+mysqladmin -u root password &quot;$MYSQL_ROOT_PASSWORD&quot;
+
+SECTION Setup the Service Certificates
+
+cd /etc/grid-security
+cp -b hostcert.pem voms/vomscert.pem
+cp -b hostkey.pem voms/vomskey.pem
+chown -R voms:voms voms
+
+cd /etc/grid-security
+if [[ -e /etc/grid-security/http ]]; then
+  mv /etc/grid-security/http{,~}
+fi
+mkdir -p /etc/grid-security/http
+cp hostcert.pem http/httpcert.pem
+cp hostkey.pem http/httpkey.pem
+chown -R tomcat:tomcat http
+
+SECTION Configure Tomcat options
+
+echo &#39;CATALINA_OPTS=&quot;${CATALINA_OPTS} -XX:MaxPermSize=256m&quot;&#39; \
+     &gt;&gt; /etc/$TOMCAT/$TOMCAT.conf
+
+if [[ $EL = 6 ]]; then
+  echo \
+  &#39;JAVA_ENDORSED_DIRS=&quot;${JAVA_ENDORSED_DIRS}:/usr/share/voms-admin/endorsed&quot;&#39; \
+     &gt;&gt; /etc/$TOMCAT/$TOMCAT.conf
+fi
+
+cat &gt;&gt; /etc/security/limits.conf &lt;&lt;__EOT__
+tomcat          soft    nofile  63536
+tomcat          hard    nofile  63536
+
+tomcat          soft    nproc   16384
+tomcat          hard    nproc   16384
+__EOT__
+
+
+SECTION Configure Trust Manager
+
+/var/lib/trustmanager-tomcat/configure.sh
+
+SECTION Add and configure a VO
+
+voms-admin-configure install \
+    --dbtype mysql \
+    --vo $VO_NAME \
+    --createdb \
+    --deploy-database \
+    --dbauser root \
+    --dbapwd $MYSQL_ROOT_PASSWORD \
+    --dbusername  admin-$VO_NAME \
+    --dbpassword $MYSQL_DB_PASSWORD \
+    --dbport  $DB_PORT \
+    --port $VOMS_PORT \
+    --mail-from $EMAIL_FROM \
+    --smtp-host $SMTP_HOST \
+    --sqlloc /usr/lib64/voms/libvomsmysql.so \
+    --cert /etc/grid-security/voms/vomscert.pem \
+    --key  /etc/grid-security/voms/vomskey.pem \
+    --read-access-for-authenticated-clients 
+
+/sbin/service voms start $VO_NAME
+/sbin/service voms-admin start $VO_NAME
+
+retry 10 1 \
+/usr/sbin/voms-db-deploy.py add-admin --vo $VO_NAME  \
+    --dn &quot;$HOST_CERT_SUBJECT&quot; \
+    --ca &quot;$HOST_CERT_ISSUER&quot;
+
+/usr/sbin/$FETCH_CRL -p10 -T10 || :  # fetch-crl errors are common
+/sbin/service $TOMCAT start
+
+retry 6 5 \
+voms-admin --nousercert --vo $VO_NAME add-ACL-entry \
+    /$VO_NAME ANYONE VOMS_CA &quot;CONTAINER_READ,MEMBERSHIP_READ&quot; true
+
+echo &quot;voms.csrf.log_only = true&quot; \
+    &gt;&gt; /etc/voms-admin/$VO_NAME/voms.service.properties
+
+
+SECTION Advertise your VOMS server
+
+printf &#39;&quot;%s&quot; &quot;%s&quot; &quot;%s&quot; &quot;%s&quot; &quot;%s&quot;\n&#39; \
+       $VO_ALIAS $HOSTNAME $VOMS_PORT &quot;$HOST_CERT_SUBJECT&quot; $VO_NAME \
+       &gt;&gt; /etc/vomses
+
+mkdir -p /etc/grid-security/vomsdir/$VO_NAME
+
+{ echo &quot;$HOST_CERT_SUBJECT&quot;
+  echo &quot;$HOST_CERT_ISSUER&quot;
+} &gt; /etc/grid-security/vomsdir/$VO_NAME/$HOSTNAME
+
+
+SECTION Starting and Enabling Services
+
+# commenting these out since for tests we don&#39;t need fetch-crl to keep running
+#/usr/sbin/$FETCH_CRL || :  # fetch-crl errors are common
+#/sbin/service $FETCH_CRL-boot start || :
+#/sbin/service $FETCH_CRL-cron start || :
+
+/sbin/service mysqld start
+service voms start
+service $TOMCAT start
+
+/sbin/chkconfig $FETCH_CRL-boot on
+/sbin/chkconfig $FETCH_CRL-cron on
+
+/sbin/chkconfig mysqld on
+/sbin/chkconfig voms on
+/sbin/chkconfig $TOMCAT on
+
+
+SECTION All Done
+&lt;/pre&gt;
+
+---++ Set up TEST_VO and add yourself as an admin
+
+To add a test VO (named TEST_VO) and add yourself as an admin, use the following script, replacing the =USER_EMAIL=, =USER_CERT_SUBJECT=, and =USER_COMMON_NAME= variables with your own:
+
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash
+
+VO_NAME=&quot;TEST_VO&quot;
+TOMCAT_PORT=&quot;8443&quot;
+USER_EMAIL=&quot;YOUR_EMAIL&quot;
+USER_CERT_SUBJECT=&quot;YOUR CERT DN&quot;
+USER_CERT_ISSUER=&quot;/DC=com/DC=DigiCert-Grid/O=DigiCert Grid/CN=DigiCert Grid CA-1&quot;
+USER_COMMON_NAME=&quot;YOUR CERT CN&quot;
+
+voms-admin --vo $VO_NAME --host $HOSTNAME --nousercert create-user \
+    &quot;$USER_CERT_SUBJECT&quot; &quot;$USER_CERT_ISSUER&quot; &quot;$USER_COMMON_NAME&quot; &quot;$USER_EMAIL&quot;
+
+voms-admin --vo $VO_NAME --host $HOSTNAME --nousercert assign-role \
+    /$VO_NAME VO-Admin &quot;$USER_CERT_SUBJECT&quot; &quot;$USER_CERT_ISSUER&quot;
+
+echo web ui: https://$HOSTNAME:$TOMCAT_PORT/voms/$VO_NAME
+&lt;/pre&gt;
+
+---++ Testing the web UI
+
+   1. Add/suspend/restore/delete a user (using your e-mail address for contact)
+   1. Verify e-mail receipt of suspension message
+
+-- Main.BrianLin - 05 Jun 2015

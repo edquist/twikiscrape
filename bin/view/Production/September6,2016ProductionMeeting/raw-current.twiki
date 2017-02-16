@@ -1,0 +1,144 @@
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-812-856-7060, 231000# 
+   * [[https://bridge.iu.edu/webapp/#/][Video Link]]
+
+---++ Announcements:   
+
+---++ Action/Significant Items: 
+   * !PerfSONAR Datastore Issues. Apache restart did not happen automatically with new RPM installation, causing a configuration issues that stopped probes from delivering data. Restart of httpd solved initial problem and data began being sent.
+      * However, this recovery caused memory issues which are being worked through now.
+   * CMS expects heavy load in the near future. 
+   * FIFE reports: &quot;Many sites upgraded to newest version of CVMFS  - thanks, GOC!&quot;
+   * New Project8 VO. Neutrino mass experiment http://www.project8.org/. 
+   * Hit 45k running flock jobs Sunday night/Monday morning for OSG VO. 
+   * IPv6 implementation at Ops is causing some issues for dual stacked !IPv4/IPv6 clients. 
+      * We are resolving issues as reported, but will need to take other action to:
+         * Make sure full testing is done in ITB
+         * Monitor both !IPv6 and !IPv4 connections to services
+   * Software and Ops need to discuss an alerting mechanism on sites that stop reporting Gratia results.
+      * UNL was recently bitten by this. 
+
+---++ Attendees: Tony, Armen, Tim T, Tim C, Kyle, Tanya, Xin, Ken, Rob Q
+
+---++ Apologies: Jeny, Scott
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status. 
+      * USATLAS total production over the past week was quite stable, at the average level of 50-60K running job slots.      
+   * Job statistics for last week.     
+      * Gratia report: 1.3M pilots, 5.1M walltime hours, and CPU/walltime ratio of 85% (for single core jobs)
+      * 1.6M real Jobs reported from the Atlas dashboard.  
+
+---++ FIFE - !Fabric for Frontier Experiments (Tanya)
+   * For the last two weeks
+      * mu2e 283K - 100% success rate
+      * nova 151K - 85% success rate (failures at Nebraska)
+      * cdf 30K  - massive failures on MIT_CMS 
+      * seaquest 10K - 80% success rate
+      * des 881  - 93% success rate
+   * Many sites upgraded to newest version of CVMFS  - thanks, GOC!
+
+
+---++ CMS (Tony &amp; Krista)
+   * CMS Production for the week:
+      * 4,367,182 hours
+      * 156,074 pilots
+
+---++ Grid Operations Center (Scott)
+   * [[http://tinyurl.com/pre26vw][GOC Services Availability/Reliability]]
+   * Current Status: [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][&lt;img src=&quot;http://steige.grid.iu.edu/steige/status_current.png&quot;&gt;]]
+      * [[http://monitor.grid.iu.edu/availability/status_overview.html][Overview board.]]
+   * &lt;a href=&quot;http://reports.grid.iu.edu/reports/&quot;&gt;Reports current: &lt;img src=&quot;http://steige.grid.iu.edu/steige/status_reports.png&quot;&gt;&lt;/a&gt;
+   * [[http://maddash.aglt2.org/maddash-webui/index.cgi?dashboard=OSG%20Grid%20Operations%20Center%20Test%20Mesh%20Config][PerfSonar]] service
+   * &lt;img src=&quot;http://gratiaweb1.grid.iu.edu/gratiastatic/today/osg_wall_hours.png&quot;/&gt;
+   * &lt;img src=&quot;http://osg-flock.grid.iu.edu/monitoring/condor/condor_7day.png&quot; width=&#39;630&#39; height=&#39;390&#39;  /&gt;&lt;br&gt;
+
+   * No Operations Meeting Yesterday due to holiday.
+   * PerfSONAR Datastore issues began with install on the 23rd. Data was held and delivery resumed today. 
+      * New Apache configuration and no restart of the service caused the issue.
+      * Some clean up still ongoing
+   * New Project8 VO going into VO package. 
+   * BNL/GGUS ticket exchange issues being worked out. Marina thinks she has the necessary fix identified. 
+   * IPv6 issues on Condor Collector being worked through. IPv6 based clients are having some issues. GOC will rollback IPv6 addressing until this can be properly fixed. 
+   * Testing of Ticket Exchange with XSEDE ongoing
+   * OIM Digicert revocation for user and host certs  
+      * Updated to throw an error and will append the ticket with the serial number for the Digicert certs to be revoked and will ask support to revoke certs directly through Digicert.
+
+&lt;!-- ---++ Networking (Shawn) --&gt;
+
+---++ Production Support (Ken)
+
+   * Hit 45k running flock jobs Sunday night/Monday morning
+
+   * Monthly site/VO spreadsheet available: [[%ATTACHURL%/Site-VO_matrix-Aug_2016.xlsx][Site-VO_matrix-Aug_2016.xlsx]]
+
+   * Gratia not working at most of Nebraska (differences with software on SL7); appears to be reporting now.
+
+   * Still working on Stampede issues for MINOS and CMS.
+
+---++ Software (Tim C.)
+
+September release (3.3.16):
+   * VO package update (just received)
+
+October release (3.3.17):
+   * Update to CVMFS 2.3 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-2408][SW-2408]])
+   * Update to !XRootD 4.4.0 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-2443][SW-2443]])
+   * Improve EL&amp;nbsp;7 packaging, esp. for systemd (e.g., but not limited to, [[https://jira.opensciencegrid.org/browse/SOFTWARE-2444][SW-2444]])
+
+
+---++ Release (Tim T.)
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| September | 3.3.16 | 2016-08-29 | 2016-09-06 | 2016-09-13 | 5 week cycle |
+| October | 3.3.17 | 2016-09-26 | 2016-10-03 | 2016-10-11 | |
+| November | 3.3.18 | 2016-10-24 | 2016-10-31 | 2016-11-08 | |
+
+[[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.3.16%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][September 13th Release]]
+
+   * OSG 3.3.16
+      * Testing
+         * Update all Globus packages to latest EPEL versions
+            * Fix IPv6 load-balancing in Globus !GridFTP
+            * !MyProxy issues GT3/pre-RFC proxy on stored raw certificate
+         * Release blahp-1.18.24
+            * Add ability to set SGE parallel environment policy in blahp scripts
+            * Enable multi-core support for PBS Pro
+         * Release HTCondor-CE 2.0.8
+            * Add Terana eScience CA to condor_mapfile
+            * Remove the HTCondor-CE init script on EL 7
+         * GUMS on RHEL7 does not scale (cannot be used in production)
+         * Release osg-pki-tools 1.2.19
+            * Reword &#39;bad VO info&#39; error from osg-*cert-request
+            * Fix formatting of CSRs
+         * xrootd-dsi should treat gridftp file as %config(noreplace)
+         * osg-configure: modules that use condor-python should require it
+         * Simplify Gratia !GridFTP probe / remove gums-host-cron
+         * Ship HTCondor !CREAM GAHP for EL7
+         * Release the initial rsv-gwms-tester
+         * Add osg-tested-internal-gram metapackage
+         * Expose JSON interfaces in GUMS for VO mapping
+         * Update lcas-lcmaps-gt4-interface to version 0.3.1+
+         * Add support for user certificates to osg-ca-generator (internal tool)
+         * osg-build 1.7.0 (internal tool)
+      * Ready
+         * !glideinWMS 3.2.15
+         * Release blahp-1.18.24
+            * Fix issues with qstat() in pbs_status.py
+            * Add slurm multicore, partition, and remote_cerequirements support
+         * Release HTCondor-CE 2.0.8
+            * condor_ce_q returns no jobs
+
+---+++ Release Schedule
+
+---++ Security
+
+---++ Communication (Kyle)
+
+
+-- Main.ScottTeige - 26 Aug 2016
+
+   * [[%ATTACHURL%/Site-VO_matrix-Aug_2016.xlsx][Site-VO_matrix-Aug_2016.xlsx]]: Site-VO matrix for August 2016
+

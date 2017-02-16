@@ -1,0 +1,95 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;VO Packages&quot; }%*
+%TOC{depth=&quot;2&quot;}%
+
+---+ v37
+
+---++ NEES VO Added
+
+[[https://ticket.grid.iu.edu/goc/viewer?id=10432][Ticket]]
+
+---+++ vomses file Addition
+&lt;verbatim&gt;
+&quot;nees&quot; &quot;voms.fnal.gov&quot; &quot;15030&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=http/voms.fnal.gov&quot; &quot;nees&quot;
+&lt;/verbatim&gt;
+
+
+---+++ edg_mkgridmap.conf Addition
+&lt;verbatim&gt;
+#USER-VO-MAP nees NEES - 47 - Steven Clark (clarks@purdue.edu)
+group vomss://voms.fnal.gov:8443/voms/nees nees
+&lt;/verbatim&gt;
+
+
+---+++ GUMS Config Addition
+&lt;verbatim&gt;
+&lt;!-- 47 NEES --&gt;
+&lt;groupMapping name=&#39;nees&#39; accountingVo=&#39;nees&#39; accountingDesc=&#39;NEES&#39;&gt;
+     &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+     url=&#39;https://voms.fnal.gov:8443/voms/nees/services/VOMSAdmin&#39;
+     persistenceFactory=&#39;mysql&#39;
+     name=&#39;nees&#39;
+     voGroup=&quot;/nees&quot;
+     sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+     sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;
+      matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&#39;true&#39; /&gt;
+     &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39; 
+     groupName=&#39;nees&#39; /&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Plus added nees to hostGroup className.
+
+---+++ UNIX Accounts
+Create: nees
+
+---++ JDEM VO Removed 
+
+[[https://ticket.grid.iu.edu/goc/viewer?id=10458][Ticket]]
+
+---+++ vomses file Deletion
+&lt;verbatim&gt;
+&quot;jdem&quot; &quot;voms.fnal.gov&quot; &quot;15028&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=http/voms.fnal.gov&quot; &quot;jdem&quot;
+&lt;/verbatim&gt;
+
+
+---+++ edg_mkgridmap.conf Deletion
+&lt;verbatim&gt;
+# USER-VO-MAP jdem JDEM -- 38 -- Stuart Fuess (fuess@fnal.gov)
+group vomss://voms.fnal.gov:8443/voms/jdem jdem
+&lt;/verbatim&gt;
+
+
+---+++ GUMS Config Deletion
+&lt;verbatim&gt;
+&lt;!-- 38 JDEM --&gt;
+
+&lt;groupMapping name=&#39;jdem&#39; accountingVo=&#39;jdem&#39; accountingDesc=&#39;JDEM&#39;&gt;
+    &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+    url=&#39;https://voms.fnal.gov:8443/voms/jdem/services/VOMSAdmin&#39;    
+    persistenceFactory=&#39;mysql&#39;    
+    name=&#39;jdem&#39;
+    voGroup=&quot;/jdem&quot;
+    sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+    sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;
+    matchFQAN=&quot;exact&quot;/&gt;    &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39;
+    groupName=&#39;jdem&#39; /&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Plus deleted jdem to hostGroup className.
+
+---+++ UNIX Accounts
+Remove: jdem
+
+
+---++ VO Package Files Location
+
+   * For ITB VO Files see:
+
+http://software-itb.grid.iu.edu/pacman/tarballs/vo-package/
+
+   * For Production VO Files see:
+
+http://software.grid.iu.edu/pacman/tarballs/vo-package/
+
+-- Main.RobQ - 31 May 2011

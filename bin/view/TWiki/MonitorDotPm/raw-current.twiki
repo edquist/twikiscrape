@@ -1,0 +1,32 @@
+---+ Package ==
+
+%TOC%
+Monitoring package. Instrument the code like this:
+
+use Monitor;
+Monitor::MARK(&quot;Description of event&quot;);
+Monitor::MARK(&quot;Another event&quot;);
+
+or, to monitor all the calls to a module
+
+use Monitor;
+Monitor::MonitorMethod(&#39;TWiki::Users&#39;);
+
+or a function
+
+use Monitor;
+Monitor::MonitorMethod(&#39;TWiki::Users&#39;, &#39;getCanonicalUserID&#39;);
+
+Then set the environment variable TWIKI_MONITOR to a perl true value, and
+run the script from the command line e.g:
+$ cd bin
+$ ./view -topic Myweb/MyTestTopic
+
+The results will be printed to STDERR at the end of the run. Two times are
+shown, a time relative to the last MARK and a time relative to the first MARK
+(which is always set the first time this package is used). The final column
+is total memory.
+
+NOTE: it uses /proc - so its linux specific...
+
+

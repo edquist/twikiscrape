@@ -1,0 +1,325 @@
+---+ Using BLAST for OSG Summer School 2010
+
+---+ For the impatient...
+
+From host =osg-edu.cs.wisc.edu=:
+
+&lt;verbatim class=&quot;screen&quot;&gt;
+[osgedu@osg-edu ~]$ source /nfs/osg-app/osgedu/blast/setup.sh 
+[osgedu@osg-edu ~]$ cd /nfs/osg-data/osgedu/blast_dbs
+[osgedu@osg-edu blast_dbs]$ time blastp -database yeast.aa -query query.fasta 
+&lt;/verbatim&gt;
+
+The three valid DBs installed on osg-edu are:
+   * yeast.aa
+   * human_genomic
+   * drosoph.aa
+   * nr
+There is a sample query file in $OSG_DATA/blast_dbs/query.fasta; typically, you run BLAST with the same DB but different queries for each job.
+
+You cannot run from host =vdt-itb.cs.wisc.edu=.
+
+---+ Introduction and Science Background
+
+We will be using a popular biology tool, BLAST, for the &quot;science demo&quot; in the OSG Summer School 2010.  We are not biologists, but will explain what BLAST is to the best of our ability and how we will be using it in our grid school.
+
+BLAST is a tool to query protein and DNA &quot;databases&quot;.  These databases are large collections of DNA or protein sequences and their associated headers.  BLAST uses the binary format of the data, but there is also a human-friendly format called &quot;FASTA&quot;.
+
+Here is what a sample yeast protein looks like in FASTA format
+
+&lt;verbatim&gt;
+&gt;gi|6319430|ref|NP_009512.1| proteasome subunit; Pre7p
+MATIASEYSSEASNTPIEHQFNPYGDNGGTILGIAGEDFAVLAGDTRNITDYSINSRYEPKVFDCGDNIVMSANGFAADG
+DALVKRFKNSVKWYHFDHNDKKLSINSAARNIQHLLYGKRFFPYYVHTIIAGLDEDGKGAVYSFDPVGSYEREQCRAGGA
+AASLIMPFLDNQVNFKNQYEPGTNGKVKKPLKYLSVEEVIKLVRDSFTSATERHIQVGDGLEILIVTKDGVRKEFYELKR
+D
+&lt;/verbatim&gt;
+
+Here is what the first few lines of a yeast chromosome looks like:
+&lt;verbatim&gt;
+&gt;gi|6322236|ref|NC_001142.1| Saccharomyces cerevisiae chromosome X, complete chromosome sequence
+CCCACACACACACCACACCCACACCCACACACACCACACCCACACACCACACCCACACCAACTCTCTCTCATCTACCTTT
+ACTCGCGCTGTCACACCTTACCCGGCTTTCTGACCGAAATTAAAAAAAATGAAAATGAAATCCTGTTCTTTAGCCCTACA
+ACACTTTTACATAGCCCTAAATAGCCCTAAATAGCCCTCATTTACGTCTCCTCCAAGCCCTATTGACTCTTACCCGGAGT
+TTCAGCTAAAAGCTATACTTACTACCTTTATTTTATGTTTACTTTTTATAGACTGTCTTTTCATCCTACTCCTTCGCACT
+TGTCTCTCGCTACTGCCGTGCAACAAACACTAAATCAAAACAGTAAAATACTACATCAAAACGCATATTCCCTAGAAAAA
+AATTTTCTTACAATATACTATACTACACAATACATAATCAGTGACTTTCGTAACAACAATTTCCTTCACTCTCCAACTTC
+&lt;/verbatim&gt;
+
+Chromosomes are very large, and the whole one isn&#39;t given here.
+
+A database is a collection of either proteins or DNA sequences.  Large biological databases are maintained by large biological labs (NCBI keeps many copies of these databases in BLAST format available for download).
+
+A common workflow in bioinformatics is to have a large number of different queries to run against a database.  A query is simply a DNA or protein sequence.  The BLAST algorithm does alignments between the query and the database entries.  It does not look at exact matches, but looks for partial alignments, insertions of characters, and deletions of characters.
+
+---+ Installing BLAST
+
+---++ Installation on OSG-EDU
+
+There is no need to install BLAST on osg-edu; it is already there for you.  You can set up the environment using:
+
+&lt;verbatim class=&quot;screen&quot;&gt;
+source /nfs/osg-app/osgedu/blast/setup.sh
+&lt;/verbatim&gt;
+
+This will add =blastp= to your environment.  Note that this is a 32-bit, statically linked executable; if you want, you can move just this binary around with your jobs.
+
+---++ Installation on any non-OSG-EDU node
+
+We have packaged a version of BLAST using the OSG packaging tool, pacman.  First, source your current VDT directory:
+
+&lt;verbatim class=&quot;screen&quot;&gt;
+source /opt/osg/osg-1.2/setup.sh
+&lt;/verbatim&gt;
+
+This should bring the command line =pacman= tool into your environment.  To download and install the software into your home directory, do this:
+&lt;verbatim class=&quot;screen&quot;&gt;
+[bbockelm@osg-edu ~]$ cd $HOME
+[bbockelm@osg-edu ~]$ mkdir blast
+[bbockelm@osg-edu ~]$ cd blast
+[bbockelm@osg-edu blast]$ pacman -allow trust-all-caches -get http://t2.unl.edu/store/cache:blast
+Beginning VDT prerequisite checking script vdt-common/vdt-prereq-check...
+
+All prerequisite checks are satisfied.
+[bbockelm@osg-edu blast]$ echo $?                         
+0
+&lt;/verbatim&gt;
+
+You should now have the =blastp= command-line tool in your environment.  Verify this by doing the following:
+
+&lt;verbatim class=&quot;screen&quot;&gt;
+[bbockelm@osg-edu blast]$ source $HOME/blast/setup.sh
+[bbockelm@osg-edu blast]$ blastp -help
+USAGE
+  blastp [-h] [-help] [-import_search_strategy filename]
+    [-export_search_strategy filename] [-task task_name] [-db database_name]
+    [-dbsize num_letters] [-gilist filename] [-negative_gilist filename]
+    [-entrez_query entrez_query] [-db_soft_mask filtering_algorithm]
+    [-subject subject_input_file] [-subject_loc range] [-query input_file]
+    [-out output_file] [-evalue evalue] [-word_size int_value]
+    [-gapopen open_penalty] [-gapextend extend_penalty]
+    [-xdrop_ungap float_value] [-xdrop_gap float_value]
+    [-xdrop_gap_final float_value] [-searchsp int_value] [-seg SEG_options]
+    [-soft_masking soft_masking] [-matrix matrix_name]
+    [-threshold float_value] [-culling_limit int_value]
+    [-best_hit_overhang float_value] [-best_hit_score_edge float_value]
+    [-window_size int_value] [-lcase_masking] [-query_loc range]
+    [-parse_deflines] [-outfmt format] [-show_gis]
+    [-num_descriptions int_value] [-num_alignments int_value] [-html]
+    [-max_target_seqs num_sequences] [-num_threads int_value] [-ungapped]
+    [-remote] [-comp_based_stats compo] [-use_sw_tback] [-version]
+
+DESCRIPTION
+   Protein-Protein BLAST 2.2.23+
+
+(remainder of screen output skipped)
+&lt;/verbatim&gt;
+
+---+ Blast Databases and Queries
+
+Look at the contents of the directory /nfs/osg-data/osgedu/blast_dbs.  It should look somewhat like this:
+
+&lt;verbatim class=&quot;screen&quot;&gt;
+[bbockelm@osg-edu blast_dbs]$ ls -lh /nfs/osg-data/osgedu/blast_dbs/
+total 188M
+-rw-rw-r--  1 bbockelm bbockelm 8.2M Jul  9 13:48 drosoph.aa
+-rw-rw-r--  1 bbockelm bbockelm 1.7M Jul  9 13:48 drosoph.aa.phr
+-rw-rw-r--  1 bbockelm bbockelm 113K Jul  9 13:48 drosoph.aa.pin
+-rw-rw-r--  1 bbockelm bbockelm 112K Jul  9 13:48 drosoph.aa.pnd
+-rw-rw-r--  1 bbockelm bbockelm  492 Jul  9 13:48 drosoph.aa.pni
+-rw-rw-r--  1 bbockelm bbockelm 427K Jul  9 13:48 drosoph.aa.psd
+-rw-rw-r--  1 bbockelm bbockelm 9.8K Jul  9 13:48 drosoph.aa.psi
+-rw-rw-r--  1 bbockelm bbockelm 6.9M Jul  9 13:48 drosoph.aa.psq
+-rw-rw-r--  1 bbockelm bbockelm 119M Jul  9 13:54 drosoph.nt
+-rw-rw-r--  1 bbockelm bbockelm 187K Jul  9 13:54 drosoph.nt.nhr
+-rw-rw-r--  1 bbockelm bbockelm  14K Jul  9 13:54 drosoph.nt.nin
+-rw-rw-r--  1 bbockelm bbockelm 9.2K Jul  9 13:54 drosoph.nt.nnd
+-rw-rw-r--  1 bbockelm bbockelm   84 Jul  9 13:54 drosoph.nt.nni
+-rw-rw-r--  1 bbockelm bbockelm  33K Jul  9 13:54 drosoph.nt.nsd
+-rw-rw-r--  1 bbockelm bbockelm  822 Jul  9 13:54 drosoph.nt.nsi
+-rw-rw-r--  1 bbockelm bbockelm  30M Jul  9 13:54 drosoph.nt.nsq
+-rw-rw-r--  1 bbockelm bbockelm 3.3M Jul  9 13:37 yeast.aa
+-rw-rw-r--  1 bbockelm bbockelm 611K Jul  9 13:37 yeast.aa.phr
+-rw-rw-r--  1 bbockelm bbockelm  50K Jul  9 13:37 yeast.aa.pin
+-rw-rw-r--  1 bbockelm bbockelm  50K Jul  9 13:37 yeast.aa.pnd
+-rw-rw-r--  1 bbockelm bbockelm  244 Jul  9 13:37 yeast.aa.pni
+-rw-rw-r--  1 bbockelm bbockelm 195K Jul  9 13:37 yeast.aa.psd
+-rw-rw-r--  1 bbockelm bbockelm 4.5K Jul  9 13:37 yeast.aa.psi
+-rw-rw-r--  1 bbockelm bbockelm 2.9M Jul  9 13:37 yeast.aa.psq
+-rw-rw-r--  1 bbockelm bbockelm  12M Jul  9 13:37 yeast.nt
+-rw-rw-r--  1 bbockelm bbockelm 2.3K Jul  9 13:37 yeast.nt.nhr
+-rw-rw-r--  1 bbockelm bbockelm  280 Jul  9 13:37 yeast.nt.nin
+-rw-rw-r--  1 bbockelm bbockelm  136 Jul  9 13:37 yeast.nt.nnd
+-rw-rw-r--  1 bbockelm bbockelm   52 Jul  9 13:37 yeast.nt.nni
+-rw-rw-r--  1 bbockelm bbockelm  456 Jul  9 13:37 yeast.nt.nsd
+-rw-rw-r--  1 bbockelm bbockelm   64 Jul  9 13:37 yeast.nt.nsi
+-rw-rw-r--  1 bbockelm bbockelm 2.9M Jul  9 13:37 yeast.nt.nsq
+&lt;/verbatim&gt;
+
+Each common prefix, such as yeast or drosoph, represent a different set of data; in this case, the yeast bacteria and fruit fly genome.  The .aa.* set of files represent proteins while .nt.* represents DNA sequences.  The remaining files with suffixes (for proteins phr, pin, pnd, pni, psd, psi, psq; for DNA, nhr, nin, nnd, nni, nsd, nsi, nsq) are the binary encodings of the databases.  The files without any suffixes (drosoph.aa, drosoph.nt, yeast.aa, yeast.nt) are the human-readable encodings.
+
+Open the human-readable database yeast.aa; you will find it is just a list of DNA sequences like the one above.  Copy out an arbitrary line of data; we will use this subsequence to perform a query.  All queries have two parts: the header line, prefixed with &quot;&gt;&quot;, and the data.  The data is all data until the end of the file or the next &quot;&gt;&quot; character.  Here&#39;s an example:
+
+&lt;verbatim&gt;
+&gt;Brian&#39;s first query!
+MPVSDSGFDNSSKTMKDDTIPTEDYEEITKESEMGDATKITSKIDANVIEKKDTDSENNITIAQDDEKVSWLQRVVEFFE
+&lt;/verbatim&gt;
+
+Save this into a file named =query.fasta=.  Congratulations, you&#39;ve just created your first FASTA query!  This query is quite silly, as it will match 100% one of the sequences in the file - not a frequent occurrence in bioinformatics research.
+
+---+ Running BLAST
+
+For queries, we will basically need two pieces of information:
+   * The database to use.  To start, we&#39;ll use the yeast.aa protein DB.
+   * The query file to run.  To start, we&#39;ll use the FASTA-formatted query given above, named =query.fasta=.
+(remember multiple queries can be specified per query file).  There are different flavors of BLAST for the different combination of protein or DNA queries running against protein or DNA databases.  We will be using =blastp=, which aligns protein queries against protein databases.
+
+To run =blastp=, do the following from =osg-edu.cs.wisc.edu=:
+
+&lt;verbatim class=&quot;screen&quot;&gt;
+cd /nfs/osg-data/osgedu/blast_dbs
+blastp -db yeast.aa -query $HOME/query.fasta
+&lt;/verbatim&gt;
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show sample blastp output...&quot;
+hidelink=&quot;Hide blastp output&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;verbatim class=&quot;screen&quot;&gt;
+BLASTP 2.2.23+
+
+
+Reference: Stephen F. Altschul, Thomas L. Madden, Alejandro A.
+Schaffer, Jinghui Zhang, Zheng Zhang, Webb Miller, and David J.
+Lipman (1997), &quot;Gapped BLAST and PSI-BLAST: a new generation of
+protein database search programs&quot;, Nucleic Acids Res. 25:3389-3402.
+
+
+
+Reference for composition-based statistics: Alejandro A. Schaffer,
+L. Aravind, Thomas L. Madden, Sergei Shavirin, John L. Spouge, Yuri
+I. Wolf, Eugene V. Koonin, and Stephen F. Altschul (2001),
+&quot;Improving the accuracy of PSI-BLAST protein database searches with
+composition-based statistics and other refinements&quot;, Nucleic Acids
+Res. 29:2994-3005.
+
+
+
+Database: yeast.aa
+           6,298 sequences; 2,974,038 total letters
+
+
+
+Query=  Brian&#39;s first query!
+Length=80
+                                                                      Score     E
+Sequences producing significant alignments:                          (Bits)  Value
+
+ref|NP_009511.1|  uridine permease; Fui1p                              170    4e-44
+ref|NP_012677.1|  dolichyl phosphate-D-mannose:protein O-D-mannos...  23.9    4.6  
+ref|NP_015305.1|  Smt3-processing enzyme; Ulp1p                       23.9    4.8  
+ref|NP_011691.1|  Squalene monooxygenase; Erg1p                       23.9    5.1  
+ref|NP_009545.1|  putative repressor protein homologous to yeast ...  23.1    7.3  
+
+
+&gt;ref|NP_009511.1| uridine permease; Fui1p
+Length=639
+
+ Score =  170 bits (430),  Expect = 4e-44, Method: Composition-based stats.
+ Identities = 80/80 (100%), Positives = 80/80 (100%), Gaps = 0/80 (0%)
+
+Query  1   MPVSDSGFDNSSKTMKDDTIPTEDYEEITKESEMGDATKITSKIDANVIEKKDTDSENNI  60
+           MPVSDSGFDNSSKTMKDDTIPTEDYEEITKESEMGDATKITSKIDANVIEKKDTDSENNI
+Sbjct  1   MPVSDSGFDNSSKTMKDDTIPTEDYEEITKESEMGDATKITSKIDANVIEKKDTDSENNI  60
+
+Query  61  TIAQDDEKVSWLQRVVEFFE  80
+           TIAQDDEKVSWLQRVVEFFE
+Sbjct  61  TIAQDDEKVSWLQRVVEFFE  80
+
+
+&gt;ref|NP_012677.1| dolichyl phosphate-D-mannose:protein O-D-mannosyltransferase; 
+Pmt4p
+Length=762
+
+ Score = 23.9 bits (50),  Expect = 4.6, Method: Composition-based stats.
+ Identities = 10/39 (25%), Positives = 21/39 (53%), Gaps = 0/39 (0%)
+
+Query  18   DTIPTEDYEEITKESEMGDATKITSKIDANVIEKKDTDS  56
+            D   + +++E  K+S +   +K  +  D   I+ +DTD+
+Sbjct  311  DAFMSAEFQETLKDSPLSVDSKTVNYFDIITIKHQDTDA  349
+
+
+&gt;ref|NP_015305.1| Smt3-processing enzyme; Ulp1p
+Length=621
+
+ Score = 23.9 bits (50),  Expect = 4.8, Method: Compositional matrix adjust.
+ Identities = 15/35 (42%), Positives = 22/35 (62%), Gaps = 1/35 (2%)
+
+Query  31   ESEMGDATKITSKIDANVIEKKDTDSENNITIAQD  65
+            ESE G  T  TS I +   +K + DS+N+IT ++D
+Sbjct  173  ESE-GVGTPSTSPISSLASQKSNCDSDNSITFSRD  206
+
+
+&gt;ref|NP_011691.1| Squalene monooxygenase; Erg1p
+Length=496
+
+ Score = 23.9 bits (50),  Expect = 5.1, Method: Composition-based stats.
+ Identities = 9/23 (39%), Positives = 15/23 (65%), Gaps = 0/23 (0%)
+
+Query  9    DNSSKTMKDDTIPTEDYEEITKE  31
+            D + K ++D TI  +DYE+  +E
+Sbjct  121  DGNDKVLEDSTIHIKDYEDDERE  143
+
+
+&gt;ref|NP_009545.1| putative repressor protein homologous to yeast Tup1p and mammalian 
+retinal transducin; contains nuclear targeting signal; 
+Hir1p
+Length=840
+
+ Score = 23.1 bits (48),  Expect = 7.3, Method: Compositional matrix adjust.
+ Identities = 12/25 (48%), Positives = 18/25 (72%), Gaps = 1/25 (4%)
+
+Query  45   DANVIEKKDTDSENNITIAQDDEKV  69
+            +A V +KKD D EN + + Q+D+KV
+Sbjct  294  NAGVKQKKDDDPENAL-VGQNDDKV  317
+
+
+
+Lambda     K      H
+   0.304    0.123    0.327 
+
+Gapped
+Lambda     K      H
+   0.267   0.0410    0.140 
+
+Effective search space used: 74103176
+
+
+  Database: yeast.aa
+    Posted date:  May 4, 2010  9:00 PM
+  Number of letters in database: 2,974,038
+  Number of sequences in database:  6,298
+
+
+
+Matrix: BLOSUM62
+Gap Penalties: Existence: 11, Extension: 1
+Neighboring words threshold: 11
+Window for multiple hits: 40
+&lt;/verbatim&gt;
+%ENDTWISTY%
+
+There are several different BLAST programs; =blastp= is for a protein query and a protein database.  =blastn= can be used for a protein query and a DNA database (such as human_genomic).
+
+---++ Using BLAST on the OSG-EDU resource
+
+Some notes on running BLAST on the OSG-EDU resource:
+   1 You need to set the $PWD of the blastp executable to the blast DB directory for it to work.  This is an apparent bug (you should be able to set up the directory search path, $BLASTDB, and use that).
+   1 =blastp= is a single, statically linked (if large at 12MB) executable.  We will install this into =$OSG_DATA/osgedu/blast/=, but one could move this around with the jobs also.
+   1 Yeast is the smallest installed DB, while drosoph is a bit larger.  Runtime for the jobs are linear functions of the size of the DB and the number of queries, and the runtime for the yeast and drosoph example are quite trivial.
+   1 human_genomic is a DNA database, meaning you need
+   1 nr is a protein DB and quite large.
+   1 =blastn= appears to have issues; just segfaults and dies.

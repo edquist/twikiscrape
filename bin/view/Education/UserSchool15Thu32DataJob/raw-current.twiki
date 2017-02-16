@@ -1,0 +1,111 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+---+ !!Transferring data via HTTP plugin
+%TOC%
+
+The goal of this exercise is to use the HTTP protocol to download data from remote web servers. This exercise builds off of the NAMD example from [[UserSchool15Thu12DataJob][Exercise 2.1]], but uses a new method to retrieve the job data.
+
+Finally, we&#39;ll write a job that uses OSG&#39;s HTTP caches.
+
+---++ Background
+
+Amazon Web Services (AWS) is a &quot;public cloud infrastructure&quot;, which is a collection of paid computing services. For this tutorial, we have uploaded the NAMD files to the Amazon&#39;s Simple Storage Service (S3) for you. Your task will be to write a job to download the input files from _the cloud_ and run NAMD.
+
+&lt;center&gt;
+&lt;img src=&quot;%ATTACHURLPATH%/data_tranfer_aws.jpg&quot; alt=&quot;data_tranfer_aws.jpg&quot; width=&#39;400&#39; height=&#39;300&#39;/&gt;
+&lt;/center&gt;
+
+---++ Setup
+First, we&#39;ll need our NAMD script from previous exercise. Go ahead and copy the =namd_run.sh= script from [[UserSchool15Thu12DataJob][Exercise 2.1]]. 
+
+Next, we&#39;ll want to create a submit file and transfer the input data from AWS. 
+
+The input files you need for this exercise are located here:
+| http://s3-us-west-2.amazonaws.com/osg-user-school/namd/par_all27_prot_lipid.inp |
+| http://s3-us-west-2.amazonaws.com/osg-user-school/namd/ubq_gbis_eq.conf |
+| http://s3-us-west-2.amazonaws.com/osg-user-school/namd/ubq.pdb |
+| http://s3-us-west-2.amazonaws.com/osg-user-school/namd/ubq.psf |
+
+As in the previous exercise, we need to tell HTCondor where to find the input files. HTCondor makes this very simple to do: just create a comma-separated list of HTTP links after =transfer_input_files=.
+
+You can get started using the template below:
+
+&lt;pre class=&quot;file&quot;&gt;
+universe = vanilla
+executable = namd_run.sh
+transfer_input_files = 
+output =
+error = 
+log = 
+should_transfer_files=Yes
+requirements = (HAS_CVMFS_oasis_opensciencegrid_org =?= TRUE)
+queue
+&lt;/pre&gt;
+
+Remember that the =requirements= line is needed to tell HTCondor to only match against job slots that have the OASIS software library available. Don&#39;t forget to specify the =output=, =error=, and =log=!
+
+
+To load the NAMD program, we use the OSG Distributed Environment Modules. For more information about OASIS, you may refer [[https://support.opensciencegrid.org/support/solutions/articles/5000634394-accessing-software-using-distributed-environment-modules][here]]. 
+
+Our wrapper script for NAMD is:
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash
+echo &quot;Files in the current directory:&quot; $(ls)
+source /cvmfs/oasis.opensciencegrid.org/osg/modules/lmod/current/init/bash
+module load namd/2.9
+namd2 ubq_gbis_eq.conf &gt; ubq_gbis_eq.log
+&lt;/pre&gt; 
+
+Save the wrapper as =namd_run.sh= and remember to make it executable with =chmod +x namd_run.sh=.
+
+Once done, submit the job. 
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% condor_submit namd_run.submit
+&lt;/pre&gt;
+
+Again, the job should run 5 minutes or so. If the job was successful, you should see a bunch of output files in the directory you submitted from. You can verify that the input files were downloaded by looking at the =output= file you created in your job. To dot his, just =grep= for the output as before:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% grep &quot;Files in the current directory&quot; job.out
+Files in the current directory: _condor_stderr _condor_stdout condor_exec.exe par_all27_prot_lipid.inp ubq.pdb ubq.psf ubq_gbis_eq.conf
+&lt;/pre&gt;
+
+---++ Transfer data from Stash
+
+Every user on OSG Connect has a publicly accessible directory served by the =stash.osgconnect.net= web server. In your home directory, you should find a subdirectory named =public=. Files that live in =~/public= are accessible at http://stash.osgconnect.net/+username/ where =username= is your OSG Connect username.
+
+&lt;center&gt;
+&lt;img src=&quot;%ATTACHURLPATH%/data_tranfer_stash.jpg&quot; alt=&quot;data_tranfer_stash.jpg&quot; width=&#39;400&#39; height=&#39;300&#39;/&gt;
+&lt;/center&gt;
+
+As before, copy the NAMD files to your =~/public= directory.
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% cp -a /stash/public/userschool2015/namd ~/public
+&lt;/pre&gt;
+
+You will also need the =namd_run.sh= script from the previous exercise. You can either copy it or create it again. Here&#39;s the script again:
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash
+echo &quot;Files in the current directory:&quot; $(ls)
+source /cvmfs/oasis.opensciencegrid.org/osg/modules/lmod/current/init/bash
+module load namd/2.9
+namd2 ubq_gbis_eq.conf &gt; ubq_gbis_eq.log
+&lt;/pre&gt;
+
+This time, try creating the entire submit file by yourself. Remember that you will need to include: 
+&lt;pre class=&quot;file&quot;&gt;
+requirements = (HAS_CVMFS_oasis_opensciencegrid_org =?= TRUE)
+&lt;/pre&gt; 
+
+*HINT* Here&#39;s what one of the =transfer_input_files= paths should look like: http://stash.osgconnect.net/+lincolnb/namd/ubq.pdb
+
+Did the transfer work? Check your =output= file for the presence of the NAMD input files. 
+
+
+
+-- Main.BalamuruganDesinghu - 23 Jul 2015
+

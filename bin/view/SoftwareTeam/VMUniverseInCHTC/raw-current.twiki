@@ -1,0 +1,218 @@
+---+ How to Run a VM Universe Job in CHTC
+
+---++ Overview
+
+This document describes how to prepare and run a job using HTCondor’s VM universe and CHTC’s pre-made VM images.
+
+---++ CHTC Base Operating System VM Images
+
+CHTC provides VM images with basic operating system installations. Each provides the following semantics, regardless of implementation details:
+
+   * The operating system is up-to-date (within 7 calendar days)
+   * The system supports installation of other packages from the operating system repositories (nb. RHN)
+   * The operating system boots normally into an appropriate runlevel to run a user-supplied payload
+   * The system is on a network with outbound access for reasonable, safe Internet activities, including:
+      * Fetching and sending files via http, https, ftp, gsiftp
+      * Synchronizing the system clock with NTP
+   * Inbound network access to the virtual guest is severely limited (only ssh from hypervisor)
+   * The system clock is accurately set with date, time, and local time zone (US Central)
+   * There is at least 2GB of free disk space under / on the filesystem
+   * SELinux is disabled
+   * Following a successful boot, the system runs a user-supplied payload:
+      * First, it attempts to mount =/dev/vdb= (ext2) at =/mnt/user=
+      * If successful, it executes =/mnt/user/run-job= as root
+      * The job environment for =run-job= is stripped down to just:&lt;pre class=&quot;file&quot;&gt;PATH=/sbin:/usr/sbin:/bin:/usr/bin
+USER=root
+PWD=/
+LANG=en_US.UTF-8&lt;/pre&gt;
+      * All standard output and error from run-job is logged to =/mnt/user/run-job.log=
+      * If the mount is successful, but the script cannot be run, informative error messages are logged to =/mnt/user/run-job-failure.log=
+
+---++ Prepare a Job Payload
+
+   1. Prepare your job to run in batch mode, as with any HTCondor job
+      * All input files that you provide will be contained in the =/mnt/user/input= directory on the virtual machine
+      * All output should be written to the =/mnt/user/output= directory on the virtual machine — all other output files will be lost!
+   1. Select one (or more) base OS images to run your job payload; currently we have Tim’s SL 6.4 and !CentOS 6.4 images
+   1. Prepare an executable, named =run-job=, that prepares the run-time environment of your job and runs it
+
+The latter step is the hard part! The =run-job= executable is responsible for preparing a bare-bones OS install to run your actual job and thus may need to include steps such as:
+
+   * Installing software packages that your job needs; these may come from the OS repositories or other repositories that you set up
+   * Configuring the system or other software packages
+   * Setting up environment variables
+   * Downloading and/or preparing input files, directory structures, etc.
+
+Further, the set-up steps may depend on the particular base OS image that you selected.
+
+---++ Prepare an Input-Output Image
+
+After writing the run-job script and collecting all input files, you package all of them into a small disk image that will serve as both input and output partition for the job.
+
+---+++ One-Time Setup Tasks
+
+Creating the image requires extra software on the machine with run-job and the input files. Install the following packages (RPM names verified on el6):
+
+   * libguestfs-tools
+
+After installing, verify that you have a command named =virt-make-fs=.
+
+---+++ Making the Image
+
+   1. Create a new directory:&lt;pre class=&quot;screen&quot;&gt;mkdir image&lt;/pre&gt;
+   1. Create input and output subdirectories:&lt;pre class=&quot;screen&quot;&gt;mkdir image/input; mkdir image/output&lt;/pre&gt;
+   1. Copy your =run-job= executable into the image directory:&lt;pre class=&quot;screen&quot;&gt;cp run-job image/&lt;/pre&gt;
+   1. Make sure that =run-job= is executable:&lt;pre class=&quot;screen&quot;&gt;chmod 0755 image/run-job&lt;/pre&gt;
+   1. Copy all input files for your job (=run-job= and the real job) into the input directory; e.g.:&lt;pre class=&quot;screen&quot;&gt;cp input-file-1 image/input/&lt;/pre&gt;
+   1. Make the image file from the image directory:&lt;pre class=&quot;screen&quot;&gt;virt-make-fs --size=&lt;em&gt;1M&lt;/em&gt; input &lt;em&gt;my-vm-image.raw&lt;/em&gt;&lt;/pre&gt;
+
+In the last step, it is possible to customize the size of the image by changing the value of the =--size== option; the format is a number (decimal is fine) followed immediately by b/K/M/G/T/P/E to mean bytes, Kilobytes, Megabytes, Gigabytes, Terabytes, Petabytes or Exabytes. The image size must be big enough to contain run-job, all of your input files, and all of your job’s output files. It is best to leave a little extra room, about 5–10% extra, but not too much extra because this file must be transferred over the network to the execute machine and back.
+
+Also note that the name of the image, given as the last argument above, is arbitrary: Name it whatever you like, although it may be best to keep the =.raw= suffix as a reminder of the image format.
+
+---++ Write a Submit File
+
+Here is a sample HTCondor submit file to customize for your job:
+
+&lt;pre class=&quot;file&quot;&gt;
+executable              = name-of-job
+
+universe                = vm
+vm_type                 = kvm
+vm_memory               = 2048
+vm_networking           = true
+vm_no_output_vm         = false
+vm_vnc                  = true
+
+vm_disk                 = cat-base-sl64-amd64-htcondor.dsk:vda:w:raw,my-vm-image.raw:vdb:w:raw
+request_disk            = 5.5GB
+
+log                     = run-cluster-$(CLUSTER).log
+
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files    = http://proxy.chtc.wisc.edu/SQUID/cat/cat-base-sl64-amd64-htcondor.dsk,my-vm-image.raw
+transfer_output_files   = my-vm-image.raw
+transfer_output_remaps  = &quot;my-vm-image.raw = my-output-image-$(CLUSTER).$(PROCESS).raw&quot;
+
+queue
+
+# condor_submit will complain about some attributes not being used;
+# ignore it until further notice
+&lt;/pre&gt;
+
+Notes on customizing the submit file attributes:
+
+| *Attribute* | *Usage* |
+| =executable= | Unlike a typical HTCondor job, this value is completely arbitrary! It does not need to be =run-job= or your real executable name. It is simply a label to see in =condor_q= output. |
+| =vm_memory= | The amount of RAM that your virtual machine will have, in Megabytes; thus, 2048 is 2 GB of RAM. Customize if you know what you are doing! |
+| =vm_disk= | Both the base OS image filename and your input-output image filename are listed here. If the names change, change them here, but leave the remaining parts (e.g., =:vda:w:raw=) as in the sample. |
+| =transfer_input_files= | These are the filenames of the base OS image and your input-output image. If you change them here, also check =vm_disk= and, for the input-output image filename, =transfer_output_files= and =transfer_output_remaps=. The two base OS image paths are:&lt;br&gt; =http://proxy.chtc.wisc.edu/SQUID/cat/cat-base-sl64-amd64-htcondor.dsk= &lt;br&gt; =http://proxy.chtc.wisc.edu/SQUID/cat/cat-base-centos64-amd64-htcondor.dsk= |
+| =transfer_output_files= | Names your input-output image as the *one and only* file to transfer back to the submit machine. That is, any changes made to the virtual filesystem *outside of* /mnt/user are discarded after the run. Be sure to use the same input-output image filename here as elsewhere. |
+| =transfer_output_remaps= | Renames the input-output image filename upon its return to the submit machine, so that you can keep the job-modified copy separate from the original submitted file. Be sure to use the same input-output image filename here as elsewhere. |
+
+
+---++ Submit and Monitor a Run
+
+When everything is ready, submit your job to HTCondor as usual:
+
+&lt;pre class=&quot;screen&quot;&gt;condor_submit my_submit_file.sub&lt;/pre&gt;
+
+Other normal HTCondor commands for monitoring and changing your job are available: =condor_q=, =condor_rm=, etc.
+
+---+++ Troubleshooting (NEEDS MORE INFO!!!!!!)
+
+   * If a job goes on hold, check the hold codes and reason:\
+     &lt;pre class=&quot;screen&quot;&gt;condor_q -l &lt;em&gt;JOBID&lt;/em&gt; | grep -i hold&lt;/pre&gt;\
+     &lt;p&gt;If the !HoldReason contains the text =VMGAHP_ERR_INTERNAL=, it probably means that the KVM hypervisor on the execute machine is having problems. Report the bad execute machine to =htcondor-inf@cs.wisc.edu= and release the job so that it tries to run on another machine:\
+     &lt;pre class=&quot;screen&quot;&gt;condor_release &lt;em&gt;JOBID&lt;/em&gt;&lt;/pre&gt;
+
+
+---++ Extract Outputs
+
+When your =run-job= scripts finishes, the virtual machine guest shuts down and HTCondor completes the job. The input-output image file is transferred back to the submit host and renamed according to the =transfer_output_remaps= attribute in the submit file. If your job produces output, you will need to extract files from the input-output image file to a directory. It is helpful to script this process — see below.
+
+---+++ One-Time Setup Tasks
+
+Creating the image requires extra software on the machine with run-job and the input files. Install the following packages (RPM names verified on el6):
+
+   * libguestfs-tools-c
+   * python-libguestfs
+
+Then, write the following Python code to an executable file named, for example, =extract-image.py=:
+
+&lt;pre class=&quot;file&quot;&gt;
+#!/usr/bin/python
+
+import guestfs
+import os
+import sys
+
+blacklist = set([&#39;/lost+found&#39;])
+
+def print_now(message):
+    print message,
+    sys.stdout.flush()
+
+g = guestfs.GuestFS()
+
+image_filename = sys.argv[1]
+output_dir = sys.argv[2]
+
+if os.path.exists(output_dir):
+    print &quot;Output directory &#39;%s&#39; already exists, will not overwrite, try again&quot; % (output_dir)
+    sys.exit(1)
+os.makedirs(output_dir)
+
+g.add_drive_opts(image_filename, readonly=1, format=&quot;raw&quot;)
+
+print_now(&quot;Extracting files from &#39;%s&#39;...&quot; % (image_filename))
+g.launch()
+
+g.mount(&#39;/dev/vda&#39;, &#39;/&#39;)
+paths = g.find(&#39;/&#39;)
+for image_path in paths:
+    full_image_path = os.path.join(&#39;/&#39;, image_path)
+    if not g.is_dir(full_image_path):
+        image_dir = os.path.dirname(image_path)
+        local_dir = os.path.join(output_dir, image_dir)
+        if not os.path.exists(local_dir):
+            os.mkdir(local_dir)
+        g.download(full_image_path, os.path.join(output_dir, image_path))
+
+print &quot;ok&quot;
+&lt;/pre&gt;
+
+---+++ Extracting Files
+
+To extract files from your renamed input-output image file, run the Python command:
+
+&lt;pre class=&quot;screen&quot;&gt;./extract-image.py my-output-image-&lt;em&gt;job-id&lt;/em&gt;.raw my-output-dir-&lt;em&gt;job-id&lt;/em&gt;&lt;/pre&gt;
+
+As shown above, the command expects the renamed input-output image filename to contain the job ID (=cluster.process=). The second argument to the Python script is the name of a new directory to create with the extracted contents from the image.
+
+Instead of the Python script, it is possible to work with the image file directly using the interactive =guestfish= command. [[http://libguestfs.org/ Its documentation]] is available online. Here is a sample invocation and interactive session:
+
+&lt;pre class=&quot;screen&quot;&gt;
+% guestfish --ro --add my-output-image-81.0.raw 
+
+Welcome to guestfish, the libguestfs filesystem interactive shell for
+editing virtual machine filesystems.
+
+Type: &#39;help&#39; for help on commands
+      &#39;man&#39; to read the manual
+      &#39;quit&#39; to quit the shell
+
+&gt;&lt;fs&gt; run
+&gt;&lt;fs&gt; list-filesystems
+/dev/vda: ext2
+&gt;&lt;fs&gt; mount /dev/vda /
+&gt;&lt;fs&gt; ls /
+input
+lost+found
+output
+run-job
+run-job.log
+&gt;&lt;fs&gt; cat /run-job.log
+...
+&lt;/pre&gt;

@@ -1,0 +1,139 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Jeff Dost
+   * Neha Sharma
+   * Doug Strain
+   * Tanya Levshina
+
+
+---+++ Guests
+   * Brian Bokelman
+
+---++ Status Report
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* Support
+  - bestman2-2.0.10 and bestman-2.2.1.3.20 release 
+    - minor updates in full mode
+    - minor updates to handle long checksum calculation time to support NERSC ATLAS T3 
+  - preparing a new VDT packaging for bestman2
+&lt;/pre&gt;
+
+Doug:
+&lt;pre class=&quot;screen&quot;&gt;
+- xrootd packaging: Built 3.0.3 release with xrootd user flag.  Also created and built xrootdfs package.
+- Pigeon: proxy expiration caused problems with GOC reporting.  Talking to Scot, etc about changing gratia reporting defaults.  For now, documentation has been modified.
+- Hadoop 0.20: No progress
+- Gratia probes/Public storage: no progress
+&lt;/pre&gt;
+
+Jeff: &lt;pre class=&quot;screen&quot;&gt;
+Hadoop 0.20 testing:
+- no progress, waiting for Brian to respond to hadoop / fuse failure issues
+Hadoop 0.20 documentation:
+- Put https://twiki.grid.iu.edu/bin/view/Storage/Hadoop20Installation
+under content management, began formatting to make it conform to the installation template
+Hadoop VDT repository:
+- Improved on cron script that calls hourly mash updates to prevent log files from growing indefinitely.
+Other:
+- assisted Terrence in testing bestman2 2.0.5 from 0.19 Production Hadoop RPM repository.  The test instance works so far and we will likely be upgrading the UCSD srm to use this version.
+&lt;/pre&gt;
+
+Neha: &lt;pre class=&quot;screen&quot;&gt;
+- removing sqlalchemy references in gratia dcache probes (in progress)
+- isolating stderr while executing the dcache billing aggregator via nohup. (in progress)
+&lt;/pre&gt;
+
+Tanya: &lt;pre class=&quot;screen&quot;&gt;
+prepared/made presentation for OSG Council
+
+xrootd native packaging:
+ - tested 3.0.3 release, modified [[https://twiki.grid.iu.edu/bin/view/SoftwareTeam/HowToInstallXrootd][documentation]], adding various configuration examples that include:
+     xrootd cluster
+    Simple Service inventory 
+     enabling simple security
+xrootdfs configuration rpm:
+   - tested Doug&#39;s rpm, provided feedback
+globus online tests:
+  - looked into globusonline REST api
+  - discussed with Brian gridftp-hdfs-dsi deficiency (unable to perform ls on directory)
+
+support
+&lt;/pre&gt;
+
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+HDFS 0.20 status
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Brian said that the configuration script that is included in rpm setup umask incorrectly. Jeff will change it, test and rebuild rpms. This should fix fuse and gridftp issues as well. 
+Terrance and Jeff have installed the latest !BeStMan2 rpm at UCSD on the test instance, production will be upgraded soon. 
+
+---++ Second agenda Item
+&lt;!-- DESCRIPTION --&gt;
+gratia storage probe 
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Doug has reported that storage probes record are not collected properly at the gratia collector. Tanya said that it looks like a problem we have investigated a year ago and it was fixed. Brian has confirmed that this is indeed the same problem and we see it  because  either the fix was never released or gratia collectors have not been upgraded. 
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+dcache storage probe
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Neha has almost finished with modifications of probe. We has to ask Philippe to drop sqlalchemy for gratia-extra-libs rpm . 
+
+---++ Forth agenda item
+&lt;!-- DESCRIPTION --&gt;
+pigeon as RSV probe
+ 
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+It looks like all rsv probes are configured to report to gratia by default and any problem reported about a service monitored by GOC (e.g gridftp) is considered as &quot;critical&quot;. It was not the purpose of pigeon tools. The tools should just allow VO to see if the SEs are available for this particular VO. We will need to discuss this issue with Alain and Scot. Meanwhile Doug will put in documentation that pigeon tools should be configured with disabled Gratia report option. 
+
+---++ Fifth agenda item
+&lt;!-- DESCRIPTION --&gt;
+xrootd native packaging
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+rpms 3.0.3 are ready and tested for various configuration:
+
+https://twiki.grid.iu.edu/bin/view/SoftwareTeam/HowToInstallXrootd
+
+Doug is working on adding xrootdfs configuration and build rpms.
+
+---++  Tickets
+
+++++++++++++
+New tickets
+++++++++++++
+
+Closed:
+
+44 - OSG Storage: Bestman: Switching from grid-map file to GUMS
+
+++++++++++++
+Old tickets
+++++++++++++
+
+Closed:
+
+39 - OSG Storage: Installing a GridFTP Server
+
+No Update:
+
+42 - OSG Storage: Xrootd: Help with documentation and troubleshooting
+
+10160 - OSG-Storage: Resource Specific Issue on T2_Nebraska_OSG
+
+
+
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 15 Apr 2011

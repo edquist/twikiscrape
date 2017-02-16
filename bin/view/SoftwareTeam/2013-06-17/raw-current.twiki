@@ -1,0 +1,112 @@
+---+ OSG Software and Release Teams Meeting, 17 June 2013
+
+*Attending:* !BrianB, !BrianL, Carl, Marco, Mat, !TimC, !TimT, Xin
+&lt;!-- !BrianB, !BrianL, Carl, Igor, !JohnW, Marco, Mat, Neha, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+
+*Triage Duty:*
+   * Neha this week
+   * Mat next week (i.e., swap with !TimC)
+   * %RED%16 (+1) open tickets%ENDCOLOR%
+
+*JIRA Tickets:*
+   * Open: 162 (+5)
+   * In Progress: 19 (+1)
+   * Ready for Testing: 6 (–3)
+   * Ready for Release: 1 (–8)
+
+*OSG Deployments:*
+| OSG 3.x | 76 (+1) sites | 21 (+3) using 3.1.18 |
+| OSG 1.2 | 27 (–0) sites | 1 (+0) using 1.2.32 |
+
+There is a nice tracking table [[http://tinyurl.com/pacmansites][available as a Google spreadsheet]].
+
+---++ OSG Software Team
+
+---+++ Accomplishments
+
+   * Built HTCondor 8.0.0 OSG RPM ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1081][SW-1081]])
+   * Integrated features from !BrianB’s HTCondor RPM into the new, unified one
+   * Added parallel universe configuration to unified HTCondor RPM
+   * Built the 32-bit version of the HTCondor 7.8.8 Debian package
+   * Tested the latest upstream release of osg-pki-tools, found issues, sent back to developers ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1072][SW-1072]])
+   * Retested the Gratia probes
+   * Investigated a VOMS log-rotation issue ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1084][SW-1084]])
+
+---+++ OSG Projects
+
+Work with Tim to make sure work is reflected in JIRA and that tickets are correct state. %RED%Be sure to mark active work as _In Progress_.%ENDCOLOR%
+
+   * SHA-2: update dcache-srmclient (Fermi) to very new version to support SHA-2 (Mat)
+   * Update OSG documentation to integrate OASIS (e.g., CE install) (Suchandra, ?)
+   * SLURM support: Make tickets (Tim, Suchandra, !BrianB), work on them (Suchandra)
+
+---+++ HTCondor Projects
+
+   * Unification of HTCondor RPMs (Carl): integration of Fedora spec file, list of remaining diffs, parallel universe support
+   * Take on HTCondor Debian packaging (!BrianL): do a build of 7.8.8
+
+---+++ Coming Soon
+
+   * Automated testing: Still want more tests and improved infrastructure
+
+---+++ Notes
+
+*dcache-srmclient:* Mat just got access to a public !dCache server; needs to ask Neha for test cases; CC !TimT. As a general rule, release team is going to own and document all manual test cases.
+
+*Documentation:* Most of Marco’s documentation tickets have been reassigned, mostly to !TimT. New tickets should not be assigned to Marco, but it’s ok to ask him questions.
+
+*SLURM:* Brian’s SLURM CE becoming more and more stable; once Suchandra gets back, we will be in home stretch. Scalability is acceptable. The SLURM jobmanager does try a qstat per job every 5 seconds, which is hardcoded into the jobmanager, but so far it is OK.
+
+*HTCondor unified RPMs:* Parallel universe configuration added. The cgroup configuration cannot be automated easily, so for now documentation on how to make the change is fine. But, !BrianB suggests it could be added to the HTCondor code. Carl examined configuration changes between RPM versions. Not sure what changes to keep; changes need review. This week: The standard universe build needs help from Jamie Frey, because it tries to download a tarball (glibc sources) from the externals server at UW, and the tarball is not even available. !TimT should also be involved in this (from the HTCondor side). Build needs to be fixed to no longer download tarballs on the fly, but rather include the source directly in the source RPM. For now, the authoritative unified RPM will live in the OSG upcoming repository. Eventually, the authoritative version will live in the HTCondor (FW) world itself, and the OSG will simply pass it through (albeit with a few conditional settings of our own).
+
+*HTCondor Debian:* Some new lintian warnings for 32-bit that might need to be fixed. !BrianL needs to talk to Michael Henke about Debain policy and about becoming an official uploader and/or maintainer. Also, !BrianL will write a punchlist that he can give to !TimC about what needs to be done before this is uploaded.
+
+*RSV:* Mat and Carl will meet to start getting Carl up to speed as a co-owner of the RSV source code.
+
+*Automated testing:* !TimC should meet with !BrianL to discuss becoming more involved in osg-test.
+
+
+
+---++ OSG Release Team
+
+*New release schedule:* Releases are planned for the second Tuesday of the month.
+   * Testing finishes up two Fridays (11 days) before the release.
+   * The final contents of the release are decided two Mondays (8 days) before the release.
+   * The packages to be released are put into the prerelease repository.
+   * The contents of the release are announced at the production meeting on the first Tuesday of the month.
+   * Light testing and minor fixes may be applied to the prerelease repository.
+   * packages added or removed from prerelease repository only under exceptional circumstances.
+   * The release on the second Tuesday of the month.
+   * The 4th Tuesday of the month may be used for security patches.
+
+---+++ Accomplishments
+
+   * Released 3.1.19 on June 11th
+      * CVMFS updated to 2.0.19
+      * !GlideinWMS updated to 2.7.1
+      * PBS gratia-probes fixed (&gt;&gt;&gt; 100% efficiency)
+      * frontier-squid bug fix
+      * client tarball fixes
+      * add npad-client to npad package
+      * Update OASIS config
+      * HTCondor 7.9.6 in upcoming
+
+---+++ Projects
+
+   * Release 3.1.20 (July 9th)
+   * Testing !OpenJDK 7
+   * Testing HDFS2
+   * Test HTCondor 8.0.0
+   * Test OSG CA with IGTF 1.53
+
+---+++ Notes
+
+   * New release plan discussed.
+      * Need clear criteria for promoting to prerelease repository.
+      * Hoping the prerelease phase will lead to more ITB testing.
+
+   * Horst starts testing !OpenJDK 7
+   * !BrianB will ping Purdue on HDFS 2 testing
+   * Freeze date for 3.1.20 is Friday June 28th (end of OSG Summer School)

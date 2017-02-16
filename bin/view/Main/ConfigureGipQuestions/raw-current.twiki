@@ -1,0 +1,146 @@
+---+!!&lt;nop&gt;configure-osg-gip.sh questions
+%TOC%
+%STARTINCLUDE%
+
+---++ Introduction
+This document is intended as a working discussion of the new questions being asked for in the new &lt;i&gt;./monitoring/configure-osg-gip.sh&lt;/i&gt; script and the variables contained in the new &lt;i&gt;./monitoring/gip-attributes.conf&lt;/i&gt; file.
+
+These variables are used in the &lt;i&gt;./vdt/setup/configure_gip&lt;/i&gt; script.
+
+
+---++configure-osg-gip.sh questions
+---+++Do you want to publish your srm information through GIP (Y/n): [n]
+
+---+++Do you want to publish your gums monitoring information through GIP (Y/n): [n] 
+If you wish to publish the status of your GUMS server, a script will periodically probe your GUMS server with an authorization request and record the success or failure in the GLUE schema.
+
+The probe is activated on the CE node, but there is special configuration required in the GUMS server&#39;s &lt;i&gt;gums.config&lt;/i&gt; for the special authorizations to be successful. Until those changes are made on the GUMS server side, your GUMS server status will show as unavailable.
+
+The &lt;i&gt;configure_gip&lt;/i&gt; will populated the following wrapper script:
+&lt;DD&gt;&lt;i&gt;VDT_LOCATION/lcg/var/gip/provider/osg-info-dynamic-providers&lt;/i&gt;&lt;/DD&gt;
+
+&lt;TABLE&gt;
+&lt;TR bgcolor=&quot;cyan&quot;&gt;&lt;TD&gt;Answer&lt;/TD&gt;&lt;TD&gt;Wrapper script contents&lt;/TD&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;TD&gt;y&lt;/TD&gt;
+&lt;TD&gt;&lt;i&gt;VDT_LOCATION/lcg/libexec/osg-info-gums-status-probe.sh VDT_LOCATION&lt;/i&gt;&lt;/TD&gt;
+&lt;/TR&gt;
+&lt;TR&gt;&lt;TD&gt;n&lt;/TD&gt;
+&lt;TD&gt;&lt;i&gt;VDT_LOCATION/lcg/libexec/osg-info-software-provider $app/etc $fullhost&lt;/i&gt;&lt;/TD&gt;
+&lt;/TR&gt;
+&lt;/TABLE&gt;
+
+&lt;b&gt;Questions:&lt;/b&gt;
+   1 If the gums probe is activated, how is the data provided by the &lt;i&gt;osg-info-software-provider&lt;/i&gt; script generated. Is it also invoked or collected in the &lt;i&gt;osg-info-gums-status-probe.sh&lt;/i&gt; script.
+
+---+++Please enter SE where gsiftp will is running: [UNAVAILABLE]
+This questions assumes that an SE (Storage Element) is required for every CE (Compute Element).
+
+&lt;b&gt;Questions:&lt;/b&gt;
+   1 Globus web services requires a &lt;i&gt;gsiftp&lt;/i&gt; service in order to handle any streaming of output or return of files from the process run.  Does this assume or preclude a &lt;i&gt;gsiftp&lt;/i&gt; running on the CE node?   I do not know if the &lt;i&gt;gsiftp&lt;/i&gt; has to be on the CE node for web services or if it can be elsewhere?
+
+---+++Please enter the Access Path to the data directory on UNAVAILABLE: [UNAVAILABLE]
+&lt;b&gt;Questions:&lt;/b&gt;
+   1 Is this the $OSG_DATA directory or is it assumed to be a common SE data directory?
+   1 Can this be the CE nodes data directory?
+
+---++configure-osg-gip.sh behavior
+---+++Scenario 1 - no SE / no GUMS data published
+&lt;verbatim&gt;
+Do you want to publish your srm information through GIP (Y/n): [n] n
+Do you want to publish your gums monitoring information through GIP (Y/n): [n] n
+We noticed that your Default SE (UNAVAILABLE), is different than your CE host (cms-xen1.fnal.gov).
+Please enter SE where gsiftp will is running: [UNAVAILABLE]
+Please enter the Access Path to the data directory on UNAVAILABLE: [UNAVAILABLE]
+writing configuration files...
+Configuring GIP...
+&lt;/verbatim&gt;
+
+&lt;b&gt;gip-attributes.conf&lt;/b&gt;:
+&lt;verbatim&gt;
+BATCH=&quot;condor&quot;
+SRM=0
+DISK=1
+SE_NAME=&quot;&quot;
+SE_HOST=&quot;&quot;
+SA_PATH=&quot;&quot;
+SE_DISK=&quot;UNAVAILABLE&quot;
+DATA=&quot;UNAVAILABLE&quot;
+GUMS=&quot;0&quot;
+SRM=0
+#--- EXPORT VARIABLES ---#
+export BATCH
+export DISK
+export SE_NAME
+export SE_HOST
+export SA_PATH
+export SE_DISK
+export DATA
+export GUMS
+&lt;/verbatim&gt;
+
+---+++Scenario 2 - publishing SRM, GUMS, GSIFTP information
+&lt;verbatim&gt;
+Do you want to publish your srm information through GIP (Y/n): [n] y
+Do you want to publish your gums monitoring information through GIP (Y/n): [n] y
+Do you also wish to publish your gsiftp information (Y/n): [Y] n
+What is the siteName of your srm Storage Element? (e.g. UIOWA-ITB): [UNAVAILABLE] SE_SITE_NAME
+What is the hostname of your srm Storage Element? (e.g. rsgrid3.its.uiowa.edu) : [UNAVAILABLE]            
+... This is a required entry. Try again.
+What is the hostname of your srm Storage Element? (e.g. rsgrid3.its.uiowa.edu) : [UNAVAILABLE] SE_HOSTNAME
+(This will be your base directory, e.g if your accessible path is your cms accessible area is &quot;/pnfs/xxxx.edu/data1/cms&quot;) your full access path may be &quot;/pnfs/xxxx.edu/&quot;
+What is the Full path of the root directory for this storage area? : [UNAVAILABLE] 
+... This is a required entry. Try again.
+What is the Full path of the root directory for this storage area? : [UNAVAILABLE] 
+STORAGE_AREA_ROOT_DIRECTORY
+Do you want to use a simplified version where all supported VOs will be assigned the same local directory (Y/n): [y]
+y
+What is the local directory that is the root for all vos ?
+LOCAL_DIRECTORY_FOR_ALL_VOS
+writing configuration files...
+Configuring GIP...
+&lt;/verbatim&gt;
+
+&lt;b&gt;gip-attributes.conf&lt;/b&gt;:
+&lt;verbatim&gt;
+BATCH=&quot;condor&quot;
+SRM=1
+DISK=0
+SE_NAME=&quot;SE_SITE_NAME&quot;
+SE_HOST=&quot;SE_HOSTNAME&quot;
+SA_PATH=&quot;STORAGE_AREA_ROOT_DIRECTORY&quot;
+SE_DISK=&quot;&quot;
+DATA=&quot;&quot;
+GUMS=&quot;1&quot;
+SRM=1
+VO_cdf_DIR=&quot;LOCAL_DIRECTORY_FOR_ALL_VOS&quot;
+   :
+&lt;b&gt;.... one for each VO... &lt;/b&gt;
+VO__DIR=&quot;LOCAL_DIRECTORY_FOR_ALL_VOS&quot;
+#--- EXPORT VARIABLES ---#
+export BATCH
+export DISK
+export SE_NAME
+export SE_HOST
+export SA_PATH
+export SE_DISK
+export DATA
+export GUMS
+export VO_cdf_DIR
+  :
+&lt;b&gt;.... one for each VO... &lt;/b&gt;
+&lt;/verbatim&gt;
+
+
+---++Adding a new VO or dropping support for a VO
+
+
+
+
+%STOPINCLUDE%
+&lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+*Major updates*:%BR%
+&lt;!--Future editors should add their signatures beneath yours!--&gt;
+--- Main.JohnWeigand - 08 Jan 2007&lt;br&gt;
+
+%INCLUDE{ &quot;Documentation.ToolsBottomMatter&quot; }%

@@ -1,0 +1,129 @@
+---+ OSG Technology Area Meeting, 15 December 2014
+
+*Coordinates:* Conference: 857-216-4999, PIN: 32390; https://www.uberconference.com/osgcat
+
+*Attending:* !BrianB, !BrianL, Carl, Edgar, Jeff, !JohnH, Marian, Mat, Suchandra, !TimC, !TimT
+&lt;!-- !BrianB, !BrianL, Carl, Edgar, Jeff, !JohnH, Jose, Marian, Mat, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+
+---+++ Triage Duty
+   * This week: !BrianL
+   * Next week: !TimT
+   * &lt;span style=&quot;color: #F60;&quot;&gt;10 (+1) open tickets&lt;/span&gt;
+
+---+++ JIRA
+   * Open: 135 (+1)
+   * In Progress: 29 (+2)
+   * Ready for Testing: 4 (–1)
+   * Ready for Release: 0 (–29)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| January | 3.2.19 | 2014-12-29 | 2015-01-05 | 2015-01-13 | |
+| February | 3.2.20 | 2015-01-26 | 2015-02-02 | 2015-02-10 | |
+| March | 3.2.21 | 2015-02-23 | 2015-03-02 | 2014-03-10 | |
+
+*Notes:* Additional “urgent” releases may be scheduled for the 4th Tuesday of each month. The *Code Freeze* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+
+---++ OSG Software Team
+
+---+++ Work Completed
+   * External
+      * Assisted the release by reviewing tickets and packages, reviewing release notes, and helping with tarball builds
+      * Promoted !MyProxy and GPT ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1715][SW-1715]])
+      * Promoted HTCondor 8.2.4 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1680][SW-1680]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1717][SW-1717]])
+      * Patched HTCondor 8.2.5 to allow user specific configs, worked through some build issues ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1553][SW-1553]])
+      * Updated to Globus GRAM client 12.5 and tested ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1724][SW-1724]])
+      * Patched !MyProxy 5.9 to allow TLS and tested ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1725][SW-1725]])
+      * Updated to Frontier Squid 2.7STABLE9-21.1 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1713][SW-1713]])
+      * Added new package for !XRootD security module ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1010][SW-1010]])
+      * Improved the HTCondor CE installation documentation by adding new content on accounting groups and minimum package versions
+      * Improved the HTCondor CE troubleshooting guide in several ways (e.g., [[https://jira.opensciencegrid.org/browse/SOFTWARE-1123][SW-1123]])
+      * Improved the HTCondor CE job router documentation with updates from the GOC training session
+      * Made a release candidate of the RSV !perfSONAR probe, which will be installed at the GOC
+      * Debugged and made a test fix for !CREAM failures at the SDSC factory ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1722][SW-1722]])
+      * Discussed and planned an upcoming transition of GRAM and !MyProxy clients to TLS only ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1716][SW-1716]])
+      * Investigated gridsite_globus dependency in !gLite packages and changed to plain gridsite ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1298][SW-1298]])
+      * Built packages for EL 7: Axis, NDT ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1604][SW-1604]])
+      * Reviewed status of EL 7 builds (esp. w.r.t. the full client and the CE) and discussed next steps
+      * Added osg-installed-versions output to osg-system-profiler-viewer for easier debugging
+      * Support, notably University of Florida
+
+   * Internal
+      * Addressed cleanup failures when OS packages get updated and built a new version of osg-test
+      * Fixed issues with reporting failures in the VMU result uploader script
+      * Investigated the causes of various nightly test failures throughout the week
+      * Improved our use of JIRA and labeling internal work
+      * Added email notifications to Koji offsite backup script
+      * Investigated and fixed GUMS test failures, which resulted from IBM Java creeping into test installs
+
+---+++ Work In Progress
+   * External
+      * &lt;span style=&quot;color: #F60; font-weight: bold;&quot;&gt;Ticket watch:&lt;/span&gt; 18 tickets marked for January, 3 are Ready For Testing, ~5 business days left (for most people)
+      * HTCondor CE
+         * Documentation: revise HTCondor CE overview, overhaul install guide (!BrianL, !TimC)
+         * Some small bug fixes, etc. (!BrianL, Mat)
+         * Scalability: reached 12K, appears to have hit hardware limits on collector; time to wrap up (document) this round of testing (Edgar, Marian)
+         * Monitor and support sites, especially LSF and SGE (!BrianL)
+      * GRAM and !MyProxy transition to TLS-only (due 1 April 2015): doing “safety” builds (Carl)
+      * GUMS: work on a variety of smaller changes (Carl)
+      * RSV !perfSONAR probe: running release candidate over weekend; need final approval from !BrianB, Soichi, and Shawn (Edgar)
+      * EL 7: working on components for full client and CE (except !BeStMan and GUMS) (Mat); evaluate progress and plan next milestone(s) (Mat, !TimC, !BrianB)
+      * !XRootD backup of HDFS accesses: scheduling meeting to discuss planning (Jeff, !TimC, !BrianB)
+      * OASIS 2: complete draft packaging (Jose)
+      * IPv6: Edgar has VMs ready to try out, !BrianL will test instructions and set-up (Edgar)
+      * Work on document with technical overview of install process (!TimC)
+      * Start documenting the state of our documentation (!TimC)
+      * !PanDA: can we get the server running here and submit one job?; waiting for them on other packages (Carl)
+
+   * Internal
+      * osg-test: Fix cleanup issues, again, maybe, hopefully (!BrianL)
+      * Koji upgrade to EL6: write upgrade and back-out plans, share with team (Mat)
+      * Koji software upgrade: harder because of database migration (Mat)
+      * UW ITB site: build machines with Puppet! (all)
+      * Offsite backups: add some monitoring? (Mat)
+      * !HTCondor CE and PBS: setting up about 700 cores with PBS and an !HTCondor CE front-end (Edgar)
+      * Checking local backups with Nagios: waiting for help from Aaron (Mat)
+      * Move OSG software source code (not packaging) to git(hub): discuss plan and timing (Mat, !TimC)
+
+---+++ Work Upcoming
+
+   * Start design for new test scheduling subsystem (!TimC, !BrianL)
+
+---+++ Notes
+
+
+---++ OSG Release Team
+
+---+++ Projects
+
+   * Brian Lin will handle the January Release
+   * Developer Freeze Next Week
+   * Limited Testing Time
+   * [[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.2.19%2C%203.1.43%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][Januray 13th Release]]
+   * Nothing in OSG 3.1 without prior approval
+   * VO package updates and IGTF CA certificate updates pre-approved for OSG 3.1
+
+%TABLE{sort=&quot;off&quot;}%
+| *3.1.43* | *Both* | *3.2.19* | *Total* | *Status* |
+| 0 (+0) | 0 (+0) | 3 (+3) | 3 (+3) | Open |
+| 0 (+0) | 0 (+0) | 12 (+12) | 12 (+12) | In Progress |
+| 0 (+0) | 0 (+0) | 3 (+3) | 3 (+3) | Ready for Testing |
+| 0 (+0) | 0 (+0) | 0 (+0) | 0 (+0) | Ready for Release |
+| 0 (+0) | 0 (+0) | 18 (+18) | 18 (+18) | Totals |
+
+   * OSG 3.2
+      * VOMS Server &amp; Clients 2.0.12
+      * HTCondor 8.2.6
+      * CE metapackage pull in the batch systems
+      * !XRootD security module
+      * frontier-squid 2.7STABLE9-21.1
+   * OSG 3.1
+      * Nothing at this time
+
+---++ OSG Investigations Team
+
+No report this week.

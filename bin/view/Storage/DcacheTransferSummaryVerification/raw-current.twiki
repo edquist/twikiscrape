@@ -1,0 +1,59 @@
+---+ Verifying the Summarization of the DCache Transfer Probe 
+
+*NOTE*: This page is an internal note for the OSG-Storage team.  It is not meant for the external sysadmin
+
+This page is meant to help a non-developer verify that the summarization is working for the DCache Transfer probe.
+
+---++ Create new records 
+
+Stop any running dCache-transfer probe.  In order to test summarization, we must create a few records that can be summarized.  Turn off all pools in dCache except for one.
+
+Create a small file locally (perhaps 1MB).  Here&#39;s a sample command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+dd if=/dev/zero of=/tmp/testfile bs=1MB count=1
+&lt;/pre&gt;
+
+Copy this file into dCache 10 times.  Because there&#39;s only one pool online, each should go to the same pool.
+
+---++ Start probe
+Edit the !ProbeConfig to verify your settings.  The following lines should be set:
+
+&lt;pre class=&quot;screen&quot;&gt;
+CollectorHost=&quot;http://gratia-osg-itb-reports.opensciencegrid.org:80&quot;
+Summarize=&quot;1&quot;
+&lt;/pre&gt;
+
+Summarize likely isn&#39;t in the !ProbeConfig by default
+
+Start the probe with the init:
+&lt;pre class=&quot;screen&quot;&gt;
+/etc/init.d/gratia-dcache-transfer start
+&lt;/pre&gt;
+
+---++ Wait
+
+The probe will only send records for complete hours, and it waits some amount of time (15 minutes) after the end of the hour before attempting to send any.
+
+So, the probe will summarize records from 1:00PM to 2:00PM starting at 2:15PM.
+
+So, you probably need to wait at this point.  Watch the probe&#39;s logs (/opt/d-cache/gratia/var/logs/[DATE].log) and wait for at least one non-handshake record to be sent.
+
+---++ Verify records 
+
+Navigate to this link:
+http://gratia-osg-itb-reports.opensciencegrid.org/gratia-reporting/showQuery.jsp?ReportTitle=Go%20Go%20Gadget%20dCache-transfer-probe&amp;displayReport=false&amp;__title
+
+This will allow you to query the DB for records.  Try this query:
+&lt;pre class=&quot;screen&quot;&gt;
+select JUR.dbid, LocalJobID, VOName, WallDuration, Njobs, StartTime, EndTime, ResourceType from JobUsageRecord JUR join JobUsageRecord_Meta JURM on JUR.dbid=JURM.dbid where ProbeName like &quot;dcache-transfer:%&quot; limit 10;
+&lt;/pre&gt;
+Look for a records which have Njobs &gt; 1.  These are summarized records.  If you copied the file in 10 times, it should have Njobs=10.
+
+Take the dbid from one of the previous summarized records.  Verify the data transferred is correct.
+&lt;pre class=&quot;screen&quot;&gt;
+select IF(`Value` &gt; 0, `Value`, 0) as TransferSize from JobUsageRecord JUR join Network N on (JUR.dbid = N.dbid) where JUR.dbid=INSERT_DBID_HERE limit 1;
+&lt;/pre&gt;
+
+The data volume should be the file size times the number of times you transferred the file.
+

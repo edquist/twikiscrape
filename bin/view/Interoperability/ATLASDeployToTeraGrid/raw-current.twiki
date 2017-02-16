@@ -1,0 +1,58 @@
+---+Atlas Software Installation on TeraGrid
+ 
+Atlas software package has mainly three parts to be installed on a grid site:
+
+1. Capone (usatlas production executor) server side package, i.e. gce-server, which defines the high level transformation scripts, executables and other tools used to invoke the grid jobs. 
+
+2. JobTransformations, which has the low level scripts for running athena jobs with the appropriate jobOptions
+
+3. Multiple Atlas releases, each one corresponds to an individual Pacman subdirectory. Each release takes about 4GB disk space.
+
+The installation is based on pacman.
+
+At this moment it&#39;s installed on the following sites:
+
+---++UC
+
+ Login hostname is tg-viz-login.uc.teragrid.org. 
+
+ Atlas software is installed under /soft/community/osg/atlas_app
+
+1) Get Pacman 
+
+&gt; cd /soft/community/osg/
+&gt; wget http://physics.bu.edu/pacman/sample_cache/tarballs/pacman-latest.tar.gz
+&gt; tar xvfz pacman-latest.tar.gz
+&gt; cd pacman-3.12.1; source setup.sh
+
+2) Install capone server package
+
+&gt; mkdir atlas_app
+&gt; cd atlas_app
+&gt; pacman -get GCL:ACE-Server-dev -trust-all-caches -allow tar-overwrite
+
+3) Install atlas software release 10.0.1
+
+&gt; mkdir -p atlas_app/atlas_rel/10.0.1
+&gt; cd atlas_app/atlas_rel/10.0.1
+&gt; pacman -get GCL:10.0.1slc3+gcc  -trust-all-caches -allow tar-overwrite
+Note: You want to install the slc3 version because this UC cluster runs SuSE Linux Enterprise 
+Server 8.
+
+4) Install atlas software jobtransformations
+
+&gt; mkdir -p atlas_app/atlas_rel/kitval
+&gt; cd atlas_app/atlas_rel/kitval
+&gt; pacman -get GCL:JobTransforms -trust-all-caches -allow tar-overwrite
+
+
+---++Validation test of Atlas software
+
+A KitValidation package is installed along the atlas releases, one can run it like (take UC as an example):
+
+&gt;/soft/community/osg/atlas_app/atlas_rel/kitval/KitValidation/KitValidation/KitValidation-01-04-05/share/KitValidation -r 9.0.4 -p /soft/community/osg/atlas_app/atlas_rel/9.0.4 -d /soft/community/osg/9.0.4.kitval-results -c soft/community/osg/atlas_app/atlas_rel/9.0.4/usr/local/gcc-alt-3.2 -k -n -g
+
+You may want to convert the above command as a grid job to run on worker nodes, as the real jobs will do. 
+
+-- Main.XinZhao - 29 Jun 2005
+

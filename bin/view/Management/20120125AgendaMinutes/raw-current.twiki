@@ -1,0 +1,138 @@
+---+ OSG Area Coordinators Meeting
+%TOC% 
+---++ Meeting Phone Coordinates
+
+%TABLE{tablewidth=&quot;550&quot; cellpadding=&quot;6&quot; dataalign=&quot;left&quot; tablerules=&quot;all&quot; tableborder=&quot;1&quot; databg=&quot;#FFFFFF, #FFFFFF&quot;}%
+| Wednesday,  2:00 PM Central Time ||
+| Phone (866) 740-1260 | Meeting ID 8405618, followed by # |
+
+---+++ Attendees
+Gabriele, Ruth, Alain, Mine, Rob Q, Dan, Chander
+
+---+++ New Items for [[https://indico.fnal.gov/categoryDisplay.py?categId=86][OSG Calendar]] 
+Jemise will update Indico
+
+---++ Follow-up Action Items
+
+---++ Stakeholder Request System Update - Gabriele Garzoglio
+Following up on pending requests at
+http://jira.opensciencegrid.org/secure/Dashboard.jspa?selectPageId=10030
+
+---++ Software Update - Alain Roy
+
+I last presented at the [[20111026AgendaMinutes][October 26th, 2011 Area Coordinator Meeting]]
+
+---+++ Status &amp; Accomplishments
+
+*Major Notes*: &lt;br&gt;
+   * The initial RPM transition has been completed. [[Documentation.Release3.ReleaseNotes][Release Notes]] We have shipped the CE, SE (Bestman/Xrootd/HDFS), RSV, Client, Worker Node Client, VOMS, and glexec.
+   * Alex Sim and his team are no longer supporting Bestman 2 for OSG as of December, 2011. Neha Sharma is the primary support in OSG and Doug Strain is the backup. 
+
+*Deployment of OSG Software 3*: &lt;br&gt;
+We know that the new RPM-based OSG Software 3 has been deployed at:
+
+   * SMU_HPC
+   * !GridUNESP_CENTRAL
+   * RENCI-Blueberry
+   * CMS Tier2 at Wisconsin (worker nodes, HDFS, Xrootd, SRM &amp; GridFTP, but not yet the CE)
+   * Nebraska: Firefly, Red &amp; Prairiefire (7 Compute Elements total)
+
+Representatives from CMS and ATLAS have told me that they have asked their sites to update by April 2012. So far we have not had much feedback from individual sites other than SMU and RENCI, but I expect it will increase in the next two months. 
+
+---+++ Open Questions
+At this time, I don&#39;t have open questions. However, depending on the work that needs to be done for jGlobus and Bestman for the SHA-2 transition (see below), we may need to find effort to solve a development problem.
+
+---+++ The next few months: the big picture
+
+In the next few months, the following 6 things will be our bigger projects. I elaborate on them below. 
+
+   1. Support for sites and VOs as they deploy the new OSG Software 3 release.
+   1. Transitioning software to RPMs that is missing: GUMS &amp; Gratia Collector
+   1. [[SoftwareTeam.SL6Support][Scientific Linux 6 support]]
+   1. [[SoftwareTeam.Sha2Support][The SHA-2 transition]]
+   1.  [[SoftwareTeam.TransitionToGocTicket][Improving how we handle support]]
+   1. Improving effort tracking
+
+---+++ Areas of Focus
+
+*1. Support for sites and VOs as they deploy the new OSG Software 3 release:* &lt;br&gt;
+To date, only a few sites have updated to the new OSG Software 3 so support has not been significant. This is likely to change as we get closer to April, the date by which CMS and ATLAS are planning to upgrade.
+
+*2. Transitioning software to RPMs that is missing:* &lt;br&gt;
+GUMS is being packaged as RPMs as we speak. GUMS 1.4 is not quite finished and John Hover is actively working on the final problems. Because of his work, we don&#39;t have an estimated release date, but the end of February is a reasonable guess.
+
+*3. Scientific Linux 6 support:* &lt;br&gt;
+CMS has asked for Scientific Linux 6 support by the end of February. Derek Wright has contributed some proof of concept effort and built a basic worker node client. 
+
+Our [[SoftwareTeam.SL6Support][plan Scientific Linux 6 support]] is being developed and will be finalized within the next week.
+
+*4. SHA-2 transition*: &lt;br&gt;
+I&#39;ve taken over the SHA-2 transition from the security team because it is mostly a software issue. The security team will provide advice as needed.
+
+As of January 2012, all certificates in use in OSG (CA, host, user, and proxy) certificates use SHA-1 or MD5 as their signing algorithm. In the near future (where &quot;near&quot; is being defined), the Certificate Authorities will begin using SHA-2 as their signing algorithm. To ensure we are ready, we need to verify that all software we provide works with MD5, SHA-1 and SHA-2. If any software is not ready, it must be updated. If we are unable to update, we need to find workarounds or delay the transition to SHA-2.
+
+Our biggest known problem is jGlobus, which is used by dCache and Bestman. The new version of jGlobus (currently in beta) support SHA-2 but does not support legacy or pre-RFC proxies and may not support httpg. I am organize a meeting with developers from Globus, Bestman, and dCache to understand our path forward.
+
+The [[SoftwareTeam.Sha2Support][SHA-2 plan is being developed]].
+
+*5. Improving Support*: &lt;br&gt;
+Historically, the OSG Software Team has not had a consistent method for providing support. We&#39;ve had two systems:
+
+   * The UW-Madison portion of the team used RT hosted at the UW-Madison. The GOC can assign tickets from their system to RT with ticket interchange software they developed.
+   * The Fermilab-based Storage Group (which no longer exists as a separate group) used the GOC Ticket System
+
+This is a mess that doesn&#39;t allow allow easy collaboration on tickets amongst OSG Staff.
+
+I have made [[SoftwareTeam.TransitionToGocTicket][a proposal to move all OSG Software support to the GOC Ticket system]]. It has not yet been widely discussed (it was just written), so the details and timeline are likely to change. However, I want this transition to happen soon so we can properly support people moving to OSG Software 3.
+
+*6. Improving effort tracking:* &lt;br&gt;
+I have been working with Brooklin Gore from the UW-Madison to improve how we track effort. This is in progress and not complete. I&#39;ve begun by defining the questions I would like to answer. They include:
+   * How much did project X cost?
+   * How do I estimate the effort required to do a project?
+   * What size does the OSG Software Team need to be?
+   * When someone asks for a new project, how can I understand the implications of taking on that work?
+   * How much time do we spend on support vs. development vs. management?
+
+---+++ Also of interest
+
+Other areas I would like to focus on for this meeting:
+
+*7. Bestman2*: &lt;br&gt;
+We (OSG Software) are now the primary supporters for Bestman2. Alex delivered a major new update in mid-December that addressed many issues we were worried about (Java 7 support, dropping unneeded libraries, etc). Neha and Doug have been testing it. We are likely to release it to production on Tuesday, January 31.
+
+We have been working with Alex Sim on how to best maintain the source code for Bestman2. He is interested in continuing to host the source code repository and provide advice, though he cannot provide development. When we do development, we will:
+   * Develop and test the code
+   * Submit a patch to Alex. 
+   * Alex or one of his co-workers will review the patch and give advice or blessing.
+   * We will commit the patch to the source code repository (Subversion) at LBNL.
+
+We have gone through this process once for a small but real patch, [[http://jira.opensciencegrid.org/browse/SOFTWARE-483][SOFTWARE-483]]. 
+
+*8. GOC Training*: &lt;br&gt;
+Rob Quick has requested that the OSG Software Team do a one-day training for the OSG Operations Team, specifically the subset that focuses on user support. We recently met and agreed that our desired result of this training is:
+
+&lt;blockquote&gt;
+*Goal:* Tickets assigned to the OSG Software Team have a shorter lifetime because the OSG Operations Team will be able to handle basic tickets and supply more pertinent information during the initial triage. 
+&lt;/blockquote&gt;
+
+Details of the training session have not yet been settled, but it is likely to be in the second-half of February in Indianapolis. 
+
+*9. Requests from stakeholders*: &lt;br&gt;
+In early January I asked stakeholders (ATLAS, CMS, VO-Forum...) for feedback on changes they would like to see for the OSG Software Stack in the next six to twelve months. We have not had many responses yet:
+
+   * [CMS] Resolve GUMS problem in which it does not get multiple DNs per user from VOMS Admin 2.6
+   * [CMS] Scientific Linux 6 support by end of February. Some initial prototyping has been done by Derek Wright and the results are promising. We have a [[SoftwareTeam.SL6Support][developing plan]]
+   * [CMS] Add GUMS and Gratia Collector to OSG Software 3. GUMS is in progress. We are waiting for some changes from John Hover, who is actively working on them. 
+   * [CMS] Eventually add CVMFS, new HDFS, and update to latest versions of other software such as lcg-utils. 
+   * [ATLAS] No feedback yet, likely to come on Friday, 27-Jan-2012
+   * [ET] Do usability testing of BOSCO before the initial release in Q2 (June 2012?) 
+
+---+++ Followup on action items
+
+From the last Area Coordinators meeting, I had two action items:
+
+1. _Alain to send staffing metrics to Ruth and Miron (for last month and future)_ &lt;br&gt;
+This was done. They will have the December staffing metrics shortly. 
+
+2. _Alain to work with Neha&#39;s management at Fermilab to confirm her job assignments in the software team_ &lt;br&gt;
+I communicated with Gabriele, and I believe this is settled. 

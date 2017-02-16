@@ -1,0 +1,49 @@
+---+ ATOM News Feeds
+
+---++ Find out What&#39;s New
+
+There are several ways to find out what&#39;s new in each TWiki web:
+   1. Visit WebChanges to see recent changes
+   1. Subscribed in WebNotify get notified of recent changes by e-mail
+   1. Use a news readers such as TWiki:Plugins/HeadlinesPlugin to display the recent changes
+      * The source can be a RSS 1.0 feed (WebRss) or ATOM 1.0 feed (WebAtom)
+      * Learn more on RSS at WebRssBase and TWiki:Codev/TWikiSyndication
+      * Learn more on ATOM at TWiki:Codev/AtomSyndication
+
+---++ ATOM Feed Usage
+
+   * The URL for an RSS feed is =%SCRIPTURL{view}%/&amp;lt;web&amp;gt;/WebAtom=
+   * For this &lt;nop&gt;%WEB% web it is %SCRIPTURL{view}%/%WEB%/WebAtom
+   * You can also create a custom feed based on a search. Add a =search=value= parameter to the URL, e.g. %SCRIPTURL{&quot;view&quot;}%/%WEB%/WebAtom?search=plugin is a what&#39;s new feed about Plugins.
+
+---++ ATOM Feed Internals
+
+Each web has a WebAtom topic which includes part of this &lt;nop&gt;%TOPIC% topic. This topic is the base for the ATOM feed and generates an WebAtom 1.0 feed for TWiki:Codev/AtomSyndication.
+
+The WebAtom topic in each web contains the following text:
+
+-----
+&lt;pre&gt;
+&amp;lt;title&gt;&amp;lt;nop&gt;%&lt;nop&gt;WIKITOOLNAME%&#39;s &amp;lt;nop&gt;%&lt;nop&gt;INCLUDINGWEB% web&amp;lt;/title&gt;
+&amp;lt;subtitle&gt;(the description of the web, plain text with no markup and no wikiwords). TWiki is an Enterprise Collaboration Platform.&amp;lt;/subtitle&gt;
+%&lt;nop&gt;INCLUDE{&quot;%&lt;nop&gt;SYSTEMWEB%.WebAtomBase&quot;}% &amp;lt;!--
+   * Set &lt;nop&gt;SKIN = rss
+--&amp;gt;
+&lt;/pre&gt;
+-----
+
+
+Below part is included by each &lt;nop&gt;WebAtom topic:
+
+-----
+&lt;verbatim&gt;
+%STARTINCLUDE%&lt;link rel=&quot;self&quot; type=&quot;application/atom+xml&quot; href=&quot;%SCRIPTURL{&quot;view&quot;}%/%INCLUDINGWEB%/%BASETOPIC%&quot;/&gt;
+&lt;id&gt;%SCRIPTURL{&quot;view&quot;}%/%INCLUDINGWEB%&lt;/id&gt;
+&lt;rights&gt;%WEBRSSCOPYRIGHT%&lt;/rights&gt;%CALC{$SET(c,0)}%
+%SEARCH{&quot;%URLPARAM{&quot;search&quot; encode=&quot;quote&quot; default=&quot;.*&quot; }%&quot; web=&quot;%INCLUDINGWEB%&quot; type=&quot;regex&quot; nosearch=&quot;on&quot; order=&quot;modified&quot; reverse=&quot;on&quot; nototal=&quot;on&quot; limit=&quot;16&quot; format=&quot;$percntCALC{$IF($GET(c)&gt;0, , &lt;updated&gt;$isodate&lt;/updated&gt;$CHAR(10))$SETM(c, +1)}$percnt&lt;entry&gt;$n &lt;title&gt;$topic&lt;/title&gt;$n &lt;link rel=\&quot;alternate\&quot; type=\&quot;text/html\&quot; href=\&quot;%SCRIPTURL{&quot;view&quot;}%/$web/$topic?t=$isodate\&quot;/&gt;$n &lt;id&gt;%SCRIPTURL{&quot;view&quot;}%/$web/$topic&lt;/id&gt;$n &lt;updated&gt;$isodate&lt;/updated&gt;$n &lt;summary&gt;$summary (last changed by &lt;nop&gt;$wikiname)&lt;/summary&gt;$n &lt;author&gt;$n  &lt;name&gt;&lt;nop&gt;$wikiname&lt;/name&gt;&lt;/author&gt;$n&lt;/entry&gt;&quot;}%
+%STOPINCLUDE%
+&lt;/verbatim&gt;
+-----
+
+__See also__: WebRssBase, TWiki:Codev/AtomSyndication 
+

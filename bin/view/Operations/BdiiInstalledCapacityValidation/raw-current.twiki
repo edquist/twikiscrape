@@ -1,0 +1,150 @@
+
+&lt;table width=&quot;100%&quot; border=&quot;0&quot;&gt; &lt;tbody&gt;&lt;tr&gt;&lt;td valign=&quot;top&quot;&gt; &lt;/td&gt; &lt;td valign=&quot;top&quot;&gt;
+---+!! BDII filter/adjustment script
+%TOC% &lt;/td&gt; &lt;td width=&quot;25%&quot; align=&quot;right&quot; valign=&quot;top&quot;&gt;
+%TABLE{ sort=&quot;off&quot; dataalign=&quot;left&quot; tableborder=&quot;0&quot; cellpadding=&quot;1&quot; cellspacing=&quot;3&quot; headerbg=&quot;#F3EDE7&quot; databg=&quot;#F3EDE7&quot;}% &lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt; 
+%STARTINCLUDE%
+
+---++++ What does it do?
+The script provides the logic for:
+   * Using the BDII data to calculate the Installed capacity (based on the guidelines laidout in the installed capacity document) at a site.
+   * Comparing the calculated installed computing capacity to the pre-determined (upper and lower) limits
+   * If the calculated installed computing capacity falls outside the limits then:
+      * Adjusting the BDII data so that the calculated installed computing capacity falls within the limits
+
+So in its guts, the script does the following:
+&lt;pre&gt;
+Incoming BDII data -----&gt; BDII filter/adjustment script -----&gt; Adjusted BDII data
+&lt;/pre&gt;
+
+Note that this BDII data adjustment operation is required mainly for sites supporting the ATLAS and CMS VOs. But the script will work for any OSG site if needed. 
+
+---++++ Can you provide an example scenario? 
+Yes, here is an example scenario for AGLT2. Note that AGLT2 has just been taken as an example for demonstration purposes only. This neither confirms nor denies the validity of the BDII data from AGLT2.  
+
+upper bound: 4000 (Fake value, for sake of example only)&lt;br&gt;
+lower bound: 3000 (Fake value, for sake of example only)&lt;br&gt;
+
+Calculated installed computing capacity: 4136&lt;br&gt;
+Adjusted installed computing capacity: 4000 (limited to upper bound)&lt;br&gt;
+Installed capacity adjustment:  -3%&lt;br&gt;
+
+Corresponding adjustments made in the physical/logical CPUs (-3% applied across all sub-clusters):&lt;br&gt;
+GlueSubClusterPhysicalCPUs: 19&lt;br&gt;
+GlueSubClusterLogicalCPUs: 19&lt;br&gt;
+GlueSubClusterPhysicalCPUs: 876&lt;br&gt;
+GlueSubClusterLogicalCPUs: 876&lt;br&gt;
+GlueSubClusterPhysicalCPUs: 706&lt;br&gt;
+GlueSubClusterLogicalCPUs: 706&lt;br&gt;
+
+---++++ Why do we need it?
+We need the BDII adjustment script in order to do reactive data correction (if appropriate) of the BDII data that comes from a site. This avoids incorrect data from getting propagated further downstream to the WLCG BDII and ending up as bad data in the hands of management. This correction is purely reactive and isn&#39;t a reflection of the correct data for the site i.e. the data is simply adjusted to fit within the limits of the installed computing capacity. The real correction will come from the proactive correction methods, which will be done by contacting the sites that produce the bad data.  
+
+---++++ How does it work?
+I hope that the example above provides a feel for how the script works. Here are some more details about the script. The script reads  the BDII data, one site at a time, from the files maintained under an input directory. These files contain the unfiltered data. Then It goes through the logic to calculate the installed computing capacity at the site. Then it compares the installed capacity with a list of pre-configured bounds for the site. If the value falls outside the bounds, then the script calculates the percentage by which the installed capacity needs to be adjusted. The script goes through the BDII data one more time and applies this % adjustment to the sub-cluster data as shown above (The rest of the BDII data remains unaltered). This in turn keeps the installed capacity within the bounds. So this is purely reactive adjustment. 
+
+---++++ Where/how will the script run?
+The script will be hosted at the Grid Operations Center (GOC) and will run there. Initially this script should be run in testing mode i.e. it could be used to filter BDII data from sites, but the filtered data should not be sent further downstream. The upper and lower bounds for different sites could be setup with various made up values (or real values if someone knows how to get those) and it should be verified how the script adjusts/filters the data. Update on Sep 1st 2009: The filtering script was run for the ITB sites at the GOC for several days and the diff results (diff between the unfiltered and filtered data file) were compared against the expected results and it was as expected. Expected results were derived by setting the upper and lower bounds to specific (fake) values for a set of ITB sites. 
+
+---++++ How can I obtain the script code/package?
+You can download the tarball 
+&lt;a href=http://osgbdiifilter.svn.sourceforge.net/viewvc/osgbdiifilter/filtering/trunk/&gt;here&lt;/a&gt;. &lt;font color=red&gt;&lt;b&gt;Note: &lt;/b&gt; The tarball attachment at the end of this document is obsolete.&lt;/font&gt;
+
+---++++ How do I install it?
+Go to the directory where you want to install the script and do the following:
+&lt;pre&gt;
+tar -zxvf &lt;tarball_name&gt;.tar.gz
+&lt;/pre&gt;
+The installation is complete!
+
+---++++ What are the pre-requisites for running the script?
+The file containing BDII data for each site should be available under a single input directory. The output directory in which the unfiltered data files are stored, should be available. The resource summary xml file and cpu information xml file derived from MyOSG should be available. 
+
+---++++ How do I run the script?
+Run the script from the command line as shown below:
+&lt;pre&gt;
+export INSTALL_DIR=/absolute/path/to/installation/directory
+sh $INSTALL_DIR/bin/installed-capacity-filter.sh &amp;ltindir&amp;gt &amp;ltoutdir&amp;gt  [ -resource &amp;lt resource_summary_file&amp;gt -cpuinfo &amp;ltcpu_info_file&amp;gt ] 
+&lt;/pre&gt;
+indir is the absolute path to the input directory containing the BDII files to be read from.&lt;br&gt;
+outdir is the absolute path for the output directory to which the adjusted BDII data will be written to as files.
+
+You can also see how to run by using help :
+sh $INSTALL_DIR/bin/installed-capacity-filter.sh --help
+
+Note that the input directory should contain one file corresponding to the BDII data for one site i.e. each site contains exactly one file containing the BDII data under the input directory. This name of the file should be the FQDN corresponding to that site + a .processed suffix. For example for the site AGLT2 the input file will be gate01.aglt2.org.processed. So there is a one to one mapping between the site name and the file name which is the FQDN for the site. This mapping is important because the site configuration values like the upper and lower bounds for the installed capacity of a site are named based on the site name like AGLT2_ll, AGLT2_ul. Given the FQDN as the filename for a site in the input directory, the bdii script will lookup the sitename from $INSTALL_DIR/etc/sites.txt. The sites.txt file will be generated in real-time from the resource summary MyOSG data. Here is a sample entry in this file:
+&lt;pre&gt;
+AGLT2,gate01.aglt2.org
+&lt;/pre&gt;
+Then it will obtain the corresponding site configuration values from limits.sh. These values will then be used for figuring out the adjustment needed in the installed capacity and consequently the BDII data. 
+
+You can get an idea about this mapping between the sitename and the site&#39;s FQDN by looking at the Name and FQDN columns of this webpage: http://is.grid.iu.edu/cgi-bin/status.cgi
+
+---++++ How does the script get the upper and lower bounds for the Installed capacity values for a particular site?
+The upper and lower bounds for the installed capacity are available in the $INSTALL_DIR/etc/limits.sh file. Note this file is generated in real-time when the filtering script is run. The values for the bounds are obtained from MyOSG (which in turn is set in OIM). For example here is how the bounds are set for the site AGLT2:
+
+AGLT2_ll refers to the lower limit
+&lt;pre&gt;
+export AGLT2_ll=3000
+&lt;/pre&gt;
+AGLT2_ul refers to the upper limit
+&lt;pre&gt;
+export AGLT2_ul=4000
+&lt;/pre&gt;
+
+Now when the script is run, it will adjust the BDII data (if appropriate) to limit the installed capacity value within these bounds.
+
+---++++ Who is responsible for setting these upper and lower bounds and where do they set it?
+Good questions. Usually the T2 co-ordinators or the site admins are responsible for setting these values in OIM of GOC. So to set these bounds go to the &lt;a href=https://oim.grid.iu.edu/oim/resource&gt;OIM web interface&lt;/a&gt; and edit the sites for which you are the site admin and set these bounds.  Once the values are set in OIM, they are published through the MyOSG service of the GOC. The installed capacity filtering script uses the machine readable XML data published by MyOSG to extract these bounds (the resource summary xml file and the cpu information xml file). Note: The cpu information i.e. KSI2K values for the different CPU models is derived from  &lt;a href=hhttp://myosg.grid.iu.edu/misccpuinfo/xml?datasource=cpuinfottp://myosg.grid.iu.edu/misccpuinfo/index?datasource=cpuinfo&gt;here&lt;/a&gt; and this is all set by Brian Bockelman. 
+
+---++++ I would like to know if a site&#39;s BDII data is adjusted or not and by what percentage. Can I find that?
+Yes, you can find that by doing the following (for example for site AGLT2). May be this will be a useful test mode for the script. 
+&lt;pre&gt;
+sh $INSTALL_DIR/bin/installed-capacity-filter-helper.sh  -adjust -site AGLT2
+&lt;/pre&gt;
+If there is some adjustment to be made in the installed capacity data, then running the above command will show the percentage adjustment as below. This % correction will be applied in each sub-cluster BDII data as shown in the example scenario way above near the top. 
+&lt;pre&gt;
+-3
+&lt;/pre&gt;
+If there is no adjustment to be made then the above command won&#39;t produce any output i.e. it will simply return to command line. 
+
+&lt;!--
+ OK, so this script adjusts the BDII data depending on if the installed capacity values fall outside the bounds. But I would like to know the installed capacity at a particular site. How do I find that?
+You can find the installed capacity at a particular site (AGLT2 for example) by running the following command:
+&lt;pre&gt; 
+sh $INSTALL_DIR/bin/installed-capacity-filter-helper.sh -site AGLT2
+&lt;/pre&gt; 
+This produces the following output showing the installed capacity values at AGLT2.
+(If you want the calculated installed capacity for all ATLAS/CMS T2 sites then run the command without the &quot;-site AGLT2&quot; option)
+&lt;pre&gt;
+==============================================================
+SITE                 IC_CALC    IC_SS      DIFF       %DIFF
+==============================================================
+AGLT2                4000(4136) 4678       -678       -16
+==============================================================
+&lt;/pre&gt;
+The description of the fields are:&lt;br&gt;
+(IC_CALC): The installed capacity calculated using the BDII data - (4136). If this value exceeds the bounds then it is adjusted within the bounds. In this particular case for AGLT2 the calculated value is 4136 KSI2K, which exceeds the upper limit of 4000. Hence the value is limited to 4000.&lt;br&gt;
+IC_SS: The installed capacity as maintained by the (ATLAS and CMS) T2 co-ordinators. This value is configured in $INSTALL_DIR/etc/setup.sh file. For example for the site AGLT2, it is configured as 
+&lt;pre&gt;
+export AGLT2=4678
+&lt;/pre&gt;
+%DIFF: % difference between the calculated installed capacity value and the value maintained by the T2 co-ordinators.
+--&gt;
+---++++ What could possibly go wrong while running this BDII filter script?
+Here are some possibilities of what could go wrong:&lt;br&gt;
+&lt;ul&gt;
+&lt;li&gt;There could be issues with non-existence of the input directory, output directory, input file being empty etc. These will be caught by the script and the errors will be logged and printed to STDERR. 
+&lt;li&gt;No matching site might be found in the MyOSG data for a filename with a particular FQDN. In this case a WARNING will be thrown and the script will skip to the next site entry.
+&lt;li&gt;The KSI2K bounds if set to 0, will be reported as a WARNING. 
+&lt;li&gt;KSI2k lookup values for some CPU models might not exist at $INSTALL_DIR/etc/gip.conf. This will result in WARNINGs that will be logged. These WARNINGs should be monitored from time to time and the cpu information should be updated with the KSI2K values of the new CPU models through the OIM web interface. 
+&lt;/ul&gt;
+The log file is stored at $INSTALL_DIR/var/log/installed-capacity-filter.log. The log entries will be time stamped. Since this is a single log file, a log rotation mechanism should be used to prevent the file from getting too large. This is the responsibility of whoever installing/using the script. 
+
+---++++ Can you refer me to some useful documents that I could go through in order to have a better understanding of the installed capacity work, BDII data etc. 
+The relevant documents are attached at the end under &#39;Attachments&#39;. The installed capacity calculation is based on the guidelines laid out in the attached document &quot;WLCG_GlueSchemaUsage-1.8.pdf&quot;.  This also needs an understanding of the GLUE schema as described in the attached document &quot;GLUESchema.pdf&quot;
+
+---++++ I have other questions/doubts/suggestions. Where do I get the answers?
+I know this page contains only limited information. So it is understandable that you have questions. I will try my best to answer these. If I don&#39;t know the answers, I could refer you to the right people. So get in touch with me! Also if you have any suggestions or comments, feel free to let me know or feel free to add it here by editing the page. Thanks. 
+
+

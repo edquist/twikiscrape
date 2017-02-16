@@ -1,0 +1,82 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+----+  Divide and conquer for large data
+
+%TOC%
+
+---++ Goals
+
+   * This tutorial will show you a paradigm for dividing up large input data 
+
+---++ Splitting up data
+
+This exercise will go through an example of splitting up a large data set into pieces in order to parallelize data processing. The tutorial implements a workflow that follows the map reduce paradigm.  In essence, the input data is split into multiple pieces, and each piece is processed independently on multiple systems.  Then as a final step, an application combines the output to generate the final output.
+&#39;
+Lets get started:
+
+   1. First log in to the OSG Connect submit node (=login.osgconnect.net=)
+   2. Create a directory for this tutorial : \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% mkdir split_input
+%UCL_PROMPT_SHORT% cd split_input
+&lt;/pre&gt;
+   3. Copy the input data from =/stash/public/userschool2015/split=: \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% cp /stash/public/userschool2015/split/data.block .
+&lt;/pre&gt;
+   3. Split the data file into 10M chunks: \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% split -a 1 -d --bytes=10M data.block data.block.
+&lt;/pre&gt;
+   3. Copy bitcount.py from =/stash/public/userschool2015/split=: \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% cp /stash/public/userschool2015/split/bitcount.py .
+&lt;/pre&gt;
+    4. Make the file executable: \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% chmod 755 bitcount.py
+&lt;/pre&gt;
+   5. Create a submit file (=split.submit=) with the following: \
+\
+&lt;pre class=&quot;file&quot;&gt;
+output        = job.out.$(Process)
+error         = job.error.$(Process)
+log           = job.log
+
+universe = vanilla
+executable = bitcount.py
+transfer_input_files = data.block.$(Process)
+arguments = data.block.$(Process)
+queue 10
+&lt;/pre&gt;
+   5. Submit the job: \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% condor_submit split.submit
+&lt;/pre&gt;
+   5. Wait for the jobs to complete: \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% condor_wait job.log
+&lt;/pre&gt;
+   5. Run =./bitcount.py data.block= and compare it to the output from: \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% cat job.out.*  | awk &#39;{s+=$1} END {print s}&#39; 
+&lt;/pre&gt;
+  
+
+As an exercise, try modifying the submit file and script so that the input data is split into 20 separate pieces and processed by 20 different jobs (hint =man split= will give you information on the arguments used for split).
+
+
+
+
+-- Main.SuchandraThapa - 28 Jul 2015

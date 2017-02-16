@@ -1,0 +1,64 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+----+ Accelerating transfers with HTTP caching
+
+Some of your computing works  require transferring  the same set of input files over and over again. In such cases, caching the data on a computing site may reduce the data transfer delays.  As we discussed in the lecture, the squid proxy has been installed on many sites that caches the data for frequent usage. 
+
+---++ Setup
+
+You can get started using the template below:
+&lt;pre class=&quot;file&quot;&gt;
+universe = vanilla
+executable = namd_run.sh
+output =
+error = 
+log = 
+requirements = (HAS_CVMFS_oasis_opensciencegrid_org =?= TRUE)
+queue
+&lt;/pre&gt;
+Remember that the =requirements= line is needed to tell HTCondor to only match against job slots that have the OASIS software library available (you may refer [[https://support.opensciencegrid.org/support/solutions/articles/5000634394-accessing-software-using-distributed-environment-modules][here]]). 
+Don&#39;t forget to specify the =output=, =error=, and =log=!
+
+We take care of the input file transfer in the wrapper script. First, copy the NAMD files to your =~/public/namd-input-files= directory.
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% mkdir -p ~/public/namd-input-files
+%UCL_PROMPT_SHORT% cp  /stash/public/userschool2015/namd/*  ~/public/namd-input-files/.
+&lt;/pre&gt;
+
+In the wrapper script, set the =http_proxy=  is equal to =OSG_SQUID_LOCATION= so that the squid cache on a site is used for data transfer.  Here, we use =wget= to transfer the input files. Our wrapper script is:
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash
+
+# Set up the proxy to take advantage of cache
+export http_proxy=$OSG_SQUID_LOCATION
+
+# Transfer input files using wget command
+wget http://stash.osgconnect.net/+username/namd-input-files/ubq.pdb
+wget http://stash.osgconnect.net/+username/namd-input-files/ubq.psf 
+wget http://stash.osgconnect.net/+username/namd-input-files/ubq_gbis_eq.conf
+wget http://stash.osgconnect.net/+username/namd-input-files/par_all27_prot_lipid.inp
+
+# Use the NAMD module from OASIS 
+source /cvmfs/oasis.opensciencegrid.org/osg/modules/lmod/current/init/bash
+module load namd/2.9
+
+# Execute NAMD
+namd2 ubq_gbis_eq.conf &gt; ubq_gbis_eq.log
+&lt;/pre&gt; 
+Save the wrapper as =namd_run.sh= and remember to make it executable with =chmod +x namd_run.sh=. 
+
+Note that =username= in the wrapper script is your username on ==login.osgconnect.net==.
+
+
+Once the submit and wrapper script files are ready, submit the job. 
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% condor_submit namd_run.submit
+&lt;/pre&gt;
+
+Again, the job should run 5 minutes or so. If the job was successful, you should see a bunch of output files in the directory you submitted from. You can verify that the input files were downloaded by looking at the =output= file you created in your job.
+ 
+-- Main.BalamuruganDesinghu - 23 Jul 2015
+

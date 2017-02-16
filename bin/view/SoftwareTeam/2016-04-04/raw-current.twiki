@@ -1,0 +1,96 @@
+---+ OSG Technology Area Meeting, 4 April 2016
+
+*Coordinates:* Conference: 857-216-4999, PIN: 32390; https://www.uberconference.com/osgcat
+
+*Attending:* !BrianL, Carl, Derek, Edgar, Jeff, Marian, Suchandra, !TimT, Xin
+&lt;!-- !BrianB, !BrianL, Carl, Derek, Edgar, Jeff, Marian, Mat, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+
+---+++ Triage Duty
+   * This week: Suchandra
+   * Next week: !TimT
+   * 9 (&amp;minus;1) open tickets
+
+---+++ JIRA
+   * Open: 195 (&amp;minus;4)
+   * In Progress: 28 (&amp;minus;2)
+   * Ready for Testing: 13 (+8)
+   * Ready for Release: 5 (+5)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| April | 3.3.11 / 3.2.37 | 2016-03-28 | 2016-04-04 | 2016-04-12 | 5 week cycle |
+| May | 3.3.12 / 3.2.38 | 2016-04-25 | 2016-05-02 | 2016-05-10 | |
+| June | 3.3.13 / 3.2.39 | 2016-05-31 | 2016-06-06 | 2016-06-14 | 5 week cycle |
+
+*Notes:* Additional “urgent” releases may be scheduled for the 4th Tuesday of each month. The *Testing* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+
+---++ OSG Software Team
+
+---+++ Discussions
+
+---+++ Support Update
+   * Clemson/Florida (!BrianL) - Conflating total mem, physical mem, and virtual mem requests in PBS (https://jira.opensciencegrid.org/browse/SOFTWARE-2260)
+   * FIU (!BrianL) - Pilots were failing due to old CRLs (again) then pilots were being held due to =MaxJobs = 128= in their Job Router (https://ticket.opensciencegrid.org/29057)
+   * Georgia Tech (!BrianL/Dave) - Answered CVMFS questions
+   * SLAC (!BrianL/BrianB/Jaime) - Removed routed job results in parent job re-submitting routed job that always fails
+   * Stanford (!BrianB/Edgar/BrianL) - Call to resolve churning CE failing to fill pool. Churning was happening due to too low =MaxIdleJobs= in their Job Router config
+   * Utah (!BrianL/Derek) - Updates to docs and walking through certificates, edg-mkgridmap, and osg-configure for SLURM
+   * Wisconsin (!BrianL/Sarah) - OIM-ITB requests were failing. Restarting the messaging server fixed the issue.
+
+---+++ Major Activities
+   * Support EL 7 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1541][SW-1541]])
+   * Fix routine automated test failures ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1996][SW-1996]])
+   * Documentation
+   * [[SW024_ConsolidateRepos][Software repository consolidation]]
+   * IPv6 evaluation ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1525][SW-1525]])
+
+
+---++ OSG Release Team
+   * Continue work on GOC repository release policy and procedure document
+   * April 12th Release - OSG 3.3.11 and OSG 3.2.37
+      * Suchandra Thapa is handling the [[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.3.11%2C%203.2.37%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][April 12th Release]]
+      * Package Freeze today
+
+%TABLE{sort=&quot;off&quot;}%
+| *3.2.37* | *Both* | *3.3.11* | *Total* | *Status* |
+| 0 (+0) | 0 (+0) | 0 (-7) | 0 (-7) | Open |
+| 0 (+0) | 2 (+2) | 5 (-4) | 7 (-2) | In Progress |
+| 0 (+0) | 0 (+0) | 11 (+6) | 11 (+6) | Ready for Testing |
+| 0 (+0) | 0 (+0) | 7 (+7) | 7 (+7) | Ready for Release |
+| 0 (+0) | 2 (+2) | 23 (+2) | 25 (+4) | Totals |
+
+3.3 series is the primary focus; only security updates and critical bug fixes for 3.2 series
+
+   * OSG 3.2.36 and OSG 3.3.10
+      * VO Package v65 - CILogon (OSG CA) migration
+      * CA Certificates based on IGTF 1.73
+   * OSG 3.3.10 Only
+      * !GlideinWMS 3.2.13
+      * HDFS 2.0.0+1612
+      * !XRootD 4.3.0
+      * Add gfal functionality to xrootd-dsi
+      * CVMFS configuration repository
+      * HTCondor CE: accept DNs in extattr_table.txt
+      * osg-pki-tools fixes
+      * HTCondor 8.4.5
+      * HTCondor 8.5.3 in Upcoming
+      * Add log4j runtime dependency to emi-trustmanager
+      * Change Koji hostname in repositories
+      * osg-test improvements
+   * OSG 3.2.36 Only
+      * Nothing
+
+---+++ Discussion
+
+*HTCondor CE BOSCO*: we decided to drop this from the release until the required HTCondor software is released by the HTCondor team.
+
+---++ OSG Investigations Team
+   * OASIS: Working toward a March release that has a number of small cleanups.  Particularly, we&#39;re moving away from the problematic NAS device and upgrading to CVMFS server 2.2.0.
+   * Still figuring out internals of new Gratia v2.  Derek will be working on this.
+   * New &quot;secure CVMFS&quot; features have been submitted upstream.  Hope to have these in an April release of CVMFS 2.2.2.
+   * HTCondor-CE-Bosco release is moving back to 3.3.12 due to errors with [[https://htcondor-wiki.cs.wisc.edu/index.cgi/tktview?tn=5601][Blahp&#39;s proxy handling]].  Tickets: [[https://jira.opensciencegrid.org/browse/SOFTWARE-2187][2187]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-2188][2188]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-2257][2257]]
+   * Gratia support for HTCondor-CE-Bosco is ongoing.  Gratia patch has been made ([[https://jira.opensciencegrid.org/browse/SOFTWARE-2257][ticket]]), waiting on review from someone with commit access.  Also, will need to modify osg-configure for new gratia, which is ongoing.

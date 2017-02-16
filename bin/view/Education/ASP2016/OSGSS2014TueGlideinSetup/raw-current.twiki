@@ -1,0 +1,50 @@
+---+ 2014 OSG User School - Our glideinWMS setup
+
+The glideinWMS setup uses a different login node than the dedicated HTCondor setup (i.e. osg-ss-submit).
+
+---++ The basics
+
+The name of the login node is *10g-5.t2.ucsd.edu*.
+
+It uses [[http://www.linuxproblem.org/art_9.html][SSH public key mechanism]] for authentication.
+If you have not done it yet, [[UserSchool14GwsSsh][please send Igor]] your laptop&#39;s and/or osg-ss-submit node&#39;s ssh public keys (alongside your account name) to get access.
+
+Once the account is set-up, you will be able to login with
+&lt;pre class=&quot;screen&quot;&gt;
+ssh &amp;lt;user&amp;gt;@10g-5.t2.ucsd.edu
+&lt;/pre&gt;
+
+The node is a standard Linux machine, and has HTCondor commands in the path. 
+
+Behind the scenes, however, there are glideinWMS processing monitoring your job submissions,
+provisioning nodes as needed.
+
+The provisioning logic is very simple:
+   * If the job doesn&#39;t tell it anything, it will get resources on all the OSG resources it can
+   * The job can specify the list of sites it is willing to run with the *DESIRED_Sites* attribute.
+
+The glideinWMS provides both [[http://10g-4.t2.ucsd.edu/vofrontend/monitor/frontendGroupGraphStatusNow.html][a snapshot monitoring page]] and
+[[http://10g-4.t2.ucsd.edu/vofrontend/monitor/frontendStatus.html][a historical monitoring page]]. 
+
+The node also has a Web server.&lt;br&gt;
+You can put any file you want into ~/public_html/  and it will become visible in !http://10g-5.t2.ucsd.edu/~&lt;i&gt;&amp;lt;user&amp;gt;&lt;/i&gt;/.
+
+---++ Understanding the system
+
+Once you log in, have a look around.
+
+Try the usual HTCondor commands. Submit a dummy job, see what happens.
+
+See where you can get resources from.&lt;br&gt;
+As explained in [[https://twiki.opensciencegrid.org/twiki/pub/Education/UserSchool14Materials/day2_03_glideinwms.pdf][the lecture]], the command to use is something along the lines of
+ &lt;pre class=&quot;screen&quot;&gt;
+condor_status -any -const &#39;MyType==&quot;glideresource&quot;&#39; -af Name \
+   -af GLIDEIN_Site -af GLIDEIN_Max_Walltime -af GLIDEIN_MaxMemMBs
+&lt;/pre&gt;
+
+Have a look at both the [[http://10g-4.t2.ucsd.edu/vofrontend/monitor/frontendGroupGraphStatusNow.html][snapshot]] and
+[[http://10g-4.t2.ucsd.edu/vofrontend/monitor/frontendStatus.html][historical]] monitoring pages. 
+
+
+
+-- Main.IgorSfiligoi

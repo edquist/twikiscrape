@@ -1,0 +1,112 @@
+
+
+
+---+!! %SPACEOUT{ &quot;%TOPIC%&quot; }%
+
+%TOC%
+
+%STARTINCLUDE%
+%EDITTHIS%
+
+&lt;span class=&quot;firstterm&quot;&gt;Delegation&lt;/span&gt; is where you empower another entity to act as you for some period of time. In this exercise we will try to submit a job that uses &lt;nop&gt;GridFTP to copy the executable =whoami= from local machine, run the executable on the remote machine, save output to a file and use &lt;nop&gt;GridFTP to transfer file back to local machine.
+
+The following job description can be used for doing the above:
+
+&lt;pre class=&quot;programlisting&quot;&gt;
+&amp;lt;job&amp;gt;
+ &amp;lt;executable&amp;gt;my_whoami&amp;lt;/executable&amp;gt;
+  &amp;lt;directory&amp;gt;${GLOBUS_USER_HOME}&amp;lt;/directory&amp;gt;
+  &amp;lt;stdout&amp;gt;${GLOBUS_USER_HOME}/stdout&amp;lt;/stdout&amp;gt;
+  &amp;lt;stderr&amp;gt;${GLOBUS_USER_HOME}/stderr&amp;lt;/stderr&amp;gt;
+  &amp;lt;fileStageIn&amp;gt;
+   &amp;lt;transfer&amp;gt;
+    &amp;lt;sourceUrl&amp;gt;
+      gsiftp://%OTHERHOST%:2811/usr/bin/whoami
+    &amp;lt;/sourceUrl&amp;gt;
+    &amp;lt;destinationUrl&amp;gt;
+      gsiftp://%OTHERHOST%:2811/${GLOBUS_USER_HOME}/my_whoami
+    &amp;lt;/destinationUrl&amp;gt;
+   &amp;lt;/transfer&amp;gt;
+  &amp;lt;/fileStageIn&amp;gt;
+  &amp;lt;fileStageOut&amp;gt;
+   &amp;lt;transfer&amp;gt;
+    &amp;lt;sourceUrl&amp;gt;
+      gsiftp://%OTHERHOST%:2811/${GLOBUS_USER_HOME}/stdout
+    &amp;lt;/sourceUrl&amp;gt;
+    &amp;lt;destinationUrl&amp;gt;
+      gsiftp://%LOGINHOST%:2811/tmp/train31DelTest
+    &amp;lt;/destinationUrl&amp;gt;
+   &amp;lt;/transfer&amp;gt;
+  &amp;lt;/fileStageOut&amp;gt;
+  &amp;lt;fileCleanUp&amp;gt;
+   &amp;lt;deletion&amp;gt;
+    &amp;lt;file&amp;gt;file:///${GLOBUS_USER_HOME}/my_whoami&amp;lt;/file&amp;gt;
+   &amp;lt;/deletion&amp;gt;
+  &amp;lt;/fileCleanUp&amp;gt;
+&amp;lt;/job&amp;gt;
+&lt;/pre&gt;
+
+Copy the RSL above and paste to file called =rsl=. Replace =train31DelegTest= with some other filename. The output will be written to this file.
+
+---+++ Use non-GCS credential
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31 ~]$ &lt;userinput&gt;unset X509_USER_PROXY&lt;/userinput&gt;
+[train31 ~]$ 
+&lt;/pre&gt;
+
+---+++ Submit job to run globus-url-copy on remote machine
+Try to submit without delegation option =-S=.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31 ~]$ &lt;userinput&gt;globusrun-ws -F https://%OTHERHOST%:8443/wsrf/services/ManagedJobFactoryService -submit -f rsl 
+&lt;/userinput&gt;
+Submitting job...Done.
+Job ID: uuid:028f85e0-023d-11db-bb44-000feae0c5a8
+Termination time: 06/23/2006 22:18 GMT
+Current job state: StageIn
+Current job state: Failed
+Destroying job...Done.
+globusrun-ws: Job failed: Staging error for RSL element fileStageIn.
+A stagingCredentialEndpoint element was not specified in the RSL, but is needed for staging.
+[train31 ~]$ 
+&lt;/pre&gt;
+
+
+Above error indicates no delegated credential was found for staging (transferring) of files to occur.
+
+
+---+++ Submit job with delegation to run globus-url-copy on remote machine
+Run same command with =-S= option.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31 ~]$ &lt;userinput&gt;globusrun-ws -F https://%OTHERHOST%:8443/wsrf/services/ManagedJobFactoryService -S -submit -f rsl 
+&lt;/userinput&gt;
+Delegating user credentials...Done.
+Submitting job...Done.
+Job ID: uuid:306922c8-023d-11db-b66c-000feae0c5a8
+Termination time: 06/23/2006 22:19 GMT
+Current job state: StageIn
+Current job state: Active
+Current job state: StageOut
+Current job state: CleanUp
+Current job state: Done
+Destroying job...Done.
+Cleaning up any delegated credentials...Done.
+[train31 ~]$ 
+&lt;/pre&gt;
+
+Note that credentials are delegated now. Also the delegated credentials are destroyed so as to prevent any misuse.
+
+If you open the output file in =/tmp/=, you should see the result of running =whoami= on the remote machine. 
+
+%STOPINCLUDE%
+
+&lt;!--                                                                            
+      * Set LOGINHOST = gridlab1
+      * Set GRIDHOST = tg-login.ncsa.teragrid.org
+      * Set OTHERHOST = gridlab2
+--&gt;
+
+%BOTTOMMATTER%
+-- Main.ForrestChristian - 2007 Jan 29: pulled from original %BR%

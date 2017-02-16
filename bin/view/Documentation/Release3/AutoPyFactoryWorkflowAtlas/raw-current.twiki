@@ -1,0 +1,182 @@
+*WORK IN PROGRESS* 
+
+&lt;style type=&quot;text/css&quot;&gt;
+.tg  {border-collapse:collapse;border-spacing:0;width:100%}
+.tg td{font-family:Arial, sans-serif;font-size:12px;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:12px;font-weight:normal;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg .tg-raw1{font-weight:bold;color:#0055ff;text-align:left}
+.tg .tg-header{font-weight:bold;background-color:#c0c0c0;text-align:center}
+.tg .tg-splitheader{font-weight:bold;background-color:#e0e0e0;text-align:center}
+&lt;/style&gt;
+
+
+&lt;!-- some useful definitions  (need 3 white spaces before * to enable it)
+   * Set UCL_PROMPT_ROOT = [root@factory ~]$
+   * Set VERSION = 2.4.6
+   * Set WRAPPERVERSION = 0.9.16
+--&gt;
+
+---+!! !PanDA-based workflow with !AutoPyFactory
+&lt;!--
+%DOC_STATUS_TABLE%
+--&gt;
+%TOC{depth=&quot;3&quot;}%
+
+---# About this Document
+
+This document describes how to configure !AutoPyFactory when the WMS is !PanDA.
+
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;Header&quot;}%
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;CommandLine&quot;}%
+
+%INCLUDE{&quot;Documentation/Release3/AutoPyFactory&quot; section=&quot;Version&quot;}%
+
+---# Configuration
+
+To use !PanDA as WMS system, set accordingly the wmsstatus plugin:
+
+&lt;pre class=&quot;file&quot;&gt;
+wmsstatusplugin = Panda
+&lt;/pre&gt;
+
+Each !APFQueue must include the !PanDA queue and the !PanDA resource names, needed by the ATLAS pilot to request a job from the Dispatcher. For example:
+
+&lt;pre class=&quot;file&quot;&gt;
+batchqueue = ANALY_BNL_LONG-condor
+wmsqueue = ANALY_BNL_LONG
+&lt;/pre&gt;
+
+The rest of the configuration depends on the type of submission, documented in other sections.
+
+---# Wrapper
+
+---## Applicable version
+
+This section describes how to use wrapper version %WRAPPERVERSION%
+
+---## Deployment
+
+Install the RACF yum repo files:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% rpm -Uhv http://dev.racf.bnl.gov/yum/grid/production/rhel/6Workstation/x86_64/racf-grid-release-latest.noarch.rpm
+Retrieving http://dev.racf.bnl.gov/yum/grid/production/rhel/6Workstation/x86_64/racf-grid-release-latest.noarch.rpm
+warning: /var/tmp/rpm-tmp.TaawC5: Header V3 DSA/SHA1 Signature, key ID e6f6b87c: NOKEY
+Preparing...                ########################################### [100%]
+   1:racf-grid-release      ########################################### [100%]
+&lt;/pre&gt;
+
+Install the wrapper:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install wrapper
+&lt;/pre&gt;
+
+NOTE: if you want to to keep older versions of the wrapper when installing or updating to latest one, add the package =wrapper= to the yum configuration variable =installonlypckgs= in file =/etc/yum.conf=, and ensure =installonly_limit= is high enough (documentation can be found in manpage for yum.conf). Example: 
+
+&lt;pre class=&quot;file&quot;&gt;
+installonly_limit=3
+installonlypkgs=wrapper
+&lt;/pre&gt;
+
+
+---## Input options
+
+&lt;table class=&quot;tg&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;variable&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;description&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;comments&lt;/th&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw1&quot;&gt;--wrapperloglevel=&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; the log level. Current valid values are =info= and =debug= &lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw1&quot;&gt;--wrapperpilotcode=&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; the location of the pilot code. &lt;br&gt; Accepts more than one value, split by comma, to pick one randomly (see --wrapperpilotcoderatio). &lt;br&gt; It is possible to set a set of URIs to just failover from one to another, without randomization. In that case, the list is enclosed between square parenthesis =[= and =]=. &lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw1&quot;&gt;--wrapperpilotcodechecksum=&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; the checksum of the pilot code. If more than one URIs for the pilotcode are provided, then a checksum value for each one of them is required, in a list split-by-comma &lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; Optional&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw1&quot;&gt;--wrapperpilotcoderatio=&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; when a list of values split-by-comma are passed to the variable wrapprepilotcode, it sets the ratio to pick randomly between them &lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw1&quot;&gt;--wrapperplatform=&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt;set the type of grid middleware available on the node. The wrapper may take some actions depending on the value. &lt;br&gt; Current valid values are: =OSG= and =EGI=. &lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw1&quot;&gt;--wrapperplugin=&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; the exact plugin that will be invoked to run the final payload. &lt;br&gt; Current valid values are: =atlasosg=, =atlasegi=, and =trivial=. &lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw1&quot;&gt;--wrapperspecialcmd=&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; a special command needed to be performed before anything else. Very rearly needed. When needed, usually is a command to source an had-oc setup.sh file. &lt;br&gt; Use with caution.&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; Optional&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw1&quot;&gt;--wrappertarballchecksum=&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; the checksum of the wrapper tarball&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; Optional&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw1&quot;&gt;--wrappertarballuri=&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; it is the URI with the location of the wrapper tarball. &lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw1&quot;&gt;--wrapperwmsqueue=&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt;the name of the queue in the WMS system (for example, in !PanDA).&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw1&quot;&gt;other options&lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; Any other input option, not starting with string =--wrapper=, will be passed *verbatim* to the payload job (a.k.a. pilot) &lt;/td&gt;
+    &lt;td class=&quot;tg-031e&quot;&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+A typical example for ATLAS is like this:
+
+&lt;pre class=&quot;file&quot;&gt;
+executable = /usr/libexec/wrapper-%WRAPPERVERSION%.sh
+arguments = --wrapperloglevel=debug \
+           --wrapperplatform=OSG \
+           --wrapperwmsqueue=ANALY_BNL_SHORT \
+           --wrappertarballuri=http://dev.racf.bnl.gov/dist/wrapper/wrapperplugins-dev12.tar.gz \
+           --wrapperpilotcode=http://pandaserver.cern.ch:25085/cache/pilot/pilotcode-PICARD.tar.gz \
+           --wrapperplugin=atlasosg \
+           -w https://pandaserver.cern.ch -p 25443 -u user
+&lt;/pre&gt;
+
+Here are examples on how to pass more than one value to =--wrapperpilotcode=.
+
+&lt;pre class=&quot;file&quot;&gt;
+arguments = ... \
+           --wrapperpilotcode = [&#39;file:///cvmfs/atlas.cern.ch/pilot.py&#39;, &#39;http://atlas.cern.ch/pilot.tar.gz&#39;], &#39;http://atlas.cern.ch/pilot-devel.tar.gz&#39; \
+           --wrapperpilotcoderatio = 99,1 \
+           ...
+&lt;/pre&gt;
+
+In that case, 99% of the times the pilot code from CVMFS will be tried, failing over the tarball at the CERN URL in case of failures. 1% of the times the development pilot code will be downloaded.
+
+&lt;pre class=&quot;file&quot;&gt;
+arguments = ... \
+           --wrapperpilotcode = [&#39;file:///cvmfs/atlas.cern.ch/pilot.py&#39;, &#39;http://atlas.cern.ch/pilot.tar.gz&#39;], &#39;http://atlas.cern.ch/pilot-devel.tar.gz&#39; \
+           --wrapperpilotcodechecksum = 123,456,789 \
+           --wrapperpilotcoderatio = 99,1 \
+           ...
+&lt;/pre&gt;
+
+In the second case, the same logic applies, but a checksum is passed for each possible case. 
+ 
+

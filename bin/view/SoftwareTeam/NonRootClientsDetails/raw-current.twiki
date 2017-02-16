@@ -1,0 +1,370 @@
+---+ Non-Root Clients – Technical Details
+
+%TOC%
+
+We currently have a large number of hosts across the OSG using the OSG-Client
+software installed from Pacman or via some other non-RPM mechanism, due to the
+requirement that these packages be installable by non-root users, or that they
+may be installed into a non-standard location (such as an NFS share).
+
+We must offer an official way of ensuring that these hosts can have up-to-date
+versions of the client software. We must do this without creating a separate
+distribution, to reduce the maintenance burden. So we should have some way of
+leveraging our existing RPMs for this.
+
+Note: in this document, the term &quot;client&quot; includes the worker node client,
+since the =osg-wn-client= package is a subset of the =osg-client= package.
+
+
+---++ User Interface
+
+We will provide multiple tar archives downloadable from our site.  These
+archives will be split up for architecture, distribution version (i.e. RHEL 5
+vs. RHEL 6), and collection installed (i.e. worker-node client versus full
+client).
+
+The user will need to unpack the archive.  Afterwards, the user will need to
+run a script (included in the archive) to configure the software that it will
+work from the place where they have unpacked the archive.
+
+Users may have to set environment variables before being able to use the
+software. We will provide a file containing these environment variables that
+can be sourced.
+
+Example install:
+&lt;verbatim class=&quot;screen&quot;&gt;
+   $ tar xvzf osg-wn-client-3.1.14.el5.x86_64.tar.gz
+   $ cd osg-wn-client
+   $ ./osg-post-install
+&lt;/verbatim&gt;
+and use:
+&lt;verbatim class=&quot;screen&quot;&gt;
+   $ . setup.sh
+   $ grid-proxy-init
+   $ globus-job-run ...
+&lt;/verbatim&gt;
+
+The software _will not be_ guaranteed to work before running the
+=osg-post-install= script, or without sourcing the =setup.sh= file.
+Furthermore, the software _will not be_ guaranteed to be relocatable to a
+different path_after_ running the =osg-post-install= script.  The software
+_will be_ guaranteed to be usable even if running on a different host than the
+one that it was installed on, so long as the paths are the same. (This is the
+NFS share use case).
+
+
+---++ Work Needed from the Software Team
+
+In order to maximize maintainability, we will attempt to reuse the RPMs we
+currently ship as part of the OSG 3.x software stack as much as possible.
+This means that the tarballs will be based directly on the binary RPMs we ship
+whenever possible.
+
+However, if there are hardcoded paths in binaries, that may require us to
+modify and rebuild some packages to support relocation. Further investigation
+is necessary to determine the extent of this difficulty.
+
+We may be able to (at least partially) reuse some of the scripts and techniques
+that we had used for the Pacman-based OSG distribution.
+
+It is hoped that once the basic principles of how we modify the packages are
+laid down, the actual work of modifying individual packages can be spread out
+over the team as a whole.
+
+The tarballs will be created from the RPMs by a script that we will run as part
+of the standard release procedure.
+
+Lists of the packages that comprise the worker-node client and the full client
+are provided below.
+
+ 
+---+++ Packages
+
+These package lists were generated on an sl5 fermicloud machine.
+
+It is possible that Globus packages still respect the =$GLOBUS_LOCATION=
+environment variable. If that is true, then those packages won&#39;t have to be
+rebuilt to be relocatable.
+
+---++++ osg-wn-client
+
+The following packages get installed as part of an osg-wn-client install:
+
+---+++++!! OS
+| *Package*                   | *Version*            |
+| alsa-lib                    | 1.0.17-1.el5         |
+| antlr                       | 2.7.6-4jpp.2         |
+| axis &lt;sup&gt;1&lt;/sup&gt;           | 1.2.1-2jpp.6         |
+| classpathx-jaf              | 1.0-9jpp.1           |
+| classpathx-mail             | 1.1.1-4jpp.2         |
+| gjdoc                       | 0.7.7-12.el5         |
+| jakarta-commons-collections | 3.2-2jpp.3           |
+| jakarta-commons-discovery   | 1:0.3-4jpp.1         |
+| jakarta-commons-httpclient  | 1:3.0-7jpp.1         |
+| jakarta-commons-lang        | 2.1-5jpp.1           |
+| jakarta-commons-logging     | 1.0.4-6jpp.1         |
+| java-1.4.2-gcj-compat       | 1.4.2.0-40jpp.115    |
+| jpackage-utils              | 1.7.3-1jpp.2.el5     |
+| libXtst                     | 1.0.1-3.1            |
+| libart_lgpl                 | 2.3.17-4             |
+| libgcj                      | 4.1.2-52.el5_8.1     |
+| libtool-ltdl                | 1.5.22-7.el5_4       |
+| libxslt                     | 1.1.17-4.el5_8.3     |
+| log4j                       | 1.2.13-3jpp.2        |
+| openldap-clients            | 2.3.43-25.el5        |
+| perl-DBI                    | 1.52-2.el5           |
+| tomcat5-servlet-2.4-api     | 5.5.23-0jpp.31.el5_8 |
+| wsdl4j                      | 1.5.2-4jpp.1         |
+&lt;sup&gt;1&lt;/sup&gt; =axis= explicitly requires some of the gcj components, thus
+bringing in them as well as their dependencies (=alsa-lib= is one of them)
+even though we do not use gcj at all.
+
+---+++++!! EPEL
+| CGSI-gSOAP              | 1.3.5-2.el5              |
+| bouncycastle            | 1.45-6.el5               |
+| dcap                    | 2.47.7-1.el5             |
+| dcap-libs               | 2.47.7-1.el5             |
+| dcap-tunnel-gsi         | 2.47.7-1.el5             |
+| dpm-libs                | 1.8.6-1.el5              |
+| fetch-crl               | 2.8.5-1.el5              |
+| gfal                    | 1.14.0-1.el5             |
+| globus-callout          | 2.2-1.el5                |
+| globus-common           | 14.9-1.el5               |
+| globus-ftp-client       | 7.4-1.el5                |
+| globus-ftp-control      | 4.4-1.el5                |
+| globus-gass-copy        | 8.6-1.el5                |
+| globus-gass-copy-progs  | 8.6-1.el5                |
+| globus-gass-transfer    | 7.2-1.el5                |
+| globus-gsi-cert-utils   | 8.3-1.el5                |
+| globus-gsi-credential   | 5.3-1.el5                |
+| globus-gsi-proxy-core   | 6.2-1.el5                |
+| globus-gsi-sysconfig    | 5.3-1.el5                |
+| globus-gss-assist       | 8.6-1.el5                |
+| globus-io               | 9.3-1.el5                |
+| globus-openssl-module   | 3.2-1.el5                |
+| globus-xio              | 3.3-1.el5                |
+| globus-xio-gsi-driver   | 2.3-1.el5                |
+| globus-xio-popen-driver | 2.3-1.el5                |
+| gridsite-libs           | 1.7.21-4.el5             |
+| gsoap                   | 2.7.13-4.el5             |
+| is-interface            | 1.14.0-0.el5             |
+| jakarta-commons-cli     | 1.0-6jpp_10.el5          |
+| joda-time               | 1.5.2-11.tzdata2008e.el5 |
+| lcgdm-libs              | 1.8.6-1.el5              |
+| lfc                     | 1.8.6-1.el5              |
+| lfc-libs                | 1.8.6-1.el5              |
+| lfc-python              | 1.8.6-1.el5              |
+| myproxy                 | 5.9-2.el5                |
+| myproxy-libs            | 5.9-2.el5                |
+| srm-ifce                | 1.14.0-1.el5             |
+| voms                    | 2.0.9-1.el5              |
+| voms-clients            | 2.0.9-1.el5              |
+
+---+++++!! OSG
+| bestman2-client                    | 2.3.0-9.osg.el5             |
+| bestman2-client-libs               | 2.3.0-9.osg.el5             |
+| bestman2-common-libs               | 2.3.0-9.osg.el5             |
+| cog-jglobus-axis                   | 1.8.0-2.osg.el5             |
+| dcache-srmclient                   | 1.9.5.23-4                  |
+| edg-gridftp-client                 | 1.2.9.2-3.osg               |
+| glite-data-delegation-api-c        | 2.0.0.7-6.osg.el5           |
+| glite-data-delegation-cli          | 2.0.1.3-6.osg.el5           |
+| glite-data-util-c                  | 1.2.3-4.osg                 |
+| glite-fts-client                   | 3.7.4-7.osg.el5             |
+| glite-security-trustmanager        | 2.5.5-6.1.osg.el5           |
+| glite-security-util-java           | 2.8.0-3.1.osg.el5           |
+| glite-service-discovery-api-c      | 2.2.3-2.sl5                 |
+| globus-gsi-callback                | 4.4-1.osg.el5               |
+| globus-gsi-openssl-error           | 2.1-4.osg                   |
+| globus-gsi-proxy-ssl               | 4.1-4.osg                   |
+| globus-gssapi-error                | 4.1-4.osg                   |
+| globus-gssapi-gsi                  | 10.7-2.osg.el5              |
+| globus-proxy-utils                 | 5.0-5.osg                   |
+| java-1.6.0-sun-compat &lt;sup&gt;2&lt;/sup&gt; | 1:1.6.0.37-1.osg.el5        |
+| jdk &lt;sup&gt;2&lt;/sup&gt;                   | 2000:1.6.0_37-fcs.1.osg.el5 |
+| jglobus                            | 2.0.4-4.osg.el5             |
+| lcg-utils                          | 1.11.14-11.osg              |
+| osg-ca-certs                       | 1.32-3.osg.el5              |
+| osg-system-profiler                | 1.0.10-1.osg.el5            |
+| osg-version                        | 3.1.13-1.osg.el5            |
+| osg-wn-client                      | 3.0.0-16.osg.el5            |
+| uberftp                            | 2.6-4.osg.el5               |
+| vo-client                          | 43-2.osg.el5                |
+| voms-api-java                      | 2.0.8-1.4.osg.el5           |
+| xalan-j2                           | 2.7.0-10.osg                |
+
+&lt;sup&gt;2&lt;/sup&gt; Note that we are deprecating the oracle jdk, so these requirements
+will be replaced by java-1.7.0-openjdk instead.
+
+---++++ osg-client
+
+In addition to the osg-wn-client packages, the following packages get installed
+as part of a full osg-client install:
+
+---+++++!! OS
+
+| nmap                      | 2:4.11-2     |
+| perl-Convert-ASN1         | 0.20-1.1     |
+| perl-Crypt-SSLeay         | 0.51-11.el5  |
+| perl-IO-Socket-SSL        | 1.01-2.el5   |
+| perl-LDAP                 | 1:0.33-3.fc6 |
+| perl-Net-SSLeay           | 1.30-4.fc6   |
+| perl-TimeDate             | 1:1.16-5.el5 |
+| perl-XML-NamespaceSupport | 1.09-1.2.1   |
+| perl-XML-SAX              | 0.14-11      |
+
+---+++++!! EPEL
+
+| globus-common-progs         | 14.9-1.el5  |
+| globus-gass-server-ez       | 4.3-1.el5   |
+| globus-gram-client          | 12.4-1.el5  |
+| globus-gram-client-tools    | 10.4-1.el5  |
+| globus-gram-protocol        | 11.3-4.el5  |
+| globus-gsi-cert-utils-progs | 8.3-1.el5   |
+| iperf                       | 2.0.5-1.el5 |
+| lcg-infosites               | 3.1.0-3.el5 |
+
+---+++++!! OSG
+| bwctl-client        | 1.4-7.osg.el5    |
+| globus-rsl          | 9.1-4.osg        |
+| globus-usage        | 3.1-4.osg        |
+| gsi-openssh         | 5.4-4.osg.el5    |
+| gsi-openssh-clients | 5.4-4.osg.el5    |
+| lcg-info            | 1.12.2-1.osg     |
+| ndt-client          | 3.6.5-2.osg.el5  |
+| osg-cert-scripts    | 2.7.2-1.osg.el5  |
+| osg-client          | 3.0.0-19.osg.el5 |
+| osg-discovery       | 1.0.7-5.osg.el5  |
+| owamp-client        | 3.2rc4-2.osg.el5 |
+
+---++ Changes to osg-ca-scripts
+
+The =osg-ca-scripts= package is not a mandatory part of a client install, but it is probably used commonly in that case. And currently, the scripts contained therein are *NOT* ready to be relocated or, in a few parts, run as non-root. Here is what !BrianL found:
+
+=/usr/lib/perl5/vendor_perl/5.8.8/OSGCERTS.pm=
+   * initialize
+   * read_updater_config_file
+
+=/usr/sbin/osg-ca-manage=
+   * fetch_crl
+   * write_config_file
+   * setup_ca
+   * fetch_crl
+   * openssl (checks if openssl is installed in /usr/bin but this is probably ok)
+   * is_writable (checks to see if running as root)
+   * check_rpm (does it even make sense to have this anymore?)
+
+=/usr/sbin/osg-update-certs=
+   * main
+
+=/usr/bin/osg-ca-certs-status= (dropping support?)
+   * print_full_info
+
+=/etc/cron.d/osg-update-certs= %BR%
+=/etc/logrotate.d/osg-ca-scripts= %BR%
+=/etc/osg/osg-update-certs.conf= %BR%
+=/etc/rc.d/init.d/osg-update-certs-cron=
+
+There are also some places where the user can specify a directory, would we want to prefix that with =$OSG_ROOT= or whatever the variable ends up being? There are also instances where temporary directories are created via =tempdir()= and I couldn’t find documentation on where these are created by default but I’m guessing they get created in =/tmp=?
+
+---++ External Testing
+
+The following people have volunteered to test the beta (ITB) release of the tarball clients:
+
+   * Iwona Sakrejda (LBL)
+   * John Hover (BNL)
+   * Horst Severini (OU)
+
+---++ End User Notes
+
+The following is a working list of quirks that end users should be made aware of before and upon installing clients via tarball.
+
+   * *osg-ca-scripts:* The fetchcrl command for osg-ca-manage does not enable a fetchcrl service/cronjob in the tarball install as it does in the rpm install. The user will need to manually add the following entry to their crontab so that their CRLs will update. The user is notified when manually running the command.
+
+&lt;verbatim class=&quot;screen&quot;&gt;
+   10 * * * *    &lt;USERNAME&gt;    &lt;OSG_LOCATION&gt;/usr/sbin/osg-update-certs --random-sleep 2700 --called-from-cron
+&lt;/verbatim&gt;
+
+Where &amp;lt;USERNAME&amp;gt; and &amp;lt;OSG_LOCATION&amp;gt; are the current running user and the location where the tarball was unpacked, respectively.
+
+   * *osg-ca-scripts:* The rpm handles logrotation of the files in &lt;OSG_LOCATION&gt;/var/log/ but they are not handled in the tarball instance. The user will have to set up logrotate by themselves if they wish.
+
+   * Java and the jpackage-utils RPM need to be installed on each node since the tarball client does not provide them, but some of the programs in the tarball-client need Java.
+
+
+---++ Repository Layout (proposed)
+
+The tarball client should be hosted on repo.grid.iu.edu.
+The directory structure will be much simpler than the structure of the RPM repos.
+All of the version / architecture/ distro version information is already contained in every filename; no need to duplicate it in the directory structure.
+
+The path will be:
+
+&lt;code&gt;repo.grid.iu.edu/tarball-install/&lt;em&gt;&amp;lt;METAPACKAGE&amp;gt;&lt;/em&gt;-&lt;em&gt;&amp;lt;OSG VERSION&amp;gt;&lt;/em&gt;-&lt;em&gt;&amp;lt;RELEASE&amp;gt;&lt;/em&gt;.&lt;em&gt;&amp;lt;DVER&amp;gt;&lt;/em&gt;.&lt;em&gt;&amp;lt;ARCH&amp;gt;&lt;/em&gt;.tar.gz&lt;/code&gt;
+
+
+   * &amp;lt;DVER&amp;gt; is the distro major version, i.e. el5 or el6
+   * &amp;lt;ARCH&amp;gt; is the architecture, i.e. i386 or x86_64
+   * &amp;lt;METAPACKAGE&amp;gt; for now is either osg-client or osg-wn-client
+   * &amp;lt;OSG VERSION&amp;gt; is the version of the OSG software stack, e.g. 3.1.17
+   * &amp;lt;RELEASE&amp;gt; is a number representing the revision of the tarball, e.g. 1
+
+A tree version:
+&lt;verbatim&gt;
+repo.grid.iu.edu/
+ +- tarball-install/
+    +- 3.1.17/
+    |  +- osg-client-3.1.17-1.el5.i386.tar.gz
+    |  +- osg-client-3.1.17-1.el5.x86_64.tar.gz
+    |  +- osg-client-3.1.17-1.el6.i386.tar.gz
+    |  +- osg-client-3.1.17-1.el6.x86_64.tar.gz
+    |  +- osg-wn-client-3.1.17-1.el5.i386.tar.gz
+    |  +- osg-wn-client-3.1.17-1.el5.x86_64.tar.gz
+    |  +- osg-wn-client-3.1.17-1.el6.i386.tar.gz
+    |  +- osg-wn-client-3.1.17-1.el6.x86_64.tar.gz
+    +- 3.1.18/
+    |  +- *.tar.gz
+    +- osg-client-latest.el5.i386.tar.gz -&gt; 3.1.18/osg-client-3.1.18-1.el5.i386.tar.gz
+    +- osg-client-latest.el5.x86_64.tar.gz -&gt; 3.1.18/osg-client-3.1.18-1.el5.x86_64.tar.gz
+    +- ...
+&lt;/verbatim&gt;
+
+We will need symlinks that point the most recent tarball client for each metapackage/dver/arch combination.
+This is so admins won&#39;t have to look up which release is the latest each time (since there is no yum-equivalent to do that for them).
+
+The following script can be used to generate the symlinks:
+&lt;verbatim&gt;
+SORT_BY_VERSION=&quot;sort_by_version.pl&quot;
+cd tarball-install
+for dver in &quot;el5&quot; &quot;el6&quot;; do
+    for arch in &quot;i386&quot; &quot;x86_64&quot;; do
+        for metapkg in &quot;osg-wn-client&quot; &quot;osg-client&quot;; do
+            latest=`ls 3*/${metapkg}-*.${dver}.${arch}.tar.gz | $SORT_BY_VERSION | tail -n 1`
+            if [ X$latest = X ] || [ ! -e $latest ]; then
+                echo WARNING: Tarball not found for $metapkg $dver $arch
+            else
+               symlink=${metapkg}-latest.${dver}.${arch}.tar.gz
+               ln -s $latest $symlink
+            fi
+        done
+    done
+done
+&lt;/verbatim&gt;
+(Download sort_by_version.pl.txt from this wiki page, rename it to sort_by_version.pl, and set the SORT_BY_VERSION line above to point to it.)
+
+
+Example symlinks (in /tarball-install/, if latest is 3.1.19-2):
+
+| *From*                                   | *To*                                               |
+| osg-wn-client-latest.el5.i386.tar.gz     | 3.1.19/osg-wn-client-3.1.19-2.el5.i386.tar.gz      |
+| osg-client-latest.el5.i386.tar.gz        | 3.1.19/osg-client-3.1.19-2.el5.i386.tar.gz         |
+| osg-wn-client-latest.el5.x86_64.tar.gz   | 3.1.19/osg-wn-client-3.1.19-2.el5.x86_64.tar.gz    |
+| osg-client-latest.el5.x86_64.tar.gz      | 3.1.19/osg-client-3.1.19-2.el5.x86_64.tar.gz       |
+| osg-wn-client-latest.el6.i386.tar.gz     | 3.1.19/osg-wn-client-3.1.19-2.el6.i386.tar.gz      |
+| osg-client-latest.el6.i386.tar.gz        | 3.1.19/osg-client-3.1.19-2.el6.i386.tar.gz         |
+| osg-wn-client-latest.el6.x86_64.tar.gz   | 3.1.19/osg-wn-client-3.1.19-2.el6.x86_64.tar.gz    |
+| osg-client-latest.el6.x86_64.tar.gz      | 3.1.19/osg-client-3.1.19-2.el6.x86_64.tar.gz       |
+
+
+   * [[%ATTACHURL%/sort_by_version.pl.txt][sort_by_version.pl.txt]]: sort the list of tarballs by version
+

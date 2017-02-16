@@ -1,0 +1,65 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Philippe Canal
+   * John Weigand
+   * Dan Yocum
+   * Tanya Levshina
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+---+++ Discussion
+Jira tickets review:
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-44][Gratia-44]] - bug in PBS probe 
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-13][unknown VO reports should ignore BatchPilot jobs]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-36][VO discrepancy report falsely reports &quot;Fermilab&quot; VO as inactive]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-37][Allow automatic lowercasing of VO&#39;s]] also, see [[https://jira.opensciencegrid.org/browse/GRATIAWEB-9][webtool web reports are case sensitive]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-33][gridftp-transfer_meter.cron.sh produces unnecessary rootmails]]
+
+Long Term:
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-32][cpuInfo update is failing via webUI]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-30][probe should start as a service]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-38][package core gratia via rpm]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-14][package report as rpms]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-40][get rid of globus dependcy in gratia common]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-41][grtia probe troubleshooting sctrips, documentation]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-35][Gratia Accounting for non MOU VOs]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-31][add network in SummaryTable]]
+ 
+Ready to be closed if tested:
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-24][PBS-LSF probe writes a lockfile in wrong place]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-18][glexec using VDT env. variables]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-22][change the location of ProbeConfig for hadoop probe]]
+   1. [[https://jira.opensciencegrid.org/browse/GRATIA-39][glexec probe now supports syslog format]]
+
+Tanya has sent email to Alain asking him to provide update on tickets #18, #22, #24 and #39. They can be closed if the testing was successful. All these bugs have been fixed and released in osg-testing. Ticket #32 (PBS) and #41(gridftp) should be assigned to software team as well.
+
+#37 - we need a clear requirments set by OSG and coordinate efforts with OIM. The VOName has been set case sensitive on purpose in gratia mysql schema. According to Philippe it was done in compliance with OSG requirements at that time.
+
+Work on #14 is ongoing.
+
+---++ Second agenda item
+&lt;!-- DESCRIPTION --&gt;
+VO names clean up - what&#39;s left?
+---+++ Discussion
+John is working with Steve, some progress has been made since the last meeting. Number of VOs in the OSG gratia database has decreased from 562 to 274. Also, the &quot;Engage&quot; and &quot;engage&quot; VOs have been  consolidated for the time being. 
+New, PBS probe has been released via pacman, so  it would  fix the problem with sites that are using PBS and pool accounts as soon as they update software.
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+gratia service rpm packaging status
+---+++ Discussion
+Some progress has been made with packaging gratia core services into rpm. Right now we are creating just one rpm. There are some missing scripts that should be written in order to finish working on packaging:
+   1. rewrite of egi-trustmanager) tomcat-configure script
+      * create serverl.xml template
+      * add libraries to server and common 
+      * modify tomcat5.conf - add gratia specific java options
+      * modify tomcat-user.xml &lt;br/&gt;
+Feedback: there are scripts that are doing similar actions for Fermilab Gratia installation. Dan will look into it. tomcat-user.xml doesn&#39;t need to be modified
+   1. changes in my.cnf: innodb and log_bin mysql-bin
+Feedback: we need to provide configuration template for large and small installations. Dan has promised to give some examples. The templates will be located in /usr/share/gratia/... and explained in documentation.
+   1. script that creates database and grant the permissions (see old vdt gratia-configure)
+Feedback: John will come up with an appropriate script (we can reuse the one that is used for nightly test installation)
+
+-- Main.TanyaLevshina - 25 Jan 2012

@@ -1,0 +1,50 @@
+---+ Package =TWiki::LineIterator=
+
+Iterator over the lines in a file
+
+
+%TOC%
+
+---++ new( $file )
+
+Create a new iterator over the given file. if the file cannot be opened, then
+there will be no elements in the iterator.
+
+
+---++ hasNext() -&gt; $boolean
+
+Returns false when the iterator is exhausted.
+
+&lt;verbatim&gt;
+my $it = new TWiki::ListIterator(\@list);
+while ($it-&gt;hasNext()) {
+   ...
+&lt;/verbatim&gt;
+
+
+---++ next() -&gt; $data
+
+Return the next line in the file.
+
+The iterator object can be customised to pre- and post-process entries from
+the list before returning them. This is done by setting two fields in the
+iterator object:
+
+   * ={filter}= can be defined to be a sub that filters each entry. The entry
+     will be ignored (next() will not return it) if the filter returns false.
+   * ={process}= can be defined to be a sub to process each entry before it
+     is returned by next. The value returned from next is the value returned
+     by the process function.
+
+For example,
+&lt;verbatim&gt;
+my $it = new TWiki::LineIterator(&quot;/etc/passwd&quot;);
+$it-&gt;{filter} = sub { $_[0] =~ /^.*?:/; return $1; };
+$it-&gt;{process} = sub { return &quot;User $_[0]&quot;; };
+while ($it-&gt;hasNext()) {
+    my $x = $it-&gt;next();
+    print &quot;$x\n&quot;;
+}
+&lt;/verbatim&gt;
+
+

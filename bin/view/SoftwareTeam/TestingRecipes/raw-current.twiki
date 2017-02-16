@@ -1,0 +1,199 @@
+%TOC%
+
+This page is intended to document recipes for manually testing certain components of OSG.
+If possible, these recipes should be turned into automated tests.
+Sometimes that is not feasible, for example if a test requires access to some resource not available in our nightly test environment, or is too complicated to automate.
+In that case, steps needed to test these components should be recorded on this page.
+
+---++ Gratia probes
+
+See [[GratiaProbeRPMTesting][this page]] for notes
+ 
+---++ GUMS (EL5)
+
+Set up an SL5 fermicloud VM with OSG/EPEL repos.
+
+As root:
+&lt;verbatim&gt;
+   # yum install gums{,-service,-client} osg-ca-certs fetch-crl globus-proxy-utils -y
+   # /etc/init.d/mysqld start
+   # mysql_secure_installation
+&lt;/verbatim&gt;
+Add a mysql user:
+&lt;verbatim&gt;
+   # GUMS_PASSWORD=&#39;MYPASSWORD&#39;
+   # echo &quot;create user &#39;gums&#39;@&#39;localhost&#39; identified by &#39;$GUMS_PASSWORD&#39;;
+grant all privileges on *.* to &#39;gums&#39;@&#39;localhost&#39; with grant option;&quot; | mysql -p mysql
+&lt;/verbatim&gt;
+Set up the database and add an admin user (use your own DN).
+&lt;verbatim&gt;
+   # gums-setup-mysql-database --user gums --host `hostname`:3306 --password $GUMS_PASSWORD
+   # gums-add-mysql-admin &#39;/DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Matyas Selmeci/CN=UID:matyas&#39;
+&lt;/verbatim&gt;
+(you use the password for the &#39;gums&#39; mysql user when it asks.)
+&lt;verbatim&gt;
+   # fetch-crl
+   # mkdir -p /etc/grid-security/http; cd $_
+   # for x in cert key; do rm -f http$x.pem; cp -f ../host$x.pem http$x.pem; done
+   # chown -R tomcat:tomcat /etc/grid-security/http
+   # /var/lib/trustmanager-tomcat/configure.sh
+   # /etc/init.d/tomcat5 start
+&lt;/verbatim&gt;
+Edit /etc/gums/gums.config, see the diff (change &quot;fermicloud065.fnal.gov&quot; to the machine you are on, and change &quot;matyas&quot; to your own login name):
+
+&lt;verbatim&gt;
+--- old 2012-04-25 16:29:14.000000000 -0500
++++ new 2012-04-25 16:32:31.000000000 -0500
+@@ -33,2 +33,4 @@
+                         persistenceFactory=&#39;mysql&#39;/&gt;
++
++                &lt;manualUserGroup persistenceFactory=&#39;mysql&#39; name=&#39;matyas&#39;/&gt;
+        &lt;/userGroups&gt;
+@@ -40,2 +42,4 @@
+                        accountName=&#39;GumsTestUserMappingSuccessful&#39;/&gt;
++
++                &lt;groupAccountMapper name=&#39;matyas&#39; accountName=&#39;matyas&#39;/&gt;
+        &lt;/accountMappers&gt;
+@@ -50,2 +54,3 @@
+                        accountMappers=&#39;gums-test&#39;/&gt;
++                &lt;groupToAccountMapping name=&#39;matyas&#39; userGroups=&#39;matyas&#39; accountMappers=&#39;matyas&#39;/&gt;
+        &lt;/groupToAccountMappings&gt;
+@@ -57,2 +62,3 @@
+                        cn=&#39;*/?*.fnal.gov&#39;/&gt;
++                &lt;hostToGroupMapping cn=&#39;fermicloud065.fnal.gov&#39; groupToAccountMappings=&#39;matyas&#39;/&gt;
+        &lt;/hostToGroupMappings&gt;
+&lt;/verbatim&gt;
+Also modify =/etc/gums/gums-client.properties= and replace =localhost= with the hostname.
+
+Now test it using grid credentials derived from your kerberos ticket.
+As root:
+&lt;verbatim&gt;
+   # yum install -y krb5-fermi-getcert
+&lt;/verbatim&gt;
+As yourself (use your own fermicloud DN):
+&lt;verbatim&gt;
+   $ kinit
+   $ get-cert.sh
+   $ grid-proxy-init
+   $ gums manualGroupAdd matyas &#39;/DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Matyas Selmeci/CN=UID:matyas&#39;
+   $ gums-host mapUser &quot;/DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Matyas Selmeci/CN=UID:matyas&quot;
+   $ gums-host generateGridMapfile
+&lt;/verbatim&gt;
+
+---++ dcache-srmclient
+
+   1. Transfer file from local disk to remote location
+&lt;verbatim&gt;
+globus-url-copy file://$PWD/file1.txt gsiftp://fndca1.fnal.gov:2811/fermigrid202/guc/file1.txt 
+&lt;/verbatim&gt;
+
+   2. Transfer file from remote location to local disk
+&lt;verbatim&gt;
+globus-url-copy gsiftp://fndca1.fnal.gov:2811/fermigrid202/guc/file1.txt file://$PWD/guc-file1.txt
+&lt;/verbatim&gt;
+
+   3. Third party transfers (from one SE to another)
+
+&lt;verbatim&gt;
+globus-url-copy gsiftp://fndca1.fnal.gov:2811/fermigrid202//guc/file1.txt  gsiftp://fg-bestman1.fnal.gov:2811/grid/data/fermilab/fermigrid202//guc/file2.txt
+&lt;/verbatim&gt;
+   4. Multiple transfers using an input file
+&lt;verbatim&gt;
+globus-url-copy -f multiple-guc-transfers.txt
+globus-url-copy -r -cd file://$PWD/testdir/ gsiftp://fndca1.fnal.gov:2811/fermigrid202/guc/testdir/
+&lt;/verbatim&gt;
+
+   5. Create directory
+&lt;verbatim&gt;
+srmmkdir -2 srm://fndca1.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/usr/fermigrid/volatile/fermilab/fermigrid202//srmclients/dir1
+&lt;/verbatim&gt;
+
+   6. Local disk to Remote location file transfer 
+&lt;verbatim&gt;
+srmcp -2 file:///$PWD/file1.txt srm://fndca1.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/usr/fermigrid/volatile/fermilab/fermigrid202//srmclients/dir1/file6.txt
+&lt;/verbatim&gt;
+
+   7. Remote location to local disk file transfer
+&lt;verbatim&gt;
+srmcp -2 srm://fndca1.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/usr/fermigrid/volatile/fermilab/fermigrid202//srmclients/dir1/file6.txt file:///$PWD/file2.txt
+&lt;/verbatim&gt;
+
+   8. Third party file transfer
+
+&lt;verbatim&gt;
+srmcp -2 srm://fndca1.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/usr/fermigrid/volatile/fermilab/fermigrid202//srmclients/dir1/file6.txt
+srm://fg-bestman1.fnal.gov:10443/srm/managerv2?SFN=/grid/data/fermilab/fermigrid202//srmclients/file7.txt
+&lt;/verbatim&gt;
+
+   9. List directory contents (-l prints metadata)
+
+&lt;verbatim&gt;
+srmls -l -2 srm://fndca1.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/usr/fermigrid/volatile/fermilab/fermigrid202//srmclients/
+&lt;/verbatim&gt;
+
+   10. List directory contents (recursive ls)
+
+&lt;verbatim&gt;
+srmls -l -2 -recursion_depth=2 srm://fndca1.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/data/fermigrid/volatile/fermilab/fermigrid202//srmclients
+&lt;/verbatim&gt;
+
+   11. Move file from one location to another
+
+&lt;verbatim&gt;
+srmmv srm://fndca1.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/usr/fermigrid/volatile/fermilab/fermigrid202/test srm://fndca1.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/usr/fermigrid/volatile/fermilab/fermigrid202/test.old
+&lt;/verbatim&gt;
+   12. Space reservation against a dCache SE 
+
+&lt;verbatim&gt;
+srm-reserve-space -2 --retention_policy=REPLICA --access_latency=ONLINE -lifetime=6000 -desired_size=55 -guaranteed_size=55 srm://fg-bestman1.fnal.gov:10443
+&lt;/verbatim&gt;
+This command won&#39;t work against Bestman SE. Though Bestman running in gateway mode should support use of pre-defined space tokens
+
+   13. Transfer using the space token. 
+
+&lt;verbatim&gt;
+srmcp -2 -space_token=YOURSPACETOKEN file:///$PWD/file1.txt srm://fg-bestman1.fnal.gov:10443/srm/v2/server?SFN=/grid/data/fermilab/fermigrid202/YOURNAME/srmclients/file8.txt
+&lt;/verbatim&gt;
+   14. Releasing the space allocation
+
+&lt;verbatim&gt;
+srm-release-space -space_token=YOURSPACETOKEN srm://fg-bestman1.fnal.gov:10443
+&lt;/verbatim&gt;
+
+   15. Then, trying to copy file , this command should fail
+
+&lt;verbatim&gt;
+srmcp -2 -space_token=YOURSPACETOKEN file:///$PWD/file1.txt srm://fg-bestman1.fnal.gov:10443/srm/v2/server?SFN=/grid/data/fermilab/fermigrid202/YOURNAME/srmclients/file9.txt
+&lt;/verbatim&gt;
+
+   16. Removing contents of a non-empty directory - this should fail
+
+&lt;verbatim&gt;
+srmrmdir -2 srm://fndca1.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/usr/fermigrid/volatile/fermilab/fermigrid202/srmclients/dir1/subdir1/testdir
+&lt;/verbatim&gt;
+   17. Removing contents of an empty directory - this should work
+
+&lt;verbatim&gt;
+srmrmdir -2 srm://fndca1.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/usr/fermigrid/volatile/fermilab/fermigrid202/srmclients/dir1/subdir1/testdir
+&lt;/verbatim&gt;
+
+   18. Local disk to remote location transfer using dccp
+&lt;verbatim&gt;
+dccp -d 5 /cloud/login/neha/jetty6.spec gsidcap://fndca1.fnal.gov:24536/pnfs/fnal.gov/usr/fermigrid/volatile/fermilab/testfile.txt
+&lt;/verbatim&gt;
+
+   19. Remote location to local disk transfer using dccp
+&lt;verbatim&gt;
+dccp -d 5  gsidcap://fndca1.fnal.gov:24536/pnfs/fnal.gov/usr/fermigrid/volatile/fermilab/testfile.txt /cloud/login/neha/jetty7.spec
+&lt;/verbatim&gt;
+
+Above commands mostly use fermi srmclient, you would need equivalent replacements for lbnl srmclients and as you know already some commands are not supported in gateway mode. 
+
+
+---++ Generating host certificates for VMs
+
+See attached file &quot;provision-cert.sh&quot;
+
+&lt;!-- vim:ft=twiki
+--&gt;
+

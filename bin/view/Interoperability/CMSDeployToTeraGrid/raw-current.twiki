@@ -1,0 +1,211 @@
+---+Installation procedures
+ 
+ There is a common procedure how to install cms software without X-based GUI.
+ You must get download.sh from here:
+http://cmsdoc.cern.ch/cms/oo/repos_standalone/download/doc/xcmsi/node4.html
+and request three packages: ORCA_8_7_3, OSCAR_3_6_5 and CMKIN_4_3_1. Everything else which is needed to run these applications will be delivered as well.
+
+ &gt; ./download.sh OSCAR_3_6_5
+
+ &gt; ./download.sh ORCA_8_7_3
+
+ &gt; ./download.sh CMKIN_4_3_1
+
+ You must have enough disk space to do that (typical is 5-10GB free on this partition). 
+
+ This is small description of command-line installation:
+http://cmsdoc.cern.ch/cms/oo/repos_standalone/download/doc/xcmsi/node5.html
+
+ You have to step in to the XCMSInstall subdir which appeared when download will be completed and run cmsi.pl script without any arguments.
+
+ &gt; cd XCMSInstall
+
+ &gt; ./cmsi.pl
+
+
+ That&#39;s it. Of course, in reality it might be more complex than just that, so please ask me in case of problems or authors of the scripts...
+
+---++ Gridshell installations
+
+ First of all your have to get gridshell distribution from TACC:
+
+&gt; wget http://www.tacc.utexas.edu/~ewalker/gridshell-v0.9.9.tar.gz
+
+ Specific places on each cluster:
+
+---+++ Purdue
+
+/tg_community/linux/osg/litvin/gridshell-v0.9.9 is the main installation
+directory. Correspondent Condor distribution is in /tg_community/linux/osg/litvin/condor
+
+ cshrc.gtcsh file from /tg_community/linux/osg/litvin/gridshell-v0.9.9 should 
+be included in ~/.cshrc
+
+ Correspondent grid project must be defined in ~/.cshrc:
+
+&gt; setenv _GRID_PROJECT_NAME TG-PHY050026T
+
+
+---+++ UC
+
+/software/linux-sles8-ia32/community/osg/cms/litvin/gridshell-v0.9.9 is the main installation
+directory. Correspondent Condor distribution is in
+/software/linux-sles8-ia32/community/osg/cms/litvin/condor
+
+cshrc.gtcsh file from /software/linux-sles8-ia32/community/osg/cms/litvin/gridshell-v0.9.9
+should be included in ~/.cshrc
+
+ Correspondent grid project must be defined in ~/.cshrc:
+
+&gt; setenv _GRID_PROJECT_NAME TG-PHY050026T
+
+
+---+++ TACC
+
+/projects/cmsim/gridshell-v0.9.9 is the main installation
+directory. Correspondent Condor distribution is in /projects/cmsim/condor
+
+cshrc.gtcsh file from /projects/cmsim/gridshell-v0.9.9 should 
+be included in ~/.cshrc
+
+
+ Correspondent grid project must be defined in ~/.cshrc:
+
+&gt; setenv _GRID_PROJECT_NAME TG-PHY050026T
+
+
+
+---++ MCPS installation
+
+MCPS-v00-00-02d was installed at TACC cluster in /projects/cmsim/MCPS-v00-00-02d
+
+
+---++Purdue
+
+ Login hostname is tg-login-linux.purdue.teragrid.org.
+
+ Main entry point for CMS software is /tg_community/linux/osg/litvin/
+
+ Release area is /tg_community/linux/osg/litvin/rel1
+
+ To be able to work you have to do next:
+
+1) Add scram tool in you PATH:
+
+setenv PATH ${PATH}:/tg_community/linux/osg/litvin/rel1/Releases/SCRAM
+
+2) Add one extra lib directory in you LD_LIBRARY_PATH:
+
+setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:/tg_community/linux/osg/litvin/lib
+
+
+
+---++UC
+
+ Login hostname is tg-viz-login.uc.teragrid.org. 
+
+ Main entry point for CMS software is /software/linux-sles8-ia32/community/osg/cms/litvin
+
+ Release area is /software/linux-sles8-ia32/community/osg/cms/litvin/rel1
+
+ To be able to work you have to do next:
+
+1) Add scram tool in you PATH:
+
+setenv PATH ${PATH}:/software/linux-sles8-ia32/community/osg/cms/litvin/rel1/Releases/SCRAM
+
+2) Define SCRAM_ARCH
+
+setenv SCRAM_ARCH Linux__2.4
+
+
+---++TACC (lonestar)
+
+ Login hostname is tg-login.tacc.teragrid.org. 
+
+ Main entry point for CMS software is /projects/cmsim
+
+ Release area is /projects/cmsim/rel1
+
+ To be able to work you have to do next:
+
+1) Add scram tool in you PATH:
+
+setenv PATH ${PATH}:/projects/cmsim/rel1/Releases/SCRAM
+
+
+
+---+HOW TO run the typical applications
+
+ If you defined everything specified above, you can run &quot;scram list&quot; to look at the list of installed packages. Please let me know in case of problems (litvin@hep.caltech.edu)
+
+If you can see all projects, you can try to check it out and play with them:
+
+---++ OSCAR Applications
+
+ Typicaly , you don&#39;t need anything to modify here, so you can just create
+environment and define everything to work with:
+
+ &gt; cd /tmp
+
+ &gt; mkdir lva
+
+ &gt; cd lva
+
+ &gt; scram project OSCAR OSCAR_3_6_5
+
+ &gt; cd OSCAR_3_6_5/src
+
+ &gt; eval `scram runtime -csh`
+
+ or 
+
+ &gt; eval ` scram runtime -sh`
+
+ &gt; oscar 
+
+
+
+---++ ORCA Applications
+
+
+ &gt; cd /tmp
+
+ &gt; mkdir lva
+
+ &gt; scram project ORCA ORCA_8_7_3
+
+ &gt; cd ORCA_8_7_3/src
+
+ &gt; cp -r specorcadir/src/Examples .
+
+ &gt; cd Examples/ExProduction
+
+ &gt; eval `scram runtime -csh` (if you have tcsh)
+
+   or 
+
+ &gt; eval `scram runtime -sh` (in case of bash)
+
+ &gt; writeAllDigis
+
+
+
+
+
+---++Purdue
+
+ specorcadir = /tg_community/linux/osg/litvin/rel1/Releases/ORCA/ORCA_8_7_3
+
+---++UC
+
+ specorcadir = /software/linux-sles8-ia32/community/osg/cms/litvin/rel1/Releases/ORCA/ORCA_8_7_3
+
+---++TACC (lonestar)
+
+ specorcadir = /projects/cmsim/rel1/Releases/ORCA/ORCA_8_7_3
+
+
+
+-- Main.VladimirLitvine - 15 Jun 2005
+

@@ -1,0 +1,159 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Jeff Dost
+   * Neha Sharma
+   * Alex Sim
+   * Doug Strain
+   * Tanya Levshina
+
+
+---++ Status reoprt
+&lt;!-- DESCRIPTION --&gt;
+
+Jeff:
+&lt;pre class=&quot;screen&quot;&gt;
+Hadoop RPMs:
+- I set up 0.20 stable branch on Brian&#39;s request on the vdt website.  
+He will start populating it as soon as the RPMs are finished being tested. http://vdt.cs.wisc.edu/hadoop/stable/2.0/rhel5/
+
+0.20 testing issues / notable changes:
+- hadoop now runs as user hadoop instead of root (fails to start if run as root)
+- HADOOP_NAMENODE_HEAP=2048m the &quot;m&quot; suffix causes java vm to fail
+- starting / stopping hadoop daemons writes output to /nohup.out instead of to stdout
+- get umask warnings when using hadoop fs commands
+- currently getting a Segmentation fault when testing gridftp
+&lt;/pre&gt;
+
+Neha:
+&lt;pre class=&quot;screen&quot;&gt;
+- gridworks upgrade to 1.9.5-23. validation. troubleshooted why replication wasn&#39;t working. reinstalled 1.9.5-23 on gridworks. all working now.
+- handled question from suchandra about dcache setup
+- worked on replacing sqlalchemy with psycopg2 in gratia transfer probe. not finished yet.
+- worked on vdt-support ticket #8795
+- meeting with tanya for updates
+- osg-software team meeting
+&lt;/pre&gt;
+
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* Support
+ - bestman2 2.0.7 release 
+   minor update
+   support for static token option to EOS and US ATLAS
+ - preparing a new VDT packaging for bestman2
+&lt;/pre&gt;
+
+Doug:
+&lt;pre class=&quot;screen&quot;&gt;
+- BNL SRM_CONFIG bug solved and fix committed to vdt.  Scot&#39;s fix in this release, my fix in next release.
+             (parallel mode transfer does not work behind firewall)
+- LIGO: Pigeon tools not updating (fixed cron and disk was full).
+- Public storage: hadoop gratia probe modified, emailed report created.
+- xrootd rpm - native packaging.  mock installed and tested.
+&lt;/pre&gt;
+
+Tanya :
+&lt;pre class=&quot;screen&quot;&gt;
+vacation - March 14 - 17
+
+meetings:
+    with Alain
+    VDT software group
+    OSG - CDIGS
+    Doug
+    Neha
+
+technical work:
+     upgraded all test clusters with a latest OSG release, ran tests
+     ran certification test on new dCache release (1.9.5.23) , investigated problem with replication
+     installed newest &quot;bdm&quot; tool release, tried to do do third-party transfer, encountered problems 
+     ran several tests on globus.org (10GB 100 files transfer FERMI - SBGGrid). Will start working on real tests
+     installed xrootd rpms, has written summary of issues
+     worked with Alain on status presentation for area coordinators meeting , updated WBS 
+     investigated problems reported by pigeon tools for LIGO VO (UFlorida, Nebraska and OUHEP)
+&lt;/pre&gt;
+
+
+---++ First Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+HDFS - !BeStMan
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+hdfs 2.0 related rpms are in VDT. Jeff has experienced some minor problems while installing it. The major showstopper is  a segmentation fault when testing gridftp. Jeff thinks that this could be related to authorization (gridmapfile). Doug will install all the rpms on our teststand (gw018k nodes are back after disk replacement) and we will check if we see the same problems with gridftp -&gt; GUMS authorization.
+
+Jeff has asked about the origin and purpose of the xrootd  related rpms that are in hdfs repository. Tanya will talk to Brian to understand where these rpms are coming from.
+
+Jeff will start working on documentation. The first priority is to document software built and upload to VDT.
+
+Also, !BeStMan2 2.0.6 should be included into the test cache.
+
+---++ Second Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+!BeStMan
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+!BeStMan2 2.0.6 release should be added to ITB. !BeStMan2 2.0.7 has minor changes and Alex needs to work on  packaging for VDT before this version could be given to ITB.
+
+---++ Third Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+dCache
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+gwdca nodes have been upgraded to SL5. Neha has built vdt-dCache package with dCache server 1.9.5.23 and gratia probes 1.07.01a-2. There were some issues with configuration for replica manager and pools. Neha has fixed configuration. Certification tests have passed. 
+
+This version will not be released to ITB because Neha has just been notified about a new release that provides some urgent fixes. We will try to build, test and release new vdt-dCache within couple of days.
+
+
+---++ Forth Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+xrootd rpm
+---+++ Discussion
+At the AHM we have agreed that we should take over the building of xrootd rpms. Doug have installed &quot;mock&quot; package used by VDT team to build rpms and is in the process of understanding how it works. Meanwhile, it looks like xrootd team is working on a source rpms, there are also the rpms distributed by CMS (Brian?) , EPEL (source unknown) and VDT. Alain and Tim are discussing how to proceed so we should wait until it is settled.  
+
+---++ Fifth Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+Public storage 
+---+++ Discussion
+Doug is testing hdfs storage probes. He has noticed that some of the records are sent to Gratia but have not propagated to !StorageElement table. He is investigating the reason.
+
+Tanya have done some trivial tests transferring files via globis.org. The current goal is to do two types of bulk data transfers :
+   1.  similar to  LIGO 3days set transfer (5000 files ~160MB each, 78GB total)
+   1.  similar to DES transfers ( files with various sizes from 10 KB ~ 100th MB)
+
+and compare the results. She has also installed [[https://sdm.lbl.gov/bdm][BDM]] tool developed by Alex&#39;s team for ESG and will try to run similar tests.
+
+
+---++ Tickets
+&lt;!-- DESCRIPTION --&gt;
+
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Tickets
+
+++++++++++++
+New tickets
+++++++++++++
+
+Closed:
+
+32 - OSG Storage: Bestman: Port confusion on restarting bestman
+
+33 - OSG Storage: Bestman: Restart bestman on updating gsiftp.servers.txt?
+
+34 - OSG Storage: Bestman: stopped working due to empty line in input list
+
+35 - OSG Storage: Bestman:  dynamic reporting total space for static space tokens
+
+36 - OSG Storage: User &quot;ligo&quot; gets permission denied on all Nebraska Gridftp servers
+
+Follow up in progress:
+
+10122 - a user cannot download files from AGLT2_USERDISK 
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 23 Mar 2011

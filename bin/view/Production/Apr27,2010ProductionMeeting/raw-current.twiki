@@ -1,0 +1,179 @@
+-- Main.DanFraser - 13 Apr 2010
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+---++ Action/Significant Items:
+   * One of the ReSS servers failed this week, but properly failed over, so there was no downtime. Causes are being investigated. (Dan)
+   * LIGO was asked to reduce pressure on NFS servers at Nebraska. Rob E mentioned that he will run a different code version on Nebraska as well as the Fermi T1. (Brian, Rob)
+   * SBGRID jobs were causing trouble on the Fermi T1 and at Nebraska and were temporarily banned on both sites. (Brian, Tony)
+   * LIGO also making sure that boinc no longer pings Google when running E@H. This was causing problems on the Fermi T1 (Rob, Tony)
+   * Data transfer data from Fermi T1 is not showing on Gratia chart for past 3-4 days. Dan asked Tony to take a look. (Dan, Tony)
+   * Three more sites upgraded to OSG 1.2.x. (Marco)
+
+---++ Attendees:
+   * Mats, Xin, Britta, Rob E., Brian, Suchandra, Tony, Marco, Abhishek, Rob Q., Mine, Parag, Dan
+ 
+---++ CMS (Burt)
+   * 58 khours/day 94% success
+   * Machine “squeezed” beams over the weekend and increased instantaneous luminosity by approx. one order of magnitude
+   * A lot of data was recorded and is currently being processed and transferred out to the T1 sites (doubled collected statistics in 2010)
+   * In technical stop until Thursday
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * During the last week ATLAS production was at the average level of 7-8k/day running jobs, mixture of reprocessing and simulation. Reprocessing started at the end of the week, and is progressing without problems. LHC had improvements with high intensity collisions and delivered record luminosity over the weekend. Now technical stop until Thursday. 
+   * Job statistics for last week. 
+      * Gratia report: USATLAS ran 2.1M jobs, with CPU/Walltime ratio of 82%. 
+      * Panda world-wide production report (real jobs): 
+         * completed successfully 1M managed MC production, validation and reprocessing jobs 
+         * average 150K jobs per day
+         * failed 92K jobs
+         * average efficiency:  jobs  - 92%,  walltime - 92%
+   * Data Transfer statistics for last week
+      * BNL T1 data transfer rate is 200~300TB/day last week. 
+   * Issues
+      * BDII uploading to WLCG: info size limit exceeded, causing no info from BNL on cern BDII, critical for production
+         * cern BDII limit increased to 10MB (confirmation?)
+         * some mis-configured info from BNL CE GIP, solved, reduced the size of the info to 2MB now. 
+      * Opportunistic SE usage for D0 : no update from T2 this week. 
+
+---++ LIGO (Britta, Rob E.)
+
+---+++ Gratia Reports
+   * Current week&#39;s total usage: 6 users utilized 36 sites
+      * 91368 jobs total (26386 / 64982 = 28.9% success)
+      * 598492.8 wall clock hours total (478053.4 / 120439.4 = 79.9% success)
+   *  Previous week&#39;s total usage: 4 users utilized 37 sites
+      * 84855 jobs total (26574 / 58281 = 31.3% success)
+      * 580605.8 wall clock hours total (478393.4 / 102212.4 = 82.4% success)
+
+---+++ LIGO / E@H
+   * Recent Average Credit (RAC): 1,794,375.88166, Last week: 1,809,868.32657
+   * E@H rank based on RAC: 2 (+-0)
+   * E@H rank based on accumulated Credits: 4 (+-0) 
+   * high production
+      * GridUNESP_CENTRAL (1,400 jobs)
+   * low production
+      * LIGO_UWM_NEMO (40 job, -90%)
+      * UFlorida-HPC (0 jobs)
+      * Purdue-RCAC (230 jobs, -60%)
+      * Firefly (250 jobs, -75%)
+      * USCMS-FNAL-WC1-CE3 (0, no cleanup jobs run)
+      * CIT_CMS_T2 / CIT_CMS_T2B ( lots of jobs suspended )
+
+---+++ LIGO / INSPIRAL
+   * Testing work-flows (one day data sets) on Firefly/LIGO ITB cluster for run-time comparison, Firefly:  gatekeeper crash
+      * LIGO_CIT: 3 hours, 21 mins
+      * Firefly: submitted 4/16 1pm, still running, all jobs idling
+   * Testing dagman ( file transfers and md5sum check) on Firefly/LIGO ITB (1000 gwf files):
+      * LIGO_CIT: 56 mins
+      * Firefly: 3 days
+   * we are pretty sure that run times at Firefly are so much longer because Britta&#39;s jobs compete with Robert&#39;s E@OSG jobs
+   * Solution: Brian will set up different roles for Robert/Britta at Firefly, LIGO VOMS server currently not maintained  
+   * Firefly gatekeeper crash 04/16: we checked condor gridmanager on submit host, checked Pepasus clustering properties
+      * gridmanager log: 8 gram error accumulation from Firefly
+
+---++ Grid Operations Center (Rob Q.)
+
+---+++ Operations Last Week 
+   * Availability metrics for the last week 
+      * [[http://tinyurl.com/23nvj99][GOC Services: BDII, MyOSG, RSV Collector, OSG Display]]
+      * [[http://tinyurl.com/26z7t2w][GOC hosted Security services managed by OSG security team]]
+   * [[http://osggoc.blogspot.com/2010/04/osg-129-release-announcement.html][ *OSG 1.2.9 Release Announcement* ]] - complete - Need to discuss release timing. 
+   * There was an ReSS problem due to the immense amount of data coming out of BNL, Steve Timm worked with the Condor team to publish results faster.
+
+---+++ Operations This Week
+   * [[http://osggoc.blogspot.com/2010/04/goc-service-update-tuesday-april-27th.html][ *GOC Production Service Update* ]] - Tuesday, April 27th at 14:00 UTC
+      * Short intermittent outage of (~5 minutes) is expected for all the services listed below while the GOC adjusts the virtual machine settings one VM host at a time; For example, myosg2 might be down for 5 minutes while myosg1 will still available be for anyone trying to access myosg.grid.iu.edu; Additionally, the GOC reserves four hours (14:00 - 18:00 UTC) in the unlikely event that unexpected problems are encountered. 
+   * *Ongoing - Ticket Exchange (TX)*: 
+      * *GGUS*
+         * ATLAS is working with users to ensure that only alarm tickets go to critical/top priority. We have seen a few users who have used this for limited-impact problems.
+      * *BNL RT*
+         * No known issues
+         * Discussing handling of merged ticket (new feature request) with BNL developer
+      * *FNAL Remedy* 
+         * No Change, waiting on FNAL action; FNAL developer going to be on vacation
+      * *VDT*, *PROD_SLAC*, *UC_CI*, *SBGrid* - No Change, waiting on GOC action discussed below
+         * &lt;em&gt;No change since last week&lt;/em&gt;: GOC has promised simple instructions on how to setup RT to use GOC-TX; depending on ease and priority, these SCs may adopt use of GOC-TX
+   * *Ongoing - Top Level WLCG BDII Monitoring* 
+      * MyOSG GIP-validation view modified to include these results; expect release on May 11th.
+      * &lt;em&gt;No change since last week&lt;/em&gt; ; Action items upon finding a problem still not clear - being worked out with CMS and OSG management
+
+
+---++ Engage (Mats, John, Chris)
+
+9 users utilized 33 sites;
+
+30288 jobs total (28542 / 1746 = 94.2% success);
+
+138599.7 wall clock hours total (128491.1 / 10108.6 = 92.7% success);
+
+
+We are still struggling to find places to run jobs with higher memory requirements (up to 2 GB) and longer wall times (up to 48 hours).
+
+
+---++ Integration (Suchandra)
+   * OSG 1.2.9 released
+   * OSG 1.2.10 release being planned
+      * just xrootd changes for tier 3 usage
+   * ITB Robot
+      * framework in place
+      * now using myproxy for authorization
+      * emails being set up to go out to osg-int mailing list
+      * adding new tests and resources
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.2.9
+      *       77 (0) OSG 1.2.X resources (       6 are 1.2.9)
+      *        6 (0) OSG 1.0.X resources (       1 are 1.0.6)
+      *        6 (-2) OSG 1.0.0 resources
+      *        1 (-1) OSG 0.8.0 resources
+
+---++ Virtual Organizations Group (Abhishek)
+
+   * D0
+      * MC Production average 11 M Events/week. 70,000 wall-hours/day at 77% efficiency.
+      * UTA SE access is still pending; D0 has sent a reminder, waiting to hear back from site contacts.
+      * Low efficiency at antaeus.hpcc.ttu.edu, ce.grid.unesp.br, ce01.cmsaf.mit.edu, osg-ce.sprace.org.br, pg.ihepa.ufl.edu, umiss001.hep.olemiss.edu.
+      * Lower than usual efficiency at chaos.lunet.edu, cit-gatekeeper.ultralight.org, and osg1.loni.org.
+      * SE now added at osg-ce.sprace.org.br.
+
+   * Fermi-VO
+      * Production proceeding smoothly. 
+      * Usage projections for Fermilab-VO and sub-VOs are now available for calendar years 2010, 2011, 2012.
+         * https://twiki.grid.iu.edu/bin/view/Production/OSGResourcePredictions 
+         * https://twiki.grid.iu.edu/bin/view/Production/FineGrainProjections
+   
+   * GLUE-X
+      * Site had missing LDIF data on OIM. Related to bug in GIP; fix expected in GIP v1.1.10. 
+         * https://ticket.grid.iu.edu/goc/viewer?id=8343
+      * Glideins from GPN VO were failing at GLUE-X site; would run for a while, then sit idle for days. Related to bug in Condor; condor team notified.
+      * Interested in trying out !GlideinWMS.
+   
+   * SBGrid/NEBioGrid
+      * Getting good concurrent job runs; but efficiency is not consistent from day to day.
+      * Using Engage&#39;s OSG !MatchMaker. Planning to evaluate both !GlideinWMS and PANDA.
+      * Feedback: need for client-side functionality to remotely diagnose job failures. E.g., whether jobs are pre-empted, and why.
+
+   * CHARMM (NIH) / OSG-VO 
+      * Running under OSG-VO using VOMS proxy. 
+         * Actively doing production and getting results.
+         * Studying molecular dynamics simulations of mutant proteins.  
+         * Have a few more models to run, then get results to JHU collaborators and get feedback.
+      * Using Panda; has been steady and reliable. 
+      * Abhishek in contact with Tim Miller and Maxim to track any resulting scientific publication. 
+
+---++ Security (Mine)
+   * EGEE is ending this friday. Changes in security comm channels. We are workign with Romain and Mingchao.
+   * Testing of pakiti is complete. Access control has been implemented and tested. We are just waiting to get the release code rather than svn code
+   * plans for deployment of pakiti and itb test cache are made and being discussed with the community
+   * TG incident but no common users. 
+   * Scott&#39;s request on resolving conflicts in debian ca packages. completed. it will be tested when a new package is prepared. 
+   * When a new CA package is prepared, we will drop the old fermi kca. we got the blessing from the fermi lab operators. 
+     

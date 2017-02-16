@@ -1,0 +1,171 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Ted Hesselroth
+   * Neha Sharma
+   * Alex Sim
+   * Doug Strain
+   * Tanya Levshina
+
+---++ Status report
+&lt;!-- DESCRIPTION --&gt;
+Abhishek:
+&lt;pre class=&quot;screen&quot;&gt;
+    *  Bestman2 is now included in VDT Hadoop (for SL5, in Hadoop-testing/ITB repository).
+    * FNAL and UCSD are evaluating it; mainly the scalability of new Jetty-based container.
+    * As things move forward, plan is to include Bestman2 for SL4 and in Hadoop-stable/Production repository.
+    * URL -- http://vdt.cs.wisc.edu/components/hadoop.htm
+&lt;/pre&gt;
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* bestman2 documentation
+  - looking into jetty optimization
+* dCache endpoint switching for daily storage testing
+  - having some SFN path problem: receiving support from FNAL.
+ srm://gwdca04.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/data/fermilab/srmtester
+* Support for multiple files request for 3rd party transfer in srm-copy
+from dCache to bestman: some strange error that we have not encountered
+before, and we&#39;re trying to duplicate the problem in a debuggable
+environment.
+&lt;/pre&gt;
+Doug:
+&lt;pre class=&quot;screen&quot;&gt;
+- Pigeon tools: several bugs (mostly with dependencies) fixed.  Package created w/ instructions.
+- RSV: Created proof-of-concept for pigeon probe.  Many enhancements/fixes still needed
+- Documentation still pending.
+&lt;/pre&gt;
+Neha:
+&lt;pre class=&quot;screen&quot;&gt;
+- emailed igor info on postgres changes and confirmed settings on gridworks
+- checked in correct companion2chimera tool script
+- add info on billing db indexes in INSTALL document
+- support
+&lt;/pre&gt;
+Ted:
+&lt;pre class=&quot;screen&quot;&gt;
+Worked in more detail in demonstrating the use of iRODS iput and iget
+commands, writing drivers for fileCreate, fileWrite, fileOpen, fileRead
+functions to the extent that these two commands could be shown to run to
+completion in the OSG model of using iRODS. 
+Began whitepaper as a preliminary report on the use of iRODS as a 
+description of the project, plan for future work by OSG staff, and potential 
+requests to the iRODS developers.
+&lt;/pre&gt;
+
+Tanya:
+&lt;pre class=&quot;screen&quot;&gt;
+Meetings:
+             June 16-18, WLCG Jamboree on evolution of storage and data management
+             ATLAS and CMS T3 coordinators  
+             with Alain
+             with Ruth and Dan
+             with Doug
+
+Technical work:
+            ran certification tests on BeStMan/HDFS, started stress test with Haifeng, discussing tune up parameters for jetty
+            investigated problems with dcache stress test, gridftp door hang with &quot;too many files open&quot; error as soon as number of client &gt;150
+            discussed changes in new xrootd release (log location,etc)
+            contacted Andrei Masslenikov (chair of Hepix storage group) to organize meeting  with NOvA and MINOS
+            email exchanged with Pablo Saiz (Alice) - AliEN FC
+            wrote a summary of jamboree meeting
+            installed and ran pigeon tools, provided feedback to Doug
+&lt;/pre&gt;
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+vdt-dcache release
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Good news:
+   * several sites have installed dcache from VDT and successfully migrated from pnfs to chimera
+Bad news:
+   * there were several problems discovered during upgrade 
+
+Neha is working on fixing them and Chris advised us to rebuild gratia probes with new gratia libraries. Hopefully will be able to cut new release early next week.
+  
+---++ Second agenda Item
+&lt;!-- DESCRIPTION --&gt;
+Pigeon Tools
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Doug will be working on improving installation, configuration procedures as well as fixing  some bugs. He also working on making pigeon tools as rsv probe. He will start creating GOC tickets as soon as he is done with fixes.  Current results according pigeons tools: 10 out of 17 OSG sites that advertised storage availability for Engage failed to do so.
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+IRODS Evaluation 
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Ted is working on white paper (see report). Special meeting dedicated to  IRODS is planned for next Wednesday.  
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+!BeStMan2
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+!BeStMan2 is released to VDT, It is included in vdt-rpm bestman/hdfs distribution as well as in vdt-pacman test cache.
+Alex provided the following information about !BeStMan2:
+   1. Functionality didn’t change
+   1. It is using new web service container  jetty, The packaging is completely different. 
+   1. The configuration options are almost the same (http-public-port is not needed an more)
+   1. Decreased dependency of globus libararies
+   1. Main challenge is to understand how to tune up jetty and increase scalability. There is not a lot of documentation provided. 
+
+
+---++ Fifth agenda item
+&lt;!-- DESCRIPTION --&gt;
+WLCG jamboree
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Jamboree main topics:
+
+   1. global namespace
+   1. away from Monrac model -  p2p file replication (?)
+   1.  Analysis job and storage: problems and expectations
+   1. SRM protocol 
+   1. tape as pure archive
+   1. Network
+
+Summary is [[https://twiki.grid.iu.edu/twiki/pub/Storage/MeetingMinutes2010Jun23/WLCG_Jamboree_Summary.pdf][here]]
+
+---++ Sixth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Tickets
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
++++++++++
+New tickets
++++++++++
+
+Closed:
+
+8786 - OSG Storage: dCache:  fermi srmclient: adler32 fails with java.lang.NoClassDefFoundError
+
+8787 - OSG Storage: dCache: issues upgrading dCache at UERJ using vdt-dcache package
+
+Follow up in progress:
+
+8785 - OSG Storage: dCache: Issues upgrading dCache at UIUC using vdt-dcache package
+
+++++++++
+Old tickets
+++++++++
+
+Closed:
+
+8747 - OSG Storage: Bestman: Increasing log file size
+
+Follow up in progress:
+
+8602 - OSG Storage: dCache: Replication Failure
+
+8603 - OSG Storage: dCache: Increasing Log level on Gridftp doors/Specify Pinboard Dump directory
+
+No update:
+8630 - OSG Storage: dCache: &quot;[CONNECTION_ERROR]&quot; from FTS to our dCache/SRM headnode
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 23 Jun 2010
+

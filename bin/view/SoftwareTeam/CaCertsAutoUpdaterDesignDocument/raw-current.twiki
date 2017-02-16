@@ -1,0 +1,92 @@
+---+ Proposed Design for CA-Certs Auto-Updater package
+
+In OSG 3.x, the most natural way to manage CA certificates is via the yum command-line tool, which can both install and update packages. However, unlike other mechanisms for installing and updating CA certificates, there is currently no tool for updating the CA certificates (and only the CA certificates) automatically and periodically. This page describes a new, simple tool that site administrators can use to perform auto-updates of just the CA certificates.
+
+---++ Overview
+
+Essentially, the tool consists of a simple script that runs a “yum update” command on just the CA certificate packages. Nearly all of the remaining details are about controlling the execution of that script.
+
+---++ Description
+
+A Python script running from cron is suitable enough for this. Condor-Cron was considered, but it was decided that Condor-cron is not appealing to some site administrators, and that we can and will work around cron’s deficiencies within the script itself.
+
+The script will update CA certificate packages by running “yum update” on all of the individual =*-ca-certs= package names (e.g., =osg-ca-certs=, =igtf-ca-certs=). Any given machine will have only one of the (currently) four mutually exclusive CA certificate packages installed; for the three not-installed packages, the yum command will issue a warning. Because of this, we are safe from a potential error caused by the software trying to install one ca-certs package on top of a different ca-certs package.
+
+We maintain the ca-certs packages, so we have full control over the dependencies they bring in. Because of this, we insure that no other parts of the user’s system are touched by updating the ca-certs packages.
+
+In order to reduce load on the repositories caused by multiple sites&#39; systems all trying to update at the same time, the script will have a “random delay” option.
+If this option is set, the script will wait for a random amount of time before trying to update.
+=fetch-crl= also does this.
+
+=yum= comes with locking built-in; if an existing yum process is running, a new yum process will wait until the previous one is finished before starting.
+Because of this, we are not susceptible to problems caused by multiple copies of the script running simultaneously.
+
+The updater script will write the time of the last successful update into a file.
+Upon running, the script will compare the current time with the time of the last successful update.
+The script will have a &quot;minimum age&quot; option to have a minimum elapsed time before attempting to update.
+This allows us to avoid problems caused by (a) the system/crond being down when the update is scheduled, or (b) transient errors when the update is scheduled.
+We can also have the script raise an error if an update was unsuccessful and the last successful update was too far in the past (as determined by a &quot;maximum age&quot; option).
+=fetch-crl= also does the latter.
+
+The RPM will install the cron job into =/etc/cron.d=.
+There will be an init script in =/etc/rc.d/init.d= which, if started, creates a lock file under =/var/lock/subsys=; and if stopped, will remove the lock file.
+The cron job will check for the existence of the lock file and it will not start the script if the lock file is missing.
+This will make the updater look to the user as if it is a service, i.e. they start it via =service osg-ca-certs-updater start=, or enable it on boot with =chkconfig osg-ca-certs-updater on=.
+=fetch-crl= also does this.
+
+---++ Details
+
+---+++ Package Filesystem Layout
+
+   $ =/usr/sbin/osg-ca-certs-updater=: Main script
+   $ =/etc/cron.d/osg-ca-certs-updater=: Crontab entry for the script
+   $ =/etc/rc.d/init.d/osg-ca-certs-updater-cron=: Init script to enable/disable running the service from cron
+   $ =/var/lock/subsys/osg-ca-certs-updater-cron=: File which, if present, enables running the service from cron
+   $ =/var/lib/osg-ca-certs-updater-lastrun=: File which contains the time of the last successful run of =osg-ca-certs-updater=
+   $ =/usr/share/man/man8/osg-ca-certs-updater.8.gz=: Unix manual page
+   $ =/usr/share/doc/osg-ca-certs-updater-VERSION/README=: Brief description and notes
+
+---+++ Command-Line Arguments
+
+&lt;verbatim&gt;
+   osg-ca-certs-updater [options]
+
+Options:
+  -h, --help            show this help message and exit
+  -a HOURS, --minimum-age=HOURS
+                        The time which must have elapsed since the last
+                        successful run before attempting an update. If not
+                        supplied or 0, always update.
+  -x HOURS, --maximum-age=HOURS
+                        The time after the last successful run after which an
+                        unsuccessful run is considered an error. If not
+                        supplied or 0, all unsuccessful runs are considered
+                        errors.
+  -r MINUTES, --random-wait=MINUTES
+                        Delay for at most this many minutes before running an
+                        update, to reduce load spikes on update servers. If
+                        not supplied or 0, update immediately.
+  -v, --verbose         Display more information.
+  -q, --quiet           Only display errors.
+  -l PATH, --logfile=PATH
+                        Write messages to this file instead of console.
+  -s, --log-to-syslog   Write messages to syslog instead of console.
+  --syslog-address=SYSLOG_ADDRESS
+                        Address to use for syslog. Can be a file (e.g.
+                        /dev/log) or an address:port combination. Default is
+                        /dev/log.
+  --syslog-facility=SYSLOG_FACILITY
+                        The syslog facility to log to. Default is user.
+&lt;/verbatim&gt;
+
+---+++ Cron Entry
+
+Below is the proposed, *default* crontab entry to ship with the package. A site administrator can change this entry.
+
+&lt;verbatim&gt;
+# The test is reversed so the expression has an exit status of 0 if the lockfile does not exist.
+0 */6 * * * root [ ! -f /var/lock/subsys/osg-ca-certs-updater-cron ] || osg-ca-certs-updater -a 23 -x 72 -r 30 -q
+&lt;/verbatim&gt;
+
+&lt;!-- vim:ft=twiki
+--&gt;

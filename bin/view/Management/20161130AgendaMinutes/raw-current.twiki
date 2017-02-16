@@ -1,0 +1,188 @@
+---+ OSG Area Coordinators Meeting
+
+---++ Meeting Phone Coordinates
+
+%TABLE{tablewidth=&quot;550&quot; cellpadding=&quot;6&quot; dataalign=&quot;left&quot; tablerules=&quot;all&quot; tableborder=&quot;1&quot; databg=&quot;#FFFFFF, #FFFFFF&quot;}%
+| Wednesday,  2:00 PM Central Time |
+| Dial-In: (866) 740-1260; meeting ID 840-6470, followed by # |
+| !VoIP: http://www.readytalk.com/?ac=8406470  |
+
+
+
+---++ Attendees
+Kyle, Scott, Susan, Gabriele, Tim T., Tim C., Jenny, Ken, Brian, Matt, Shawn
+
+---++ Top of Meeting Business
+
+---+++ New Items for [[https://indico.fnal.gov/categoryDisplay.py?categId=86][OSG Calendar]], 
+---+++ Current plan for [[https://twiki.grid.iu.edu/bin/view/Management/NewsletterArticles][Newsletter Articles]]
+Please note that all newsletter articles are due around the middle of the month before the targeted newsletter.
+
+**We want to get an update on the area goals we had established at the staff retreat; these goals are available at https://osg-docdb.opensciencegrid.org:440/cgi-bin/ShowDocument?docid=1217
+
+Also please remember that the next OSG annual report for each area will explicitly state the goals and the results.
+
+
+
+---++ Tim Cartwright - Software
+
+Since 21 September 2016.
+
+---+++ Software updates
+November and December releases:
+   * Ended support for Globus GRAM
+   * Fixed a Globus !GridFTP hang
+   * Fixed a couple of small Gratia accounting issues
+   * Updated HTCondor-CE to report information for ATLAS AGIS
+   * Other small updates and enhancements to HTCondor-CE and BLAHP
+   * Improved EL&amp;nbsp;7 support by adding or improving =systemd= integration for several components
+   * Updated OSG PKI tools to use SHA2 for Certificate Signing Requests
+   * Disabled SSLv3 for several Globus tools
+   * Updated !EDG-MkGridMap, !GlideinWMS
+
+---+++ SELinux
+After further investigation, only HTCondor needs SELinux work. Tim Theisen is working on it.
+
+---+++ Support
+The Software team typically handles 3&amp;ndash;4 active site support issues every week, in additional to other random GOC tickets that come our way. Since the last report, we have helped:
+   * Caltech - Found CE jobs being throttled due to local legacy script that removed non-CMS jobs
+   * Cancer Computer - Up and running; fixed BLAHP bug
+   * CHTC - Fixing malformed accounting records
+   * Harvard - Fixed GIP/slurmdb issues that brought down their Slurm backend
+   * IIT - Up and running, adding new EL6/EL7 mixed clusters
+   * Notre Dame - Found and fixed empty-condor/HTCondor-CE incompatibility
+   * PDSF - Working on installing a CE on a netbooted image
+   * RAL - Discovered multiple condor_q-related bugs
+   * UFL - Fixed BLAHP/Torque incompatibility
+   * Utah - Up and running, adding new EL6/EL7 mixed clusters
+
+---+++ Concerns
+Just one: We are waiting on other groups for a number of WBS items (see below).
+
+---+++ Software Goals for Year 5
+
+&lt;!--
+   * Set SWNO = &lt;span style=&quot;color: white; background-color: #00D; padding-left: 3px; padding-right: 3px;&quot;&gt;abandoned&lt;/span&gt;
+   * Set SWIP = &lt;span style=&quot;color: white; background-color: #F90; padding-left: 3px; padding-right: 3px;&quot;&gt;in&amp;nbsp;progress&lt;/span&gt;
+   * Set SWDN = &lt;span style=&quot;color: white; background-color: #0A0; padding-left: 3px; padding-right: 3px;&quot;&gt;done&lt;/span&gt;
+   * Set SWNS = &lt;span style=&quot;color: white; background-color: #D00; padding-left: 3px; padding-right: 3px;&quot;&gt;not started&lt;/span&gt;
+--&gt;
+
+   1. Ongoing
+      a. Routine updates to software packages
+      a. Bug fixes to software and packaging
+      a. Routine documentation updates
+      a. Support installation and configuration of new OSG sites and HTCondor CE transitions
+      a. Support ongoing use of OSG Software
+   1. HTCondor-CE and Friends
+      a. Unify BLAHP code and switch to HTCondor build [Derek, 2016-11]&amp;nbsp;&amp;mdash; %SWIP% (waiting for HTCondor 8.7)
+      a. Help with monitoring improvements, especially that affect HTCondor-CE&amp;nbsp;&amp;mdash; %SWNS% (maybe all Investigations?)
+   1. Support SELinux
+      a. Define initial project plan [Tim&amp;nbsp;C., 2016-10]&amp;nbsp;&amp;mdash; %SWDN%
+      a. Identify all components in the OSG software stack that need SELinux rules&amp;nbsp;&amp;mdash; %SWDN%
+      a. Ship initial SELinux rules (from upstream or OSG) for all affected packages&amp;nbsp;&amp;mdash; %SWNO% (none needed)
+      a. Work with upstream developers to support SELinux fully in their own sources&amp;nbsp;&amp;mdash; %SWNS% (waiting on HTCondor)
+   1. Enhance alternatives to GUMS
+      a. Help identify, propose, and have accepted a technology direction for mapping&amp;nbsp;&amp;mdash; %SWIP% (waiting on Investigations)
+      a. Identify major problems with existing mapping code and fix&amp;nbsp;&amp;mdash; %SWNS%
+      a. Improve packaging and configuration defaults to reflect OSG recommendations&amp;nbsp;&amp;mdash; %SWNS%
+      a. Document authorization system updates and recommendations&amp;nbsp;&amp;mdash; %SWNS%
+      a. Migrate edg-mkgridmap sites to new OSG mapping software [Jan 2017]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Work with AGLT2 to migrate from GUMS and document process [Feb 2017]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Identify specific follow-on projects to allow more sites to migrate from GUMS [Mar 2017]&amp;nbsp;&amp;mdash; %SWNS%
+   1. Release OSG 3.4
+      a. Update to Hadoop Distributed File System (HDFS) 3.x with error-correcting codes; available first in osg-upcoming. [Mar 2017]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Drop Globus GRAM packages [Jun 2017]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Drop GIP and OSG Info Services [Jun 2017]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Drop !BeStMan [Jun 2017]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Release 3.4.0 [Jun 2017]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Remove GRAM code from OSG software sources (e.g., OSG Configure) [Sep 2017]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Add Singularity&amp;nbsp;&amp;mdash; %SWIP% (built, release to Upcoming Dec 2016)
+   1. Increase utility of Madison ITB
+      a. Add the capability to install and test HTCondor pre-releases in an OSG-like environment&amp;nbsp;&amp;mdash; %SWIP% (repurposing machines)
+      a. Create a tool to maintain steady job pressure on the Madison ITB site&amp;nbsp;&amp;mdash; %SWNS%
+      a. Add newer OSG technologies to ITB (as WBS tasks); e.g., !StashCache, HTCondor-CE-Bosco&amp;nbsp;&amp;mdash; %SWNS%
+   1. Documentation renovations
+      a. Complete initial version of new, user-centered Release3 home page [Brian L., Dec 2016]&amp;nbsp;&amp;mdash; %SWIP%
+      a. Update documents in priority order [ongoing]&amp;nbsp;&amp;mdash; %SWIP%
+      a. Document !GlideinWMS architecture for internal, then site administrator use [Tim&amp;nbsp;C.]&amp;nbsp;&amp;mdash; %SWIP%
+      a. Document HTCondor-CE and -Bosco architectures for internal, then site administrator use [Brian&amp;nbsp;L.]&amp;nbsp;&amp;mdash; %SWIP%
+      a. Work with Operations and Investigations to explore other documentation technologies [Tim&amp;nbsp;C.]&amp;nbsp;&amp;mdash; %SWIP%
+   1. Smaller Year 5 projects
+      a. Finish remaining EL 7 builds&amp;nbsp;&amp;mdash; %SWDN%
+      a. Complete another significant round of scalability testing for OSG and CMS [Edgar, Nov 2016]&amp;nbsp;&amp;mdash; %SWIP%
+      a. Support GRÅCC project as needed, esp. by changing OSG software to use it (e.g., osg-display and gratia-apel) [Derek/Carl]&amp;nbsp;&amp;mdash; %SWIP%
+      a. Automate some pieces of tracking OSG CEs&amp;nbsp;&amp;mdash; %SWNS% (probably drop)
+      a. Consolidate public software download repositories to a single GOC host&amp;nbsp;&amp;mdash; %SWIP% (waiting on Scott to set a date)
+      a. Help OSG move from BDII to CE-Collector&amp;nbsp;&amp;mdash; %SWIP%
+      a. Help incorporate a generic HTCondor pilot job executable into the HTCondor source code [drop?]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Migrate OSG software from Java 7 to Java 8&amp;nbsp;&amp;mdash; %SWIP%
+      a. Manage new stakeholder and internal projects that involve the OSG Software team [Tim&amp;nbsp;C.]&amp;nbsp;&amp;mdash; %SWIP%
+   1. Year 5 Internal Maintenance
+      a. Move Koji build host from batlab.org domain to chtc.wisc.edu domain&amp;nbsp;&amp;mdash; %SWDN%
+      a. Update Koji build system to latest version [Mat, Jan 2017]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Work on very simple effort reporting system [Tim&amp;nbsp;C.]&amp;nbsp;&amp;mdash; %SWIP%
+   1. Automated Testing
+      a. Expand coverage of components and test cases&amp;nbsp;&amp;mdash; %SWIP%
+      a. Improve expressiveness of test infrastructure&amp;nbsp;&amp;mdash; %SWIP%
+      a. Investigate automated testing across multiple hosts in CHTC&amp;nbsp;&amp;mdash; %SWNS%
+
+---+++ Metrics
+
+JIRA tickets for Software (orange) and Software+Release (grey):
+
+%ATTACHURL%/jira-software-2016-11-30.png
+
+
+
+---++ Tim Theisen - Release Management
+
+---+++ Goals
+   * Ongoing
+      * Test and Release Software
+      * Collect metrics on effectiveness
+      * Collect new testing recipes
+   * Madison ITB
+      * Current Goals
+         * Start Beta Testing HTCondor Releases in ITB environment
+         * Start Testing HTCondor in VMU environment with SELinux enforcing
+
+---+++ Recent Accomplishments
+
+   * *Releases*
+      * Since Septmeber 21st
+         * October Release
+            * [[Documentation.Release3.Release3317][3.3.17]]: HTCondor 8.4.9, HTCondor-CE 2.0.10, CVMFS 2.3.2, !XRootD 4.4.0, frontier-squid 2.7.STABLE9-27, gratia-probe 1.17.0, osg-control 1.1.0, VO Package v69, HTCondor 8.5.7 in upcoming
+         * Data Release
+            * [[Documentation.Release3.Release33172][CA Certificates]]: IGTF 1.78         
+         * November Release
+            * [[Documentation.Release3.Release3318][3.3.18]]: !GlideinWMS 3.2.16, edg-mkgridmap 4.0.4, osg-pki-tools 1.2.20, BLAHP 1.18.28, HTCondor-CE 2.0.11, gratia-probe 1.17.0-2.5
+
+   * Special Releases: None
+
+   * Defects found in testing
+      * 0 of 24 tickets in October
+      * 0 of 15 tickets in November
+
+   * Continue Beta Testing HTCondor Releases
+      * Found and fixed a defect in HTCondor pre-release testing for October release
+         * Change in HTCondor CE tickled long standing configuration file parsing defect
+
+---++ Minutes
+Key Initiatives
+   1. SELinux: HTCondor is the only component that requires work: assigned to Tim T. OSG will not ship SELinux-specific rules: depending on HTCondor for that, expected in Dec.
+   2. Continue support for sites at ~3 issues per week. Relevant examples: (1) Cancer Computing is now contributing cycles to OSG. (2) Clarified accounting of jobs for CHTC.
+   3. Started to plan for OSG v3.4 release for Jun 17. Adding support for Singularity containers in Dec 2016.
+   4. 3 releases since Sep 21; no special releases. Now testing HTCondor pre-releases on OSG ITB at Madison; found one defect for the HTCondor team.
+
+Top Issues / Concerns
+   1. Several work items are waiting on other groups for progress. Managing timelines accordingly.
+
+Key Accomplishments
+   1. Ended support for Globus GRAM. No negative comments.
+   2. Updated HTCondor-CE to report to ATLAS AGIS: last remaining stumbling block for BDII retirement.
+
+
+
+-- Main.GabrieleGarzoglio - 19 Oct 2016
+

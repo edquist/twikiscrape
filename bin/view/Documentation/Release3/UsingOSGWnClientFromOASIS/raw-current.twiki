@@ -1,0 +1,105 @@
+&lt;style type=&quot;text/css&quot;&gt;
+code em, pre em { color: red; font-weight: normal; font-style: normal; }
+&lt;/style&gt;
+
+---+ Configuring a Site to Use the Worker Node Client Software From OASIS
+%TOC%
+
+---++ About This Guide
+
+The _OSG Worker Node Client_ is a collection of software components that is expected to be added to every worker node that can run OSG jobs. It provides a common environment and a minimal set of common tools that all OSG jobs can expect to use. See the [[#ReferenceSection][reference section]] below for contents of the Worker Node Client.
+
+It is possible to install the Worker Node Client software in a variety of ways, depending on what works best for distributing and managing software at your site:
+
+   * Use the Worker Node Client software from OASIS (this guide) - useful when [[NavTechOASIS][OASIS]] is already mounted on your worker nodes
+   * [[InstallWNClient][Install using RPMs and Yum]] - useful when managing your worker nodes with a tool (e.g., Puppet, Chef) that can automate RPM installs
+   * [[InstallWNClientTarball][Install using a tarball]] - useful when installing onto a shared filesystem for distribution to worker nodes
+
+This document is intended to guide system administrators through the process of configuring a site to make the Worker Node Client software available from OASIS.
+
+---++ Before Starting
+
+As with all OSG software installations, there are some one-time (per host) steps to prepare in advance:
+
+   * Ensure the host has [[SupportedOperatingSystems][a supported operating system]]
+
+Also note that, once configured to use OASIS, each use of Worker Node Client software will cause that software and its associated files to be downloaded from a CVMFS server or your local cache thereof. This may result in extra network activity, especially if Worker Node Client tools are used heavily.
+
+---++ Configuring Your Site to Use the Worker Node Client From OASIS
+
+Below are the one-time steps that you must perform to configure your site to use the Worker Node Client software from OASIS.
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;p&gt;On every worker node, [[InstallCvmfs][install and configure OASIS]]&lt;/p&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Determine the OASIS path to the Worker Node Client software for your worker nodes:&lt;/p&gt;
+%TABLE{sort=&quot;off&quot;}%
+| *Worker Node OS* | *Use&amp;hellip;* |
+| EL&amp;nbsp;5 | =/cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client/3.2/current/el5-x86_64= |
+| EL&amp;nbsp;6 | =/cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client/3.2/current/el6-x86_64= |
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;On the CE, in the =/etc/osg/config.d/10-storage.ini= file, set the =grid_dir= configuration setting to the path from the previous step&lt;/p&gt;
+    &lt;p&gt;For more information, see the [[EnvironmentVariables][OSG environment variables reference page]] and the [[IniConfigurationOptions#Storage][CE configuration instructions]].&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Once you finish making changes to configuration files on your CE, validate, fix, and apply the configuration:&lt;/p&gt;
+    &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% osg-configure -v
+%UCL_PROMPT_ROOT% osg-configure -c&lt;/pre&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+---++ Validing the Worker Node Client
+
+To verify functionality of the worker node client, you will need to submit a test job against your CE and verify the job&#39;s output.
+
+   1. Submit a job that executes the =env= command (e.g. Run [[TroubleshootingHTCondorCE#condor_ce_trace][condor_ce_trace]] with the =-d= flag from your HTCondor CE)
+   1. Verify that the value of =OSG_GRID= is set to the directory of your WN Client installation
+
+---+++ Manually Using the Worker Node Client From OASIS
+
+If you must log onto a worker node and use the Worker Node Client software directly during your login session, use the steps below to set up access to the software:
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Determine the OASIS path to the Worker Node Client software for your worker nodes:&lt;/p&gt;
+%TABLE{sort=&quot;off&quot;}%
+| *Worker Node OS* | *Use&amp;hellip;* |
+| EL&amp;nbsp;5 | =/cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client/3.2/current/el5-x86_64/setup.sh= |
+| EL&amp;nbsp;6 | =/cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client/3.2/current/el6-x86_64/setup.sh= |
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Set up access to the Worker Node Client software for the duration of your login session:&lt;/p&gt;
+    &lt;pre class=&quot;screen&quot;&gt;%UCL_PROMPT% source &lt;em&gt;PATH&lt;/em&gt;&lt;/pre&gt;
+    &lt;p&gt;where &lt;code&gt;&lt;em&gt;PATH&lt;/em&gt;&lt;/code&gt; is from the previous step.
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+---++ Troubleshooting
+
+Some possible issues that may come up:
+
+   * A missing softlink to the CA certs directory. To check this, run:\
+      &lt;pre class=&quot;screen&#39;&gt;ls -l /cvmfs/oasis.opensciencegrid.org/mis/osg-wn-client/3.2/current/el5-x86_64/etc/grid-security/&lt;/pre&gt;\
+      &lt;p&gt;and check that =certificates= is linked to somewhere. The fix is to yum update the oasis-config package to version 4. A known workaround is to run:&lt;/p&gt;\
+      &lt;pre class=&quot;screen&quot;&gt;export X509_CERT_DIR=/cvmfs/oasis.opensciencegrid.org/mis/certificates&lt;/pre&gt;\
+      &lt;p&gt;before any commands.&lt;/p&gt;
+   * !OpenJDK 7 must be installed from RPMs before using software that needs Java (e.g., =srm-ls=) from OASIS. There are some instructions [[Documentation.Release3.InstallSoftwareWithOpenJDK7][here]]. If you are running under an EL5 distribution, java programs may produce an error like this:\
+   &lt;pre class=&#39;screen&#39;&gt;Exception in thread &quot;main&quot; java.lang.NoClassDefFoundError: org/globus/gsi/OpenSSLKey&lt;/pre&gt;
+   This shouldn&#39;t happen under EL6 distributions. The (unofficial) workaround is to run the following as root:\
+   &lt;pre class=&#39;screen&#39;&gt;%UCL_PROMPT_ROOT% mkdir /usr/share/java-1.7.0
+%UCL_PROMPT_ROOT% mkdir /usr/lib/java-1.7.0&lt;/pre&gt;\
+   This problem is also mentioned [[SoftwareTeam.Java6MigrationDetails][here]].
+
+---++ How to get Help?
+To get assistance please use this [[HelpProcedure][Help Procedure]].
+
+#ReferenceSection
+---++ Reference
+
+Please see the documentation on using [[Documentation/Release3.YumRpmBasics][yum and RPM]], [[Documentation/Release3.InstallBestPractices][the best practices]] for using yum to install software, and using [[Documentation/Release3.YumRepositories][yum repositories]].
+
+#WnContents
+---+++ Worker node contents
+%INCLUDE{&quot;Documentation/Release3/InstallWNClient&quot; section=&quot;WnContents&quot;}%
+

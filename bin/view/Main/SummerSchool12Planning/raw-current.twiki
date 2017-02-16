@@ -1,0 +1,99 @@
+---+ Planning document for Storage
+
+---++ Outline
+[[Education.UserSchool12Schedule][Timeline page]]
+
+
+---+++ Goals:
+   * Students should be able to identify five strategies for managing data for HTC jobs (local storage, job sandbox, prestaging, caching, remote I/O)
+   * Build from the ground up, local storage -&gt; job sandbox -&gt; prestaging -&gt; caching -&gt; remote I/O
+   * Students should be able to compare/contrast the approaches, and select an appropriate approach for a given problem.
+   * Run jobs using pre-staging and job sandboxes (local was run on Alain’s day)
+   * Run jobs using caching and job sandboxes
+   * Extra-credit: Remote I/O with Parrot (may overlap with Alain a bit?)
+
+---+++ 9:00 - 9:30 Interactive Lecture 1: Adding Data and Storage to the HTC picture
+   * Discuss archetypical cases of how data is used in HTC.
+   * Introduce the five strategies for managing data.
+
+&lt;!-- Find strong analogies to real-life.  Law-firm caching analogy: getting folders from the basement. --&gt;
+
+---+++ 9:30 - 10:15 Planning for distributed storage (interactive)
+   * Break up into pairs.  Students will be given a few example problems.  They will be asked to determine, for the different solution approaches to the problems, the choke points and I/O load incurred at the choke points.
+   * Goal is to show how application can be broken into different parts to optimize IO
+ 
+---+++ 10:30 - 11:00 Using remote storage systems (lecture)
+   * Discuss results of previous hands on
+   * Show how SRM commands, and how to use remote storage.
+   * Show how to use OSG as data &#39;cloud&#39;
+
+---+++ 11:00 - 12:00 Using (remote storage) (hands-on)
+   * Show how to use the data staging.  lcg-cp and whatnot.
+   * Using lcg management inside a job
+
+---+++ 1:00 - 1:45 Managing large distributed data (lecture)
+   * How does shared storage differ from shared computing
+   * Review previous solution using lcg commands
+   * Discuss caching with wget/curl
+   * Automating data movement
+
+---+++ 1:45 - 2:45 Caching and automating storage (hands-on)
+   * Copy input to web server
+   * Goal is to create a dagman that will stage some data, run computation, then stage data back.
+   * Using caching for data input
+   * Emphasize fault tolerance
+   * Extra Credit: Use parrot for data access
+
+---+++ 3:00 - 3:30 Dealing with real resources (lecture)
+   * Review fault tolerance techniques for storage
+   * Show how real resources can fail, from experience
+   * Show what can be wrong 
+   * Proper exit codes count for a lot
+
+---+++ 3:30 - 4:00 Understanding machine differences (hands-on)
+   * Show SL5 and SL6 difference
+   * Memory size differences
+
+---+++ 4:00 - 4:30 Basic troubleshooting (lecture)
+   * Show simple techniques to troubleshoot remote machines
+      * /bin/bash -x
+      * logging environment before starting computation
+
+---+++ 4:30 - 5:00 Troubleshooting practice (hands-on)
+   * ?
+
+
+---++ Brian&#39;s stuff
+
+9:50 - 10:10
+Discussion / Lecture 2
+- Discuss results of the first hands-on session
+ - Review solutions
+ - Review the &quot;cost of complexity&quot; for data management.
+ - Cover reliability of the solutions.
+- Discuss how shared storage resources differ from shared compute resources
+- Lecture on basic concepts of presaging data with SRM and GridFTP.
+
+10:10 - 10:30
+Break
+
+10:30 - 11:15
+Hands-on with SRM and GridFTP
+- Verify they can use SRM and GridFTP for the BestMan at the site.
+- Stage data to a single endpoint, submit jobs.
+- While jobs are running, stage data to multiple sites.
+- Submit jobs at the remaining sites.
+
+11:15 - 11:35
+- Wrap-up previous Hands-On.  What was simple?  What was difficult?  Mention Globus Online and experimental data movers.
+- Talk about caching with wget/curl.
+
+11:35 - 12:00
+Hands-on with caching
+- Upload database to a web server somewhere (to investigate: maybe to web-server built in to schedd?)
+- Re-run jobs from before, across multiple sites, with the cache
+- Extra credit 1: modify workflow to use parrot and caching.
+- Extra credit 2: Take another one of the summer school&#39;s applications to use storage more intelligently.
+
+
+-- Main.DerekWeitzel - 12 Jun 2012

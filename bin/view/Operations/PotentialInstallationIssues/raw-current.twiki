@@ -1,0 +1,96 @@
+
+%TOC%
+
+---++ Potential Installation Issues
+
+Going through the installation procedure for [[Documentation.OsgCEInstallGuide][OSG 0.2.1]]
+and noting things that may raise questions of may need correction.  Not an exhaustive list, just from my experience.
+
+---+++ !OsgMailingLists
+
+At end of Pre-installation checklist in the subsection &quot;Assistance during the installation&quot;
+there is a link to !OsgMailingLists that references !http://osg.ivdgl.org/twiki/bin/view/Trash/Trash/Trash/Trash/Integration/OsgMailingLists
+in the Trash/Trash/Integration TWiki.  This should probably refer to a more permanent location.
+
+---+++ Mail list page on production Grid Support
+
+Related to the above item.  Should this page
+[[http://osg.grid.iu.edu/OSG/index.php?option=com_content&amp;task=view&amp;id=40&amp;Itemid=60][http://osg.grid.iu.edu/OSG/index.php?option=com_content&amp;task=view&amp;id=40&amp;Itemid=60]]
+and this page
+[[Trash/Trash/Integration.OsgMailingLists][http://osg.ivdgl.org/twiki/bin/view/Trash/Trash/Trash/Trash/Integration/OsgMailingLists]]
+be reconciled.
+
+---+++  Request and Install Host Certificate
+
+Change the instructions for getting certificates to use the cert-scripts package.
+
+
+---+++ !GridThreeSchema
+
+Under &quot;Configuration and Setup of OSG CE Services&quot; subsection 
+&quot;Configuring the Grid3 Information Provider&quot; the second paragraph has a reference
+to [[Trash/Trash/Integration.GridThreeSchema][GridThreeSchema]] which is on the Trash/Trash/Integration TWiki.
+This should be moved from Trash/Trash/Integration to a permanent location.
+
+---+++ configure-osg.sh
+
+When running the configure-osg.sh script, it asks for a Policy URL but does not
+list it in the summary under &quot;Please review the information:&quot;.  It should also list the POLICY_URL.&lt;br/&gt;
+Also, for my installation, the hostname information in the generated grid3-info.conf
+file was not the &lt;FQDN&gt; but just the local host name without the lbl.gov. If it gets this from executing the hostname command, perhaps it should use &quot;hostname -f&quot;.  This is for the variables GRID3_JOB_CONTACT, GRID3_UTIL_CONTACT, and hostname.
+
+---+++Authorizing users
+
+Should move the instructions [[Trash/Trash/Integration.OsgCEAuthorization][OsgCEAuthorization]]
+off of Trash/Trash/Integration and on to Documentation.
+And then the links underneath, such as to !GumsAdmins, should also point to a production page
+and not an Trash/Trash/Integration page.
+
+---+++ configure-misci.sh
+
+Instructions say to use the --choose-user switch to specify the local account for running the MIS-CI cron jobs. Is this the same account as for the mis VO?&lt;br/&gt;
+Answer is that it can be the same account as for the mis VO. See [[http://www.ppdg.net/cgi-bin/roundup.cgi/osg-csc/issue9][CSC issue9]].
+
+I ran &lt;br/&gt;&lt;tt&gt;configure-misci.sh --choose-user someacct&lt;/tt&gt; &lt;br/&gt;and there were no complaints until
+is said &lt;br/&gt;&lt;tt&gt;ivdgl does not exist&lt;br/&gt;
+Please create the user ivdgl and ...&lt;br/&gt;
+Or use the option --choose_user ...&lt;/tt&gt;&lt;br/&gt;
+It would be nice if the script complains about invalid options, like using &#39;-&#39; rather than &#39;_&#39;.
+
+The VOs put into $VDT_LOCATION/MIS-CI/etc/misci/mis-ci-site-info.cfg is not the same as listed on the main instructions page [[Documentation.OsgCEInstallGuide][OSG 0.2.1]].  I guess they should be the same for the default installation.
+
+After running the &lt;tt&gt;run-mis-ci.sh&lt;/tt&gt; I do the &lt;br/&gt;
+&lt;tt&gt;globus-job-run &lt;hostname&gt;/jobmanager-mis /bin/sh &quot;siteinfo&quot; &lt;/tt&gt;&lt;br/&gt;
+and the output seems to look good, except the line&lt;br/&gt;
+&lt;tt&gt;hostname                 localhost&lt;/tt&gt;&lt;br/&gt;
+Should it really say localhost?
+
+---+++ Mysql
+
+Somewhere in the installation instructions there should be a reminder to set a good password on the administrative account for mysql.
+
+---+++ GUMS
+
+I copied the STAR group mappings prescription from
+[[http://osg.ivdgl.org/twiki/bin/view/Provisioning/GumsTemplate][http://osg.ivdgl.org/twiki/bin/view/Provisioning/GumsTemplate]]
+including the 
+&lt;verbatim&gt;
+&lt;!--- 9 STAR ---!&gt;
+&lt;/verbatim&gt;
+and got an error when doing the &quot;Update Members&quot; from the GUMS web interface 
+&lt;verbatim&gt; (!https://somehost:8443/gums) &lt;/verbatim&gt;.  The error in the admin log file 
+($VDT_LOCATION/tomcat/v5/logs/gums-service-admin.log)
+said&lt;br/&gt;
+&lt;tt&gt;
+01 Jul 2005 15:05:25,668 [FATAL]: The configuration wasn&#39;t read properly. GUMS is not 
+operational: The string &quot;--&quot; is not permitted within comments.
+&lt;/tt&gt;&lt;br/&gt;
+
+I needed to change the !sslCertfile and !sslKey values from&lt;br/&gt;
+&lt;tt&gt;/etc/grid-security/host{cert|key}.pem&lt;/tt&gt; to &lt;tt&gt;/etc/grid-security/http/http{cert|key}.pem&lt;/tt&gt;
+
+---+++ Stopped at
+
+GUMS running and working with STAR VO.
+
+-- Main.DougOlson - 29 Jun 2005

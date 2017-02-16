@@ -1,0 +1,264 @@
+---+ Code preparation
+
+%TOC{title=&quot;Outline:&quot;}% 
+
+---++ Use framework template script to prepare EDAnalyzer skeleton
+From your =CMSSW_1_2_0/src/Demo= directory:
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+mkedanlzr -track MyTrackAnalyzer
+&lt;/verbatim&gt;
+
+---++ Include root libraries into *BuildFile* _(CMS makefile)_
+The !BuildFile is in =Demo/MyTrackAnalyzer/=.  Edit it as follows, adding the text in red as shown. Do not overwrite anything.
+&lt;verbatim style=&quot;background-color: lightgrey;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+&lt;use name=FWCore/Framework&gt;
+&lt;use name=Foundation/PluginManager&gt;
+&lt;use name=FWCore/ParameterSet&gt;
+&lt;flags SEAL_PLUGIN_NAME=&quot;DemoMyTrackAnalyzer&quot;&gt;
+&lt;use name=DataFormats/TrackReco&gt;
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: red;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+&lt;use name=root&gt;
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: lightgrey;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+&lt;export&gt;
+   &lt;lib name=DemoMyTrackAnalyzer&gt;
+   &lt;use name=FWCore/Framework&gt;
+   &lt;use name=Foundation/PluginManager&gt;
+   &lt;use name=FWCore/ParameterSet&gt;
+   &lt;use name=DataFormats/TrackReco&gt;
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: red;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+   &lt;use name=root&gt;
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: lightgrey;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+&lt;/export&gt;
+&lt;/verbatim&gt;
+
+---++ Add analysis code and output ROOT file for histograms to skeleton:
+Edit the =Demo/MyTrackAnalyzer/src/MyTrackAnalyzer.cc= file.
+&lt;verbatim style=&quot;background-color: lightgrey;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+// -*- C++ -*-
+//
+// Package:    MyTrackAnalyzer
+// Class:      MyTrackAnalyzer
+// 
+/**\class MyTrackAnalyzer MyTrackAnalyzer.cc Demo/MyTrackAnalyzer/src/MyTrackAnalyzer.cc
+
+ Description: &lt;one line class summary&gt;
+
+ Implementation:
+     &lt;Notes on implementation&gt;
+*/
+//
+// Original Author:  Oliver Gutsche
+//         Created:  Mon Jan 15 10:28:42 CST 2007
+// $Id: MidWestGridWorkshop2007Code.txt,v 1.1 2007/03/24 22:32:17 OliverGutsche Exp $
+//
+//
+
+
+// system include files
+#include &lt;memory&gt;
+
+// user include files
+#include &quot;FWCore/Framework/interface/Frameworkfwd.h&quot;
+#include &quot;FWCore/Framework/interface/EDAnalyzer.h&quot;
+
+#include &quot;FWCore/Framework/interface/Event.h&quot;
+#include &quot;FWCore/Framework/interface/MakerMacros.h&quot;
+
+#include &quot;FWCore/ParameterSet/interface/ParameterSet.h&quot;
+#include &quot;FWCore/ParameterSet/interface/InputTag.h&quot;
+#include &quot;DataFormats/TrackReco/interface/Track.h&quot;
+
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: red;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+#include &quot;TH1D.h&quot;
+#include &quot;TFile.h&quot;
+#include &quot;TLorentzVector.h&quot;
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: lightgrey;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+
+//
+// class decleration
+//
+
+class MyTrackAnalyzer : public edm::EDAnalyzer {
+   public:
+      explicit MyTrackAnalyzer(const edm::ParameterSet&amp;);
+      ~MyTrackAnalyzer();
+
+   private:
+      virtual void beginJob(const edm::EventSetup&amp;) ;
+      virtual void analyze(const edm::Event&amp;, const edm::EventSetup&amp;);
+      virtual void endJob() ;
+
+      // ----------member data ---------------------------
+      edm::InputTag trackTags_; //used to select what tracks to read from configuration file
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: red;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+      TH1D *pt_;
+      TH1D *mmumu_;
+      TH1D *mzz_;
+      TFile *file_;
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: lightgrey;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+};
+
+//
+// constants, enums and typedefs
+//
+
+//
+// static data member definitions
+//
+
+//
+// constructors and destructor
+//
+MyTrackAnalyzer::MyTrackAnalyzer(const edm::ParameterSet&amp; iConfig)
+:
+ trackTags_(iConfig.getUntrackedParameter&lt;edm::InputTag&gt;(&quot;tracks&quot;))
+{
+   //now do what ever initialization is needed
+&lt;/verbatim&gt;
+(Note the =histograms.root= file definition below; you&#39;ll use this in your !CRAB config file.)
+&lt;verbatim style=&quot;background-color: red;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+   file_ = new TFile(&quot;histograms.root&quot;,&quot;RECREATE&quot;);
+
+   pt_ = new TH1D(&quot;pt&quot;,&quot;Track p_{T}&quot;,250,0.,250.);
+   pt_-&gt;Sumw2();
+   pt_-&gt;SetXTitle(&quot;p_{T} [GeV]&quot;);
+   pt_-&gt;SetYTitle(&quot;Events&quot;);
+
+  mmumu_ = new TH1D(&quot;mmumu&quot;,&quot;m_{#mu#mu}&quot;,250,0.,250.);
+  mmumu_-&gt;Sumw2();
+  mmumu_-&gt;SetXTitle(&quot;m_{#mu#mu} [GeV]&quot;);
+  mmumu_-&gt;SetYTitle(&quot;Events&quot;);
+
+  mzz_ = new TH1D(&quot;mzz&quot;,&quot;m_{ZZ}&quot;,250,0.,250.);
+  mzz_-&gt;Sumw2();
+  mzz_-&gt;SetXTitle(&quot;m_{ZZ} [GeV]&quot;);
+  mzz_-&gt;SetYTitle(&quot;Events&quot;);
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: lightgrey;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+
+}
+
+
+MyTrackAnalyzer::~MyTrackAnalyzer()
+{
+ 
+   // do anything here that needs to be done at desctruction time
+   // (e.g. close files, deallocate resources etc.)
+
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: red;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+  file_-&gt;Write();
+  file_-&gt;Close();
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: lightgrey;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+
+}
+
+
+//
+// member functions
+//
+
+// ------------ method called to for each event  ------------
+void
+MyTrackAnalyzer::analyze(const edm::Event&amp; iEvent, const edm::EventSetup&amp; iSetup)
+{
+   using namespace edm;
+   using reco::TrackCollection;
+  
+   Handle&lt;TrackCollection&gt; tracks;
+   iEvent.getByLabel(trackTags_,tracks);
+   for(TrackCollection::const_iterator itTrack = tracks-&gt;begin();
+       itTrack != tracks-&gt;end();
+       ++itTrack) {
+&lt;/verbatim&gt;
+(You may have a line in the original file to overwrite here: int charge ...)
+&lt;verbatim style=&quot;background-color: red;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+     pt_-&gt;Fill(itTrack-&gt;pt());
+     std::vector&lt;TLorentzVector&gt; mumus;
+     TLorentzVector track1(itTrack-&gt;px(),itTrack-&gt;py(),itTrack-&gt;pz(),std::sqrt(itTrack-&gt;p()*itTrack-&gt;p()+0.10566*0.10566));
+     for(TrackCollection::const_iterator itTrack2 = tracks-&gt;begin();
+         itTrack2 != tracks-&gt;end();
+         ++itTrack2) {
+       if ( itTrack-&gt;charge() != itTrack2-&gt;charge() ) {
+         TLorentzVector track2(itTrack2-&gt;px(),itTrack2-&gt;py(),itTrack2-&gt;pz(),std::sqrt(itTrack2-&gt;p()*itTrack2-&gt;p()+0.10566*0.10566));
+         TLorentzVector mumu = track1 + track2;
+
+         mmumu_-&gt;Fill(mumu.M());
+         mumus.push_back(mumu);
+
+       }
+     }
+
+     if ( mumus.size() &gt; 1 ) {
+       for ( std::vector&lt;TLorentzVector&gt;::iterator mumu1 = mumus.begin();
+             mumu1 != mumus.end();
+             ++mumu1) {
+         if ( mumu1-&gt;M() &gt; 80. &amp;&amp; mumu1-&gt;M() &lt; 100.0 ) {
+           for ( std::vector&lt;TLorentzVector&gt;::iterator mumu2 = mumu1+1;
+                 mumu2 != mumus.end();
+                 ++mumu2) {
+             if ( mumu2-&gt;M() &gt; 80. &amp;&amp; mumu2-&gt;M() &lt; 100.0 ) {
+               TLorentzVector zz = *mumu1 + *mumu2;
+               mzz_-&gt;Fill(zz.M());
+             }
+           }
+         }
+       }
+     }
+&lt;/verbatim&gt;
+&lt;verbatim style=&quot;background-color: lightgrey;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+  }
+}
+
+
+// ------------ method called once each job just before starting event loop  ------------
+void 
+MyTrackAnalyzer::beginJob(const edm::EventSetup&amp;)
+{
+}
+
+// ------------ method called once each job just after ending the event loop  ------------
+void 
+MyTrackAnalyzer::endJob() {
+}
+
+//define this as a plug-in
+DEFINE_FWK_MODULE(MyTrackAnalyzer);
+&lt;/verbatim&gt;
+
+---++ Prepare parameter-set to run EDAnalyzer:
+A parameter set in CMSSW is a configuration file.  In the =Demo/MyTrackAnalyzer/test= directory, create a file =demotest.cfg=, and give it the following contents:
+&lt;verbatim style=&quot;background-color: lightgrey;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+process A = {
+
+  source = PoolSource {
+        untracked vstring fileNames = {
+                &quot;file:test.root&quot;
+        }
+        untracked int32 maxEvents = -1
+        untracked uint32 skipEvents = 0
+  }
+
+  module higgs = MyTrackAnalyzer {
+        untracked InputTag tracks = ctfWithMaterialTracks
+  }
+
+  path p = {
+        higgs
+  }
+
+}
+&lt;/verbatim&gt;
+
+
+
+-- Main.AnneHeavey - 24 May 2007 (from Oliver Gutsche)

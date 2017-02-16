@@ -1,0 +1,129 @@
+---+ Basic Submit File Generator
+&lt;sticky&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;title&gt;submit file generator&lt;/title&gt;
+&lt;style&gt;
+.required {
+	color:red;
+        font-weight: bold;
+}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;p&gt;NOTE: At a minimum, supply the values indicated in &lt;span class=&quot;required&quot;&gt;red&lt;/span&gt;&lt;/p&gt;
+&lt;p class=&quot;required&quot;&gt;Choose a universe: vanilla, grid, standard or parallel
+&lt;input type=&quot;text&quot; id=&quot;tuniverse&quot; size=8 maxlength=&quot;8&quot;&gt;&lt;/p&gt;
+[[#universes][Help me choose!]]
+&lt;p id=enterURL&gt;if you want to use one specific grid resource, enter the url here:
+&lt;input type=&quot;text&quot; id=&quot;resURL&quot; size=50 maxlength=&quot;50&quot;&gt;&lt;/p&gt;
+&lt;p class=&quot;required&quot;&gt;What&#39;s the name of your executable file? (include file extension) &lt;input type=&quot;text&quot; id=&quot;executable&quot; size=50 maxlength=&quot;50&quot;&gt;&lt;/p&gt;
+&lt;p&gt;If you&#39;re going to pass any arguments to your executable, enter arguments:
+&lt;input type=&quot;text&quot; id=&quot;arguments&quot; size=50 maxlength=&quot;50&quot;&gt;&lt;/p&gt;
+&lt;p class=&quot;required&quot;&gt;Choose a name (and directory, if desired) for your logfile or logfiles:
+&lt;input type=&quot;text&quot; id=&quot;logfile&quot; size=50 maxlength=&quot;50&quot;&gt;&lt;/p&gt;
+&lt;p class=&quot;required&quot;&gt;Choose a name (and directory, if desired) for your output file or files:
+&lt;input type=&quot;text&quot; id=&quot;outfile&quot; size=50 maxlength=&quot;50&quot;&gt;&lt;/p&gt;
+&lt;p class=&quot;required&quot;&gt;Choose a name (and directory if desired) for your error file or error files:
+&lt;input type=&quot;text&quot; id=&quot;errfile&quot; size=50 maxlength=&quot;50&quot;&gt;&lt;/p&gt;
+[[#how_to_separate_multiple_output][How do I separate multiple log, output and error files?]]
+&lt;p&gt;Specify any other input files, if applicable:
+&lt;input type=&quot;text&quot; id=&quot;iptfiles&quot; size=50 maxlength=&quot;50&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Specify any other output files, if applicable:
+&lt;input type=&quot;text&quot; id=&quot;optfiles&quot; size=50 maxlength=&quot;50&quot;&gt;  &lt;/p&gt;  
+[[#when_to_specify_output_files][When do I need to use this?]]
+&lt;p&gt;Maximum anticipated memory usage (specify KB, MB, GB or TB):
+&lt;input type=&quot;text&quot; id=&quot;maxmem&quot; size=7 maxlength=&quot;7&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Maximum anticipated disk usage (specify KB, MB, GB or TB):
+&lt;input type=&quot;text&quot; id=&quot;maxdisk&quot; size=7 maxlength=&quot;7&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Number of CPUs you&#39;re requesting (only necessary for parallel jobs):
+&lt;input type=&quot;text&quot; id=&quot;maxcpu&quot; size=2 maxlength=&quot;2&quot;&gt;&lt;/p&gt;
+[[#how_to_determine_resource_needs][how do I determine what I will need?]]
+&lt;p&gt;How many times would you like to run this job, if more than one?
+&lt;input type=&quot;text&quot; id=&quot;runNum&quot; size=5 maxlength=&quot;5&quot;&gt;&lt;/p&gt;
+&lt;button onclick=&quot;createSubFile()&quot;&gt;Create this submit file&lt;/button&gt;
+---++After clicking the button, the submit file appears below
+&lt;p id=subUniverse&gt;&lt;/p&gt;
+&lt;p id=subResource&gt;&lt;/p&gt;
+&lt;p id=subExecutable&gt;&lt;/p&gt;
+&lt;p id=subArguments&gt;&lt;/p&gt;
+&lt;p id=subLogs&gt;&lt;/p&gt;
+&lt;p id=subOuts&gt;&lt;/p&gt;
+&lt;p id=subErrs&gt;&lt;/p&gt;
+&lt;p id=subIpts&gt;&lt;/p&gt;
+&lt;p id=subOpts&gt;&lt;/p&gt;
+&lt;p id=subMaxmem&gt;&lt;/p&gt;
+&lt;p id=subMaxdisk&gt;&lt;/p&gt;
+&lt;p id=subMaxcpu&gt;&lt;/p&gt;
+&lt;p id=subRuns&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;script&gt;
+function createSubFile(){
+        var univ = document.getElementById(&quot;tuniverse&quot;).value;
+        var url = document.getElementById(&quot;resURL&quot;).value;
+	var exe = document.getElementById(&quot;executable&quot;).value;
+	var args = document.getElementById(&quot;arguments&quot;).value;
+	var logs = document.getElementById(&quot;logfile&quot;).value;
+	var outs = document.getElementById(&quot;outfile&quot;).value;
+	var errs = document.getElementById(&quot;errfile&quot;).value;
+	var ipts = document.getElementById(&quot;iptfiles&quot;).value;
+	var opts = document.getElementById(&quot;optfiles&quot;).value;
+	var mem = document.getElementById(&quot;maxmem&quot;).value;
+	var cpu = document.getElementById(&quot;maxcpu&quot;).value;
+	var disk = document.getElementById(&quot;maxdisk&quot;).value;
+	var runs = document.getElementById(&quot;runNum&quot;).value;
+        document.getElementById(&quot;subUniverse&quot;).innerHTML = &#39;universe = &#39; + univ;
+	document.getElementById(&quot;subExecutable&quot;).innerHTML = &#39;executable = &#39; + exe;
+	document.getElementById(&quot;subLogs&quot;).innerHTML = &#39;log = &#39; + logs;
+	document.getElementById(&quot;subOuts&quot;).innerHTML = &#39;output = &#39; + outs;
+	document.getElementById(&quot;subErrs&quot;).innerHTML = &#39;error = &#39; + errs;
+	document.getElementById(&quot;subRuns&quot;).innerHTML = &#39;Queue &#39; + runs;
+if (url.length&gt;=1){
+ document.getElementById(&quot;subResource&quot;).innerHTML = &#39;grid_resource = &#39; + url;
+};
+if (args.length&gt;=1){
+ document.getElementById(&quot;subArguments&quot;).innerHTML = &#39;arguments = &#39; + args;
+};
+if (ipts.length&gt;=1){
+ document.getElementById(&quot;subIpts&quot;).innerHTML = &#39;transfer_input_files = &#39; + ipts;
+};
+if (opts.length&gt;=1){
+ document.getElementById(&quot;subOpts&quot;).innerHTML = &#39;transfer_output_files = &#39; + opts;
+};
+if (mem.length&gt;=1){
+ document.getElementById(&quot;subMaxmem&quot;).innerHTML = &#39;request_memory = &#39; + mem;
+};
+if (cpu.length&gt;=1){
+ document.getElementById(&quot;subMaxcpu&quot;).innerHTML = &#39;request_cpus = &#39; + cpu;
+};
+if (disk.length&gt;=1){
+ document.getElementById(&quot;subMaxdisk&quot;).innerHTML = &#39;request_disk = &#39; + disk;
+};
+}
+&lt;/script&gt;
+&lt;/html&gt;
+
+---++ universes
+   * vanilla: the default universe. Supports Glideins.
+   * grid: supports remote options, like choosing a specific resource
+   * standard: supports checkpointing
+   * parallel: for parallel jobs
+---++ how to separate multiple output, log and error files
+Use $(Process) to separate output files that appear over multiple runs.
+For example, if you specify that your logfile will be my-job-$(Process).log, your output file will be my-job-$(Process).out and your error file will be my-job-$(Process).err:
+   * the first run will produce my-job-0.log, my-job-0.out and my-job-0.err
+   * the second run will produce my-job-1.log, my-job-1.out and my-job-1.err
+   * the third run will produce my-job-2.log, my-job-2.out and my-job-2.err and so on.
+You can also use $(Process) to place each run in a separate directory.
+For example, if you specify that your logfile will be run-$(Process)/my.log, your logfile will be run-$(Process)/my.out and your error file will be run-$(Process)/my.err:
+   * the first run will produce the run-0 directory containing my.log, my.out and my.err
+   * the second run will produce the run-1 directory containing my.log, my.out and my.err
+   * the third run will produce the run-2 directory containing my.log, my.out and my.err and so on.
+---++ when to specify output files
+   * when they are not in the top level directory (items in subdirectories are not retrieved by default)
+   * when you only want to transfer *some* output files
+---++ how to determine resource needs
+   * if you&#39;ve run this job before, your logs should list your disk, memory and cpu usage
+   * if you are able to run the program locally somewhere, use [[http://linux.die.net/man/1/top][top]] or [[http://linux.die.net/man/1/ps][ps]] to determine memory usage and use ls to see the disk space used by the input/output files, the executable and the temporary files
+

@@ -1,0 +1,115 @@
+-- Main.DanFraser - 09 Jul 2009
+---++ Action/Significant Items
+   * Data transfer records in Gratia are caught up with CMS, but still behind for BNL by ~25 days. This has been the case for several weeks. The bottleneck appears to be at BNL.
+      * Xin planning to apply the patch sent by Brian. This &quot;should&quot; fix the problem by bundling the transfers into bundles of 20.
+   * Should we also explore the idea of reducing the number of Gratia data transfer records to minimize problems in the future?
+      * Burt &amp; Xin thought this seems reasonable, just need to make sure everyone gets involved in the requirements (especially Frank).
+   * There are a variety of issues that have arisen from STEP09. Need to explore/fine-tune mechanisms to ensure that Burt and Xin are kept in the loop.
+      * Dan sent the WLCG summary to the Facility list. Burt, Xin, to look at this and help us identify the issues, and start working through them.
+   * Memory leak fixed in Globus for Atlas.
+      * This is now running in production and appears to be fixed and reboots no longer needed on a several times/wk frequency.
+   * OSG needs the capability to internally use different site names and then map them to the appropriate WLCG convention. (Rob to identify what is needed to make this happen).
+
+---++ Attendees:
+   * Xin, Armen, Mats, Brian, Suchandra, Burt, Marco, Rob Q., Mine, Chander, Miron, Dan
+
+
+---++ Executive Director Input
+  I still do not see any data movement/access information from ATLAS. We know there are problems in this area. How do we help Xin find and feed us this information? From the Step09 summary from Ian Bird (July21 WLCG MB) I have the following q&#39;s for production and the US ATLAS/US CMS participants:
+   1. Real time monitoring of throughput and transfers per experiment tools for site and grid - should OSG be contributing here? 
+   1. Tier-2s: shared sw areas affecting CPU efficiencies - does this happen on OSG? Does it affect our recommendations for $OSG_APP?
+   1. What are our plans for V5 BDII deployment if at all? 
+   1. Monitoring/dashboards - should OSG operations/support be looking at the WLCG Site dashboards? 
+
+
+---++ CMS (Burt)
+   * Computing: 155 khour/day, 96% success.  CPU/wallclock at 67% (excluding FNAL skims: 70%).  Skim/re-reconstruction work has slowed down temporarily as we transition.  We will be processing CRAFT08 and CRAFT09 data shortly at the Tier 1 (these are cosmic ray data at full field).
+   * Storage: We are now caught up with gratia data, looks like.  I don&#39;t yet understand the numbers however.
+   * OSG: We have two CEs at OSG 1.2 (gpn-husker and cit-gatekeeper2).  Most others are at 1.0.0.
+
+---++ Atlas (Armen &amp; Xin)
+
+   * job statistics for last week. 
+      * Last week USATLAS production was a little bit low, because there were not enough defined jobs to run. It&#39;s back to normal this week. 
+      * Gratia report: USATLAS ran 802K jobs, with CPU/Walltime ratio of 87%. 
+      * PanDA world-wide production report (real jobs):
+         * completed successfully 325K managed MC production, validation jobs
+         * average  46K jobs per day
+         * failed   79K  jobs
+         * average efficiency: 81% for jobs and 95% for walltime
+
+   * Now we are preparing for the reprocessing of summer 2008 data. The reprocessing will start from August 10th, if everything goes as planed. 
+
+   * Site issue
+      * BNL completed the OS upgrade to SL5 on all farm nodes. Phased out all storage spaces from all worker nodes. 
+      * BNL tried to consolidate the OSG resource name under the new resource group name, but failed. Need better understanding of the OSG model and how different services (BDII, RSV, VO test, and accounting) handle them. 
+
+   * Condor-G 
+      * memory leak problem in globus/gahp_server is fixed. 
+      * stresstest starts this week
+
+
+---++ LIGO (Britta)
+
+   *  Britta unable to attend Production call 08/04
+
+   * 08/03/09 Can&#39;t pull Gratia report on http://gratia-osg.fnal.gov:8880/gratia-reporting/
+
+   * Gratia reports
+
+      * This week&#39;s total usage:4 users utilized 17 sites ;
+      * 10085 jobs total (9421 / 664 = 93.4% success);
+      * 51533.8 wall clock hours total (48753.9 / 2779.9 = 94.6% success);
+
+      * Last week&#39;s total usage: 7 users utilized 22 sites;
+      * 10800 jobs total (10209 / 591 = 94.5% success);
+      * 50481.1 wall clock hours total (48418.8 / 2062.4 = 95.9% success);
+
+
+   * E@OSG reports
+      * Recent Average Credit (RAC): 226,458.93660,  Last Week:232,163.51807;
+      * E@H rank based on RAC: 7 (+0)
+      * E@H rank based on accumulated Credits: 21 (+0)
+
+   * Details
+      * Scaled down job submission on AGLT2, Nebraska after requests from Bob, Brian 
+      * No problems to report      
+
+---++ Integration (Suchandra)
+   * Focusing on documentation issues
+      * Need to educate users about new cache
+      * Improve documentation to clarify OSG 1.0 vs OSG 1.2 differences
+      * Will get feedback from site admins meeting
+   * No major bugs found, one or two issues discovered, will be addressed in update to vdt and osg
+   * Will have an itb post-mortem discussion on thursday and will use notes based on that to improve next cycle
+
+---++ Site Coordination (Marco)
+   * Site Administrators workshop August 6,7:
+      * Indico (registration, agenda): http://indico.fnal.gov/conferenceDisplay.py?confId=2497
+      * Material: https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationSiteAdminsWorkshopTutorialsAug09
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.2
+      * 3 OSG 1.2: CIT_CMS_T2B, UCHC_CBG, Purdue?
+      * 31 OSG 1.0.X resources (22 are 1.0.4)                                                                                                                                                                  
+      * 31 OSG 1.0.0
+      * 3 OSG 0.8.0 
+
+
+---++ Metrics (Brian)
+   * Trying to get feedback from ATLAS on the Gratia transfer data (will be physically attending one of their meetings in a few weeks).
+   * Need help from the GOC to label VOs by science field in OIM (ticket 7266).
+   * Work is progressing on installed capacity tests in ITB; done by Karthik on the metrics side and Arvind on the GOC side.  
+
+---++ Grid Operations Center (Rob Q.)
+
+---+++ Operations Last Week 
+   * BDII Review of Outage from July 8th [[BDIIRootCauseAnalysis][Link]]
+   * *OSG 1.2.0*: Released July 27th - pyOpenSSL RSV issue reported.
+
+---+++ Operations This Week
+   * New VO Package - 
+   * August 6th and 7th - [[http://indico.fnal.gov/conferenceDisplay.py?confId=2497][Site Administrators Meeting in Indianapolis]] -- *Please register if you have not already done so!*
+
+---+++ Future Events
+   * VORS Turn Down Scheduled for August 24th - This was extended while we contact the sites not reporting RSV to the GOC. 
+   * September Machine Room Move in Bloomington September 19 2009 - All GOC Services in Bloomington are expected to be down. IUPUI will still be handling BDII traffic. GOC will attempt to install as many other services on an Indianapolis based server/VM as possible, especially other critical ones like MyOSG.

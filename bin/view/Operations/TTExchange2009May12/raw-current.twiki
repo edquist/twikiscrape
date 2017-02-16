@@ -1,0 +1,185 @@
+---+ !!Document Classifications
+
+
+%TOC%
+
+---+ Purpose of this document
+
+This document is intended to document and convey the information culled from phone conversations with Steve Timm and Elizabeth on May 12 2009.
+In searching for problems with the ticket exchange, Elizabeth found the following:
+
+---++ tickets where remedy was assigned, but no remedy response was seen
+
+In each of these tickets, the destination/originating ticket remained blank. All ticket content came from the GOC, one of the CCs or the customer/contact. Nothing came directly from remedy. This was only a survey of the tickets that were active/open at the time of investigation.
+
+   * https://ticket.grid.iu.edu/goc/viewer?id=6806
+   * https://ticket.grid.iu.edu/goc/viewer?id=6759
+   * https://ticket.grid.iu.edu/goc/viewer?id=6823
+   * https://ticket.grid.iu.edu/goc/viewer?id=6765
+   * https://ticket.grid.iu.edu/goc/viewer?id=6847
+   * https://ticket.grid.iu.edu/goc/viewer?id=6842
+   * https://ticket.grid.iu.edu/goc/viewer?id=6841
+   * https://ticket.grid.iu.edu/goc/viewer?id=6840
+   * https://ticket.grid.iu.edu/goc/viewer?id=6837
+   * https://ticket.grid.iu.edu/goc/viewer?id=6834
+   * https://ticket.grid.iu.edu/goc/viewer?id=6830
+   * https://ticket.grid.iu.edu/goc/viewer?id=6691
+   * https://ticket.grid.iu.edu/goc/viewer?id=6636
+
+---++ &quot;blank&quot; tickets from remedy
+
+   * https://ticket.grid.iu.edu/goc/viewer?id=6661
+   * https://ticket.grid.iu.edu/goc/viewer?id=6843
+   * https://ticket.grid.iu.edu/goc/viewer?id=6839
+   * https://ticket.grid.iu.edu/goc/viewer?id=6833
+   * https://ticket.grid.iu.edu/goc/viewer?id=6835
+   * https://ticket.grid.iu.edu/goc/viewer?id=6831
+   * https://ticket.grid.iu.edu/goc/viewer?id=6828
+
+These tickets come into our system and creates some ticket Fermi/Remedy - INC00000000#### - ISSUE=FOO PROJ=71 which is to say that the subject we get from remedy looks more like this &quot;Fermi/Remedy - INC000000001526 -&quot; and that footprints ticket FOO is totally empty, with exception of the message: A New Fermi/Remedy ticket has been created. Fermilab/Remedy HelpDesk ticket was created at m/dd/yyyy hh:mm:ss AM/PM for User bridge, cd-srv.
+
+This message does not include any references to a footprints ticket with content, nor any decipherable problem report or instruction. These tickets are neither populating an originating ticket ID nor a destination ticket ID. If the idea is that we now, after the upgrade, must populate these fields by hand, that is something that was never clearly communicated to us, and something we had never done before the upgrade.
+
+_Note from Rob: Populating fields by hand is not an option. The GOC does not have effort for this, which is why the ticket exchange was created._
+
+---++ Various fermilab/remedy contacts
+Ticket exchange problems:
+   * osg-fnal-ticket-exchange@fnal.gov 
+
+Currently, oim lists the following SC operations contacts for fermilab:
+
+   * PRIMARY: footprints-remedy@fnal.gov
+      * should parse and route remedy tickets. 
+      * This does not appear to be working, or at least, reliably so.
+   * SECONDARY: fermigrid-help@fnal.gov
+      * sends to a mailing list, does not go to remedy. Steve Timm is a member.
+      * this mailing list can receive our tickets successfully and seems to be a quick fix option for unattended fermilab tickets.
+      * I would not expect this to be a suitable option for USCMS tickets (which also route to remedy)
+
+_Note from Rob: We should try to identify the equivalent CMS list to bypass the ticketing until this is resolved, so no issues get dropped._
+
+For notifications:
+   * helpdesk-admin@fnal.gov
+      * Does not go to remedy. The staffers work downstairs from Steve, but he seemed unsure who they would tell if they received a ticket from us.
+
+Footprints (through the project admin interface) shows the following contacts:
+
+   * Fermilab SC - testforwarder@bel-kwinith.dhcp.fnal.gov
+      * I am guessing this is something used in the original ttexchange setup for remedy before the upgrade 
+      * *15:!2 UPDATE* Changed this address to footprints-remedy@fnal.gov to eliminate variables
+   * USCMS - footprints-remedy@fnal.gov
+   * GRATIA - footprints-remedy@fnal.gov
+
+*GOC TODO*: Find out from So and AG whether gocticket is using the footprints DB address for Fermilab SC, or the OIM contact
+
+*completed* Arvind says that if there is a conflict, gocticket will use the FP address.
+
+
+---++ Testing
+
+A test ticket to fermilab did not route while we were on the call. I CCed footprints-remedy@fnal.gov in anticipation that &quot;testforwarder@bel-kwinith.dhcp.fnal.gov&quot; might have been the problem, but this did not resolve the issue.
+---++++ 14:51 update
+
+Bert says remedy remedy received but did not process the following, notably with no destination or originating VO:
+
+&lt;b&gt;&lt;i&gt;This message is to let you know that ticket 6850 &quot;second test ticket &quot; was updated on 05/12/2009 at 15:59:55 with the following information:
+
+FootPrints Ticket Description:
+test
+
+For complete ticket details, click 
+&#39;https://ticket.grid.iu.edu/goc/viewer?id=6850&#39;
+
+Assignees: Elizabeth Chism
+
+--
+Please submit problems, requests, and questions at:
+https://ticket.grid.iu.edu/goc/
+&lt;/i&gt;&lt;/b&gt;
+
+I am perplexed because my email copy additionally included the following:
+
+&lt;b&gt;&lt;i&gt;Assignees: Elizabeth Chism
+Status: Engineering
+Originating VO Support Center: MIS
+Destination VO Support Center: Fermilab
+Originating Ticket Number: 
+Destination Ticket Number: 
+&lt;/i&gt;&lt;/b&gt;
+---++++ 15:05 update from Steve
+
+I have created Incident INC000000001667 to track this in the Service Desk
+for the problems at the Fermilab end.
+
+Steve Timm
+
+
+On Tue, 12 May 2009, Steven Timm wrote:
+
+It is now clear that any of the GOC tickets which have thus
+far successfully made it into our Service Desk were for USCMS
+and any of those that were for the Fermilab SC have not
+made it.  From Bert&#39;s earlier E-mail today it seems these
+have been going into the bit bucket.  Bert has sent copies
+of the outbound E-mails to the GOC and they will look
+at what is happening on their end.
+
+*FERMI TODO* Bert, is there some way you could make the footprints-remedy
+script so that all E-mail there gets copied to human eyes, at least
+for now until we get this sorted out?  We can&#39;t afford to have
+tickets fall on the ground and at least ten tickets have done just that in 
+the past couple of weeks.
+
+Thanks
+
+Steve Timm
+
+---++++ 15:58 update from Steve
+
+List osg-fnal-ticket-exchange@fnal.gov has now been created, with, I believe, the correct people on it.
+
+GOC Ticket 6851 was created by Elizabeth mid-afternoon. the best status we have right now is that when it left the GOC it looks like it had the right Destination VO Support Center fields but when it gets to footprints-remedy@fnal.gov it didn&#39;t have them. So we&#39;ve got some looking at e-mail formats and headers to do. This is logged as incident number INC000000001667 at the Fermi Service Desk.
+
+Steve Timm 
+
+---++++ 16:58 update from Steve
+
+Since GOC made the change to send Fermilab VO test tickets to footprints-remedy@fnal.gov there is one open ticket, goc 6847, which has now made it into
+Remedy and been correctly registered as an Incident, so we might be getting somewhere now.  *GOC TODO* Is there a way that you could generate updates on the other tickets,
+i.e. 6806, 6759, 6823, 6765, and so forth, those that were never routed before, and see if we pick them up now? Maybe try one or two at a time first so we don&#39;t generate too much chaos.
+
+thanks
+
+Steve Timm
+
+---++++ 17:20 update
+
+Elizabeth completed 16:58 TODO with ticket 6759 and 6806.
+
+---+++ May 13 updates
+(overnight)
+Steve Timm had Bert implement the text that the last version of remedy used. There was a misunderstanding about whether there was a human reader at the GOC parsing footprints emails into the system. The fermilab team now knows that it is done programmatically and *then* read.  17:20 TODO successfully created remedy tickets. Steve Timm updated both remedy tickets and they successfully reached footprints.
+
+---++++ 15:38 update
+
+E and Kyle pushed updates with the other unattended remedy tickets, or closed those that were ready to close.
+
+---+++ May 14 updates
+
+---++++ 09:33 update
+Elizabeth inventoried the Remedy problem tickets and found that all the remedy tickets for fermilab have reached their destination. The USCMS tickets are still unconfirmed. Elizabeth emailed the ttexchange mailing list to ask whether our collaborators could confirm that those generated or updated tickets, or whether this would require followup with Burt H, or someone similar. Elizabeth also requested that Kyle Gross and Arvindd Gopu be added to the ttexchange mailing list.
+
+*USCMS TODO* Check to see that GOC tickets 6842, 6834, 6830, 6691 and 6636 reached remedy. 
+Tony Tiradani has agreed to look into this.
+
+*FERMILAB TODO* Add the following addresses to the ttexchange mailing list:
+   * agopu [at rate of] indiana.edu
+   * kagross [at rate of]indiana.edu
+
+---++ Various other information
+   * Bert Shuler bshuler@fnal.gov appears to be the primary script/dev person on this project.
+
+
+-- Main.ElizabethChism - 12 May 2009
+---+++ Comments
+%COMMENT{type=&quot;tableappend&quot;}%

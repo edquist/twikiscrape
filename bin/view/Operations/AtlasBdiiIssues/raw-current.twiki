@@ -1,0 +1,63 @@
+
+
+This page is intended to serve as a record of some information publishing issues that ATLAS/BNL has encountered. 
+&lt;font color=blue&gt;Burt&#39;s comments in blue .. &lt;/font&gt;
+&lt;font color=red&gt;Brian&#39;s comments in red ... &lt;/font&gt;
+&lt;font color=green&gt;John Hover&#39;s follow-up comments in green ... &lt;/font&gt;
+&lt;font color=purple&gt;John Weigand&#39;s comments in purple (aka black and blue)... &lt;/font&gt;
+
+---+++ Meeting Coordinates
+
+An ESNet conference has been setup for
+   * 3 PM, Eastern 
+   * July 30, 2009:
+   * Phone Number: 510-665-5437
+   * Meeting ID: 5678
+
+---+++ Background
+
+ATLAS has several OSG resources at BNL: BNL_ATLAS_1 and BNL_ATLAS_2 (gatekeepers), BNL_ATLAS_SE (dCache/SRM), and BNL-LCG2(a gatekeeper used to publish dCache, FTS, LFC, and !MyProxy information for forwarding to the WLCG BDII). Initially each of these has been in their own resource groups in OIM, as has traditionally been the case. In an effort to consolidate the information publishing and accounting, we made a plan, with Arvind&#39;s help, to merge them. 
+
+   * Place BNL_ATLAS_1 and BNL_ATLAS_SE under the BNL-LCG2 resource group in OIM. 
+   * Moving the specialized providers for LFC, !MyProxy, and FTS to the BNL_ATLAS_1 CEMon instance. 
+   * Remove the BNL-LCG2 gatekeeper (as it was only created as a place-holder).
+
+This migration effort caused problems for the FTS service, particularly the central FTS at CERN.  My understanding is that on each FTS server there is an automatic periodic update where the system queries BDII for the storage endpoints for all sites that participate in FTS channels configured in the server. In this scenario, the channels are staticly defined, and refer only to sitenames. It is the storage endpoints (e.g. SRM urls) that are re-configured dynamically (once per day at most sites, every hour for central CERN). I&#39;m waiting confirmation, but we think that the &#39;glite-sd-query&#39; tool is the one used to look up this info.  &lt;font color=blue&gt;The FTS servers run glite-sd-query as a cron job (part of glite-sd2cache) and cache the results in /opt/glite/etc/services.xml.&lt;/font&gt;
+
+We thought that the FTS configuration update did its site lookup based on the mds-vo-name=XXX in the base DN for each !GlueSchema object in BDII. It appears that instead the tool examines the value of an attribute within the objects: !SiteUniqueID. &lt;font color=red&gt; In general, mds-vo-name=XXXX is ignored; its existence is side-effect from representing the GLUE in LDAP, and has no intrinsic meaning.&lt;/font&gt; In our case, even though records published from BNL_ATLAS_1 had their mds-vo-name properly converted from &quot;local&quot; to &quot;BNL-LCG2&quot;, the value within !SiteUniqueID was still &quot;BNL_ATLAS_1&quot;. We recognized this only in retrospect. At the time we just switched everything back to the previous configuration in order to restore function.  &lt;font color=blue&gt;Confirmed: glite-sd-query populates the site field with the result from &lt;nop&gt;GlueForeignKey: &lt;nop&gt;GlueSiteUniqueID from the &lt;nop&gt;GlueServicesUniqueID stanza.&lt;/font&gt;
+
+While investigating and getting help from OSG folk, we learned that we should have adjusted the config.ini file and switched the &quot;site_name&quot; variable in  /monitoring/config.ini from BNL_ATLAS_1 to BNL-LCG2.
+   * &lt;font color=purple&gt;This would have caused you to stop reporting Gratia accounting data to APEL/WLCG.  Gratia maintains accounting summary data by &quot;site_name&quot;.  It is the only identifier of a CE service known to it in the config.ini file.  Changes would have been required in the Gratia-APEL interface and in the APEL-EGEE interface to report correctly.&lt;/font&gt;
+   * &lt;font color=red&gt;John - the site name in the config.ini file is irrelevant after the first record is sent to Gratia.  The Gratia Collector uses the initial site name seen until a manual intervention occurs.&lt;/font&gt;
+   * &lt;font color=purple&gt;That may very well be true, however, it just adds to the confusion when trying to troubleshoot accounting problems.  And do you really want to see your current accounting data in Gratia as the old site name or the new one.   Also, the way Gratia is handling it today may very well cause problems in trying to retain historical information about a &quot;site&quot;.  There are special tables in the APEL-EGEE that allow for &quot;associating&quot; defunct/disabled sites names with the newer ones.  For example, now I have changed my &quot;site name&quot; to BNL2... 6 months later I change it to BNL_NEWER_2 ...and Gratia is now still showing it as BNL_ATLAS_2.  If this what is desired, that&#39;s fine.  I still see it as a problem.  It also makes a programmatic syncing of the Gratia-APEL interface data almost impossible.  And even if we still send from Gratia to APEL, it likely will stop the data from being passed from APEL to EGEE without manual modification of the tables in APEL.&lt;/font&gt;
+
+---+++ Remaining Issue(s) &amp; Concerns
+
+   1 If we begin using OSG resource group names as site_names for individual resources, what are the consequences of no longer having distinct resource names?
+      * &lt;font color=blue&gt;The resource names are still unique -- &lt;nop&gt;GlueCEUniqueID corresponds to the gatekeeper hostname, for instance. &lt;/font&gt;
+      * &lt;font color=blue&gt;One issue is that multiple CEs can overwrite shared entries, such as &lt;nop&gt;GlueSite, some of the SE entries if you&#39;ve got both CEs configured to publish the SE, etc.  This should be ok but might be confusing when troubleshooting.&lt;/font&gt;  
+      * &lt;font color=red&gt;This should primarily affect matchmaking based on the BDII; i.e., gLite WMS, some CMS tools.  I&#39;m not aware of an ATLAS one which uses the OSG BDII.&lt;/font&gt;
+      * &lt;font color=purple&gt;See item 4 related to Gratia in this section&lt;/font&gt;
+      * &lt;b&gt;From David Colladas email 7/30:&lt;/b&gt; Please note that is not advised to change the Resource Group names, asfor WLCG monitoring (SAM, !GridView, availability reports) the site names are taken from the Resource Group names. If these names change, it will be difficult to map historical information to the new names and this may also affect different reporting tools. If this is the plan, I would recommend you to expose these changes well in advance to the WLCG Management Board.
+   1 If that is a problem, would it make sense to consider dynamically replacing resource name strings with resource group strings in BDII contents before it is forwarded to the WLCG BDII?
+   1 On a related subject, when multiple resources of a given type (e.g. a CE) &lt;font color=purple&gt;(the resource does not have a type. A resource contains multiple services and each can be a different type)&lt;/font&gt; are combined in a resource group, in some cases the service availability should be calculated as OR, i.e. if *any* CE is up the site availability is OK (100%). While for other types of resources (maybe storage), availability calculation should be AND, e.g., if half the storage is offline, then perhaps the the site should be considered 50% available.  
+      * &lt;font color=red&gt;This might be a valid point, but we go by the algorithm as defined by WLCG... this various tweak has been discussed before, but I&#39;ve never seen any serious action on it.&lt;/font&gt;
+      * &lt;font color=green&gt;So, is the current algorithm AND or OR? This will affect what resources we choose to include in the resource group.&lt;/font&gt;
+      * &lt;b&gt;From David Colladas email 7/30:&lt;/b&gt; About the question on the current algorithm and if it&#39;s AND or OR, the answer is &#39;OR&#39;. The algorithm is described here: https://twiki.cern.ch/twiki/pub/LCG/GridView/Gridview_Service_Availability_Computation.pdf
+   1 I spoke with the Gratia team, and they say that Gratia probes are nearly entirely independent of the Resource name. The exception is that the probe is associated with &lt;font color=red&gt;site name in the !ProbeConfig (which is populated from the config.ini)&lt;/font&gt; the *first time* the probe connects. Henceforth the collector uses that resource name. The resource name can be changed by the Collector administrator at any time--nothing needs to be done at the site.  
+      * &lt;font color=purple&gt;This is not entirely true.  They may have meant there is no programmatic connection at this time.  However, there is a need to use !MyOsg data to drive the !Gratia-APEL/WLCG interface for ATLAS and CMS Tier 1/2 sites to determine the sites  and the EGEE group names (e.g.  Tier1 --&gt; US-T1-BNL -&gt; BNL_ATLAS_1)  used here http://www3.egee.cesga.es/gridsite/accounting/CESGA/tier1_view.html .  In the !WLCGInformation element (associated with a resource...not !ResourceGroup), the !InteropAccounting element is what would identify the &quot;resource&quot; as one to be interfaced and the !AccountingName as the group (US-T1-BNL).  The Gratia site name is the Resource/Name in !MyOsg. This is currently maintained manually and very error prone.&lt;/font&gt; &lt;font color=green&gt;This looks like the really nasty problem. If the whole Gratia-&gt; APEL interface equates an OSG resource name with an EGEE site, then something will have to be changed to make this all work.&lt;/font&gt;
+
+---+++ Plans
+
+BNL plans to try the resource/resource group consolidation again during the next major scheduled downtime. This time we are also going to plan to shift everything under a new resource group name &quot;BNL_ATLAS&quot;, with ATLAS FTS re-defining all channels at all sites to refer to that sitename (rather than BNL-LCG2). These recent complications have had the positive effect of having the FTS team put together a clear recipe for changing site names globally. &lt;font color=red&gt;I believe this will work, assuming that all the other T1s work in a coordinated fashion during the downtime.&lt;/font&gt;
+
+
+---+++ References
+
+   * FTS site name change procedure:   https://twiki.cern.ch/twiki/bin/view/LCG/FtsProcedureSiteNameChange
+   * OIM Glossary: OIMTermDefinition
+ 
+
+-- Main.JohnHover - 29 Jul 2009
+
+

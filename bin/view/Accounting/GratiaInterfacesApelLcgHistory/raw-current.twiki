@@ -1,0 +1,844 @@
+---+!! Gratia Interfaces - APEL/WLCG - History
+
+
+%TOC%
+
+%STARTINCLUDE%
+
+---+ Description
+This page provides a history of the changes made to the Gratia-APEL interface.
+
+---+ History of code changes
+&lt;blockquote&gt;&lt;pre&gt;
+ 6/19/07 (John Weigand)
+#   Instead of using 1 normalization factor for all sites, the
+#   lcg-reportableSites now contains a normalization factor for
+#   those sites that have reported on the OSG survey.  Based on that
+#   survey, using a Specint2000 specification, individual normalization
+#   factors have been assigned to reflect the type of hardware those
+#   site&#39;s WN clusters are using.  This factor is the 2nd token in that
+#   lcg-reportableSites file.  If no token is present, the normalization
+#   factor used is derived from the probe specified in the lcg.conf file.
+#   This changed required that individual queries of the gratia database
+#   be performed on a site basis since the application of the normalization
+#   factor is applied there.  The query sent to the log file represents the
+#   first one used in order to reduce the verbage there.  The site and
+#   normalization factor used is displayed there.
+#   - Another item to note is that coincident with this change the
+#     BNL_ATLAS_1 and BNL_ATLAS_2 sites are now being reported as BNL_OSG
+#     at that administrators request.  This was a database change to the
+#     relation of the Site and Probe tables via siteid.
+#
+# 9/12/07 (John Weigand)
+#   Fixed a problem when an empty set is returned from the query.
+#
+# 2/19/08 (John Weigand)
+#   Due to the length of time it was taking to collect data on the
+#   &#39;Unknown&#39; VOs, added an extra set of methods to determine the
+#   &#39;Unknown&#39; VOs for all sites and only process those.  This reduces
+#   the duration significantly.
+#
+# 4/15/08 (John Weigand)
+#   Added methods for creating an xml and html file from the APEL database.
+#   And reorganized some of the main section.
+#
+# 6/3/08 (John Weigand)
+#   In the past when a site had no data, no update was made to the APEL
+#   table.  Now we will create an update record showing it was processed.
+#   We will create the update records for each VO.
+#
+# 6/25/08 (John Weigand)
+#   Removed the calculation (just commented in case it has to be
+#   re-instated) of a default normalization factor using the
+#   NormalizationProbe attribute.  The NormalizationDefault attribute
+#   is used soley for sites not having a normalization factor which
+#   as of now, there are none and hopefully in the future this will
+#   remain true.
+#
+# 9/25/08 (John Weigand)
+#   1. Added methods to copy the xml/html files that are extracted from
+#   the APEL database tables to the Gratia collector for this
+#   database.  The lcg.conf file has a new attribute called
+#   GratiaCollector defining (in scp format) the directory to copy
+#   this files to.
+#   2. Also added method(s) to trap &#39;warning&#39; type messages that do
+#   not affect the actual update of the APEL data, but may represent
+#   conditions that should be investigated.  This was put in to trap
+#   any errors that may occur on the copy to the Gratia collector,
+#   but can be used to detect site not reporting for a period or
+#   other conditions.
+#
+# 11/11/08 (John Weigand)
+#   Added an additional filter on the selection criterea. Only
+#   selecting ResourceType=&#39;Batch&#39;.  Changes to the condor probes
+#   (v1.00.3) will result in distinguishing between the actual
+#   grid jobs (Batch) and the grid monitoring job (Documentation/Release3.GridMonitor) when
+#   jobs are submitted using condor_submit. Any &#39;local&#39; job used to
+#   submit a job on the CE node will be filtered, but should they
+#   at some point be passed to Gratia, these will be identified as
+#   Local.
+#
+# 03/11/2009 (John Weigand)
+#   1. Added a setting of the umask to 002 for all files being written.
+#   This was to, hopefully, insure the setting of the right permissions
+#   on the files sent to the tomcat ./webapps/gratia-data/interfaces/apel-lcg
+#   directory for viewing data in the Gratia reporting service.
+#   2. Also commented out (so it can be re-activated easily) the checking
+#   for &#39;unknown&#39; VOs with atlas or cms-like unix accounts.  This slow down
+#   the interface considerably and that problem appears to have gone away.
+#
+#
+# 3/12/2009 (John Weigand)
+#   Added a method (DetermineReportableSitesFileToUse) that will retain
+#   the lcg-reportableSites file in a &#39;history&#39; directory and use that
+#   during the process.  It copies the main configuration file to this
+#   directory on when running in the &#39;current&#39; month thereby preserving
+#   prior months configuration in the event we have make updates there.
+#   Refer to the comments in that method for more details.
+#   This required an additional attribute in the lcg.conf file
+#   (SiteFilterHistory) to define the directory these are retained in.
+#   This allows us to change the SiteFilterFile at anytime during the
+#   current month without fear of mis-stating the previous months updates
+#   which currently are performed for the 1st 15 days of the current month.
+#   This is not perfect since, in order to really retain this data, the
+#   previous month should be added/updated in SVN/CVS.  A warning notification
+#   will be sent the first time a new history file as a reminder.
+#
+# 5/19/2009 (John Weigand)
+#   Added functionality to retrieve summary data by CommonName and populate
+#   a new APEL table called OSG_CN_DATA.  The WLCG requirement is to use full
+#   DN but Gratia currently only summarizes by the CN portion of the user proxy.
+#   This is an interim solution until Gratia is modified to summarize by DN.
+#   The changes for this new functionality are:
+#   - lcg-db.conf: added an LcgUserTable attribute to identify the new table
+#   - method GetQuery: Changed to optionally add in CommonName to the query.
+#     I chose to make it a python variable in this query so as not to replicate
+#     the rest of the query and take a chance on having it in 2 places to modify.
+#     This is a bit of a gimmick but one I think is best.  The DBflag argument,
+#     if True will allow CommonName to be included in the query and summary.
+#   - added methods GetVoQuery and GetUserQuery
+#     These were added to allow for more intuitive reading of the main
+#     section of the program.  Both call GetQuery, one using the original
+#     Site/VO grouping and the other using Site/User/VO grouping.
+#   - method RetrieveVoData
+#     Changed to call GetVoQuery instead of GetQuery
+#   - added method RetrieveUserData
+#     This is clone of RetrieveVoData except it calls GetUserQuery and does not
+#     check for empty results at this time.
+#   - added methods ProcessVoData and ProcessUserData
+#     This pulled a section of code from the main section in order to keep the
+#     main section more readable.
+#   - added methods CreateLCGsqlVoUpdates and CreateLCGsqlUserUpdates
+#     Both call CreateLCGsqlUpdates abstracting the table name to that level.
+#   - method CreateLCGsqlUpdates
+#   Added tableName as an argument.
+#   - method RunLCGUpdate
+#     Used for both VO and User summaries.  Added logging to identify the
+#     file being used and the number of insert DML statements being processed.
+#   IMPORTANT NOTE: Changes were NOT made to look for &#39;unknown&#39; VOs at the User
+#   level.  The &#39;unknown&#39; VO check was left in (allowing it to be activated via
+#   a command line argument) back on 3/11 in the event it needed to be
+#   re-activated.  Since it uncertain if this will be needed again and the code
+#   changes much more complex and maybe no longer needed, I chose NOT to make
+#   changes to the code for this at this time.
+#
+# 6/1/2009 (John Weigand)
+#    In the CreateXmlHtmlFiles method, changed the Path selection criteria
+#    for the org_Tier2 table:
+#     - USA Path changed from 1.31 to 1.32
+#     - for SPRACE (which was inadvertantly omitted since April 2008), they
+#       are not included under USA, but under Brazil which is 1.4.
+#
+# 6/26/2009 (John Weigand)
+#    Added method (CheckForUnreportedDays) to check to see if a site
+#    has more than 2 days unreported during the month and send a warning
+#    email so it can be investigated.  This provides a little better handle
+#    on sites that are having problems.  Not perfect, but better.
+#    Added new parameter to lcg.conf (MissingDataDays) to set the threshold.
+#
+#    Also added a method (SetDatesWhereClause) to insure consistency in
+#    the where clause for the time period across all the queries.
+#
+# 7/7/2009 (John Weigand)
+#    Added new method (CheckForShutdownDays) called by CheckForUnreportedDays
+#    that will use a new class (Downtimes) to check MyOSG for days in
+#    which there are planned shutdowns for a site.  This will eliminate
+#    sending a warning email for sites that have unreported days for this
+#    reason.  It should be noted that if the url/criteria used in the
+#    Downtime class to query MyOSG changes, this class will not be able
+#    to detect it as different xml and may not detect planned shutdowns
+#    accurately.
+#
+# 7/29/2009 (John Weigand)
+#    Added method FindTierPath to find the correct org_Tier1/2 entries for
+#    the OSG data.  It was using a query based on Path but this has been
+#    changing to much.  Now using the Name which appears pretty stable.
+#
+# 8/28/2009 (John Weigand)
+#    Changed the syntax on the lcg.conf attributes for the email
+#    notifications so that multiple &#39;To&#39; addresses can be specified.
+#
+# 11/04/09 (Chris Green).
+#   Inclusion of CommonName from summary table was changed to:
+#     IF(DistinguishedName NOT IN (&quot;&quot;, &quot;Unknown&quot;),DistinguishedName,CommonName)
+#   to take advantage of new information. November 2009 is the first month for
+#   which any item with a CommonName also has a DistinguishedName (except in
+#   the case where CommonName is &quot;Generic XXX user&quot;, in which case
+#   DistinguishedName is blank).
+#
+# 12/14/09 (John Weigand)
+#   Added use of a new class (InactiveResources) to query MyOsg for Resource
+#   that have been marked inactive.  This is used in conjunction with the
+#   Downtimes class when checking why a site/resource has no data for a
+#   day.  Unfortunately, there is no MyOSG query that will give downtimes and
+#   active/inactive status.
+#
+#  2/1/10 (John Weigand)
+#   Uncommented a logging of the INSERT dml to the log file.
+#   The commenting of this entry (done in revision 3654 on 11/2/2009)
+#   inadvertantly #  affected the checking for late updates performed by the
+#   find-late--updates.sh script.
+#   I had forgotten that script was parsing the log file to make this
+#   determination.  I added a comment to that affect when I uncommented the line
+#   so I don&#39;t do this again.  I am not sure if it is worth creating another
+#   method of detecting this type of condition at this time.
+#
+#  3/3/10 (John Weigand)
+#   In the etQueryForDaysReported method, which checks to see if a resource
+#   has missed any days of reporting,  I removed the check for just cms and
+#   atlas VOs.  Some sites are only used as a backup or for overflow from the
+#   main site.  This eliminates falsely reoprting problems.
+#
+#  4/8/10 (John Weigand)
+#   Modified the  CreateXmlHtmlFiles method to output an extract of the
+#   OSG_DATA table with 3 additional calculated columns in order to
+#   see what the HepSpec2006 value, that is now used in WLCG reporting,
+#   would be:
+#      HS06_CPU    HS06_WCT    HS06Factor
+#   Since HepSpec2006 is not available across all sites, WLCG does a simple
+#   multiplication by 4 on the SI2K normalization factor we use. At some
+#   my guess is we will start using the HS06 value but,until then, this
+#   is the only means of being able to compare easily.
+#
+#  8/5/11 (John Weigand)
+#  ---------------------
+#  This represents a major change to the interface.  All OSG reporting to
+#  WLCG has been in reference to MyOsg resource group.  However, the MyOsg
+#  InteropAccounting flag for WLCG Information is at the resource,
+#  not resource group, level.  The changes made in this revision will now
+#   1. treat the lcg-reportableSites config file entries as resource groups
+#      This also means the Normalization Factors should be calculated
+#      at the resource group level.
+#   2. determine which resources within that resource group should have
+#      their gratia data reported to APEL/WLCG.
+#   3. summarize (using sql) the accounting data for the month for all
+#      interfaced resources for the resource group.
+#  A new class, InteropAccounting(.py), provides the access to MyOsg.
+#
+#  Due to a disconnect between Gratia site and MyOsg resource group/resource
+#  that has existed from the beginning of time, some previously identifiable
+#  &quot;non-reporting&quot; conditions may not get detected.  If all &quot;resources&quot;
+#  reported to Gratia with the resource name, this would resolve that
+#  problem.  However, many resources report to Gratia with the
+#  resource group name.  Due to this, any &quot;non-reporting&quot; conditions
+#  are ignored unless the entire &quot;resource group&quot; shows as not reporting.
+#
+#  Added a couple more validations for the WARNING email:
+#   1. site we are reporting that do not have the MyOsg InteropAccounting set
+#   2. sites we are not reporting that do have the MyOsg InteropAccounting set
+#   3. Resource groups we are reporting that are not defined in Rebus
+#   4. Resource groups that have and Accounting Name different from Rebus
+#
+#  Another word of warning.  Since this is now assuming Gratia sites
+#  are equivalent to MyOsg resource groups and not resources, any updates
+#  needed to re-populate will be a problem since MyOsg is not time
+#  sensitive.  Resource may be added or dropped from MyOsg at any point
+#  in time.  It only reflects the current state.  So re-populating may
+#  result in the wrong data being used.
+#
+#  Additional cleanup to simplify the change to SSM/ActiveMQ for the interface
+#   1. Eliminated all code associated with updating the OSG_DATA table.
+#      The OSG_CN_TABLE is the one soley used by APEL.
+#   2. Eliminated all code associated with find &quot;unknown&quot; VOs for Atlas
+#      which was a problem with Atlas rerorting that has since been resolved.
+#   3. Eliminated all code assoicated with using a default Normalization
+#      Factor.  All resource groups/sites must have one
+
+&lt;/pre&gt;&lt;/blockquote&gt;
+
+---+ Original interface (up until Aug 2011)
+The original interface to APEL was an update to the an OSG_DATA table defined below.  This was a summary by site and vo.   In May 2009, APEL requested that a new table OSG_CN_DATA should be populated.   This table required the summary to be by site,vo and user DN.  Unbeknown to us sometime between then and Aug 2011, the OSG_DATA was no longer used to populated the EGI portal and the OSG_CN_DATA table was being used exclusively.   This is intended to retain the data about the interface and summary query used of the OSG_DATA table.
+
+The table below shows the mapping of Gratia data to the APEL database&#39;s _OSG_DATA_ table and to the EGI OSG view.  It&#39;s purpose is to aid in understanding the data where different names are used for the data shown.
+ 
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+|  *EGI Accounting Portal%BR%OSG view*  |  *APEL%BR%OSG_DATA*  |  *Gratia data (all data is from the &lt;nop&gt;VOProbeSummary table unless otherwise noted)*  |
+| resource group%BR%(Gratia site) | &lt;nop&gt;ExecutingSite | &lt;nop&gt;Site.SiteName |
+| VO | &lt;nop&gt;LCGUserVO | &lt;nop&gt;VOName |
+| Number of jobs |&lt;nop&gt;Njobs | Sum of &lt;nop&gt;NJobs |
+| Sum CPU | &lt;nop&gt;SumCPU | Sum of (&lt;nop&gt;CpuUserDuration + &lt;nop&gt;CpuSystemDuration) / 3600 |
+| Norm Sum CPU | &lt;nop&gt;NormSumCPU | (Sum of (&lt;nop&gt;CpuUserDuration + &lt;nop&gt;CpuSystemDuration) / 3600) * Normalization Factor |
+| Sum Elapsed | &lt;nop&gt;SumWCT | Sum of &lt;nop&gt;WallDuration / 3600  |
+| Norm Sum Elapsed | &lt;nop&gt;NormSumWCT | (Sum of &lt;nop&gt;WallDuration / 3600) * Normalization Factor |
+| | &lt;nop&gt;Month | The month the data is collected for |
+| | &lt;nop&gt;Year | The year the data is collected for |
+| | &lt;nop&gt;RecordStart | Earliest date reported for the month |
+| | &lt;nop&gt;RecordEnd | Latest data reported for the month |
+| | &lt;nop&gt;NormFactor | Normalization Factor used |
+| | &lt;nop&gt;MeasurementDate | Date of update into APEL |
+
+The SQL query below on the Gratia database is an example using the following criteria:
+   * &lt;nop&gt;SiteName: UTA_SWT2
+   * Normalization Factor: 1.543
+   * Month: November 2008
+&lt;blockquote&gt;&lt;pre&gt;
+SELECT Site.SiteName AS ExecutingSite,
+    VOName as LCGUserVO,
+   Sum(NJobs),
+   Round(Sum(CpuUserDuration+CpuSystemDuration)/3600) as SumCPU,
+   Round((Sum(CpuUserDuration+CpuSystemDuration)/3600)*1.543) as NormSumCPU,
+   Round(Sum(WallDuration)/3600) as SumWCT,
+   Round((Sum(WallDuration)/3600)*1.543) as NormSumWCT,
+   date_format(min(EndTime),&quot;%m&quot;)       as Month,
+   date_format(min(EndTime),&quot;%Y&quot;)       as Year,
+   date_format(min(EndTime),&quot;%Y-%m-%d&quot;) as RecordStart,
+   date_format(max(EndTime),&quot;%Y-%m-%d&quot;) as RecordEnd,
+   &quot;1.543&quot;,
+   NOW()
+from
+     Site,
+     Probe,
+     VOProbeSummary Main
+where
+      Site.SiteName = &quot;UTA_SWT2&quot;
+  and Site.siteid = Probe.siteid
+  and Probe.ProbeName  = Main.ProbeName
+  and Main.ResourceType = &#39;Batch&#39;
+  and Main.VOName in ( &quot;usatlas&quot;,&quot;atlas&quot;,&quot;uscms&quot;,&quot;cms&quot; )
+  and Main.EndTime &amp;gt;= &quot;2008-11-01 00:00:00&quot;
+  and Main.EndTime &amp;lt; &quot;2008-12-01 00:00:00&quot;
+group by ExecutingSite,
+         LCGUserVO
+&lt;/pre&gt;&lt;/blockquote&gt;
+
+---+ History of reportable sites changes
+&lt;blockquote&gt;&lt;pre&gt;
+##################################################################
+# This file identifies the set of sets reportable to the APEL-LCG
+# database and the normalization factor to be used in the
+# gratia query.
+#
+# Format:
+#  token 1 - The Site.SiteName
+#  token 2 - The normalization value to be used. This was obtained
+#            from site surveys regarding the hardware used on a
+#            site&#39;s clusters and is an estimated value based
+#            on a SPECint2000 specification.  If no value is
+#            specified, then a value is derived from the
+#            gratia database using the gratia_psacct.ProbeName
+#            specified in lcg.conf file.
+#  This tokens are whitespace seperated.
+#  Comments - line starting with a # sign
+#  Empty lines are permittted.
+# -----------------------------------------------------------------
+# History:
+#   8/16/07 (John Weigand)
+#             Changes sites:
+#               UTA-DPCC to UTA_DPCC. 1st reported: 12.1.2006
+#             New sites:
+#               AGLT2             1st reported:   4.6.2007
+#               BU_ATLAS_Tier2    1st reported:  never
+#               BU_ATLAS_Tier2o   1st reported:  never
+#               IU_ATLAS_Tier2    1st reported:   6.5.2007
+#               MWT2_IU           1st reported:  10.9.2006
+#               MWT2_UC           1st reported:  9.27.2006
+#               SLACXRD           1st reported:  never
+#               OU_OCHEP_SWT2     1st reported:  3.15.2007
+#               OU_OSCER_ATLAS    1st reported:  8.15.2006
+#               UC_Teraport       1st reported:  never
+#               UC_ATLAS_MWT2     1st reported:   9.1.2006
+#               UTA_SWT2          1st reported:   7.6.2006
+#   8/07/07 (John Weigand)
+#             Removed UCSanDiegoPG.
+#             Added HEPGRID_UERJ,UCSDT2,UCSDT2-B.
+#             These are the same WN clusters as the UCSanDiegoPG
+#             for which there was no nomralization factor. So they
+#             will take the default one.
+#             This change was made at the request of Burt Holzman
+#             and satifies the GOC ticket #1714.
+#   6/19/07 (John Weigand) -
+#             The BNL_ATLAS_1 and BNL_ATLAS_2 sites were changed
+#             to be BNL_OSG.  This was done by changing the
+#             relation between the Site and Probe table on siteid.
+#             The old site names are still reflected in the reporting
+#             and all 3 assigned the same normalization factor as
+#             they all feed the same WN cluster.
+#   9/12/07 (John Weigand) -
+#             Added SLAC_PROD.
+#   9/20/07 (John Weigand) -
+#             Replaced SLAC_PROD with PROD_SLAC.
+#             There has been confusion over which it is and may have been
+#             done incorrectly on 9/12/2007.
+#   9/27/07 (John Weigand) -
+#             Updated Normalization factor for AGLT2 (2100)
+#             Updated Normalization factor for PROD_SLAC (1757)
+#   10/02/07 (John Weigand) -
+#             Updated Normalization factor for BNL_ATLAS_Tier2  (1294)
+#             Updated Normalization factor for BNL_ATLAS_Tier2o (1645)
+#             Also adjusted  BNL_ATLAS_1, BNL_ATLAS_2, BNL_OSG  (1351)
+#              - appeared to be an error in the calulation
+#             Updated Normalization factor for UTA_SWT2         (1543)
+#             Updated Normalization factor for OU_OSCER_ATLAS   (1543)
+#             Updated Normalization factor for OU_OCHEP_SWT2    (1543)
+#             Updated Normalization factor for SLACXRD          (1757)
+#             Updated Normalization factor for UC_Teraport      (1412)
+#             Updated Normalization factor for MWT2_IU          (1787)
+#             Updated Normalization factor for MWT2_UC          (1787)
+#             Updated Normalization factor for UC_ATLAS_MWT2    (1169)
+#             Updated Normalization factor for IU_ATLAS_TIER2    (921)
+#             Added new atlas site IU_OSG with Normalization factor (2099)
+#             Corrected Normalization factor for BNL_ATLAS_Tier2  (1123)
+#             Corrected Normalization factor for BNL_ATLAS_Tier2o (1624)
+#             Corrected Normalization factor for IU_OSG (1678)
+#   10/03/07 (John Weigand) -
+#             Removed SLACXRD. Name known only to Panda.
+#             Updated Normalization factor for BNL_PANDA        (1351)
+#   10/12/07 (John Weigand) -
+#             Updated Normalization factor for UTA_DPCC         (915)
+#   11/08/07 (John Weigand) -
+#             Replaced BNL_PANDA,BNL_OSG,BNL_LOCAL with US-T1-BNL
+#   11/09/07 (John Weigand) -
+#             Updated Normalization factor for PROD_SLAC       (1726)
+#   12/20/07 (John Weigand) -
+#             Replaced US-T1-BNL with BNL_ATLAS_1.  This undoes the 11/8/07
+#             change.  The intent is to allow BNL_ATLAS_1 to appear in the
+#             EGEE OSG view.  Then, in an EGEE Tier1 view translation table,
+#             BNL_ATLAS_1 will translate to US-T1-BNL. In the short term,
+#             both entries will be reflected until changes are made in
+#             the EGEE site association table for the Tier 1 view.
+#             When the changes to the Gratia Site table and EGEE tables
+#             are complete the US-T1-BNL can be removed.
+#   1/17/08 (John Weigand) -
+#             US-T1-BNL to BNL_ATLAS_1 changes effected.
+#             Removing US-T1-BNL entry.
+#   1/20/08 (John Weigand) -
+#             Updated Normalization factor for PROD_SLAC       (1779)
+#   2/14/08 (John Weigand) -
+#             Updated Normalization factor for AGLT2 from 2100 to 2168
+#             effective 1/1/2008.  Update for January effected 2/15.
+#   3/18/08 (John Weigand) -
+#             Added SWT2_CPB (1645) per Pat McGuigan request
+#   3/19/08 (John Weigand)
+#             Removed UCSDT2-B, BU_ATLAS_Tier2o, IU_ATLAS_Tier2, UTA_DPCC
+#             in order for mail showing sites with no data is accurate.
+#             These were deprecated some time ago.
+#   3/21/08 (John Weigand)
+#             Changed BU_ATLAS_Tier2 normalization (1533) per Saul Youssef
+#             Combined BU_ATLAS_Tier2 and BU_ATLAS_Tier1o clusters
+#   4/14/08 (John Weigand)
+#             Adding UFlorida-HPC &amp; UFlorida-IHEPA per Backjoo Kim
+#             Also changed the following factors using Brian Bocklemans system
+#             that derives the processor model from GIP.
+#              Site                New     Old
+#              --------            ----    -----
+#              BNL_ATLAS_1         1393    1351
+#              CIT_CMS_T2          2393    default (1.04)
+#              GLOW                1686    default (1.04)
+#              HEPGRID_UERJ        2117    default (1.04) (Not a Tier2 at EGEE)
+#              MIT_CMS             1364    790
+#              Nebraska            1571    1578
+#              OU_OCHEP_SWT2       2389    1543
+#              PROD_SLAC           1789    1779
+#              Purdue-Lear         1285    default (1.04)
+#              Purdue-RCAC         1543    default (1.04)
+#              SPRACE              2117    1676           (Not a Tier2 at EGEE)
+#              UCSDT2              2023    default (1.04)
+#              UC_ATLAS_MWT2       1285    1169
+#              UC_Teraport         1250    1412           (Not a Tier2 at EGEE)
+#              UFlorida-HPC        1521    was not reporting
+#              UFlorida-IHEPA      1521    was not reporting
+#              USCMS-FNAL-WC1-CE   1809    default (1.04)
+#   4/29/08 (John Weigand)
+#              Changed the following to use the GIP reported configuration and the
+#              normalization factors from http://t2.unl.edu/gratia/site_normalization
+#                                     old   new
+#                                     ----  ----
+#                 AGLT2               2168  2167
+#                 BU_ATLAS_Tier2      1533  1487
+#                 IU_OSG              1678  2101
+#                 MWT2_UC             1787  1521
+#                 MWT2_IU             1787  not being reported
+#                 SWT2_CPB            1645  1628
+#                 UFlorida-PG         1602  1535
+#   4/29/08 (John Weigand)
+#               Dropped the following as they are not in the org_Tier2 table.
+#                 HEPGRID_UERJ        2117
+#                 SPRACE              2117
+#                 UC_Teraport         1250
+#                 OU_OSCER_ATLAS      1543
+#   5/21/08 (John Weigand)
+#           Updates based on https://t2.unl.edu/gratia/wlcg_reporting#sitenorm
+#           GIP data.
+#                 AGLT2              2698
+#                 GLOW               2108
+#                 PROD_SLAC          2412
+#           Added Purdue_Steele with Purdue_Lear factor to see if Brians
+#           site picks it up tomorrow.
+#   5/28/08 (John Weigand)
+#           Updates based on https://t2.unl.edu/gratia/wlcg_reporting#sitenorm
+#           GIP data.
+#             BU_ATLAS_Tier2      2022   previously 1487  
+#             Purdue-RCAC         1756   previously 1543
+#             Purdue-Steele       1756   previously 1285
+#   6/12/08 (John Weigand) 
+#           Updates based on https://t2.unl.edu/gratia/wlcg_reporting#sitenorm
+#           GIP data.
+#             MWT2_UC             1935   previously 1521
+#             Purdue-RCAC         2338   previously 1756
+#             Purdue-Steele       2529   previously 1756
+#   7/14/08 (Karthik Arunachalam)
+#           Updates based on https://t2.unl.edu/gratia/wlcg_reporting#sitenorm
+#           GIP data. 
+#            CIT_CMS_T2           2354   previously 2393
+#            UCSDT2               2497   previously 2023
+#            BNL_ATLAS_1          1593   previously 1393
+#            Purdue-Lear          1285   Removed (Taken out of service)
+#   7/24/08 (Karthik Arunachalam)
+#           Updates based on https://t2.unl.edu/gratia/wlcg_reporting#sitenorm
+#           GIP data. 
+#           Update because site name PROD_SLAC changed to WT2 (Equivalent of dropping PROD_SLAC and adding WT2)
+#            WT2                   2412  previously PROD_SLAC   2412
+#   8/26/08 (Karthik Arunachalam)
+#           Updates based on comparison of NFgip to NFapel at http://www.nhn.ou.edu/~karunach/nf.html
+#           Update logic: If NFgip &gt; NFapel then NFapel=NFgip. 
+#                         Else If NFgip &lt; NFapel then Contact site admin to see why NFgip dropped        
+#                         Else Do nothing. 
+#       --------------------------------------
+#       Site            NFgip   NFapel  %diff
+#       --------------------------------------
+#       CIT_CMS_T2      2398    2354    1  
+#       GLOW            2166    2108    2  
+#       MIT_CMS         1872    1364    37 
+#       Purdue-RCAC     2883    2338    23 
+#       Purdue-Steele   3196    2529    26 
+#       UCSDT2          2871    2497    14 
+#       BNL_ATLAS_1     1944    1593    22 
+#       MWT2_IU         1836    1787    2  
+#       MWT2_UC         1878    1935    -2 
+#       WT2             2171    2412    -9 
+#       SWT2_CPB        1877    1628    15 
+#       --------------------------------------
+#   12/1/08
+#       Updates based on http://t2.unl.edu/gratia/site_normalization
+#            Nebraska 2027   previously 1571
+#   
+#   02/17/09
+#       Updates based on http://t2.unl.edu/gratia/site_normalization
+#            Nebraska           1832   previously 2166 (drop confirmed through GOC ticket # 6366
+#            BNL_ATLAS_1        2302   previously 1944
+#            AGLT2              3130   previously 2698
+#
+#   02/24/2009
+#       Removing UFlorida-IHEPA (This site has been de-commissioned according to Bockjoo Kim)
+#
+#   02/28/2009 (John Weigand)
+#       Added UFlorida-IHEPA back (This site was decommissioned on 2/14 and
+#       merged into UFlorida-PG. It still counts toward MOU. per Bockjoo Kim.)
+#
+#  03/13/2009 (John Weigand)
+#    1. Removed UFlorida-IHEPA again.  
+#       Decommissioned 2/14/09.  Load assumed by UFlorida-PG
+#       Due to the changes made in the LCG.py process to allow for date
+#       sensitiviy of this file, it can be done at any time in the current month
+#    2. Removed UC_ATLAS_MWT2 - stopped being considered a T2 site in 
+#        2009/06 per Rob Gardner.  We never got word and just realized now.
+#   03/24/2009 (Karthik)
+#    GLOW       2408    previously 1832  (jump due to fixing of incorrect lower value assigned after an upgrade)
+#
+#  06/01/2009 (John Weigand)
+#    Re-added SPRACE (had been removed back mistakenly back in April 2008)
+#    at the request of CMS (Frank Wuerthwein).  They are in the org_Tier1
+#    table under country Brazil.
+#    Re-added HEPGRID_UERJ (had been removed back mistakenly back in April 2008)
+#    at the request of CMS (Ken Bloom). They are currently not in the org_Tier2
+#    table but are working toward an MOU agreement.  They will also be
+#    under Brazil.
+#
+#  06/18/2009
+#  CIT_CMS_T2   3046    previously 2398 (jump due to addition of 500 new cores)
+#
+#  01/04/2010 (Karthik Arunachalam)
+#  AGLT2        3507    previously 3130
+#
+#  01/27/2010 (John Wegiand)
+#    Added GridUNESP_CENTRAL as a part of the BR_SP_SPRACE fenderation.
+#    - they are part of SPRACE and have temporarily given them the same
+#      normalization factor.  This site may not have a steady load of
+#      cms/atlas jobs.
+#
+# 02/08/2010 (Karthik Arunachalam)
+# USCMS-FNAL-WC1-CE     1995    previously 1809
+# MWT2_IU               2339    previously 1836
+# UTA_SWT2              2851    previously 1543
+#
+# 03/03/2010 (Karthik Arunachalam)
+# Updated NFapel to the NFgip values for the following sites
+# ------------------------------------------------
+# Site                  NFgip   NFapel   %diff
+# ------------------------------------------------
+# GridUNESP_CENTRAL     3672    2117     73
+# UFlorida-HPC          2415    1521     58
+# BU_ATLAS_Tier2        2897    2022     43
+# MWT2_UC               2449    1935     26
+# ------------------------------------------------
+#
+# 07/09/2010 (Karthik Arunachalam)
+# Updated NFapel values to NFgip values for the following sites
+# ------------------------------------------------
+# Site                  NFgip   NFapel   %diff
+# ------------------------------------------------
+# USCMS-FNAL-WC1-CE     2566    1995    28
+# Nebraska              2603    2027    28
+# Purdue-RCAC           3031    2883    5
+#
+# 09/08/2010 (John Weigand)
+#     Added NERSC-PDSF with a 1160 SI2K value per Brian Bockleman email
+#
+# 09/13/2010 (Karthik Arunachalam)
+# Updated NFapel values to NFgip values for the following sites
+#---------------------------------------------------
+# Site                    NFgip   NFapel  % diff
+# ---------------------------------------------------
+# SPRACE                  3370    2117    59
+# OU_OCHEP_SWT2           4020    2389    68
+# ---------------------------------------------------
+#
+# 09/16/2010 (John Weigand)
+#   Updated NF for BNL_ATLAS_1 - from 2302 new 3225
+#
+# 09/22/2010 (Karthik Arunachalam)
+# Updated NFapel values to NFgip values for the following sites
+#---------------------------------------------------
+# Site                    NFgip   NFapel  % diff
+# ---------------------------------------------------
+# UCSDT2                  3310    2871    15
+# HEPGRID_UERJ            3196    2117    50
+#
+# 11/03/2010 (John Weigand)
+#   Changed NF for WT2 from 2412 to 3424
+#
+# 11/05/2010 (John Weigand)
+#   - Added HU_ATLAS_Tier2 based on MyOsg InteropAccounting setting
+#     and the fact that it is defined in the LCG Topology as a
+#     site for US_NET2.  Using BU_ATLAS_Tier2 NF until a real number
+#     is available.
+#   - Added Purdue-Rossmann based on MyOsg InteropAccouting setting
+#     and confirmation from the site admin on goc ticket 9500.
+#     They will not show in EGEE Tier2 until they register with LCG. 
+#     Using Purdue-Steele NF until one is available. 
+#    
+# 11/09/2010 (John Weigand)
+# Update NF values based on 10/26/10 GIP.  After 10/26, a bug in
+# Gratia (or somewhere else) is causing only deltas to show in the
+# Nebraska Subcluster table these are derived from.
+#---------------------------------------------------
+# Site                    NFgip   NFapel  % diff
+# ---------------------------------------------------
+# CIT_CMS_T2               3236    3046     6
+# Purdue-Rossmann          2810    3196   -12
+# HU_ATLAS_Tier2           3748    2897    29
+#
+# 11/11/2010 (John Weigand)
+# Update NF values for BNL_ATLAS_1 in preparation for changing from
+# reporting by resource group rather than resource as defined in MyOsg.
+# The GIP NF is based on BNL_ATLAS resource group. 
+#----------------------------------------
+# Site                    NFgip   NFapel
+# ---------------------------------------
+# BNL_ATLAS_1              3970     3225
+# 
+# 12/10/2010 (John Weigand)
+#   Adding LC-glcc for ALICE VO.  This is a CREAM CE and, at this time
+#   does not have the ability to report to GIP.  So, based on LC-glcc
+#   info on cluster:
+#     864 cores Intel(R) Xeon(R) CPU X5660 @ 2.80GHz
+#   using 3920 NF factor
+# 
+#   Changing NERSC-PDSF to 3420 based on this configuration they sent
+#   Cores SI2K  HS06   Model    
+#   ----  ---   -----  -----    
+#    20   1967         Dual-Core AMD Opteron(tm) Processor 2220
+#    96   3196         Intel(R) Xeon(R) CPU E5410  @ 2.33GHz
+#   672   4020         Intel(R) Xeon(R) CPU E5520  @ 2.27GHz
+#   180   2936  11.75  Intel(R) Xeon(R) CPU L5640  @ 2.27GHz (HS06 number)
+#   248   2347         Quad-Core AMD Opteron(tm) Processor 2350
+# 
+# 2/24/2011 (John Weigand)
+#   Changing normalization factors for these resources.
+#    ----------------------------------------
+#    Site                    NFgip   NFapel
+#    ---------------------------------------
+#    AGLT2                   4489    3507
+#    BU_ATLAS_Tier2          3383    2897
+#    SWT2_CPB                2330    1877  
+#
+#   AGLT2 should have been changed in Januuary.
+#   BU_ATLAS_Tier2 and SWT2_CPB should have been changed in December.
+#   (these respective months will be rerun)
+# 
+# 3/17/2011 (Karthik Arunachalam)
+# Changing WT2&#39;s KSI2K value based on what Wei Yang of SLAC provided
+# (10.6 as the weighted average HS06 value for WT2), which when divided
+# by 4 yields 2.65 KSI2K 
+#    ----------------------------------------
+#    Site                    NFgip   NFapel
+#    ---------------------------------------
+#    WT2                     3424    2650
+# 
+# 
+# 3/18/2011 (Karthik Arunachalam)
+# Current SI2K values contained here for USATLAS is taken from the GIP and it is deemed inaccurate,
+# since when converting these to HS06 values by multiplying by 4, they don&#39;t match with the 
+# HS06 values directly calculated for the site. To fix this discrepancy,
+# I Updated the SI2K values for all USATLAS sites based on the values
+# contained in the spreadsheet maintained by Rob Gardner at
+# http://www.usatlas.bnl.gov/twiki/bin/view/Admins/CapacitySummary.html
+# The direct link to this particular spreadsheet is
+# http://www.usatlas.bnl.gov/twiki/bin/view/Admins/CapacitySummary.html
+# The direct link to this particular spreadsheet is
+# http://www.usatlas.bnl.gov/twiki/bin/view/Admins/rsrc/Admins/CapacitySummary/Normalization-factors-USATLAS-v19-v1.xls
+# This spreadsheet maintains the average HEPSPEC values for all the USATLAS sites
+# The SI2K equivalent is obtained by dividing this HEPSPEC value by 4,
+# and this is the value to which the USATLAS sites have been updated below
+# For example the average HEPSPEC value for AGLT2 in Rob Gardner&#39;s spreadsheet above
+# is 8.50. So the equivalent SI2K value is
+# SI2K = HEPSPEC * 1000/4       = 8.50 * 1000/4 = 2125
+# Here are the updates i.e. old values vs new values for all the USATLAS sites
+#========================================
+#                     Old       New
+#========================================
+#--- ATLAS Tier 1 ----
+# BNL_ATLAS_1         3970     3093
+#--- ATLAS Tier 2 ----
+# AGLT2               4489      2125
+# BU_ATLAS_Tier2      3383      2003
+# HU_ATLAS_Tier2      3748      2218
+# IU_OSG              2101      1400
+# MWT2_IU             2339      2170
+# MWT2_UC             2449      2178
+# OU_OCHEP_SWT2       4020      2413
+# WT2                 2650      2650
+# SWT2_CPB            2330      1865
+# UTA_SWT2            2851      2810
+#
+#
+# 3/28/2011 (Karthik Arunachalam)
+# Remove IU_OSG from WLCG reporting.
+# Reason: IU_OSG is marked inactive and removed in MyOSG
+# and has the InterOp accounting flag set to false. It
+# doesn&#39;t participate in WLCG reporting anymore.
+#
+#
+# 04/29/2011 (Karthik Arunachalam)
+# -------------------------------------
+# Site                old       new
+# -------------------------------------
+# BU_ATLAS_Tier2      2003      2095
+# OU_OCHEP_SWT2       2413      2255
+# SWT2_CPB            1865      2107
+#
+# 07/11/2011 (John Weigand)
+#  1. removed MWT2_IU effective for July 2011 per goc ticket 10543
+#     There is another resource (MWT2) expected to be added to
+#     resource group MWT2_UC sometime in the future.
+#  2. Changed NF for:
+# -------------------------------------
+# Site      old       new
+# -------------------------------------
+# WT2      2650      2823
+#     based on this rationale from Wei Yang..
+#     Since WT2 is using HS06factor = 10.6 now and we see 6.1%
+#     under reporting, I would like to update the HS06Factor to
+#        10.6/(1-6.1%) = 11.29
+#
+# 08/08/2011 (John Weigand)
+# Per conversation with Rob Gardner, added MWT2 with a the
+# following FN factor:
+#   MWT2  HS 8.712   SI2K 2178
+# MWT2 will be removed as a resource under MWT2_UC and added as a
+# resource group by itself.  MWT2_UC will eventually be deprecated.
+# If this is not done, we will be double reporting MWT2 resource
+# under MWT2 and MWT2_UC resource groups.
+#
+#
+# 08/16/11 (John Weigand)
+#  Changed to using resource group as the aggregator.  This affected
+#  only the Tier 1 sites.  Name changes affected:
+#     old               new
+#   --------------      -----------------
+#   USCMS-FNAL-WC1-CE   USCMS-FNAL-WC1
+#   BNL_ATLAS_1         BNL-ATLAS
+#
+#
+# 08/24/11 (John Weigand)
+#   Removed HEPGRID_UERJ based on goc ticket 10904
+#    https://ticket.grid.iu.edu/goc/viewer?id=10904
+#   (this was part of an attempt to clean up MyOSG/OIM data)
+#
+# 10/3/11 (John Weigand) 
+#   Added Purdue-Hansen with SI2K NF of 2170 
+# 
+# 10/11/11 (John Weigand)
+#    Updated NF factor per Jeff Porter for NERSC-PDSF
+#       old  3420      3480
+# 
+# 1/1/12 (John Weigand
+#    Removed MWT2_UC.  Site has been disabled. Load going to MWT2
+#
+##################################################################
+# 
+#-- Site  ------- SPECint2000
+# 
+#--- CMS Tier 1 ----    
+USCMS-FNAL-WC1      2566        
+#--- CMS Tier 2 ----    
+CIT_CMS_T2          3236        
+GLOW                2408
+MIT_CMS             1872
+Nebraska            2603
+Purdue-RCAC         3031
+Purdue-Steele       3196
+Purdue-Rossmann     2810
+Purdue-Hansen       2170
+UCSDT2              3310
+SPRACE              3370
+GridUNESP_CENTRAL   3672
+UFlorida-HPC        2415
+UFlorida-PG         1535 
+#
+#
+####################################
+####################################
+#--- ATLAS Tier 1 ----
+BNL-ATLAS           3093 
+#--- ATLAS Tier 2 ----
+AGLT2               2125
+HU_ATLAS_Tier2      2218
+BU_ATLAS_Tier2      2095
+MWT2                2178
+OU_OCHEP_SWT2       2255
+WT2                 2823
+SWT2_CPB            2107
+UTA_SWT2            2810
+# 
+# 
+# 
+####################################
+####################################
+#--- ALICE Tier 2 ----
+NERSC-PDSF          3480 
+LC-glcc             3920 
+
+&lt;/pre&gt;&lt;/blockquote&gt;
+
+-- Main.JohnWeigand - 08 Aug 2011

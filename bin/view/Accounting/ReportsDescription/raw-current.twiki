@@ -1,0 +1,621 @@
+%TOC%
+---++ Report Installation Guide
+ * [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallGratiaReporting][Download and configure mailed gratia reports]]
+---++Description of Accounting Reports
+---+++Python reports
+This page will make an attempt to describe/explain the accounting reports that are part of the gratia account reporting mechanism. Gratia accounting collects data from various grid resources and populates them into a database. This data is then used to generate reports that are sent to end users, site admins, management and stakeholders. These reports form an important part of the gratia accounting mechanism in the sense it provides a quick summary of the big picture of Grid Accounting. These reports have a significant impact in terms of understanding the accountability of resources, how efficiently these resources are being utilized, by whom, when and much more. 
+
+All the scripts that generate and email the report are contained in the gratia trunk/reporting/summary. The main scripts are the daily and range. Also involved are the  perl reports (all-sites-oim, all-vos-oim, failure-by-vo-site, osg-users).
+
+Given below are the description of the reports in no particular order. To give you a good idea of how the report looks like, we have tried to include a complete sample report whenever possible. The frequency of when these reports are sent out (daily, weekly or monthly) vary. Note that each of these reports have the flexibility to be generated either for a specific date or for a range of dates. 
+
+&lt;ol&gt;
+&lt;li&gt;
+---++++Report from the job level Gratia db
+
+This report provides the job level accounting information from the Gratia database. To start with, this report provides a big picture summary of the job based accounting information based on sites and then provides multiple sub reports that contain the OSG usage summary statistics for the jobs that finished for a given date or a date range. The OSG usage summary is based on different permutations and combinations of sites and VOs. 
+
+Report invocation hierarchy: &lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; daily&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; range
+
+&lt;b&gt;How one could receive this report:&lt;/b&gt;
+
+You could receive the &lt;b&gt;&quot;Report from the job level Gratia db&quot;&lt;/b&gt; report by subscribing to the &lt;font color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list. Note: This is a single report (consisting of multiple sub-reports as explained below) that that will be sent. &lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/ReportFromTheJobLevelGratiaDb&gt;Click here&lt;/a&gt; to view a complete sample report. 
+
+Each of the sub reports that this report contains are explained in more detail below. 
+&lt;ul&gt;
+&lt;li&gt;
+Report name: &lt;b&gt;RangeSumup&lt;/b&gt;
+
+Report category: Site and VO reports
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; daily -&gt; AccountingReports.RangeSumup&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; range -&gt; AccountingReports.RangeSumup
+
+Purpose of the report:
+        This report provides a big picture summary of how the different sites have (and not have) reported in regard to accounting data i.e. it provides information like how many sites reported, how many sites didn&#39;t report, how may sites had no activity, the non-reporting sites etc. It provides the name of the corresponding sites whereever appropriate. This report also provides a big picture summary of how the various VOs have reported with respect to activity.
+&lt;hr color=blue&gt;
+&lt;/li&gt;
+
+&lt;li&gt;
+Report name: &lt;b&gt;DailySiteReport&lt;/b&gt;
+
+Report category: Site report
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; daily -&gt; AccountingReports.DailySiteReport&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; range -&gt; AccountingReports.DailySiteReport
+
+Purpose of report:
+        This report provides the summary of site based utilization of grid resources. This report contains the following information:
+
+&lt;pre&gt;
+----------------------------------------------------------------
+ Site | # of Jobs | Wall Duration | Delta jobs | Delta duration
+----------------------------------------------------------------
+&lt;/pre&gt;
+
+The following is an explanation of the various columns. This is generally
+applicable for any report that contains these fields
+
+Wall Duration is expressed in hours and rounded to the nearest hour.
+Wall Duration is the duration between the instant the job start running and
+the instant the job ends its execution.
+The number of jobs counted here includes only the jobs directly seen by batch
+system and does not include the request sent directly to a pilot job.
+The Wall Duration includes the total duration of the the pilot jobs.
+Deltas are the differences with the previous day.
+(nr) after a VO name indicates that the VO is not registered with OSG.
+
+&lt;hr color=blue&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+Report name: &lt;b&gt;DailyVOReport&lt;/b&gt;
+
+Report category: VO report
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; daily -&gt; AccountingReports.DailyVOReport&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; range -&gt; AccountingReports.DailyVOReport
+
+Purpose of report:
+        This report provides the summary of VO based utilization of grid resources. This report contains the following information:
+
+&lt;pre&gt;
+--------------------------------------------------------------
+ VO | # of Jobs | Wall Duration | Delta jobs | Delta duration
+--------------------------------------------------------------
+&lt;/pre&gt;
+
+&lt;hr color=blue&gt;
+&lt;/li&gt;
+
+&lt;li&gt;
+
+Report name: &lt;b&gt;DailySiteVOReport&lt;/b&gt;
+
+Report category: Site report
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; daily -&gt; AccountingReports.DailySiteVOReport&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; range -&gt; AccountingReports.DailySiteVOReport
+
+Purpose of report:
+        This report provides the summary of Site based utilization of grid
+resources, grouped by VOs. This report contains the following information:
+
+&lt;pre&gt;
+----------------------------------------------------------------------
+ Site | VO | # of Jobs | Wall Duration | Delta jobs | Delta duration
+----------------------------------------------------------------------
+&lt;/pre&gt;
+
+&lt;hr color=blue&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+Report name: &lt;b&gt;DailyVOSiteReport&lt;/b&gt;
+
+Report category: VO report
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; daily -&gt; AccountingReports.DailyVOSiteReport&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; range -&gt; AccountingReports.DailyVOSiteReport
+
+Purpose of report:
+        This report provides the summary of VO based utilization of grid resources, grouped by Sites. This report contains the following information:
+
+&lt;pre&gt;
+---------------------------------------------------------------------
+ VO | Site | # of Jobs | Wall Duration | Delta jobs | Delta duration
+---------------------------------------------------------------------
+&lt;/pre&gt;
+
+&lt;hr color=blue&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+---++++New users on OSG
+
+This report contains information about the users whose very first job finished on a OSG site on a given date or a date range specified. Below is a sample header as contained in the report. &lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/newUsersOnOSG&gt;Click here&lt;/a&gt; to view a complete sample report. 
+
+&lt;pre&gt;
+The following users&#39;s CN very first&#39;s job on on the OSG site finished 
+between 2010-05-02 - 2010-05-03 (midnight UTC - midnight UTC):
+----------------------------------------------------------------------------------------------------
+   | Site Name            | VO              | Probe Name                     | User                
+----------------------------------------------------------------------------------------------------
+&lt;/pre&gt;
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; newUsers -&gt; AccountingReports. NewUsers
+
+This report could be received by subscribing to the &lt;font color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list. 
+&lt;/li&gt;
+&lt;li&gt;
+---++++Job Success Rate by Site
+This report provides a summary of the job success rate by site. Shown below is part of the report header. &lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/jobSuccessRateBySite&gt;Click here&lt;/a&gt; to view a complete sample report. 
+
+&lt;pre&gt;
+--------------------------------------------------------------------------------------------------------------------
+ Site | Wall Succ Rate | Wall Success | Wall Failed | Success Rate |    Success |     Failed
+--------------------------------------------------------------------------------------------------------------------
+&lt;/pre&gt;
+
+Here are the description of the header information:
+
+Wall Success: Wall clock hours of successfully completed jobs&lt;br&gt;
+Wall Failed: Wall clock hours of unsuccessfully completed jobs&lt;br&gt;
+Wall Success Rate: Wall Success / (Wall Success + Wall Failed)&lt;br&gt;
+Success: number of successfully completed jobs&lt;br&gt;
+Failed: Number of unsuccessfully completed jobs&lt;br&gt;
+Success Rate: number of successfull jobs / total number of jobs&lt;br&gt;
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; dailyStatus -&gt; AccountingReports.GenericDailyStatus
+
+This report could be received by subscribing to the &lt;font color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list. 
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++Job Success Rate by VO
+
+This report provides a summary of the job success rate by VO. Shown below is part of the report header. &lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/jobSuccessRateByVO&gt;Click here&lt;/a&gt; to view a complete sample report. 
+
+&lt;pre&gt;
+--------------------------------------------------------------------------------------------------------------------------------
+VO                     | Wall Succ Rate | Wall Success | Wall Failed | Success Rate |    Success |     Failed
+--------------------------------------------------------------------------------------------------------------------------------
+&lt;/pre&gt;
+
+Here are the description of the header information:
+
+Wall Success: Wall clock hours of successfully completed jobs&lt;br&gt;
+Wall Failed: Wall clock hours of unsuccessfully completed jobs&lt;br&gt;
+Wall Success Rate: Wall Success / (Wall Success + Wall Failed)&lt;br&gt;
+Success: number of successfully completed jobs&lt;br&gt;
+Failed: Number of unsuccessfully completed jobs&lt;br&gt;
+Success Rate: number of successfull jobs / total number of jobs&lt;br&gt;
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; dailyStatus -&gt; AccountingReports.GenericDailyStatus (need to give --groupby=VO option from command line)
+
+This report could be received by subscribing to the &lt;font color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list. 
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++Job Success Rate by Site and VO
+
+This report provides a summary of the job success rate by Site and VO. Shown below is part of the report header. &lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/jobSuccessRateBySiteAndVO&gt;Click here&lt;/a&gt; to view a complete sample report. 
+
+&lt;pre&gt;
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+     | Site                   | VO                     | Wall Succ Rate | Wall Success | Wall Failed | Success Rate |    Success |     Failed
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+&lt;/pre&gt;
+
+Here are the description of the header information:
+
+Wall Success: Wall clock hours of successfully completed jobs&lt;br&gt;
+Wall Failed: Wall clock hours of unsuccessfully completed jobs&lt;br&gt;
+Wall Success Rate: Wall Success / (Wall Success + Wall Failed)&lt;br&gt;
+Success: number of successfully completed jobs&lt;br&gt;
+Failed: Number of unsuccessfully completed jobs&lt;br&gt;
+Success Rate: number of successfull jobs / total number of jobs&lt;br&gt;
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; dailyStatus -&gt; AccountingReports.GenericDailyStatus (need to give --groupby=BOTH option from command line)
+
+This report could be received by subscribing to the &lt;font color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list. 
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++Data transfer report summary by site
+This report provides the OSG Data transfer summary for a given date or date range  (midnight UTC - midnight UTC)
+including all data that transferred in that time period. It also provides the deltas, which are the differences with the previous period. Below is part of the header for the report. &lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/dataTransferReportSummaryBySite&gt;Click here&lt;/a&gt; to view a complete sample report. 
+
+&lt;pre&gt;
+--------------------------------------------------------------------------------------------------------------------------
+ Site     | Protocol                  |    Num transfer |  Delta transfer |     Number of MiB |         Delta MiB
+--------------------------------------------------------------------------------------------------------------------------
+&lt;/pre&gt;
+
+It also provides other information like storage resources with no activity, non reporting storage resources and more. 
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; transfer -&gt;  AccountingReports.DataTransferSumup
+
+This report could be received by subscribing to the &lt;font color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list. 
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++Gratia Summary for VO: engage 
+This report provides the summary of the job exit status for the engage VO, (midnight to midnight central time) for a given date or a date range including all jobs that finished in that time period.
+For Condor the value used is taken from &#39;ExitCode&#39; and NOT from &#39;Exit Status&#39;
+
+The report provides the following information as shown in the header below. &lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/gratiaSummaryForEngageVO&gt;Click here&lt;/a&gt; to view a complete sample report. 
+&lt;pre&gt;
+------------------------------------------------------------------------------------------------------------------------------
+ Site                   | Wall Succ Rate | Wall Success | Wall Failed | Success Rate |    Success |     Failed 
+------------------------------------------------------------------------------------------------------------------------------
+&lt;/pre&gt;
+
+This report also provides the 
+OSG usage summary for  a given date or date range (midnight UTC - midnight UTC) for the engage VO, 
+including all jobs that finished in that time period as shown in the header below:
+
+&lt;pre&gt;
+----------------------------------------------------------------------------------------------------------------------
+ VO                     | User                                | # of Jobs | Wall Duration | Delta jobs | Delta duration
+----------------------------------------------------------------------------------------------------------------------
+&lt;/pre&gt;
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; dailyForVO -&gt; AccountingReports.GenericDailyStatus
+
+This report could be received by subscribing to the &lt;font color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list. 
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++Gratia Summary for VO: osg
+This report provides the summary of the job exit status for the osg VO, (midnight to midnight central time) for a given date or a date range including all jobs that finished in that time period.
+For Condor the value used is taken from &#39;ExitCode&#39; and NOT from &#39;Exit Status&#39;
+
+The report provides the following information as shown in the header below. &lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/gratiaSummaryForOsgVO&gt;Click here&lt;/a&gt; to view a complete sample report. 
+&lt;pre&gt;
+------------------------------------------------------------------------------------------------------------------------------
+ Site                   | Wall Succ Rate | Wall Success | Wall Failed | Success Rate |    Success |     Failed 
+------------------------------------------------------------------------------------------------------------------------------
+&lt;/pre&gt;
+
+This report also provides the 
+OSG usage summary for  a given date or date range (midnight UTC - midnight UTC) for the osg VO, 
+including all jobs that finished in that time period as shown in the header below:
+
+&lt;pre&gt;
+----------------------------------------------------------------------------------------------------------------------
+ VO                     | User                                | # of Jobs | Wall Duration | Delta jobs | Delta duration
+----------------------------------------------------------------------------------------------------------------------
+&lt;/pre&gt;
+
+
+Report invocation hierarchy:&lt;br&gt;
+        daily_mail_cron.sh -&gt; daily_mutt.sh -&gt; dailyForVO -&gt; AccountingReports.GenericDailyStatus
+
+This report could be received by subscribing to the &lt;font color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list. 
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++Report of jobs longer than 7 days
+
+This report gives a summary of long running jobs that finished on a specified date or a in given date range.
+
+Below is the sample header contained in the report. &lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/jobsLongerThan7Days&gt;Click here&lt;/a&gt; to view a complete sample report. 
+ 
+---------------------------------------------------------------------------------------
+     | Site               | VO             | # of Jobs | Avg Wall | % Cpu | Max EndTime
+---------------------------------------------------------------------------------------
+
+Wall Duration is expressed in days to the nearest days.&lt;br&gt;
+% Cpu is the percentage of the wall duration time where the cpu was used.&lt;br&gt;
+Only jobs that last 7 days or longer are counted in this report.&lt;br&gt;
+
+Report invocation hierarchy:&lt;br&gt;
+	range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; longjobs -&gt; AccountingReports.LongJobs
+
+This report could be received by subscribing to the &lt;font
+color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list. 
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++Summary on how sites are reporting to Gratia
+
+This report indicates which sites Gratia has heard from or have known
+activity.&lt;br&gt;
+
+&lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/summaryOnHowSitesAreReportingToGratia&gt;Click here&lt;/a&gt; to view a complete sample report. 
+
+Report invocation hierarchy:&lt;br&gt;
+	range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; reporting -&gt; AccountingReports.NonReportingSites 
+
+This report could be received by subscribing to the &lt;font
+color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list. 
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++Report by user
+
+This report provides the job summary information based on users under whose DN
+the jobs ran. Below is the sample header for the report. &lt;a
+href=https://twiki.grid.iu.edu/bin/view/Accounting/summaryOnHowSitesAreReportingToGratia&gt;Click
+here&lt;/a&gt; to view a complete sample report.
+
+----------------------------------------------------------------------------------------------------------------------
+     | VO                     | User                                | # of Jobs | Wall Duration | Delta jobs | Delta duration
+----------------------------------------------------------------------------------------------------------------------
+
+Wall Duration is expressed in hours and rounded to the nearest hour. Wall Duration is the duration between the instant the job started running and the instant the job ended its execution.  Deltas are the differences with the previous period.
+
+Report invocation hierarchy:&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; usersreport -&gt;  AccountingReports.RangeUserReport
+
+This report could be received by subscribing to the &lt;font
+color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list.
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++OSG Efficiency by VO
+
+This report provides a summary of the efficiency of the jobs that ran for a
+particular VO grouped by the number of cores that these jobs ran on. The
+efficiency is calculated in terms of the ratio of the Cpu to Wall duration.
+
+Below is a sample header for the report. &lt;a
+href=https://twiki.grid.iu.edu/bin/view/Accounting/osgEfficiencyByVO&gt;Click
+here&lt;/a&gt; to view a complete sample report. 
+
+-------------------------------------------------------------------------------------------------------------
+  #   | VO |   Cores |     Njobs |     Delta |      Wall | #   Delta | CpuToWall |     Delta | %Effi | Delta
+--------------------------------------------------------------------------------------------------------------
+
+Wall Duration (Wall) is expressed in hours and rounded to the nearest hour.
+Wall Duration is the duration between the instant the job started running
+and the instant the job ended its execution.
+Deltas are the differences with the previous period.
+
+Report invocation hierarchy:&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; voefficiency -&gt; AccountingReports.EfficiencyRange 
+
+This report could be received by subscribing to the &lt;font
+color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list.
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++OSG Efficiency by VO by time period
+
+This report provides the OSG Efficiency by VO by time period i.e. efficiency
+of jobs that finished for a particular VO grouped by the number of cores on
+which the jobs ran. 
+
+Below is a sample header for the report. &lt;a
+href=https://twiki.grid.iu.edu/bin/view/Accounting/osgEfficiencyByVOByTimePeriod&gt;Click
+here&lt;/a&gt; to view a complete sample report. 
+
+------------------------------------------------------------------------
+  #   | VO             |     Cores |    1 Days |    7 Days |   30 Days 
+------------------------------------------------------------------------
+
+Wall Duration is expressed in hours and rounded to the nearest hour. Wall
+Duration is the duration between the instant the job started running
+and the instant the job ended its execution.
+Cpu Duration is the sum for each core that participated to the job 
+of the amount of time the core participated actively to the job.
+
+Report invocation hierarchy:&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; gradeefficiency -&gt; AccountingReports.EfficiencyGraded 
+
+This report could be received by subscribing to the &lt;font
+color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list.
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++OSG Efficiency by Site and VO
+
+This report provides the efficiency of finished jobs based on the site, vo and
+number of cores. 
+
+Below is a sample header for the report.  &lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/osgEfficiencyBySiteAndVO&gt;Click
+here&lt;/a&gt; to view a complete sample report. 
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Site                   | VO              |     Cores |     Njobs | #   Delta |      Wall |      Delta | CpuToWall | Delta | %Effi | Delta
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+Wall Duration (Wall) is expressed in hours and rounded to the nearest hour.
+Wall
+Duration is the duration between the instant the job started running
+and the instant the job ended its execution.
+Deltas are the differences with the previous period.
+
+Report invocation hierarchy:&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; efficiency -&gt; AccountingReports.EfficiencyRange 
+
+This report could be received by subscribing to the &lt;font
+color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list.
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++VO discrepancy report 
+
+This report provides information about VO discrepancy that occurs between the
+VOs registered in the OSG Information Management (OIM) system and the VOs that
+are being reported to gratia. This report categorizes the discrepancies into
+different types. You can view more details by &lt;a
+href=https://twiki.grid.iu.edu/bin/view/Accounting/osgEfficiencyBySiteAndVO&gt;viewing
+&lt;/a&gt; the sample report.
+
+Report invocation hierarchy:&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; compareVOs.py
+
+This report could be received by subscribing to the &lt;font
+color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list.
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++Report by user by site
+
+This report provides information about the # of jobs that finished for a
+particular user, the wall duration based on the VO and the Site the jobs ran
+on. Below is a sample header of the report. &lt;a
+href=https://twiki.grid.iu.edu/bin/view/Accounting/reportByUserBySite&gt;Click
+here&lt;/a&gt; to view a complete sample report. 
+
+------------------------------------------------------------------------------------------------------------------------------
+     | User                                | VO             | Site | # of Jobs | Wall Duration | Delta jobs | Delta duration
+-------------------------------------------------------------------------------------------------------------------------------
+
+Wall Duration is expressed in hours and rounded to the nearest hour. Wall
+Duration is the duration between the instant the job started running
+and the instant the job ended its execution.
+Deltas are the differences with the previous period.
+
+Report invocation hierarchy:&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; usersitereport -&gt;  AccountingReports.RangeSiteUserReport
+
+This report could be received by subscribing to the &lt;font
+color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list.
+
+&lt;/li&gt;
+&lt;li&gt;
+---++++OSG Installed Probe Versions
+
+This reports list the current version of the Gratia probe(s) installed and
+reporting at each site. Only sites registered in OIM are listed.
+Below is a sample header for the report. &lt;a
+href=https://twiki.grid.iu.edu/bin/view/Accounting/osgInstalledProbeVersions&gt;Click
+here&lt;/a&gt; to view a complete sample report.
+
+------------------------------------------------------------------------------------
+ Site                 | Software         | Release      | Last Contact | Probe name
+------------------------------------------------------------------------------------
+
+Report invocation hierarchy:&lt;br&gt;
+        range_mail_cron.sh -&gt; range_mutt.sh -&gt; range_mutt_nightly.sh -&gt; softwareVersions -&gt; AccountingReports.SoftwareVersion
+
+This report could be received by subscribing to the &lt;font
+color=blue&gt;osg-accounting-info@fnal.gov&lt;/font&gt; mailing list.
+
+&lt;/li&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+---+++Perl reports
+&lt;ol&gt;
+&lt;li&gt;
+---++++OSG site metrics report
+
+This report consists of  gratia site-oriented statistics for OSG usage
+for a given time period. It also compares the statistics for the current time period with the previous time period. Data are only included for jobs that *completed* in the period in question. Here is an example of what the report contains:
+
+&lt;pre&gt;
+Summary of active reporting names:
+____________________________________________________________________________________________
+| Reporting Name |    Job   | # Sites | # Jobs  |   Wall    | Delta |  Delta  | Delta Wall |
+|                | Success? |         |         | Time (h)  | Sites |  Jobs   |  Time (h)  |
+|________________|__________|_________|_________|___________|_______|_________|____________|
+|     usatlas    |    Yes   |   26    | 3037666 | 1283083.6 |  -16  | +848877 | -1590114.6 |
+|     usatlas    |    No    |   26    |    7948 |   24817.8 |  -16  |    -813 |   -15668.7 |
+============================================================================================
+
+Site summary: 
+________________________________________________________________________________________________
+|      SiteName       |    Job   | # Users | # Jobs  |   Wall   | Delta |  Delta  | Delta Wall |
+|                     | Success? |         |         | Time (h) | Users |  Jobs   |  Time (h)  |
+|_____________________|__________|_________|_________|__________|_______|_________|____________|
+| AGLT2               |    Yes   |    7    |  484034 | 150133.0 |  +7   |  +57892 |  -452513.2 |
+| AGLT2               |    No    |    7    |     417 |    839.5 |  +7   |    +169 |     -289.8 |
+| AGLT2_CE_2          |    Yes   |    3    |    3539 |     20.7 |  +3   |     -10 |       -6.4 |
+| BELLARMINE-ATLAS-T3 |    Yes   |    1    |       2 |      0.1 |  +1   |     -40 |       -1.2 |
+.....
+.....
+
+
+|                        CN                        |        Site         |    Job   |  # Jobs  |    Wall    |    Delta   |  Delta Wall  |
+|                                                  |                     | Success? |          |  Time (h)  |    Jobs    |   Time (h)   |
+|__________________________________________________|_____________________|__________|__________|____________|____________|______________|
+| /CN=Nurcan Ozturk 18551                          | AGLT2               |    Yes   |   476392 |   147109.7 |     +58426 |    -455045.6 |
+| /CN=Nurcan Ozturk 18551                          | AGLT2               |    No    |      413 |      839.5 |       +199 |       -289.8 |
+| /CN=Nurcan Ozturk 18551                          | BNL_ATLAS_1         |    Yes   |  1274521 |   391389.0 |    +251847 |    -344023.2 |
+| /CN=Nurcan Ozturk 18551                          | BNL_ATLAS_1         |    No    |     3540 |    16024.7 |      -1582 |      -3418.6 |
+.....
+.....
+
+&lt;/pre&gt;
+
+Usually these reporting scripts are run in the server at Fermilab and mailed to the site admins who are responsible for a particular site. The emails of the recipients are pulled from the OIM interface. 
+
+To get specific help on how to run this report, please look at the help function of the report by doing the following:
+
+&lt;pre&gt;
+perl all-sites-oim --help
+&lt;/pre&gt;
+&lt;/li&gt;
+
+&lt;li&gt;
+---++++OSG metrics for VOs
+
+These reports contains  the Gratia statistics for OSG usage for a particular VO
+for a specific time period. Data are only included for jobs that *completed* in the period in question. Deltas for the report are calculated and provided with respect to the previous time period. The emails to which the reports must be sent is gathered from either a configuration file that could be customized or from OIM or both. 
+
+Example of a typical report is provided below:
+&lt;pre&gt;
+------------------------------------------------------------------------
+Comparing current data for week 2011-03-21 - 2011-03-27 (inclusive)
+to previous week 2011-03-14 - 2011-03-20 (inclusive).
+
+Days start and end at midnight UTC.
+
+ Current week&#39;s total usage: 13 users utilized 43 sites;
+                             24391 jobs total (16370 / 8021 = 67.1% success);
+                             95808.8 wall clock hours total (82080.5 / 13728.3 = 85.7% success);
+Previous week&#39;s total usage: 18 users utilized 44 sites;
+                             37974 jobs total (27876 / 10098 = 73.4% success);
+                             138220.6 wall clock hours total (127670.7 / 10549.9 = 92.4% success);
+
+Active reporting name: Engage:engage
+
+Site summary: 
+_______________________________________________________________________________________________
+|       SiteName       |    Job   | # Users | # Jobs |   Wall   | Delta |  Delta | Delta Wall |
+|                      | Success? |         |        | Time (h) | Users |  Jobs  |  Time (h)  |
+|______________________|__________|_________|________|__________|_______|________|____________|
+| BNL_ATLAS_1          |    Yes   |    6    |   385  |   1378.5 |  +6   |    +29 |    +726.3  |
+| BNL_ATLAS_1          |    No    |    6    |     0  |      0   |  +6   |    -36 |    -478.5  |
+| CIT_CMS_T2           |    Yes   |    2    |    42  |     14.0 |  +2   |     +4 |     -17.0  |
+
+|                        CN                        |         Site         |    Job   |  # Jobs  |    Wall    |    Delta   |  Delta Wall  |
+|                                                  |                      | Success? |          |  Time (h)  |    Jobs    |   Time (h)   |
+|__________________________________________________|______________________|__________|__________|____________|____________|______________|
+| /CN=Vivek Bhattacharya 796436                    | BNL_ATLAS_1          |    Yes   |       18 |       26.7 |        -65 |       -507.0 |
+| /CN=Vivek Bhattacharya 796436                    | Clemson-Palmetto     |    Yes   |       66 |       52.9 |        +12 |       -346.8 |
+.....
+.....
+
+&lt;/pre&gt;
+
+More details on how to run this report or specific help information could be obtained by doing:
+
+&lt;pre&gt;
+perl all-vos-oim --help
+&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+
+
+-- Main.KarthikArun - 21 Apr 2010
+

@@ -1,0 +1,238 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+---+ Wednesday Exercise 1.3: Wrapper scripts for pre-packaged code.
+
+In this exercise, you will create an installation of a molecular dynamics simulation package (GROMACS) and then create \
+a wrapper script to unpack that installation to run jobs.  It should take 40-45 minutes.  
+
+---++ Background 
+
+Our last exercise for this session is the most important.  Some software cannot be compiled into a 
+single executable.  
+In this case, it is necessary to create a &quot;wrapper&quot; script (usually in bash or 
+perl) that is able to &quot;install&quot; the software on a per job basis.  This script can either 
+install the software from the source code, or (as in this exercise), unpack a portable software 
+package that you&#39;ve pre-built yourself. Not only 
+does this portability technique work with almost any kind of software that can be 
+locally installed, it also allows for a great deal of control and flexibility 
+for what happens within your job.  Once you can write a script to handle your software 
+(and often your data as well), you can submit a large variety of workflows to a distributed computing 
+system like the Open Science Grid.  
+
+---++ Our Software Example
+
+For this exercise, we will be using the molecular dynamic simulation software package GROMACS.  GROMACS is a good example of 
+software that is not compiled to a single executable: a researcher may want to run multiple GROMACS commands in order to 
+complete a full simulation.  
+
+   1. Do an internet search to find the GROMACS software downloads page.  
+   1. Create a directory for this exercise on the CHTC submit server =learn.chtc.wisc.edu= (*not* =osg-learn.chtc.wisc.edu=), and download GROMACS version 5.1.2 into that directory.  
+
+---++ Where to Prepare
+
+Our goal is to pre-build a GROMACS installation, and then write a script that will unpack that installation and run a simulation.  
+
+   1. Where can we create this pre-built installation?  Based on the end of the lecture, what are our options and which would be most appropriate?  Make a guess before moving on.  
+   1. Because we&#39;re on the CHTC-based submit node (=learn.chtc.wisc.edu=), we have the option of using an interactive job to build the GROMACS installation.  This is a good option because the submit server is already busy with lots of users and the GROMACS install will be longer than a minute or two.  To submit an interactive job do the following: 
+      1. Copy the following lines into a file named =build.submit= \
+&lt;pre class=&quot;file&quot;&gt;
+universe = vanilla
+
+output = build.out
+error = build.err
+log = build.log
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files = 
+
+request_disk = 2GB
+request_memory = 2GB
+
+# Make sure to get a session on CHTC&#39;s compiling servers:
++IsBuildJob = true
+requirements = (OpSysAndVer =?= &quot;SL6&quot;) &amp;&amp; ( IsBuildSlot == true )
+
+queue
+&lt;/pre&gt;
+      1. Note the lack of executable.  Condor doesn&#39;t need an executable for this job because it will be interactive, meaning _you_ are running the commands instead of Condor.  
+      1. In order to create the installation, we will need the source code to come with us.  The =transfer_input_files= line is blank - fill it in with the name of our GROMACS source tarball.  
+      1. To request an interactive job, we will add a =-i= flag to the =condor_submit= command.  The whole command you enter should look like this: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;condor_submit -i build.submit&lt;/strong&gt; 
+&lt;/pre&gt;
+
+---++ Read Through Installation Documentation
+
+While you&#39;re waiting for the interactive job to start, you can start reading the GROMACS installation documentation online. 
+
+   1. Find the installation documentation for GROMACS, by clicking through the link to installation instructions on the [[http://www.gromacs.org/Downloads][downloads page]].  We&#39;re using GROMACS 5.1.2 and we want to find the &quot;Installation Guide.&quot;  
+   1. [[http://manual.gromacs.org/documentation/5.1.2/install-guide/index.html][There&#39;s a lot of information about installation]]!  Which section of the documentation will likely have a quick overview of the installation process?  Guess which section, then move to the next item.  
+   1. A short installation overview will be likely be available in the section on [[http://manual.gromacs.org/documentation/5.1.2/install-guide/index.html#quick-and-dirty-installation][&quot;Quick and Dirty Installation&quot;]].  \
+Sure enough, that section provides the following information: \
+&lt;pre class=&quot;file&quot;&gt;
+1. Get the latest version of your C and C++ compilers.
+2. Check that you have CMake version 2.8.8 or later.
+3. Get and unpack the latest version of the GROMACS tarball.
+4. Make a separate build directory and change to it.
+5. Run cmake with the path to the source as an argument
+6. Run make, make check, and make install
+7. Source GMXRC to get access to GROMACS
+
+Or, as a sequence of commands to execute:
+
+$ tar xfz gromacs-5.1.2.tar.gz
+$ cd gromacs-5.1.2
+$ mkdir build
+$ cd build
+$ cmake .. -DGMX_BUILD_OWN_FFTW=ON -DREGRESSIONTEST_DOWNLOAD=ON
+$ make
+$ make check
+$ sudo make install
+$ source /usr/local/gromacs/bin/GMXRC
+&lt;/pre&gt;\
+\
+This is helpful because it gives a sense of \
+what steps are necessary to install GROMACS.  
+   1. What is the problem with the final line of installation instructions? \
+&lt;pre&gt;
+sudo make install
+&lt;/pre&gt;
+   1. =sudo= indicates the need for administrative privileges, which are not available \
+to you within a job.  You usually need administrative privileges if the software is being installed \
+in a system location like =/usr/bin= or =/usr/local=.  This means that we will have to change \
+at least one step in the install procedure to make sure that we&#39;re \
+installing to the job&#39;s working directory (where we have the ability to install software) instead of a \
+protected system location (where we don&#39;t have the ability to install software).  \
+Often, software&#39;s installation location can be set by using a &quot;prefix&quot; argument, typically during a configuration step \
+of the installation.  Try to find which section of the documentation talks about this and what the option is.  
+   1. This information appears in multiple places in the GROMACS installation guide: 
+      * At the beginning of the guide, the [[http://manual.gromacs.org/documentation/5.1.2/install-guide/index.html#typical-installation][Typical Installation]] \
+section has a line indicating an option, =-DCMAKE_INSTALL_PREFIX= that will allow you to set the installation location. 
+      * Later, in [[http://manual.gromacs.org/documentation/5.1.2/install-guide/index.html#installing-gromacs][Installing Gromacs]], it says the =make install= step will install the software to a location provided to the =cmake= installation step, and can be modified with the =-DCMAKE_INSTALL_PREFIX= option.  
+   1. So we will have to set the installation prefix to our job&#39;s working directory, using the &lt;pre&gt;-DCMAKE_INSTALL_PREFIX=/path/to/install/location&lt;/pre&gt; \
+argument to =cmake=.  
+
+---++ Installation
+
+Your interactive job should have started by now and we&#39;ve learned about installing our program.  Let&#39;s test it out.  Note that some of these steps may take a long time to complete.  
+
+   1. Run the commands to unpack the source code and make directories: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;tar xfz gromacs-5.1.2.tar.gz&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cd gromacs-5.1.2&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;mkdir build&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cd build&lt;/strong&gt;
+&lt;/pre&gt;\
+
+   1. The next step is using =cmake= with the =-DCMAKE_INSTALL_PREFIX= install option.  The job working directory is created uniquely for each job, so we won&#39;t be able to &quot;hard-code&quot; a specific path name into the argument like =/home/username= or =scratch/username=.  Luckily, we can use a special unix variable, =$(pwd)= to indicate the working directory.  =$(pwd)= gives an absolute path to the current working directory, and from there, you can add on a relative path to the location of your choice.  First, let&#39;s check our current location: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;echo $(pwd)&lt;/strong&gt; 
+/var/lib/condor/execute/slot1/dir_30435/gromacs-4.6.5/build
+&lt;/pre&gt; \
+If we want to install to the working directory (=/var/lib/condor/execute/slot1/dir_30435=), we will want to set the installation prefix as =$(pwd)/../..=.  So our =cmake= command will be this: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cmake .. -DGMX_BUILD_OWN_FFTW=ON -DREGRESSIONTEST_DOWNLOAD=ON -DCMAKE_INSTALL_PREFIX=$(pwd)/../../&lt;/strong&gt;
+&lt;/pre&gt;\
+Run this command to move to the next step.  \
+
+   1. Finish the installation:  \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;make&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;make check&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;make install&lt;/strong&gt;
+&lt;/pre&gt;\
+Note that these steps can take a long time!  Feel free to open a new tab/terminal window and make a second connection to =learn.chtc.wisc.edu= to start working on the \
+wrapper script and submit file steps below.  
+   1. *Go back to the job&#39;s main working directory*: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cd ../..&lt;/strong&gt;
+&lt;/pre&gt;\
+and confirm that our installation procedure created a =bin=, \
+=lib64=, =share=, and =include= directories.  \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;ls&lt;/strong&gt;
+bin gromacs-5.1.2 gromacs-5.1.2.tar.gz lib64 include share
+&lt;/pre&gt;
+   1. Now we want to package up our installation, so we can use it in other jobs.  We can do this simply by compressing any necessary directories \
+into a single gzipped tarball.  First, create a directory for the total installation.  Then move the installation directories inside, and tar it up!  \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;mkdir gromacs&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;mv bin lib64 share include gromacs&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;tar czf gromacs.tar.gz gromacs/&lt;/strong&gt;
+&lt;/pre&gt;\
+
+   1. Once everything is complete, type =exit= to leave the interactive job.  Make sure that your tarball is in the main working directory - it will be transferred back to the submit server automatically.  \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;exit&lt;/strong&gt;
+&lt;/pre&gt;
+
+---++ Wrapper Script
+
+Now that we&#39;ve created our portable installation, we need to write a script that opens and uses the installation.  These steps should be performed back on the submit server.  
+
+   1. The first step for our script is to untar our installation.  Create a script called =run_gromacs.sh= and include the following lines: \
+      &lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash
+
+tar xzf gromacs.tar.gz
+&lt;/pre&gt;\
+
+   1. The installation description used a certain set of instructions to access GROMACS, but we&#39;re going to use a more common method - that of \
+adding our gromacs installation to the =PATH= environment variable.  \
+&lt;pre class=&quot;file&quot;&gt;
+export PATH=$(pwd)/gromacs/bin:$PATH
+&lt;/pre&gt;\
+Note that because the job&#39;s execute directory will be different each time, we&#39;re again using the =$(pwd)= command to describe the local working directory. \
+
+   1. Finally, the wrapper script needs to not only install GROMACS, but actually run the GROMACS commands.  Add the following lines to your =run_gromacs.sh= wrapper script.  \
+&lt;pre class=&quot;file&quot;&gt;
+gmx pdb2gmx -f 3HTB_clean.pdb -o 3HTB_processed.gro -water spc -ff gromos43a1
+gmx grompp -v -f minim.mdp -c 3HTB_processed.gro -p topol.top -o results.tpr
+gmx mdrun -v -deffnm results -c 3HTB_processed.gro 
+&lt;/pre&gt;\
+
+   1. Make sure the wrapper script has executable permissions: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;chmod +x run_gromacs.sh&lt;/strong&gt;
+&lt;/pre&gt;
+
+---++ Run a GROMACS job
+
+We&#39;re almost ready!  We need two more pieces to run a GROMACS job.  
+
+   1. Download the necessary input files to your directory on the submit server and then untar them.  \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;wget http://proxy.chtc.wisc.edu/SQUID/osgschool16/gromacs_files.tar.gz&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;tar -xzf gromacs_files.tar.gz&lt;/strong&gt;
+&lt;/pre&gt;
+   1. Our last step is to create a submit file for our GROMACS job.  Think about which lines this submit file will need.  Make a copy of a previous submit file (you could use the =build.submit= file from the interactive job as a base) and modify it as you think necessary.  
+   1. The two most important lines to modify for this job are listed below; check them against your own submit file: \
+&lt;pre class=&quot;file&quot;&gt;
+executable = run_gromacs.sh
+transfer_input_files = gromacs.tar.gz,3HTB_clean.pdb,JZ4.pdb,minim.mdp
+&lt;/pre&gt; \
+A wrapper script will always be a job&#39;s =executable=.  When using a wrapper script, you must also always remember to transfer the software/source code using =transfer_input_files=.  
+   1. We also need to add a requirement to ensure that the job will run on a Linux system, running major version 6.  This can be done with the line: \
+&lt;pre class=&quot;file&quot;&gt;
+requirements = (OpSys == &quot;LINUX&quot;) &amp;&amp; (OpSysMajorVer == 6) &amp;&amp; has_avx
+&lt;/pre&gt;
+   1. Submit the job with =condor_submit=.
+   1. Once the job completes, it should produce a =results.log= file, along with various other intermediate files.  
+
+---++ Food for thought
+
+If you have completed all three exercises before the break, think about the following questions and try out an implementation of your answers.  
+
+   1. When we installed GROMACS to the working directory of our interactive job, the various GROMACS \
+   directories (=bin=, =lib64=, =include= and so on) just appeared \
+   in the working directory of the job.  What commands would you add or change in our installation process in order to: 
+      1. create a directory called =gromacs= inside the job&#39;s working directory?
+      1. install GROMACS to this location?
+   1. When we submitted our GROMACS job, there were a lot of intermediate files (=.gro=, =.top=) that came back with our desired results.  What commands \
+could you add to the wrapper script to delete these files before the job exits?  
+   1. How would you change your submit file to transfer the tarball of input files instead of transferring them individually?  How would you have to change your \
+=run_gromacs.sh= script accordingly? 

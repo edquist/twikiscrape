@@ -1,0 +1,142 @@
+---+!! Collector build and release-cutting procedure
+
+---++ Build
+
+&lt;verbatim&gt;
+cd &lt;release-top&gt;/build-scripts
+make release
+&lt;/verbatim&gt;
+
+---++ Install and test collector
+
+&lt;ul&gt;
+&lt;li&gt;Create / edit a suitable collector configuration file. See =gratia/common/configuration/collector-dev.dat= or =gratia/common/configuration/collector-nbuild.dat= for examples.&lt;/li&gt;
+&lt;li&gt;Install with =gratia/build-scripts/install-release=. Example install from local:%BR%&lt;verbatim&gt;
+VERSION_OPT=&quot;-L&quot;
+VERSION_ARG=~greenc/gratia-BIGINT
+INSTALL_SCRIPT=~greenc/gratia-BIGINT/build-scripts/install-release
+CONFIG_DIR=~greenc/gratia-BIGINT/common/configuration
+MAILTO=MAILME@fnal.gov
+INSTANCE=greenc_test
+service=dev
+${INSTALL_SCRIPT} -t -p -a \
+                  $VERSION_OPT $VERSION_ARG \
+                  -C ${CONFIG_DIR}/collector-$service.dat \
+                  -c $INSTANCE -m $MAILTO
+&lt;/verbatim&gt;
+Invoke =install-release --help= for an explanation of all the options.&lt;/li&gt;
+&lt;li&gt;Test as appropriate.&lt;/li&gt;
+&lt;/ul&gt;
+
+%STARTSECTION{&quot;CommitAndPort&quot;}%
+---++ Ensure all desired code is committed
+
+&lt;verbatim&gt;
+svn status
+svn commit -m &lt;message&gt; &lt;files&gt; ...
+&lt;/verbatim&gt;
+
+See this [[https://twiki.grid.iu.edu/bin/view/Accounting/SvnPrimer][SVN primer]] for more details on SVN use.
+
+---++ Port desired changes to branch
+
+If the current release stream is taking place on a branch, port desired changes from HEAD into the specified branch. For example:
+&lt;verbatim&gt;
+svn checkout https://gratia.svn.sourceforge.net/svnroot/gratia/branches/v1-06
+svn merge -r&lt;version-range&gt; https://gratia.svn.sourceforge.net/svnroot/gratia/trunk .
+svn commit -m&lt;message&gt; .
+&lt;/verbatim&gt;
+
+Checking in changes to the whole tree is important because the directory attributes are all updated to reflect which revisions have been merged in from HEAD. This will make future merges simpler and less error-prone.
+%ENDSECTION{&quot;CommitAndPort&quot;}%
+
+Then, perform a [[#Build][build]] and [[#Install_and_test_collector][test install]] of the merged code.
+
+---++ Cut a developer tag
+
+For example:
+&lt;verbatim&gt;
+svn copy https://gratia.svn.sourceforge.net/svnroot/gratia/{branches/v1-06,development-tags/v1-06-18-rc1}
+&lt;/verbatim&gt;
+
+---++ Export to Gratia releases area and build
+
+&lt;verbatim&gt;
+ssh gratia@gr6x1.fnal.gov
+cd ~/gratia-releases/
+RELEASE=v1.06.18-rc1
+svn export http://gratia.svn.sourceforge.net/svnroot/gratia/development-tags/${RELEASE//./-} gratia-${RELEASE}
+cd gratia-${RELEASE}/build-scripts
+make release
+&lt;/verbatim&gt;
+
+---++ Perform install on nightly build machines
+
+&lt;ol&gt;
+&lt;li&gt;If desired, disable the nightly install command in gratia&#39;s crontab on the [[http://fermigrid.fnal.gov/gratia-development-organization.html][remote install host]]:
+&lt;pre&gt;
+%RED%#%ENDCOLOR%05 0 * * *  /home/gratia/cron-scripts/nightly-build.sh --mail gratia-builds@fnal.gov
+&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;Perform the install on all the nightly build collectors, for example:
+&lt;verbatim&gt;
+install-nightly-builds -- -R v1.06.18-rc1
+&lt;/verbatim&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+Note: if invoked as root, the host credentials for the machine on which install-nightly-builds is executed are obtained before attempting to do the remote installs. Otherwise the user&#39;s credentials must be in root&#39;s .k5login file on the target install machines.
+
+---++ Copy the final release candidate to the tags arm of the repository
+
+After testing on the nightly install machines and creating as many release candidates as necessary, copy the final release candidate to the release arm:
+&lt;verbatim&gt;
+svn copy https://gratia.svn.sourceforge.net/svnroot/gratia/{development-tags/v1-06-18-rcX,tags/v1-06-18}
+&lt;/verbatim&gt;
+
+---++ Produce the final build
+
+&lt;verbatim&gt;
+ssh gratia@gr6x1.fnal.gov
+cd ~/gratia-releases/
+RELEASE=v1.06.18
+svn export http://gratia.svn.sourceforge.net/svnroot/gratia/tags/${RELEASE//./-} gratia-${RELEASE}
+cd gratia-${RELEASE}/build-scripts
+make release
+&lt;/verbatim&gt;
+
+---++ Export tarballs for VDT
+
+&lt;verbatim&gt;
+cd ~/gratia-releases
+RELEASE=v1.06.18
+cp -p gratia-${RELEASE}/target/gratia_*.tar tarballs/
+scp -p gratia-${RELEASE}/target/gratia_*.tar fnalu.fnal.gov:/afs/fnal.gov/files/expwww/gratia/html/Files/
+&lt;/verbatim&gt;
+
+Note: for the copy to FNALU, one should either have membership in the PTS group =nichols:wadmgratia= or be in the ACL for the =/afs/fnal.gov/files/expwww/gratia/html/= directory tree. Someone with admin privileges in this area can do:
+&lt;verbatim&gt;
+cd /afs/fnal.gov/files/expwww/gratia/html
+find . -type d -exec fs sa -dir \{\} -acl &lt;user&gt; write -print\;
+&lt;/verbatim&gt;
+
+---++ Update the version number on the release page
+
+Update the [[InstallationGuideVDT][VDT-team packaging and installation instructions]] as appropriate, including but not necessarily limited to the !TWiki variable =ReleaseVersion=.
+
+%STARTSECTION{&quot;Trash.ReleaseDocumentationReleaseNotes&quot;}%
+---++ Make sure the release notes are current
+
+Create and/or edit the correct page under the [[WebHome#Production_Releases][releases section]] of the main [[WebHome][Accounting !TWiki page]].
+%ENDSECTION{&quot;Trash.ReleaseDocumentationReleaseNotes&quot;}%
+
+---++ Update the ERD if necessary
+
+See John Weigand&#39;s notes under the [[WebHome#Entity_Relationship_Diagrams_ERD][ERD section]] of the main [[WebHome][Accounting !TWiki page]].
+
+%STARTSECTION{&quot;VDTRelease&quot;}%
+---++ Request a VDT release
+
+Send email to =vdt-support@opensciencegrid.org= giving URLs from which to obtain the release.
+%ENDSECTION{&quot;VDTRelease&quot;}%
+
+-- Main.ChrisGreen - 27 Jul 2010

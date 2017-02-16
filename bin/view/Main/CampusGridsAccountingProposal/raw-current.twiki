@@ -1,0 +1,50 @@
+---+!! Campus Grids Accounting Proposal
+%TOC%
+
+
+---++ Requirements
+
+The primary concern for campus grids accounting is accurately recording of usage by campus grid users using OSG technology.  This can be broken into:
+
+Accounting for campus grid usage when:
+   1. Flocking from campus submitter to a campus Condor cluster (same campus)
+   2. Flocking from submitter to [[Documentation.CampusFactoryInstall][Campus Factory]] enabled cluster.
+   3. Flocking from submitter to !GlideinWMS frontend and therefore out to OSG.
+   4. Flocking from submitter to another campus&#39; Condor cluster.
+   5. Flocking from submitter to another campus&#39; Campus Factory enabled cluster.
+
+
+---++ Proposal
+
+Currently, the [[Accounting.ProbeConfigGlideinWMS][probe installation instructions]] include:
+
+   &lt;pre class=&quot;file&quot;&gt;
+JOBGLIDEIN_ResourceName=&quot;$$([IfThenElse(IsUndefined(TARGET.GLIDEIN_ResourceName), IfThenElse(IsUndefined(TARGET.GLIDEIN_Site), IfThenElse(IsUndefined(TARGET.FileSystemDomain), \&quot;Local Job\&quot;, TARGET.FileSystemDomain), TARGET.GLIDEIN_Site), TARGET.GLIDEIN_ResourceName)])&quot;
+&lt;/pre&gt;
+
+This expression is a priority listing of 3 variables it will look for in the resource description
+   1. =GLIDEIN_ResourceName= is guaranteed to be on OSG glidein factories.  Therefore, if that is seen, then it is the OIM name of the resource the job ran at.  This will cover case 3.
+   1. =GLIDEIN_Site= will be seen on campus factory enabled clusters.  Cover case 2 &amp; 5.
+   1. =FileSystemDomain= will be seen on flocked to clusters.  Cover case 1, 4.
+
+Therefore, we %RED%append%ENDCOLOR% the value of the attributes with notation to help us determine the usage.  For example, the Campus Factory enabled clusters can be: &lt;pre&gt;
+GLIDEIN_Site%RED%-CF%ENDCOLOR%
+&lt;/pre&gt;
+
+And for flocked jobs: &lt;pre&gt;
+FileSystemDomain%RED%-Flock%ENDCOLOR%
+&lt;/pre&gt;
+
+New version of the instructions will include:
+   &lt;pre class=&quot;file&quot;&gt;
+JOBGLIDEIN_ResourceName=&quot;$$([IfThenElse(IsUndefined(TARGET.GLIDEIN_ResourceName), IfThenElse(IsUndefined(TARGET.GLIDEIN_Site), IfThenElse(IsUndefined(TARGET.FileSystemDomain), \&quot;Local Job\&quot;, $(TARGET.FileSystemDomain)-Flock), $(TARGET.GLIDEIN_Site)-CF), TARGET.GLIDEIN_ResourceName)])&quot;
+&lt;/pre&gt;
+
+---++ Technical Details
+
+The probe will make the usage for the different &#39;grids&#39; look different.  It will do this by adding a new =Grid= type, Campus.  
+
+   1. For case 3, the =Grid= = &#39;OSG&#39;, =ResourceType= = !BatchPilot.
+   1. For case 1,2,4 &amp; 5 =Grid= = &#39;Campus&#39;, =ResourceType= = !BatchPilot.
+
+-- Main.DerekWeitzel - 12 Jan 2012

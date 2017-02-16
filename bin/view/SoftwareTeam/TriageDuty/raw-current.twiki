@@ -1,0 +1,27 @@
+---+ Software Team Triage Duty
+
+---++ Triage Rotation
+
+We rotate triage duty for everyone whose total allocation to the Technology Area is greater than or equal to 50%, except Brian Bockelman.
+
+---++ Triage Script
+
+   1. Update checkout (=Documents/OSG/Software/Calendar/osg-triage-assignments=)
+   1. Generate next rotation\
+       &lt;pre&gt;./triage.py --generateNextRotation &amp;gt; rotation.txt&lt;/pre&gt;
+   1. Check and update assignments against calendar
+   1. Load triage assignments into Google Calendar\
+       &lt;pre&gt;./triage.py --load rotation.txt&lt;/pre&gt;
+
+---++ Triage Duty Calendar
+
+The calendar is hosted on Tim Cartwright’s Google Calendar account. If you need privileges to edit, just ask Tim.
+
+To subscribe to this calendar in your calendar program, use the iCal URL: =https://www.google.com/calendar/ical/h5t4mns6omp49db1e4qtqrrf4g%40group.calendar.google.com/public/basic.ics=
+
+&lt;iframe src=&quot;https://www.google.com/calendar/embed?height=600&amp;amp;showPrint=0&amp;amp;wkst=1&amp;amp;bgcolor=%23FFFFFF&amp;amp;src=h5t4mns6omp49db1e4qtqrrf4g%40group.calendar.google.com&amp;amp;color=%232F6309&amp;amp;ctz=America%2FChicago&quot; style=&quot; border-width:0 &quot; width=&quot;800&quot; height=&quot;600&quot; frameborder=&quot;0&quot; scrolling=&quot;no&quot;&gt;&lt;/iframe&gt;
+
+---++ Weekly email
+
+An email goes out every Monday at 6 a.m. (Central Time) with the names of the staff on triage duty that week and on the following week. The script that sends out the email lives in SVN as =software/tools/email-triage-duty= and there&#39;s a checkout in =/p/condor/workspaces/vdt/tools= from where a cronjob runs it. The cronjob runs as the =cndrutil= user on =tonic.cs.wisc.edu= which is a RHEL 5 machine at UW-Madison. It looks like this:&lt;pre&gt;
+0 6 * * 1 /s/std/bin/runauth /usr/bin/python /p/condor/workspaces/vdt/tools/email-triage-duty -u &#39;https://www.google.com/calendar/ical/h5t4mns6omp49db1e4qtqrrf4g%40group.calendar.google.com/public/basic.ics&#39; -e osg-software@opensciencegrid.org&lt;/pre&gt;

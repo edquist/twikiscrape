@@ -1,0 +1,39 @@
+---+!! Template Example
+
+Example template topic for [[%TWIKIWEB%.CommentPluginExamples#TemplateTopic][CommentPluginExamples:templatetopic]].
+
+
+&lt;verbatim&gt;
+%TMPL:DEF{PROMPT:example}%%TMPL:P{promptbox}%%TMPL:END%
+&lt;/verbatim&gt;
+
+&lt;verbatim&gt;
+%TMPL:DEF{FORM:example}%
+#TemplateTopicPrompt
+&lt;form method=&quot;post&quot; action=&quot;%SCRIPTURL{save}%/%BASEWEB%/%BASETOPIC%&quot; enctype=&quot;application/x-www-form-urlencoded&quot; name=&quot;examplecomment&quot; id=&quot;examplecomment&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;redirectto&quot; value=&quot;%BASEWEB%.%BASETOPIC%&quot; /&gt;
+%COMMENTPROMPT%
+&lt;/form&gt;
+%TMPL:END%
+&lt;/verbatim&gt;
+
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:example}%%POS:BEFORE%%TMPL:P{OUTPUT:examplethreadmode}%%TMPL:END%
+&lt;/verbatim&gt;
+
+&lt;verbatim&gt;
+%TMPL:DEF{OUTPUT:examplethreadmode}%%POS:BEFORE%
+%GMTIME{&quot;#CommentDate$epoch&quot;}%
+%WIKIUSERNAME% - %DATE%:
+
+%URLPARAM{&quot;comment&quot;}%
+
+--- 
+%TMPL:END%
+&lt;/verbatim&gt;
+
+
+Include generic comment templates:
+&lt;verbatim&gt;
+%TMPL:INCLUDE{&quot;%TWIKIWEB%.CommentPlugin&quot;}%
+&lt;/verbatim&gt;

@@ -1,0 +1,24 @@
+---+!!&lt;nop&gt;%TOPIC%
+%TOC%
+
+%STARTINCLUDE%
+
+---++Introduction
+It is an ultimate interoperability goal that both OSG and &lt;nop&gt;TeraGrid resources can be used together as from a single seamless grid for user applications. A set of user-level tools with a single point of access to both grids must be provided to achieve this goal. 
+
+---++About the &lt;nop&gt;GridShell
+&lt;nop&gt;GridShell is developed within the &lt;nop&gt;TeraGrid community to allow an individual &lt;nop&gt;TeraGrid user to access &lt;nop&gt;TeraGrid resources across multiple sites through a shell environment. The lead author of &lt;nop&gt;GridShell is Dr. Edward Walker from the Texas Advanced Computing Center. &lt;nop&gt;GridShell has been tested within several &lt;nop&gt;TeraGrid sites, and will be deployed widely on all &lt;nop&gt;TeraGrid sites in near future. 
+
+---++A Short Summary about Up-to-Date &lt;nop&gt;GridShell Evaluation
+
+&lt;nop&gt;GridShell provides an interface for a user to create a “single” virtual cluster that is based on multiple physical clusters. Condor glidein mechanism based on Globus job submission is used to virtualize resources that are marshaled as accessible through a tcsh/csh shell. The support for other shell environments (e.g., bash) is being developed. The installation of &lt;nop&gt;GridShell is very straightforward, and little configuration is needed. It has been tested that &lt;nop&gt;GridShell works for simple job submissions via “condor_submit” across several OSG systems as well as between an OSG system and several &lt;nop&gt;TeraGrid systems. 
+
+It is a reasonable idea to put &lt;nop&gt;GridShell as part of the OSG gateway to the &lt;nop&gt;TeraGrid based on the fact that &lt;nop&gt;GridShell provides a straightforward way for users to roam across OSG and &lt;nop&gt;TeraGrid resources. The following several issues still require further investigation and evaluation. 
+
+---* The number of pre-booked cluster nodes (through glidein jobs) might get large, which might not necessarily dedicated to actual job running for a certain period of time. &lt;nop&gt;GridShell supports to shorten this period through a static configuration parameter. It is a reasonable idea to base the selection of appropriate number of cluster nodes on some dynamic resource discovery strategies that would use information services. This idea requires further research. 
+
+---* &lt;nop&gt;GridShell allows a user to augment an existing condor pool with resources &lt;nop&gt;GridShell helps manage. Dynamically created condor pools via &lt;nop&gt;GridShell are “owned” by an individual user. It is interesting to investigate how &lt;nop&gt;GridShell could be used for OSG VO-based users. This investigation may be a pure authentication/authorization issue, and may not be supposed to be addressed within &lt;nop&gt;GridShell.
+
+---* When shell clients are based on OSG machines, the communications between Condor-starters and the Condor-master based on TCP might require extra security configurations (e.g., firewall rules for opening ports). But generally this is not a concern because Globus Toolkit requires such configurations anyway.
+
+-- Main.ShaowenWang - 16 Jun 2005

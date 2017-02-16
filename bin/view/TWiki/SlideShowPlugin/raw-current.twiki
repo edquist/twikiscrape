@@ -1,0 +1,172 @@
+
+
+---+!! Slide Show Plugin
+
+This Plugin converts a topic with headings into a slide show.
+
+%TOC%
+
+---++ Introduction
+
+There is already a defacto standard for presentations, why this Plugin? This Plugin makes sense for organizations that do already have lots of content in TWiki: It is easy to create a web based presentation that contains many links to related content. The Plugin does not try to compete with the bells and whistles of the other presentation program, but the markup of TWiki and other Plugins like TWiki:Plugins/ChartPlugin, TWiki:Plugins/GaugePlugin, TWiki:Plugins/SpreadSheetPlugin, TWiki:Plugins/TWikiDrawPlugin can be used to create an appealing presentation.
+
+Any topic with headings can be converted into a slide show. Each slide starts with a =&quot;---++&quot;= heading. There are two modes to view a topic:
+
+   * Normal topic view mode: Headings and text is shown in the usual TWiki rendering, representing the outline of the slide show. This mode is useful to print handouts.
+   * Presentation mode: Each heading with text is shown as a slide; the format is based on a slide template. Navigation buttons are added to go to the &quot;First&quot;, &quot;Previous&quot;, and &quot;Next&quot; slide. Slide navigation is quick because it is done with anchor jumps to the same page. 
+
+You can start the presentation by clicking on the &quot;Start presentation&quot; button.
+
+---++ Syntax Rules
+
+---+++ How to Create a Slide Show
+
+   * Start with =%&lt;nop&gt;SLIDESHOWSTART%=
+      * Use the optional =template= parameter to specify your own slide template topic, e.g. =%&lt;nop&gt;SLIDESHOWSTART{ template=&quot;MyOwnSlideTemplate&quot; }%=
+   * Create the slides. Start each slide with a =&quot;---++&quot;= heading and add text like paragraphs, bullets, tables and images.
+      * __Hint:__ Make sure to keep each slide short enough so that you do not need to scroll to see all text of a slide during the presentation.
+      * __Note:__ You can use any heading level you like, but use the same for all slides.
+   * End your slide show with =%&lt;nop&gt;SLIDESHOWEND%=
+
+---+++ How to Create Your own Slide Template
+
+To create your own template topic, copy the &quot;Default Slide Template&quot; section below into your own slide template topic and customize it to your needs. It can be activated as the default template in the Plugin&#39;s =TEMPLATE= setting, or per slide show with the =%&lt;nop&gt;SLIDESHOWSTART{ template=&quot;MyOwnSlideTemplate&quot; }%= setting.
+
+   * Use an HTML table that defines a slide. For example, create one row for the slide title, another one for the slide text.
+   * These keywords can be used:
+     | *Keyword* | *What it means* |
+     | =%&lt;nop&gt;SLIDETITLE%= | The heading of the slide |
+     | =%&lt;nop&gt;SLIDETEXT%= | The text of the slide |
+     | =%&lt;nop&gt;SLIDECOMMENT%= | The comment of the slide (optional; appended to slide of missing) |
+     | =%&lt;nop&gt;SLIDENUM%= | The current slide number |
+     | =%&lt;nop&gt;SLIDEMAX%= | The last slide number |
+     | =%&lt;nop&gt;SLIDENAV%= | The navigation buttons for &quot;First&quot;, &quot;Previous&quot;, &quot;Next&quot; slide |
+     | =%&lt;nop&gt;SLIDENAVALL%= | The navigation buttons for &quot;First&quot;, &quot;Previous&quot;, &quot;Next&quot;, &quot;Last&quot; slide |
+     | =%&lt;nop&gt;SLIDENAVFIRST%= | The navigation button for &quot;First slide&quot; |
+     | =%&lt;nop&gt;SLIDENAVPREV%= | The navigation button for &quot;Previous slide&quot; |
+     | =%&lt;nop&gt;SLIDENAVNEXT%= | The navigation button for &quot;Next slide&quot; |
+     | =%&lt;nop&gt;SLIDENAVLAST%= | The navigation button for &quot;Last slide&quot; |
+   * Only text between =%&lt;nop&gt;STARTINCLUDE%= and =%&lt;nop&gt;STOPINCLUDE%= is used for the template.
+
+---++ Example
+
+This is a short example of a slide show. You should see a &quot;Start presentation&quot; button if this Plugin is installed:
+
+%SLIDESHOWSTART%
+---+++ Silly Sample Slide Show
+%BR%
+
+&lt;center&gt;
+By TWiki:Main/PeterThoeny
+
+San Jose, 17 Nov 2002
+&lt;/center&gt;
+
+---+++ Agenda
+   * Silly Introduction
+   * Silly Feature
+   * Silly Conclusion
+---+++ Silly Introduction
+   * why foo bar
+   * blah blah
+---++++ Comments
+   * This text is not shown in the slide if HIDECOMMENTS is set to on.
+---+++ Silly Feature
+   * it&#39;s foo bar
+   * more foo bar
+---+++ Silly Conclusion
+   * foo is bar
+   * bar is foo
+%SLIDESHOWEND%
+
+This text is not part of the slide show
+
+---++ &lt;nop&gt;%TOPIC% Global Settings
+
+Plugin settings are stored as preferences variables. To reference a plugin setting write ==%&lt;nop&gt;&amp;lt;plugin&amp;gt;_&amp;lt;setting&amp;gt;%==, i.e. ==%&lt;nop&gt;SLIDESHOWPLUGIN_SHORTDESCRIPTION%==
+
+   * One line description, is shown in the %TWIKIWEB%.TextFormattingRules topic:
+      * Set SHORTDESCRIPTION = Create web based presentations based on topics with headings.
+
+   * Debug plugin: (See output in =data/debug.txt=)
+      * Set DEBUG = 0
+
+   * Default template for slides:
+      * Set TEMPLATE = SlideShowPlugin
+
+   * Hide text starting with a =---+++ Comments= heading:
+      * Set HIDECOMMENTS = on
+
+---++ Default Slide Template
+
+The part between the rulers defines the default format of a slide:
+
+-----
+%STARTINCLUDE%
+&lt;table width=&quot;100%&quot; border=&quot;0&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot;&gt;
+&lt;tr bgcolor=&quot;#003399&quot;&gt;&lt;td valign=&quot;middle&quot; width=&quot;2%&quot;&gt;
+&lt;img src=&quot;%PUBURL%/%WEB%/SlideShowPlugin/logo.gif&quot; border=&quot;0&quot; alt=&quot;TWiki Slide Show&quot; /&gt;&amp;nbsp;&lt;/td&gt;
+&lt;td valign=&quot;middle&quot;&gt;
+&lt;font size=&quot;+3&quot; color=&quot;#FFFFFF&quot;&gt;%SLIDETITLE%&lt;/font&gt;&lt;/td&gt;
+&lt;td align=&quot;right&quot; valign=&quot;middle&quot;&gt;
+%SLIDENAVNEXT%&amp;nbsp;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;table width=&quot;100%&quot; border=&quot;0&quot; cellspacing=&quot;0&quot; cellpadding=&quot;3&quot;&gt;
+&lt;tr bgcolor=&quot;#FFFF99&quot;&gt;&lt;td width=&quot;1&quot;&gt;
+&lt;img src=&quot;%PUBURL%/%WEB%/SlideShowPlugin/clearpixel.gif&quot; width=&quot;1&quot; height=&quot;480&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;
+&lt;td valign=&quot;top&quot;&gt;
+%BR%
+&lt;font size=&quot;+2&quot; color=&quot;#003399&quot;&gt;
+%SLIDETEXT%
+&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;table width=&quot;100%&quot; border=&quot;0&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot;&gt;
+&lt;tr bgcolor=&quot;#FFFFCC&quot;&gt;&lt;td valign=&quot;middle&quot;&gt;
+%SLIDENAVALL%&amp;nbsp;&lt;/td&gt;
+&lt;td valign=&quot;middle&quot; align=&quot;right&quot;&gt;
+&lt;font size=&quot;-1&quot; color=&quot;#666666&quot;&gt;Slide %SLIDENUM% of %SLIDEMAX%&lt;/font&gt;&lt;/td&gt;
+&lt;td valign=&quot;middle&quot; align=&quot;right&quot;&gt;
+&lt;font size=&quot;-2&quot; color=&quot;#666666&quot;&gt; COPYRIGHT &amp;copy; %SERVERTIME{$year}% by the contributing authors &lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+%STOPINCLUDE%
+-----
+
+---++ Plugin Installation Instructions
+
+__Note:__ You do not need to install anything on the browser to use this plugin. The following instructions are for the administrator who installs the plugin on the server where TWiki is running. 
+
+   * Download the ZIP file from the Plugin web (see below)
+   * Unzip ==%TOPIC%.zip== in your twiki installation directory. Content:
+     | *File:* | *Description:* |
+     | ==data/TWiki/%TOPIC%.txt== | Plugin topic |
+     | ==data/TWiki/%TOPIC%.txt,v== | Plugin topic repository |
+     | ==lib/TWiki/Plugins/%TOPIC%.pm== | Plugin Perl module |
+     | ==pub/TWiki/*.gif== | Various button image files |
+   * (Dakar) Visit =configure= in your TWiki installation, and enable the plugin in the {Plugins} section.
+   * Test above example if the installation was successful.
+
+---++ Plugin Info
+
+|  Plugin Author: | TWiki:Main/PeterThoeny |
+|  Plugin Version: | 1.005 |
+|  Change History: | &lt;!-- versions below in reverse order --&gt;&amp;nbsp; |
+|  16 Mar 2005: | 1.005 Crawford Currie prepped for Dakar, and fixed multiple evaluation bug |
+|  21 Nov 2004: | 1.004 Added support for =%&lt;nop&gt;SLIDECOMMENT%= template keyword (TWiki:Main/ArthurClemens); added benchmarks |
+|  21 Mar 2004: | Internal change: Fixed unofficial function call |
+|  14 Dec 2002: | Added =%&lt;nop&gt;SLIDENAVALL%= template keyword; added HIDECOMMENTS setting |
+|  23 Nov 2002: | Added =%&lt;nop&gt;SLIDENAVLAST%= template keyword; using print Skin for presentation mode |
+|  19 Nov 2002: | Added &quot;Start presentation&quot; and &quot;End presentation&quot; buttons; added =%&lt;nop&gt;SLIDENAVFIRST%=, =%&lt;nop&gt;SLIDENAVPREV%=, =%&lt;nop&gt;SLIDENAVNEXT%= template keywords |
+|  17 Nov 2002: | Initial version |
+|  CPAN Dependencies: | none |
+|  Other Dependencies: | none |
+|  Perl Version: | 5.005 |
+|  TWiki:Plugins/Benchmark: | %TWIKIWEB%.GoodStyle 98%, %TWIKIWEB%.FormattedSearch 99%, SlideShowPlugin 99% |
+|  Plugin Home: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC% |
+|  Feedback: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC%Dev |
+|  Appraisal: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC%Appraisal |
+
+__Related Topics:__ %TWIKIWEB%.TWikiPreferences, %TWIKIWEB%.TWikiPlugins
+
+
+

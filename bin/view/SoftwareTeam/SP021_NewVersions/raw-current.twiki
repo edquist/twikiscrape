@@ -1,0 +1,71 @@
+---+ Project 21: Support New Versions of OSG Software (3.2 and Beyond)
+
+---++ Description
+
+---+++ Background
+
+As with other long-lived Yum repositories, we want to support the release of major new versions of the OSG software stack, such as 3.2 and 4.0. Following community practices, each major release would be distributed in its own Yum repository. However, when we moved from OSG 3.0 and 3.1, we did *not* create a new repository, nor did we figure out any of the issues related to doing so.
+
+The Upcoming repositories are separate from the main ones, and hence the work that we did to support them will help us prepare for the introduction of a 3.2 series.
+
+---+++ Goal
+
+Design and implement changes to the OSG software infrastructure to support new release versions, starting with OSG 3.2, and help the Release team by documenting changes to conventions, tools, and procedures as necessary.
+
+---+++ Scope
+
+The Software team owns all of the packaging and build infrastructure, so all changes therein to support new versions are included in this project. Also included is all internal documentation of the tools and procedures for using them.
+
+   * Organization of Subversion directory structure (=native= area)
+   * New koji tags
+   * Organization and naming of Yum repositories
+   * Organization and naming of tarball distributions
+   * Mirrors, mirroring scripts, etc. — some of this work may be done by mirror maintainers
+   * Workflow scripts: osg-build, osg-promote
+   * System for running osg-test
+   * Internal documentation: RPMDevelopmentGuide, OSGBuildTools, KojiWorkflow, RepositoryManagement, KojiHubSetup
+
+The Release team is responsible for:
+
+   * Deciding what packages are released in a new version
+   * Acceptance testing of a new version
+   * The release process, including its documentation
+   * Production documentation (officially, although we all help out)
+   * Policies for defining major version releases, support lifetimes, etc.
+
+The Operations team is responsible for making changes to the IU-based hosting of the Yum repositories.
+
+---+++ Risks
+
+---+++ Links
+
+   * [[SP021_NewVersionsDetails][Project technical details]]
+
+---++ Tasks and Schedule
+
+&lt;!--
+   * Set PENDING =  &lt;div style=&quot;color: white; background-color: #AAA; padding-left: 1em; padding-right: 1em;&quot;&gt;Waiting&lt;/div&gt;
+   * Set ON_TRACK = &lt;div style=&quot;color: white; background-color: #0A0; padding-left: 1em; padding-right: 1em;&quot;&gt;On&amp;nbsp;Track&lt;/div&gt;
+   * Set BEHIND =   &lt;div style=&quot;color: white; background-color: #F60; padding-left: 1em; padding-right: 1em;&quot;&gt;Behind&lt;/div&gt;
+   * Set AT_RISK =  &lt;div style=&quot;color: white; background-color: #C00; padding-left: 1em; padding-right: 1em;&quot;&gt;At&amp;nbsp;Risk&lt;/div&gt;
+   * Set SKIPPED =  &lt;div style=&quot;color: white; background-color: #C00; padding-left: 1em; padding-right: 1em;&quot;&gt;Skipped&lt;/div&gt;
+   * Set COMPLETE = &lt;div style=&quot;color: white; background-color: #000; padding-left: 1em; padding-right: 1em;&quot;&gt;Done&lt;/div&gt;
+--&gt;
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Milestone* | *State* | *People* | *Est. Start* | *Est. Finish* | *Act. Finish* | *Notes* |
+| 1. Design project and technical plans | %COMPLETE% | !TimC, Mat | | 2013-08-02 | | Finish planning w/ mtg on 2013-08-19 |
+| 2. Implement one-time Subversion change | %COMPLETE% | !TimC | | 2013-08-23 | 2013-08-21 | Just move =upcoming= |
+| 3. Implement changes to tarball client hosting | %COMPLETE% | Mat | | 2013-09-10 | 2013-09-10 | ITB on 2013-09-03 |
+| 4. Implement changes to Yum repositories |||||||
+| &amp;nbsp; 4.1. Prepare deployment plan and scripts | %COMPLETE% | !BrianL, Mat | | 2013-09-30 | 2013-09-27 | |
+| &amp;nbsp; 4.2. Deploy new Yum structure in ITB | %COMPLETE% | !BrianL, Carl | 2013-10-01 | 2013-10-01 | 2013-10-01 | |
+| &amp;nbsp; 4.3. Test the new repositories | %COMPLETE% | Release | 2013-10-01 | 2013-10-07 | 2013-10-07 | |
+| &amp;nbsp; 4.4. Deploy new Yum structure in production | %COMPLETE% | !BrianL, Carl | 2013-10-08 | 2013-10-08 | 2013-10-08 | |
+| 5. Implement changes to Koji |||||||
+| &amp;nbsp; 5.1. Design implementation plan | %COMPLETE% | Carl, Mat | | 2013-09-17 | 2013-09-17 | |
+| &amp;nbsp; 5.2. Prepare deployment plan and scripts | %COMPLETE% | Carl | | 2013-09-30 | 2013-09-23 | |
+| &amp;nbsp; 5.3. Deploy new Koji tags and targets | %COMPLETE% | Carl | 2013-10-22 | 2013-10-22 | 2013-10-22 | |
+
+---++ Notes
+

@@ -1,0 +1,639 @@
+---+!!Analysis Example using the Grid
+%TOC{depth=&quot;3&quot;}%
+
+---+ Introduction
+Root may be run in batch mode on the grid to analyze large data samples. This example creates simulated data in root format using trees and performs analysis on the simulated data by means of processing on the grid. This example is based on a demo developed by OU programmer Chris Walker.
+
+---+ Customize this Document
+
+&lt;!-- OSG Grid School Defaults
+   * Local VO= %URLPARAM{&quot;INPUT_VO&quot; encode=&quot;quote&quot; default=&quot;osgedu&quot;}%
+   * Local UCL_HOST = %URLPARAM{&quot;INPUT_HOST&quot; encode=&quot;quote&quot; default=&quot;training&quot;}%
+   * Local UCL_USER = %URLPARAM{&quot;INPUT_USER&quot; encode=&quot;quote&quot; default=&quot;osguser-YOUR-NUMBER&quot;}%
+   * Local UCL_DOMAIN = %URLPARAM{&quot;INPUT_DOMAIN&quot; encode=&quot;quote&quot; default=&quot;osgconnect.net&quot;}%
+   * Local GATEKEEPER = %URLPARAM{&quot;INPUT_GATEKEEPER&quot; encode=&quot;quote&quot; default=&quot;red.unl.edu&quot;}%
+   * Local UCL_CWD= %URLPARAM{&quot;INPUT_CWD&quot; encode=&quot;quote&quot; default=&quot;analysis_example&quot;}%
+   * Local WORKING_DIR= %URLPARAM{&quot;INPUT_WORKING_DIR&quot; encode=&quot;quote&quot; default=&quot;/share/users/%UCL_USER%/osg_school/touble_part1&quot;}%
+   * Local BATCH_SYSTEM = %URLPARAM{&quot;BATCH_SYSTEM&quot; encode=&quot;quote&quot; default=&quot;condor&quot;}%
+   * Local REMOTE_ROOT = %URLPARAM{&quot;INPUT_REMOTE_ROOT&quot; encode=&quot;quote&quot; default=&quot;/mnt/hadoop/user&quot;}%
+   * Local REMOTE_SRM = %URLPARAM{&quot;INPUT_SRM&quot; encode=&quot;quote&quot; default=&quot;red-srm1.unl.edu:8443&quot;}%
+   * Local REMOTE_GRIDFTP= %URLPARAM{&quot;INPUT_GRIDFTP&quot; encode=&quot;quote&quot; default=&quot;red-gridftp.unl.edu&quot;}%
+   * Local SURL = srm://%REMOTE_SRM%/srm/v2/server?SFN=%REMOTE_ROOT%
+   * Local TURL= gsiftp://%REMOTE_GRIDFTP%/%REMOTE_ROOT%
+   * Local OSG_DATA=%URLPARAM{&quot;INPUT_OSG_DATA&quot; encode=&quot;quote&quot; default=&quot;/osg/data&quot;}%
+   * Local BLAST_DB_SUBMIT=%URLPARAM{&quot;INPUT_BLAST_DB_SUBMIT&quot; encode=&quot;quote&quot; default=&quot;/share/blast&quot;}%
+   * Local VDT_LOCATION=/opt/osg-client
+--&gt;
+
+%ICON{&quot;warning&quot;}% %RED% Please change your Login Name and click on the Customize button!%ENDCOLOR%
+&lt;form action=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%WEB%/%TOPIC%&quot;&gt;
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      %RED%Login Name%ENDCOLOR%
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_USER&quot; value=&quot;%UCL_USER%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;!--
+  &lt;tr&gt;
+    &lt;td&gt;
+      VO
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_VO&quot; value=&quot;%VO%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+--&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Host Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_HOST&quot; value=&quot;%UCL_HOST%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Domain Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_DOMAIN&quot; value=&quot;%UCL_DOMAIN%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;!--
+  &lt;tr&gt;
+    &lt;td&gt;
+      Exercise Path
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_WORKING_DIR&quot; value=&quot;%WORKING_DIR%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+--&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+     &amp;nbsp;
+     &lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;Customize&quot; /&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/form&gt;
+
+---+ Exercises 
+---++ Prerequisite 
+
+   * Login on submission node &lt;pre class=&quot;screen&quot;&gt;
+ssh -XY %UCL_USER%@%UCL_HOST%.%UCL_DOMAIN%
+&lt;/pre&gt;
+&lt;!--   * Initialize the OSG client environment &lt;pre class=&quot;screen&quot;&gt;
+source %VDT_LOCATION%/setup.sh
+&lt;/pre&gt;
+   * Obtain proxy certificate, if you have not done so already &lt;pre class=&quot;screen&quot;&gt;
+voms-proxy-init -voms %VO%:/%VO%
+&lt;/pre&gt;
+--&gt;
+   * Make a directory for this exercise&lt;pre class=&quot;screen&quot;&gt;
+mkdir -p %UCL_CWD%
+cd %UCL_CWD%
+&lt;/pre&gt;
+
+---++ Simple Analysis Example
+
+---+++ Step 1: Create simulated data using the grid
+
+Now in your test directory on the submission host we will create the three files: ==run-root.cmd==, ==run-root.sh==, and ==run-root.C== with the contents
+given below. This may require running an editor such as =emacs= on your local desktop and then copying the created files to the submission host. Or the =nano= editor can be run directly on the submission host. A
+typical copy command would be as follows. 
+
+&lt;pre class=&quot;screen&quot;&gt;
+scp run-root.* %UCL_USER%@%UCL_HOST%.%UCL_DOMAIN%:%UCL_CWD%/
+&lt;/pre&gt;
+
+It is probably easier to create all scripts with =nano= on the submission node, though, and then you won&#39;t have to copy (==scp==) anything at all. So everything below assumes you are logged on to a terminal session on the submission node.
+
+First, we will utilize a simple command script to submit the grid jobs. It is ==run-root.cmd==:
+
+&lt;!--
+universe=grid
+grid_resource=gt2 osgitb1.nhn.ou.edu/jobmanager-fork
+--&gt;
+
+&lt;pre class=&quot;file&quot;&gt;
+universe=vanilla
+executable=run-root.sh
+transfer_input_files = run-root.C
+transfer_executable=True
+when_to_transfer_output = ON_EXIT
+log=run-root.log
+transfer_output_files = root.out,t00.root,t01.root
+output=run-root.out.$(Cluster).$(Process)
+error=run-root.err.$(Cluster).$(Process)
+notification=Never
+queue 
+&lt;/pre&gt;
+
+Note that the executable script is:  ==run-root.sh== which is as follows:
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash 
+source /cvmfs/oasis.opensciencegrid.org/osg/modules/lmod/current/init/bash
+module load root
+module load libXpm
+root -b &lt; run-root.C &gt; root.out
+&lt;/pre&gt;
+This script runs Root in batch mode and executes input macro ==run-root.C== and produces output that is routed to file ==root.out==.
+It has to be made executable, by use of the =chmod= Linux command (protections can be checked with the command =ls -l=):
+
+&lt;pre class=&quot;screen&quot;&gt;
+chmod +x run-root.sh
+&lt;/pre&gt;
+
+The macro  ==run-root.C== consists of the following code:
+
+&lt;pre class=&quot;file&quot;&gt;
+{ 
+ 
+ // create files containing simulated data
+ 
+ TRandom g; 
+ char c[256]; 
+ for ( int j = 0 ; j &lt; 2 ; j++ ){ 
+    sprintf(c,&quot;t%2.2d.root\000&quot;,j); 
+    TFile f(c,&quot;RECREATE&quot;,&quot;MyFile&quot;, 0/*no compression*/); 
+    TTree *t = new TTree(&quot;t0&quot;,&quot;t0&quot;); 
+    Int_t Run; 
+    TBranch * b_Run = t-&gt;Branch(&quot;Run&quot;,&amp;Run); 
+    Int_t Event; 
+    TBranch * b_Event = t-&gt;Branch(&quot;Event&quot;,&amp;Event); 
+    Float_t Energy; 
+    TBranch * b_Energy = t-&gt;Branch(&quot;Energy&quot;,&amp;Energy); 
+    Run = j; 
+ 
+        for( Event = 0 ; Event &lt; 100 ; Event++ ){ 
+          Energy = g.Gaus(500.0 , 200.0);   
+          t-&gt;Fill(); 
+        }  
+    f.Write(); 
+    f.Close(); 
+ } 
+} 
+.q 
+&lt;/pre&gt;
+
+The grid job can be submitted using:
+
+&lt;pre class=&quot;screen&quot;&gt;
+condor_submit run-root.cmd
+&lt;/pre&gt;
+
+It can be checked with: 
+
+&lt;pre class=&quot;screen&quot;&gt;
+condor_q %UCL_USER%
+&lt;/pre&gt;
+
+After it runs, you will find a log file that describes the job: ==run-root.log==, and output file: ==root.out==, and the files containing the simulated data: ==t00.root==, ==t01.root== in your test directory. 
+&lt;!--
+You can now copy the output files to your local desktop machine with the =scp= command we used before. A
+typical copy command would be as follows. 
+
+&lt;pre class=&quot;screen&quot;&gt;
+scp %UCL_USER%@%UCL_HOST%.%UCL_DOMAIN%:%UCL_CWD%/t*.root .
+&lt;/pre&gt;
+--&gt;
+
+You need to copy these files into your public directory, so that you can download it to your local desktop:
+
+&lt;pre class=&quot;screen&quot;&gt;
+cp t0*.root ~/public/
+&lt;/pre&gt;
+
+Now open a different terminal window on your local desktop, and download the root files with:
+
+&lt;pre class=&quot;screen&quot;&gt;
+wget http://stash.osgconnect.net/~%UCL_USER%/t00.root  http://stash.osgconnect.net/~%UCL_USER%/t01.root
+&lt;/pre&gt;
+
+You can then inspect the contents of ==t00.root== and ==t01.root== by running Root in your current directory in the local terminal window in which you just ran the ==wget== command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+root t00.root
+&lt;/pre&gt;
+
+And then the Root command:  ==TBrowser b==
+
+With the ==TBrowser== you can plot the simulated data in branch “Energy” as well as the other branches. Double click on the name of the root files, and then on the variables you would like to plot.
+
+Each data file contains a TTree named “t0”. You can plot the contents of all (in this example both) data file TTree&#39;s by using the TChain method as follows:
+
+&lt;!--
+Before running root, execute the following command:
+&lt;pre class=&quot;screen&quot;&gt;
+export LD_LIBRARY_PATH=/usr/lib/root
+&lt;/pre&gt;
+--&gt;
+In Root execute the following commands:
+&lt;pre class=&quot;file&quot;&gt;
+TChain tc(&quot;t0&quot;);
+tc.Add(&quot;t*.root&quot;);
+tc.Draw(&quot;Energy&quot;);
+&lt;/pre&gt;
+
+When you are done with this, you can quit ==root== again with the command ==.q &lt;Return&gt;==.
+
+---+++ Step 2: Analyze Real Data
+
+Now we want to have a look at a real live ATLAS root file. For this, go back to the remote terminal window on osgconnect. You will need a new condor submit script called ==run-z.cmd==:
+
+&lt;pre class=&quot;file&quot;&gt;
+universe=vanilla
+executable=run-z.sh
+transfer_input_files = readEvents.C,/home/zeno/public/muons.root
+transfer_executable=True
+when_to_transfer_output = ON_EXIT
+log=run-z.log
+transfer_output_files = root-z.out,histograms-z.root
+output=run-z.out.$(Cluster).$(Process)
+error=run-z.err.$(Cluster).$(Process)
+notification=Never
+queue 
+&lt;/pre&gt;
+
+The new executable script you need for this job is:  ==run-z.sh== which is as follows:
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash 
+source /cvmfs/oasis.opensciencegrid.org/osg/modules/lmod/current/init/bash
+module load root
+module load libXpm
+root -b -q readEvents.C+ &gt; root-z.out
+&lt;/pre&gt;
+This script runs Root in batch mode and executes input macro ==readEvents.C== and produces output that is routed to file ==root-z.out==.
+It has to be made executable, by use of the =chmod= Linux command (protections can be checked with the command =ls -l=):
+
+&lt;pre class=&quot;screen&quot;&gt;
+chmod +x run-z.sh
+&lt;/pre&gt;
+
+The macro  ==readEvents.C== consists of the following code:
+
+&lt;pre class=&quot;file&quot;&gt;
+#include &quot;TFile.h&quot;
+#include &quot;TTree.h&quot;
+#include &quot;TCanvas.h&quot;
+#include &quot;TH1F.h&quot;
+#include &amp;lt;iostream&amp;gt;
+//#include &quot;TLorentzVector.h&quot;
+using namespace std;
+
+void readEvents(){
+
+	// load the ROOT ntuple file
+	TFile * f = new TFile(&quot;muons.root&quot;);
+	TTree *tree = (TTree *) f-&gt;Get(&quot;POOLCollectionTree&quot;);
+	int nEntries = tree-&gt;GetEntries();
+	cout &lt;&lt; &quot;There are &quot; &lt;&lt; nEntries &lt;&lt; &quot; entries in your ntuple&quot; &lt;&lt; endl;
+	
+	// create local variables for the tree&#39;s branches
+	UInt_t NLooseMuons;
+	Float_t LooseMuonsEta1;
+	Float_t LooseMuonsPhi1;
+	Float_t LooseMuonsPt1;
+
+	Float_t LooseMuonsEta2;
+	Float_t LooseMuonsPhi2;
+	Float_t LooseMuonsPt2;
+	
+	// set the tree&#39;s braches to the local variables
+	tree-&gt;SetBranchAddress(&quot;NLooseMuon&quot;, &amp;NLooseMuons);
+	tree-&gt;SetBranchAddress(&quot;LooseMuonEta1&quot;, &amp;LooseMuonsEta1);
+	tree-&gt;SetBranchAddress(&quot;LooseMuonPhi1&quot;, &amp;LooseMuonsPhi1);
+	tree-&gt;SetBranchAddress(&quot;LooseMuonPt1&quot;, &amp;LooseMuonsPt1);
+	
+	tree-&gt;SetBranchAddress(&quot;LooseMuonEta2&quot;, &amp;LooseMuonsEta2);
+	tree-&gt;SetBranchAddress(&quot;LooseMuonPhi2&quot;, &amp;LooseMuonsPhi2);
+	tree-&gt;SetBranchAddress(&quot;LooseMuonPt2&quot;, &amp;LooseMuonsPt2);
+	
+	// declare some histograms
+  TH1F *muPt1 = new TH1F(&quot;muPt1&quot;, &quot;;p_{T} [GeV/c];Events&quot;, 50, 0, 200);
+  TH1F *muPx1 = new TH1F(&quot;muPx1&quot;, &quot;;p_{x} [GeV/c];Events&quot;, 50, 0, 200); //added px
+  TH1F *muPy1 = new TH1F(&quot;muPy1&quot;, &quot;;p_{y} [GeV/c];Events&quot;, 50, 0, 200); //added py
+  TH1F *muPz1 = new TH1F(&quot;muPz1&quot;, &quot;;p_{z} [GeV/c];Events&quot;, 50, 0, 200); //added pz
+  TH1F *muEta1 = new TH1F(&quot;muEta1&quot;, &quot;;#eta;Events&quot;, 50, -3, 3);
+  TH1F *muPhi1 = new TH1F(&quot;muPhi1&quot;, &quot;;#phi;Events&quot;, 50, -4, 4);
+  TH1F *muE1 = new TH1F(&quot;muE1&quot;, &quot;;Energy;Events&quot;, 50, 0, 200);
+  
+  TH1F *muPt2 = new TH1F(&quot;muPt2&quot;, &quot;;p_{T} [GeV/c];Events&quot;, 50, 0, 200);
+  TH1F *muPx2 = new TH1F(&quot;muPx2&quot;, &quot;;p_{x} [GeV/c];Events&quot;, 50, 0, 200); //added px
+  TH1F *muPy2 = new TH1F(&quot;muPy2&quot;, &quot;;p_{y} [GeV/c];Events&quot;, 50, 0, 200); //added py
+  TH1F *muPz2 = new TH1F(&quot;muPz2&quot;, &quot;;p_{z} [GeV/c];Events&quot;, 50, 0, 200); //added pz
+  TH1F *muEta2 = new TH1F(&quot;muEta2&quot;, &quot;;#eta;Events&quot;, 50, -3, 3);
+  TH1F *muPhi2 = new TH1F(&quot;muPhi2&quot;, &quot;;#phi;Events&quot;, 50, -4, 4);
+  TH1F *muE2 = new TH1F(&quot;muE2&quot;, &quot;;Energy;Events&quot;, 50, 0, 200);
+  
+  TH1F *zPt = new TH1F(&quot;zPt&quot;, &quot;;p_{T} [GeV/c];Events&quot;, 50, 0, 200);
+  TH1F *zPx = new TH1F(&quot;zPx&quot;, &quot;;p_{x} [GeV/c];Events&quot;, 50, 0, 200); //added px
+  TH1F *zPy = new TH1F(&quot;zPy&quot;, &quot;;p_{y} [GeV/c];Events&quot;, 50, 0, 200); //added py
+  TH1F *zPz = new TH1F(&quot;zPz&quot;, &quot;;p_{z} [GeV/c];Events&quot;, 50, 0, 200); //added pz
+  //TH1F *zEta = new TH1F(&quot;zEta&quot;, &quot;;#eta;Events&quot;, 50, -3, 3);
+  //TH1F *zPhi = new TH1F(&quot;zPhi&quot;, &quot;;#phi;Events&quot;, 50, -4, 4);
+  TH1F *zE = new TH1F(&quot;zE&quot;, &quot;;Energy;Events&quot;, 50, 0, 200);	
+  TH1F *zMass = new TH1F(&quot;zMass&quot;, &quot;;Mass;Events&quot;, 50, 0, 200);	
+
+  
+	// loop over each entry (event) in the tree
+  	for( int entry=0; entry&amp;lt;nEntries; entry++ ){
+      if( entry%10000 == 0 ) cout &lt;&lt; &quot;Entry:&quot; &lt;&lt; entry &lt;&lt; endl;
+    
+      // check that the event is read properly
+      int entryCheck = tree-&gt;GetEntry( entry );
+      if( entryCheck &lt;= 0 ){  continue; }
+      
+      // only look at events containing at least 2 leptons
+      if(NLooseMuons &lt; 2) continue;
+      
+      // require the leptons to have some transverse momentum
+      if(abs(LooseMuonsPt1) *0.001 &lt; 20 || abs(LooseMuonsPt2) *0.001 &lt; 20 ) continue;
+      
+      // make a LorentzVector from the muon
+      //TLorentzVector Muons1;
+     // Muons1.SetPtEtaPhiM(fabs(LooseMuonsPt1), LooseMuonsEta1, LooseMuonsPhi1, 0);
+  
+      // print out the details of an electron every so often
+      if( entry%10000 == 0 ){ 
+        cout &lt;&lt; &quot;Muons pt1: &quot; &lt;&lt; LooseMuonsPt1 &lt;&lt; &quot; eta: &quot; &lt;&lt; LooseMuonsEta1 &lt;&lt; &quot; phi &quot; &lt;&lt; LooseMuonsPhi1 &lt;&lt; endl;
+        cout &lt;&lt; &quot;Muons pt2: &quot; &lt;&lt; LooseMuonsPt2 &lt;&lt; &quot; eta: &quot; &lt;&lt; LooseMuonsEta2 &lt;&lt; &quot; phi &quot; &lt;&lt; LooseMuonsPhi2 &lt;&lt; endl;
+      }
+
+      //calculation of muon energy
+        Double_t muonMass = 0.0;  // assume the mass of the muon is negligible
+        Double_t muonPx1 = abs(LooseMuonsPt1)*cos(LooseMuonsPhi1);
+        Double_t muonPy1 = abs(LooseMuonsPt1)*sin(LooseMuonsPhi1);
+        Double_t muonPz1 = abs(LooseMuonsPt1)*sinh(LooseMuonsEta1);
+	Double_t muonEnergy1 = sqrt (muonPx1*muonPx1 + muonPy1*muonPy1 + muonPz1*muonPz1 + muonMass*muonMass);
+
+	Double_t muonPx2 = abs(LooseMuonsPt2)*cos(LooseMuonsPhi2);
+        Double_t muonPy2 = abs(LooseMuonsPt2)*sin(LooseMuonsPhi2);
+        Double_t muonPz2 = abs(LooseMuonsPt2)*sinh(LooseMuonsEta2);
+	Double_t muonEnergy2 = sqrt (muonPx2*muonPx2 + muonPy2*muonPy2 + muonPz2*muonPz2 + muonMass*muonMass);
+
+	Double_t zCompX = muonPx1 + muonPx2;
+        Double_t zCompY = muonPy1 + muonPy2;
+        Double_t zLongi = muonPz1 + muonPz2;
+        Double_t zPerp = sqrt (zCompX*zCompX + zCompY*zCompY);  
+	Double_t zEnergy = muonEnergy1 + muonEnergy2;
+	Double_t zM = sqrt (zEnergy*zEnergy -zCompX*zCompX -zCompY*zCompY -zLongi*zLongi);
+	
+
+      // fill our histograms
+        muPt1-&gt;Fill((LooseMuonsPt1)*0.001); // in GeV
+        muEta1-&gt;Fill(LooseMuonsEta1);
+        muPhi1-&gt;Fill(LooseMuonsPhi1);
+	muPx1-&gt;Fill( muonPx1*0.001); // in GeV
+	muPy1-&gt;Fill( muonPy1*0.001); // in GeV
+	muPz1-&gt;Fill( muonPz1*0.001); // in GeV
+        muE1-&gt;Fill(muonEnergy1*0.001); // in GeV
+
+	muPt2-&gt;Fill((LooseMuonsPt2)*0.001); // in GeV
+        muEta2-&gt;Fill(LooseMuonsEta2);
+        muPhi2-&gt;Fill(LooseMuonsPhi2);
+	muPx2-&gt;Fill( muonPx2*0.001); // in GeV
+	muPy2-&gt;Fill( muonPy2*0.001); // in GeV
+	muPz2-&gt;Fill( muonPz2*0.001); // in GeV
+        muE2-&gt;Fill(muonEnergy2*0.001); // in GeV
+      
+ 	zPt-&gt;Fill( zPerp*0.001); // in GeV
+ 	zPx-&gt;Fill( zCompX*0.001); // in GeV
+	zPy-&gt;Fill( zCompY*0.001); // in GeV
+	zPz-&gt;Fill( zLongi*0.001); // in GeV
+        zE-&gt;Fill( zEnergy*0.001); // in GeV
+        zMass-&gt;Fill(zM*0.001); // in GeV
+     
+	}
+
+  // draw the eta distribution
+  zMass-&gt;Draw();
+  
+  // make a ROOT output file to store your histograms
+  TFile *outFile = new TFile(&quot;histograms-z.root&quot;, &quot;recreate&quot;);
+  muPt1-&gt;Write();
+  muEta1-&gt;Write();
+  muPhi1-&gt;Write();
+  muE1-&gt;Write();
+  muPx1-&gt;Write();
+  muPy1-&gt;Write();
+  muPz1-&gt;Write();
+
+  muPt2-&gt;Write();
+  muEta2-&gt;Write();
+  muPhi2-&gt;Write();
+  muE2-&gt;Write();
+  muPx2-&gt;Write();
+  muPy2-&gt;Write();
+  muPz2-&gt;Write();
+
+  zPt-&gt;Write();
+  zE-&gt;Write();
+  zPx-&gt;Write();
+  zPy-&gt;Write();
+  zPz-&gt;Write();
+  zMass-&gt;Write();
+  
+  outFile-&gt;Close();
+}
+&lt;/pre&gt;
+
+The grid job can be submitted using:
+
+&lt;pre class=&quot;screen&quot;&gt;
+condor_submit run-z.cmd
+&lt;/pre&gt;
+
+It can again be checked with: 
+
+&lt;pre class=&quot;screen&quot;&gt;
+condor_q %UCL_USER%
+&lt;/pre&gt;
+
+After it runs, you will find a log file that describes the job: ==run-z.log==, and output file: ==root-z.out==, and the files containing the simulated data: ==histograms-z.root== in your test directory. 
+
+You again need to copy that file into your public directory, so that you can download it to your local desktop:
+
+&lt;pre class=&quot;screen&quot;&gt;
+cp histograms-z.root ~/public/
+&lt;/pre&gt;
+
+Go back to the local terminal window on your local desktop, and download the root files with:
+
+&lt;pre class=&quot;screen&quot;&gt;
+wget http://stash.osgconnect.net/~%UCL_USER%/histograms-z.root
+&lt;/pre&gt;
+
+You can inspect the contents of ==histograms-z.root== by running Root (i.e., ==root histograms-z.root==) in your current directory in your local terminal window:
+
+&lt;pre class=&quot;screen&quot;&gt;
+root histograms-z.root
+&lt;/pre&gt;
+
+And then using the Root command:  ==TBrowser b==
+
+With the ==TBrowser== you can plot the variables in the root file. Double click on histograms-z.root, and then on the variables to plot them.
+
+---+++ Step 3: Make TSelector
+
+Now let&#39;s go back to the files created in step 1, in the remote terminal window. Start ==root== in your test directory with the following commands:
+
+&lt;pre class=&quot;screen&quot;&gt;
+module load root
+root -b
+&lt;/pre&gt;
+
+And then execute the following commands:
+&lt;pre class=&quot;file&quot;&gt;
+TFile f(&quot;t00.root&quot;);
+t0-&gt;MakeSelector(&quot;s0&quot;,&quot;=legacy&quot;);
+f.Close();
+.q
+&lt;/pre&gt;
+
+This will create files ==s0.C== and ==s0.h== in your test directory that contain code corresponding to the definition of the TTree &quot;t0&quot;. This code can be used to process files containing data is these TTree&#39;s.
+
+Now we will add a histogram to the TSelector code. Several code lines have to be added to the TSelector code files ==s0.C== and ==s0.h==.
+
+To ==s0.h== make the following additions:
+after existing include statements add:
+
+&lt;pre class=&quot;file&quot;&gt;
+#include &amp;lt;TH1F.h&amp;gt;
+&lt;/pre&gt;
+
+After class s0 definition:
+&lt;pre&gt;
+class s0 : public TSelector {
+public :
+&lt;/pre&gt;
+add
+&lt;pre class=&quot;file&quot;&gt;
+TH1F *e;
+&lt;/pre&gt;
+
+To ==s0.C== make the following additions:
+
+After entry:
+&lt;pre&gt;void s0::SlaveBegin(TTree * /*tree*/)
+{&lt;/pre&gt;
+add
+&lt;pre class=&quot;file&quot;&gt;
+e = new TH1F(&quot;e&quot;, &quot;e&quot;, 1000, -199.0, 1200.0);
+&lt;/pre&gt;
+
+After Process entry:
+&lt;pre&gt;Bool_t s0::Process(Long64_t entry)
+{&lt;/pre&gt;
+add
+&lt;pre class=&quot;file&quot;&gt;
+GetEntry(entry);
+e-&gt;Fill(Energy);
+&lt;/pre&gt;
+
+After terminate entry:
+&lt;pre&gt;void s0::Terminate()
+{&lt;/pre&gt;
+add
+&lt;pre class=&quot;file&quot;&gt;
+TFile f(&quot;histograms.root&quot;,&quot;RECREATE&quot;);
+f.WriteObject(e,&quot;Energy&quot;);
+f.Close();
+&lt;/pre&gt;
+
+Now create the new script files for Step 2:
+
+&lt;!--
+universe=grid 
+grid_resource=gt2 osgitb1.nhn.ou.edu/jobmanager-condor 
+--&gt;
+
+create:
+==run-root-2.cmd==
+&lt;pre class=&quot;file&quot;&gt;
+universe=vanilla
+executable=run-root-2.sh 
+transfer_input_files = s0.C,s0.h,run-root-2.C,t00.root,t01.root 
+transfer_executable=True 
+when_to_transfer_output = ON_EXIT 
+log=run-root-2.log 
+transfer_output_files = root-2.out,histograms.root 
+output=run-root-2.out.$(Cluster).$(Process) 
+error=run-root-2.err.$(Cluster).$(Process) 
+notification=Never 
+queue 
+&lt;/pre&gt;
+
+Create ==run-root-2.sh==
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash 
+source /cvmfs/oasis.opensciencegrid.org/osg/modules/lmod/current/init/bash
+module load root
+module load libXpm
+root -b &lt; run-root-2.C &gt; root-2.out 
+&lt;/pre&gt;
+
+It has to be made executable, by use of the =chmod= Linux command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+chmod +x run-root-2.sh
+&lt;/pre&gt;
+
+
+Create ==run-root-2.C==
+&lt;pre class=&quot;file&quot;&gt;
+.L s0.C++ 
+{ 
+ //Load and run TSelector 
+ 
+  s0 *s = new s0(); 
+ 
+  TChain tc(&quot;t0&quot;); 
+  tc.Add(&quot;t*.root&quot;); 
+  tc.Process(s); 
+ 
+} 
+&lt;/pre&gt;
+
+We can test the Root job on the osgconnect training machine by issuing command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+root -b &lt; run-root-2.C
+&lt;/pre&gt;
+
+If this works, we can process the data files =t00.root= and =t01.root= on the
+Grid with our new command script ==run-root-2.cmd==.
+
+This can be done with command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+condor_submit run-root-2.cmd
+&lt;/pre&gt;
+
+Once your job has finished, you again need to copy that file into your public directory, so that you can download it to your local desktop:
+
+&lt;pre class=&quot;screen&quot;&gt;
+cp histograms.root ~/public/
+&lt;/pre&gt;
+
+Go back to the local terminal window on your local desktop, and download the root files with:
+
+&lt;pre class=&quot;screen&quot;&gt;
+wget http://stash.osgconnect.net/~%UCL_USER%/histograms.root
+&lt;/pre&gt;
+
+You can look at the output histogram file: =histograms.root=
+with ==TBrowser b== as before, in your local terminal window.
+
+
+-- Main.PatrickLouisSkubic - 18 Jul 2012
+
+
+
+-- Main.RobQ - 05 Aug 2014
+

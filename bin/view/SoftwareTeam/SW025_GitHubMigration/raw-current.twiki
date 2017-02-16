@@ -1,0 +1,142 @@
+&lt;!--
+   * Set UNKNOWN =  &lt;div style=&quot;color: white; background-color: #C00; padding-left: 1em; padding-right: 1em;&quot;&gt;Unknown&lt;/div&gt;
+   * Set POC =  &lt;div style=&quot;color: white; background-color: #073; padding-left: 1em; padding-right: 1em;&quot;&gt;As initial proof-of-concept&lt;/div&gt;
+   * Set EXTERNAL = &lt;div style=&quot;color: white; background-color: #06F; padding-left: 1em; padding-right: 1em;&quot;&gt;External&lt;/div&gt;
+   * Set INTERNAL = &lt;div style=&quot;color: white; background-color: #0A0; padding-left: 1em; padding-right: 1em;&quot;&gt;Internal&lt;/div&gt;
+
+   * Set PENDING =  &lt;div style=&quot;color: white; background-color: #AAA; padding-left: 1em; padding-right: 1em;&quot;&gt;Waiting&lt;/div&gt;
+   * Set ON_TRACK = &lt;div style=&quot;color: white; background-color: #0A0; padding-left: 1em; padding-right: 1em;&quot;&gt;On&amp;nbsp;Track&lt;/div&gt;
+   * Set BEHIND =   &lt;div style=&quot;color: white; background-color: #F60; padding-left: 1em; padding-right: 1em;&quot;&gt;Behind&lt;/div&gt;
+   * Set AT_RISK =  &lt;div style=&quot;color: white; background-color: #C00; padding-left: 1em; padding-right: 1em;&quot;&gt;At&amp;nbsp;Risk&lt;/div&gt;
+   * Set SKIPPED =  &lt;div style=&quot;color: white; background-color: #AAA; padding-left: 1em; padding-right: 1em;&quot;&gt;Skipped&lt;/div&gt;
+   * Set COMPLETE = &lt;div style=&quot;color: white; background-color: #000; padding-left: 1em; padding-right: 1em;&quot;&gt;Done&lt;/div&gt;
+--&gt;
+
+---+ Project 25: Migrate SVN repositories of OSG-owned software to Git and !GitHub
+
+---++ Description
+
+---+++ Background
+
+[[https://github.com][GitHub]] provides a useful collaborative environment for software projects.
+Many OSG-owned software projects are currently only available in SVN. We can
+migrate the repositories for those projects to !GitHub and gain access to its
+collaborative features.
+
+---+++ Goal and Scope
+
+All projects that are in the
+[[https://vdt.cs.wisc.edu/svn/software][VDT SVN software area]] and are still
+active will be migrated to !GitHub: a new !GitHub repository will be created
+per project, and the original SVN directories will be closed to further
+changes.
+
+
+---+++ Links
+
+   * [[SoftwareTeam.GitHubMigrationProposal][Migration proposal]]
+
+---+++ Tasks
+
+Migration occurs in three phases:
+
+   1. Schedule a time with other developers to ensure minimal interruption to
+      their workflow.
+   1. Migrate their repos.
+   1. Verify functionality and work with developers to resolve issues.
+
+---+++ Schedule
+
+Main.MatyasSelmeci will own the tasks, though several will be delegated to Main.CarlEdquist.
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Milestone*                                             | *Effort*                 | *State*    | *Est. Start* | *Est. Finish* | *Act. Finish* | *Notes*                         |
+| 1. Complete migration proposal                          | 2--4 hours               | %COMPLETE% |              | 2016-03-07    | 2016-03-08    |                                 |
+| 2. Write migration, safe backup, and monitoring scripts | 1--2 days                | %COMPLETE% |              | 2016-03-08    | 2016-03-08    | Work mostly by Carl             |
+| 3. Set up backups of &quot;sync only&quot; repos                  | 30 minutes               | %COMPLETE% | 2016-03-08   | 2016-03-10    | 2016-03-11    |                                 |
+| 4. Migrate some internal repos as a proof of concept    | 1--2 hours               | %COMPLETE% | 2016-03-09   | 2016-03-10    | 2016-03-16    | Work split between Mat and Carl |
+| *Check in with Main.TimCartwright and Main.BrianBockelman* |                       |            |              |               |               |                                 |
+| 5. Write documentation for new workflow                 | 2--4 hours               | %COMPLETE% | 2016-03-09   | 2016-03-10    | 2016-04-11    |                                 |
+| 6. Migrate software                                     | 15--60 minutes per proj. | %COMPLETE% | 2016-03-11   | 2016-04-08    | 2016-04-11    | Work split between Mat and Carl |
+
+---+++ Projects to migrate
+
+People listed include both the owners of the migration (Mat or Carl) and owners
+of the software themselves. Only projects that have a clear future of
+development will be migrated -- projects where that&#39;s not obvious are marked
+&quot;Unknown&quot;. Projects that are only known to be used internally are marked as
+&quot;Internal&quot;; projects that have external users are marked as &quot;External&quot;.
+
+| *Project*                 | *Status*   | *People*            | *Scheduled* | *Completed* | *Notes*                                     |
+| =InstalledCapacityReport= | %COMPLETE% | Carl                | 2016-03-30  | 2016-04-01  | Rename to =installed-capacity-report=       |
+| =condor-cron=             | %COMPLETE% | Mat                 | 2016-03-30  | 2016-04-05  |                                             |
+| =doe-cert-analysis=       | %SKIPPED%  |                     |             |             | Last commit 2013-06-18 vwelch               |
+| =gram-state=              | %SKIPPED%  |                     |             |             | Last commit 2012-09-22 bbockelm             |
+| =osg-build=               | %COMPLETE% | Mat                 | 2016-03-30  | 2016-04-05  |                                             |
+| =osg-ca-certs-updater=    | %COMPLETE% | Mat                 | 2016-03-30  | 2016-04-05  |                                             |
+| =osg-ca-generator=        | %COMPLETE% | Mat, !BrianL        |             | 2016-03-17  | Modify =new-test= to pull this from AFS repo |
+| =osg-ca-scripts=          | %COMPLETE% | Carl, !BrianL       | 2016-03-30  | 2016-04-01  |                                             |
+| =osg-cert-scripts=        | %SKIPPED%  |                     |             |             | Last commit 2012-02-27 apadmana             |
+| =osg-cleanup=             | %COMPLETE% | Mat                 | 2016-03-30  | 2016-04-05  |                                             |
+| =osg-configure=           | %COMPLETE% | Mat                 |             | 2016-03-17  | Have go-ahead from !DerekW                  |
+| =osg-control=             | %COMPLETE% | Mat                 | 2016-03-30  | 2016-04-05  |                                             |
+| =osg-display-data=        | %COMPLETE% | Carl                | 2016-03-30  | 2016-04-01  |                                             |
+| =osg-info-services=       | %COMPLETE% | Mat                 | 2016-03-30  | 2016-04-05  |                                             |
+| =osg-make-vomsdir=        | %COMPLETE% | Carl                | 2016-03-30  | 2016-04-01  |                                             |
+| =osg-next-tools=          | %COMPLETE% | Carl                | 2016-03-30  | 2016-04-01  | =mash-scripts= broken out separately to =osg-next-tools.mash-scripts= |
+| =osg-pki-tools=           | %COMPLETE% | Carl, !BrianL       | 2016-03-30  | 2016-04-01  |                                             |
+| =osg-site-web-page=       | %SKIPPED%  |                     | 2016-03-30  |             | Last commit 2011-12-16 marco                |
+| =osg-system-profiler=     | %COMPLETE% | Mat                 | 2016-03-30  | 2016-04-05  |                                             |
+| =osg-test=                | %COMPLETE% | Mat, !BrianL, !TimT | &lt;s&gt;2016-03-09&lt;/s&gt; 2016-03-16 | 2016-03-16 | Modify =new-test= to pull this from AFS repo |
+| =osg-triage-assignments=  | %COMPLETE% | Carl                | 2016-03-30  | 2016-04-01  |                                             |
+| =osg-vo-map=              | %SKIPPED%  |                     |             |             | Last commit 2011-07-20 sthapa               |
+| =osg-web-index=           | %SKIPPED%  |                     |             |             | Last commit 2012-03-30 kronenfe             |
+| =release-tools=           | %COMPLETE% | Carl, !BrianL, !TimT | 2016-03-30 | 2016-04-01  | Update release procedure docs               |
+| =rsv=                     | %COMPLETE% | Carl, Edgar         | 2016-03-30  | 2016-04-01  |                                             |
+| =rsv-perfsonar=           | %COMPLETE% | Carl, Edgar         | 2016-03-30  | 2016-04-01  |                                             |
+| =rsv-vo-gwms=             | %COMPLETE% | Carl, Edgar         | 2016-03-30  | 2016-04-01  |                                             |
+| =stashcache-daemon=       | %SKIPPED%  |                     |             |             | Repo in GH as part of =OSGConnect/StashCache= |
+| =storage-testing=         | %SKIPPED%  |                     |             |             | Last commit 2011-12-15 neha                 |
+| =tarball-client=          | %COMPLETE% | Mat                 |             | 2016-03-12  | Updated docs to refer to new repo           |
+| =testers=                 | %COMPLETE% | Mat, !TimC          | 2016-03-30  | 2016-04-11  |                                             |
+| =tools=                   | %COMPLETE% | Carl                | 2016-03-30  | 2016-04-01  | Docs need updating; replace checkout in =/p/vdt/workspace/tools= with clone |
+| =vm-test-runs=            | %COMPLETE% | Mat, !BrianL        |             | 2016-04-11  | Modify TestRunsAsVMs to refer to Git repo once migrated; modify =osg-run-tests= ; outside of =software/= area |
+| =yum-update-notifier=     | %SKIPPED%  |                     |             |             | Inactive; in GH as =djw8605/yumRepoUpdate=  |
+
+
+---+++ Sync-only projects (DONE)
+
+The following projects are already in !GitHub and merely need to be synced to
+UW AFS.
+
+=htcondor-ce= will be done first as a proof-of-concept. The rest will be done
+two business days later, if nothing goes wrong with =htcondor-ce=.
+
+| *Project*                  | *Scheduled*                  | *Completed* | *Notes*                           |
+| =OSG-Measurements-Metrics= | 2016-03-10                   | 2016-03-10  |                                   |
+| =bestman2=                 | 2016-03-10                   | 2016-03-10  | Copy from =edquist/bestman2=      |
+| =graphtool=                | 2016-03-10                   | 2016-03-11  | &lt;s&gt;Re-copy from =djw8605/graphtool= (MAYBE)&lt;/s&gt; |
+| =gums=                     | 2016-03-10                   | 2016-03-10  |                                   |
+| =htcondor-ce=              | %ORANGE%2016-03-08%ENDCOLOR% | 2016-03-08  |                                   |
+| =oasis-server=             | 2016-03-10                   | 2016-03-10  |                                   |
+| =privilege-xacml=          | 2016-03-10                   | 2016-03-10  |                                   |
+| =puppet-contrib=           | 2016-03-10                   | 2016-03-10  |                                   |
+| =stashcache=               | 2016-03-10                   | 2016-03-10  | Copy from =OSGConnect/StashCache= |
+
+We don&#39;t want to move projects by &quot;forking&quot; them on !GitHub because that
+results in screwy metadata. Instead, use the following move procedure:
+   1. If the repo already exists under =opensciencegrid=, rename it with a =.orig= extension.
+   1. Create a new repo under =opensciencegrid=
+   1. Mirror-Clone from the old repo
+   1. Mirror-Push to the URL of the new repo
+
+For example, with =OSGConnect/StashCache=:
+   1. Create =opensciencegrid/stashcache= in the web interface
+   1. &lt;verbatim&gt;git clone --mirror https://github.com/OSGConnect/StashCache.git&lt;/verbatim&gt;
+   1. &lt;verbatim&gt;cd StashCache.git&lt;/verbatim&gt;
+   1. &lt;verbatim&gt;git push --mirror git@github.com:opensciencegrid/stashcache.git&lt;/verbatim&gt;
+
+=git push= will complain about pull request refs getting rejected (by github), eg:
+&lt;pre&gt;! [remote rejected] refs/pull/1/head -&gt; refs/pull/1/head (deny updating a hidden ref)&lt;/pre&gt;
+
+Alas, we lose the pull request history (as well as github issues) from the original project.

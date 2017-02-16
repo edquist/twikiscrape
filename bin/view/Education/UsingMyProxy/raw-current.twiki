@@ -1,0 +1,144 @@
+&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;%PUBURL%/%WEB%/WorkshopTutorialModules/exercises.css&quot;&gt;
+
+---+!! Using &lt;nop&gt;MyProxy
+
+%TOC%
+
+%STARTINCLUDE%
+%EDITTHIS%
+
+A &lt;nop&gt;MyProxy server is running on your local machine and we will use that to see how we can manage your credentials using the &lt;nop&gt;MyProxy Server.
+
+---+++ Loading proxy into &lt;nop&gt;MyProxy Server
+This steps creates a proxy on the &lt;nop&gt;MyProxy Server. For this exercise we will use the credentials that were pre-configured for you, so unset environment variables. Also, there is no need for a local proxy at this point, so we remove it.
+
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;unset X509_USER_PROXY&lt;/userinput&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;grid-proxy-destroy&lt;/userinput&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;grid-proxy-info&lt;/userinput&gt;
+ERROR: Couldn&#39;t find a valid proxy.
+Use -debug for further information.
+[train31@gridlab1 ~]$ 
+[train31@gridlab1 ~]$ &lt;userinput&gt;myproxy-init -s %LOGINHOST%&lt;/userinput&gt;
+Your identity: /C=US/O=SDSC/OU=SDSC/CN=Account Train31/UID=train31
+Enter GRID pass phrase for this identity:
+Creating proxy ............................... Done
+Proxy Verify OK
+Your proxy is valid until: Fri Jun 30 10:34:27 2006
+Enter &lt;nop&gt;MyProxy pass phrase:
+Verifying - Enter &lt;nop&gt;MyProxy pass phrase:
+Verify failure
+Error entering passphrase.
+[train31 ~]$ &lt;nop&gt;myproxy-init -s %LOGINHOST%
+Your identity: /C=US/O=SDSC/OU=SDSC/CN=Account Train31/UID=train31
+Enter GRID pass phrase for this identity:
+Creating proxy .......................................................... Done
+Proxy Verify OK
+Your proxy is valid until: Fri Jun 30 10:34:42 2006
+Enter &lt;nop&gt;MyProxy pass phrase:
+Verifying - Enter &lt;nop&gt;MyProxy pass phrase:
+A proxy valid for 168 hours (7.0 days) for user train31 now exists on %LOGINHOST%.
+[train31 ~]$ 
+&lt;/pre&gt;
+
+The first pass phrase is to decrypt your private key.
+
+The second pass phrase is one to protect your login on the &lt;nop&gt;MyProxy server.
+
+A credential exists for you on the server now, but there are no local credentials.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31 ~]$ &lt;userinput&gt;grid-proxy-info&lt;/userinput&gt;
+ERROR: Couldn&#39;t find a valid proxy.
+Use -debug for further information.
+[train31 ~]$ 
+&lt;/pre&gt;
+
+---+++ Accessing credentials from &lt;nop&gt;MyProxy Server
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31 ~]$ &lt;userinput&gt;myproxy-logon -s %LOGINHOST%&lt;/userinput&gt;
+Enter &lt;nop&gt;MyProxy pass phrase:
+A credential has been received for user train31 in /tmp/x509up_u539.
+[train31 ~]$ 
+&lt;/pre&gt;
+
+The pass phrase here is the &lt;nop&gt;MyProxy pass phrase, rather than your credential.
+
+A local copy of proxy certificate with lifetime of 12 hours  exists now.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31 ~]$ &lt;userinput&gt;grid-proxy-info &lt;/userinput&gt;
+subject  : /C=US/O=SDSC/OU=SDSC/CN=Account Train31/UID=train31/CN=1046308089/CN=398902167/CN=947386583
+issuer   : /C=US/O=SDSC/OU=SDSC/CN=Account Train31/UID=train31/CN=1046308089/CN=398902167
+identity : /C=US/O=SDSC/OU=SDSC/CN=Account Train31/UID=train31
+type     : Proxy draft (pre-RFC) compliant impersonation proxy
+strength : 1024 bits
+path     : /tmp/x509up_u539
+timeleft : 11:59:42
+[train31 ~]$ 
+&lt;/pre&gt;
+
+---+++ Using credentials from &lt;nop&gt;MyProxy Server for globus-url-copy
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31 ~]$ &lt;userinput&gt;\rm &lt;nop&gt;myProxyTest &lt;/userinput&gt;
+[train31 ~]$ &lt;userinput&gt;ls -lt &lt;nop&gt;myProxyTest&lt;/userinput&gt;
+ls: &lt;nop&gt;myProxyTest: No such file or directory
+[train31 ~]$ &lt;userinput&gt;globus-url-copy gsiftp://localhost:2811/home/train31/tempFile gsiftp://localhost:2811/home/train31/myProxyTest&lt;/userinput&gt;
+[train31 ~]$ &lt;userinput&gt;ls -lt &lt;nop&gt;myProxyTest&lt;/userinput&gt;
+-rw-r--r--  1 train31 train31 43 Jun 23 10:37 &lt;nop&gt;myProxyTest
+[train31 ~]$ &lt;userinput&gt;more &lt;nop&gt;myProxyTest&lt;/userinput&gt; 
+Temporary file for testing globus-url-copy
+[train31 ~]$ 
+&lt;/pre&gt;
+
+
+
+---+++ Using credentials from &lt;nop&gt;MyProxy Server to submit a GRAM job
+
+Try submitting a job (using the GRAM job submission commands that you learned in the introductory module) to run the command &#39;/usr/bin/whoami&#39; using your &lt;nop&gt;MyProxy credentials. You should see that your job returns the name of your user ID.
+
+
+---+++ Running globusrun-ws from a different machine
+Swap machines with your friend. Attempt to run the job from previous step. You should see the login of your friend:
+
+Now download credentials from your &lt;nop&gt;MyProxy Server using your username and password. Next, run the job again. Your username on the &lt;nop&gt;MyProxy server is your login name.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[ranantha ~]$ &lt;userinput&gt;myproxy-logon -s %LOGINHOST% -l train31&lt;/userinput&gt;
+Enter &lt;nop&gt;MyProxy pass phrase:
+A credential has been received for user train31 in /tmp/x509up_u502.
+[ranantha ~]$
+&lt;/pre&gt;
+
+The above overwrites your friend&#39;s credntial with yours from &lt;nop&gt;MyProxy server. Attempt running the job now, you should see your own login name, since the credentials are yours.
+
+Remember to destroy your proxy from your friend&#39;s machine!
+
+&lt;pre class=&quot;screen&quot;&gt;
+[ranantha@gridlab1 ~]$ &lt;userinput&gt;grid-proxy-destroy &lt;/userinput&gt;
+[ranantha@gridlab1 ~]$ 
+&lt;/pre&gt;
+
+
+---+++ Deleting your credentials from &lt;nop&gt;MyProxy Server
+
+Use =myproxy-destroy= to remove your credentials from the server. You should have valid credentials to do that.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;myproxy-destroy  -s %LOGINHOST%&lt;/userinput&gt;
+Default &lt;nop&gt;MyProxy credential for user train31 was successfully removed.
+[train31@gridlab1 ~]$
+&lt;/pre&gt;
+
+
+%STOPINCLUDE%
+&lt;!--                                                                            
+      * Set LOGINHOST = gridlab1
+      * Set GRIDHOST = tg-login.ncsa.teragrid.org
+      * Set OTHERHOST = gridlab2
+--&gt;
+%BOTTOMMATTER%
+-- Main.ForrestChristian - 2007 Jan 29: pulled from original %BR% 

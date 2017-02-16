@@ -1,0 +1,41 @@
+---+!! Include Topics and Web Pages Using =%&lt;nop&gt;INCLUDE{...}%= Variable
+
+Use the =%&lt;nop&gt;INCLUDE{...}%= variable to embed the content of another topic or web page inside a TWiki topic. The whole content or only parts of a page can be included. If needed, set a proxy server in %WIKIPREFSTOPIC%.
+
+%TOC%
+
+---++ Syntax Example
+
+=%&lt;nop&gt;INCLUDE{ &quot;page&quot; pattern=&quot;reg-exp&quot; rev=&quot;2&quot; warn=&quot;off&quot; section=&quot;clients&quot; }%=
+
+The =pattern= parameter is optional and allows you to extract some parts of a web page. Specify a %TWIKIWEB%.RegularExpression that scans from start (=&#39;^&#39;=) to end and contains the text you want to keep in parenthesis, e.g., =pattern=&quot;^.*?(from here.*?to here).*&quot;=. You need to make sure that the integrity of a web page is not compromised; for example, if you include a table, make sure to include everything including the table end tag.
+
+VarINCLUDE explains the other parameters.
+
+__Note:__ All text of a topic is included unless it contains a =%&lt;nop&gt;STARTINCLUDE%= and =%&lt;nop&gt;STOPINCLUDE%=, or you specify a =section= parameter and/or a =pattern= parameter. A pattern will only search between =%&lt;nop&gt;STARTINCLUDE%= and =%&lt;nop&gt;STOPINCLUDE%=.
+
+---++ Usage Examples
+
+---+++ 1. Display regression test results in a TWiki page
+&lt;pre&gt;
+  &amp;lt;pre&amp;gt;
+  %&lt;nop&gt;INCLUDE{&quot;http://domain/~qa/v1.1/REDTest.log.txt&quot;}%
+  &amp;lt;/pre&amp;gt;
+&lt;/pre&gt;
+
+---+++ 2. Display Google&#39;s robot.txt file
+
+&lt;pre&gt;
+  %&lt;nop&gt;INCLUDE{&quot;http://www.google.com/robots.txt&quot;}%
+&lt;/pre&gt;
+
+---+++ 3. Display the current time in Tokyo in a TWiki page
+
+   * You type:
+      * ==Tokyo: %&lt;nop&gt;INCLUDE{&quot;http://TWiki.org/cgi-bin/xtra/tzdate?tz=Asia/Tokyo&quot; pattern=&quot;^.*&amp;lt;\!--tzdate:date--&amp;gt;(.*?)&amp;lt;\!--/tzdate:date--&amp;gt;.*&quot;}%==
+   * You get:
+      * Tokyo: %INCLUDE{&quot;http://TWiki.org/cgi-bin/xtra/tzdate?tz=Asia/Tokyo&quot; pattern=&quot;^.*&lt;\!--tzdate:date--&gt;(.*?)&lt;\!--/tzdate:date--&gt;.*&quot;}%
+
+__Related Topics:__ VarINCLUDE, UserDocumentationCategory
+
+

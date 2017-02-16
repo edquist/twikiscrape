@@ -1,0 +1,86 @@
+---+ OSG Technology Area Meeting, 16 November 2015
+
+*Coordinates:* Conference: 857-216-4999, PIN: 32390; https://www.uberconference.com/osgcat
+
+*Attending:* !BrianL, Carl, Derek, Edgar, Jeff, !JohnH, Jose, Marian, Mat, Suchandra, !TimC, !TimT, Xin
+&lt;!-- !BrianB, !BrianL, Carl, Derek, Edgar, Jeff, !JohnH, Jose, Marian, Mat, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+
+---+++ Triage Duty
+   * This week: !TimT
+   * Next week: !TimC
+   * &lt;span style=&quot;color: #F60;&quot;&gt;10 (–5) open tickets&lt;/span&gt;
+
+---+++ JIRA
+   * Open: 181 (+6)
+   * In Progress: 31 (+3)
+   * Ready for Testing: 2 (–9)
+   * Ready for Release: 1 (–5)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| Special | 3.2.31 / 3.3.5 | N/A | 2015-11-17 | 2015-11-19 | |
+| December | 3.2.32 / 3.3.6 | 2015-11-23 | 2015-11-30 | 2015-12-08 | |
+| January | 3.2.33 / 3.3.7 | 2015-12-28 | 2016-01-04 | 2016-01-12 | 5 week cycle |
+| February | 3.2.34 / 3.3.8 | 2016-01-25 | 2016-02-01 | 2016-02-09 | |
+
+*Notes:* Additional “urgent” releases may be scheduled for the 4th Tuesday of each month. The *Testing* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+
+---++ OSG Software Team
+
+---+++ Discussions
+   * HTCondor 8.4.2 most likely coming tomorrow, be ready for builds, developer testing, etc. – ask for help if appropriate.
+   * There is a new internal tool at =&lt;em&gt;SVN&lt;/em&gt;/software/tools/built-against-pkgs=. It extracts NVRs of given package names that were installed as part of given builds. !TimC will ask for this information before approving promotions to testing in certain cases where it seems important. For instance, we sometimes need to verify that HTCondor-CE was built against a particular version of HTCondor itself, and this tool makes it very easy to answer the question. It even produces output in JIRA format! Try using the tool from a machine that has Koji access set up.
+   * Last week’s release may have introduced a problem with the logrotate entries for the RSV JSON consumer – we should investigate immediately to see if this is fixable for Thursday. [[https://ticket.grid.iu.edu/27417][GOC #27417]].
+
+---+++ Major Activities
+   * Support EL 7 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1541][SW-1541]])
+   * Fix routine automated test failures ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1996][SW-1996]])
+   * Documentation
+   * HTCondor-CE ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1813][SW-1813]])
+   * [[SW024_ConsolidateRepos][Software repository consolidation]]
+   * IPv6 evaluation ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1525][SW-1525]])
+   * [[https://twiki.opensciencegrid.org/bin/view/Trash/SoftwareTeamSiteSupportStatus][Support]]
+
+
+---++ OSG Release Team
+   * Special November 19th Release - OSG 3.2.31 and OSG 3.3.5
+      * Suchandra? is handling the [[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.3.5%2C%203.2.31%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][November 19th Release]]
+      * Release Thursday
+
+%TABLE{sort=&quot;off&quot;}%
+| *3.2.31* | *Both* | *3.3.5* | *Total* | *Status* |
+| 0 (+0) | 2 (+0) | 0 (+0) | 2 (+0) | Open |
+| 0 (+0) | 3 (+0) | 1 (+0) | 4 (+0) | In Progress |
+| 0 (+0) | 3 (+0) | 0 (+0) | 3 (+0) | Ready for Testing |
+| 0 (+0) | 1 (+0) | 0 (+0) | 1 (+0) | Ready for Release |
+| 0 (+0) | 9 (+0) | 1 (+0) | 10 (+0) | Totals |
+
+   * OSG 3.2.30 and OSG 3.3.4
+      * HTCondor CE
+         * Enable GSI mapping cache
+         * Update method for setting default JOB_ROUTER_ENTRIES attribute
+      * Plug memory leak for lcmaps-plugins-scas-client
+      * osg-configure
+         * condor_ce_reconfig of generate environment files
+         * Don&#39;t error out for missing !ReSS servers
+      * specify collector port in xroot-cache-probe
+   * OSG 3.3.4 Only
+      * HTCondor 8.4.2
+   * OSG 3.2.30 Only
+      * HTCondor 8.2.10
+
+
+---++ OSG Investigations Team
+
+   * OASIS: Little activity as .
+   * !StashCache:
+      * Prototype of CVMFS-over-StashCache continues to make progress.
+      * Working to get &quot;all green&quot; in monitoring - i.e., using the probes we already developed.
+      * Submitting jobs using !StashCache through !NoVA production system.
+   * &lt;span style=&quot;text-decoration: blink;&quot;&gt;CEMon&lt;/span&gt; (part of HTCondor-CE): got OK from AGIS team, will try to get it in the HTCondor-CE release.
+   * OSG-CE-BOSCO: No progress to report.
+   * LIGO: LIGO workflow made widely deployable; now on &gt;5 sites and passed 10k hours / day.

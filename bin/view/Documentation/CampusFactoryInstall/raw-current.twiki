@@ -1,0 +1,487 @@
+---+!! Campus Grid Factory Install Guide 
+&lt;!-- BOSCO and Campus factory are different. 
+&lt;div style=&quot;background-color:#87cefa; padding:7px; -moz-border-radius: 5px; border-radius: 5px;&quot;&gt;
+Did someone say... &amp;#8220;[[CampusFactoryInstallRC][Alpha]]&amp;#8221;?
+&lt;/div&gt;
+--&gt;
+
+%DOC_STATUS_TABLE%
+%TOC%
+
+&lt;!-- conventions used in this document
+   * Local UCL_CWD = ~/cf/
+   * Local UCL_HOST = cf
+--&gt;
+
+&lt;!-- Local variables
+   * Set CONDORREL = 7.7.6
+   * Set CFREL = 0.4.3
+   * Set AS_OF_DATE = May 2, 2012
+--&gt;
+
+
+---+ About This Document
+This document describes the installation of the Campus Factory.  The OSG model for setting up a Campus Grid utilizes a Condor based submit host to submit jobs across multiple clusters with different Job Schedulers.  A Campus Grid Factory must be installed on the login node of each non-Condor based cluster as an integration point into the Campus Grid. 
+
+---+ How To Get Help?
+You can find support in the Campus Grid mailing list: campusgrids@fnal.gov
+&lt;!--
+You can find support in the !SourceForge project [[http://sourceforge.net/projects/campusfactory/support][support page]]
+--&gt;
+
+---+ Requirements
+The Campus Grid Factory requires:
+   * A supported (LRM) Local Resource Manager (e.g. PBS)
+   * A submit host for the LRM with RHEL 5 based Operating System, a public IP and port 9618 (Condor Collector) open.
+      * The hardware recommendations for the Campus Factory are modest: production factories have run on 1GB of ram and 1 Core.  
+&lt;!--
+   * [[http://www.cs.wisc.edu/condor/downloads-v2/download.pl?state=select_from_mirror_page&amp;version=7.5.6&amp;mirror=UW%20Madison&amp;optional_organization_url=http://][Condor-%CONDORREL%]] (installation and configuration documented below).
+   * The [[https://sourceforge.net/projects/campusfactory/files/][Campus Factory]].
+--&gt;
+
+---+ Introduction
+The Campus Factory is a component of the OSG Campus Grid Infrastructure.
+
+The Campus Factory allows job submission access to a single job queue (PBS or LSF) by creating an overlay allowing Condor jobs to flock into the queue as PBS user jobs owned by the user running the Campus Factory.
+
+The Campus Factory includes a Condor installation (running a Negotiator and Collector) and a process submitting user jobs to the local PBS queue.
+
+In order to submit jobs to the Campus Factory you need a Condor submit host. You can install a dedicated one or you can modify an existing one to flock to the Campus Factory. Check the [[#Next_Steps][Next Steps section]] at the end of this document.
+
+For more information about the Campus Factory structure check the [[http://sourceforge.net/apps/trac/campusfactory][introduction on !SourceForge]].
+
+   * Campus Grid elements: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/CampusGridColored.png&quot; alt=&quot;CampusGridColored.png&quot; width=&#39;383&#39; height=&#39;446&#39; /&gt;    
+
+
+---+ Installation Procedure
+
+---++ Installing Condor 
+
+You do not have to install Condor as root.  This guide will assume installing as non-root.  The user that runs Condor will be the same user which the pilots will be submitted as to PBS.
+   1 Go to the [[http://www.cs.wisc.edu/condor/downloads-v2/download.pl][download page]] and choose Condor version %CONDORREL% for your platform (currently condor-7.6.2-x86_64_rhap_5-stripped.tar.gz for RHEL 5 64bit, x86_64).
+      *  =condor-7.6.2-x86_64_rhap_5-stripped.tar.gz=  (for RHEL 5 x86_64 OS)
+   1 Save the downloaded file to your home directory (you can use =wget= or =curl=).
+   1 Create the Condor installation directory: &lt;pre class=&quot;screen&quot;&gt;
+mkdir ~/cf
+mkdir ~/cf/condor
+&lt;/pre&gt;
+   1 Create a temporary directory and extract the source from the downloaded file in your home directory&lt;pre class=&quot;screen&quot;&gt;
+mkdir /tmp/condor-src
+cd /tmp/condor-src
+tar xzf ~/condor-%CONDORREL%-x86_64_rhap_5-stripped.tar.gz 
+&lt;/pre&gt;
+   1 Run the Condor installation script (note that Condor cannot resolve &#39;~&#39;. Use variables or absolute path):&lt;pre class=&quot;screen&quot;&gt;
+cd condor-%CONDORREL%-x86_64_rhap_5-stripped
+./condor_install --prefix=$HOME/cf/condor &lt;/pre&gt;   
+&lt;!--
+./condor_install --prefix=~/cf/condor --type=manager
+--&gt;
+
+The installation script created for you 
+   * files to set the environment (=condor.sh/csh=)
+   * standard configuration files =~/cr/condor/etc/condor_config= 
+   * and a host specific directory =~/cr/condor/local.$HOST= (where $HOST is the short name of your host) containing the machine-specific configuration file and log and spool directories. 
+
+
+---++ Configuring Condor 
+These instructions cover only the configuration of a Campus Factory for a PBS job queue
+
+   1. Download and extract the Campus Factory [[https://sourceforge.net/projects/campusfactory/files/][release]]. E.g.:&lt;pre class=&quot;screen&quot;&gt;
+cd ~/cf/
+wget http://sourceforge.net/projects/campusfactory/files/CampusFactory-%CFREL%/CampusFactory-%CFREL%.tar.gz/download
+tar xzf CampusFactory-%CFREL%.tar.gz&lt;/pre&gt;
+   1. Define =CONDOR_LOCATION= as your Condor installation directory and =FACTORY_LOCATION= as your Campus Factory installation directory:&lt;pre class=&quot;screen&quot;&gt;
+export CONDOR_LOCATION=~/cf/condor
+export FACTORY_LOCATION=~/cf/CampusFactory-%CFREL%&lt;/pre&gt;
+   1. Make a local configuration directory:&lt;pre class=&quot;screen&quot;&gt;
+mkdir $CONDOR_LOCATION/etc/config.d&lt;/pre&gt;
+   1. Edit the required lines in the =condor_config= file (=$CONDOR_LOCATION/etc/condor_config=):
+      * =LOCAL_CONFIG_DIR= set to =&amp;lt;CONDOR_LOCATION&gt;/etc/config.d=, where &amp;lt;CONDOR_LOCATION&gt; is the content of the variable defined above. Use the absolute path, no variables or symbols like =~=. E.g.:&lt;pre class=&quot;file&quot;&gt;
+LOCAL_CONFIG_DIR = /home/marco/cf/condor/etc/config.d&lt;/pre&gt;
+   1. Copy the =condor_config.factory= and =condor_mapfile= from the factory release.&lt;pre class=&quot;screen&quot;&gt;
+cp $FACTORY_LOCATION/share/condor/condor_config.factory $CONDOR_LOCATION/etc/config.d/condor_config.factory
+cp $FACTORY_LOCATION/share/condor/condor_mapfile $CONDOR_LOCATION/etc/condor_mapfile&lt;/pre&gt;
+   1. Edit the required condor lines in the factory condor configuration file (=condor_config.factory=):
+      $ =FLOCK_FROM=: Hosts that will be allowed to run jobs on this cluster.  You must list all hosts, including the host you are installing on.
+      $ =INTERNAL_IPS=: IP addresses (or hostnames) of the worker nodes and any NAT machines that the worker nodes may use to contact the =CONDOR_HOST=.
+   1. Optional parameters in the factory condor configuration file (=condor_config.factory=):
+      $ =FLOCK_TO=: Hosts that can run jobs submitted on this cluster. It would allow to daisy-chain this Campus Factory to another Campus Factory or Condor cluster.
+   1. Comment out =DAEMON_LIST= in the file =$CONDOR_LOCATION/local.*/condor_config.local= file.
+   1. Check the value of these condor lines in the local condor configuration file (=local.$(HOST)/condor_config.local=). Condor&#39;s setup should have been set these for you:
+      $ =CONDOR_HOST=: to the full hostname of the machine that will run condor
+      $ =CONDOR_ADMIN=: set to the email address that will receive emails about malfunctioning condor.
+      $ =UID_DOMAIN=: set to a unique name for this resource. It is used by Condor to aggregate the resources. This has no relation to the network domain (from the FQDN) even if you can use that to build a unique name. For example, a cluster named Firefly at Nebraska, has =UID_DOMAIN= set to =firefly.unl.edu=
+      $ =FILESYSTEM_DOMAIN=: set to your file system domain. Condor considers that hosts with the same =FILESYSTEM_DOMAIN= share the home directories and users ID (Therefore files in the home directory do not need to be copied over). This can be the same as =UID_DOMAIN=. If your hosts have no shared directories set =FILESYSTEM_DOMAIN= to a unique ID on each host, e.g. the hostname (=FILESYSTEM_DOMAIN =  $(FULL_HOSTNAME)=).
+      $ =COLLECTOR_NAME=: Name of the resource.  This is the long name, such as =FireflyCluster=. %RED% Please choose a single identifier (no spaces).%ENDCOLOR%
+      * A sample configuration with the variables filled in is shown in the source [[http://sourceforge.net/apps/trac/campusfactory/browser/campus_factory/tags/CampusFactory-0.3.1/share/condor/condor_config.local][condor_config.local]].
+   1. Configure BLAHP (Batch Local ASCII Helper Protocol) for your batch scheduler as explained below. This is used by Condor to submit to the local batch scheduler (in =$CONDOR_LOCATION/libexe/glite=)
+      * *It is important to know if you have shared directories in the cluster (e.g. HOME dir) and set =blah_shared_directories= below accordingly. Use =/dev/null= if you have none.*
+
+---+++ Configuring BAHP for PBS
+If the local batch scheduler to include in the Campus Factory is PBS then
+   1. Edit the Condor PBS Blahp configuration.  This file is located in =$CONDOR_LOCATION/libexec/glite/etc/batch_gahp.config=.
+      * Make sure that =pbs= is included in the supported_lrms list at the beginning (e.g. =supported_lrms=pbs=)
+      * Use =which qstat= to find the binary path of the PBS executables (i.e. qstat, qsub, ...), =/usr/bin= in the example
+      * Set =pbs_binpath= and these other variables accordingly: &lt;pre class=&quot;file&quot;&gt;
+pbs_binpath=/usr/bin
+pbs_nochecksubmission=yes
+pbs_nologaccess=yes
+blah_shared_directories=/dev/null&lt;/pre&gt;
+&lt;!--
+   1. After editing =batch_gahp.config=, copy the file to the new configuration file location:&lt;pre class=&quot;screen&quot;&gt;
+cp $CONDOR_LOCATION/libexec/glite/etc/batch_gahp.config $CONDOR_LOCATION/libexec/glite/etc/blah.config &lt;/pre&gt;
+--&gt;
+
+---+++ Configuring BAHP for SGE
+If the local batch scheduler to include in the Campus Factory is SGE (Sun Grid Engine or any of its variants Oracle Grid Engine, Univa Grid Engine,  Open Grid Scheduler) then:
+   1. If it is not already there (will be there in Condor 7.8), add to =$CONDOR_LOCATION/etc/condor_config= the line:&lt;pre class=&quot;file&quot;&gt;
+SGE_GAHP = $(GLITE_LOCATION)/bin/batch_gahp &lt;/pre&gt;
+   1. Edit the Condor SGE BLAHP configuration.  This file is located in =$CONDOR_LOCATION/libexec/glite/etc/batch_gahp.config=.
+      * Make sure that =sge= is included in the supported_lrms list at the beginning (e.g. =supported_lrms=sge=)
+      * Check =echo $SGE_ROOT= or use =which qstat= to find the root path of the SGE executables (i.e. qstat, qsub, ...), =/usr/share/sge/current= in the example
+      * Check =echo $SGE_CELL= to know the SGE cell that you are using.
+      * Set =sge_root= and these other variables accordingly: &lt;pre class=&quot;file&quot;&gt;
+sge_root=/usr/share/sge/current
+sge_cell=SIRAFCluster
+blah_shared_directories=/dev/null&lt;/pre&gt;
+&lt;!--
+   1. there is an error in the current SGE support in BLAHP
+--&gt;
+&lt;!--
+   1. After editing =batch_gahp.config=, copy the file to the new configuration file location:&lt;pre class=&quot;screen&quot;&gt;
+cp $CONDOR_LOCATION/libexec/glite/etc/batch_gahp.config $CONDOR_LOCATION/libexec/glite/etc/blah.config &lt;/pre&gt;
+--&gt;
+
+---+++ Configuring GAHP for other job managers
+
+---++ Starting condor
+Start the Condor daemons by first sourcing the setup file =condor.sh=:&lt;pre class=&quot;screen&quot;&gt;
+source $CONDOR_LOCATION/condor.sh&lt;/pre&gt;
+
+Then starting the =condor_master=:&lt;pre class=&quot;screen&quot;&gt;
+condor_master&lt;/pre&gt;
+
+
+---++ Installing the factory 
+The Campus Factory is the package downloaded above during the Condor configuration.
+=$FACTORY_LOCATION= was defined above as the Campus Factory installation directory.
+
+---++ Configuring the factory
+Create a log directory for the log files of the factory (e.g. =/tmp/cf-logs=).
+
+Full documentation on configuration options for the factory are listed on the [[http://sourceforge.net/apps/trac/campusfactory/wiki/Configuration][Configuration page on !SourceForge]].
+In the configuration file =$FACTORY_LOCATION/etc/campus_factory.conf=, the values you are required to change are:
+   $ =worker_tmp=: The local temp directory on the worker node.  This will be where condor places the intermediate job data and glidein logs.  This should be an existing directory on the worker node.  An example is =/tmp=
+   $ =logdirectory=: Directory to place the logs for the factory.  They will be named campus_factory.log. It is recommended to use a local directory.
+
+&lt;!--
+The job template =$FACTORY_LOCATION//share/glidein_jobs/job.submit.template= needs to be configured correctly:
+   1. Set these variables to the correct value:&lt;pre class=&quot;file&quot;&gt;
+GLIDEIN_HOST = example.com
+WN_TMP = /tmp
+GLIDEIN_Site = Grid site&lt;/pre&gt;
+   1. Customize the environment for your configuration:&lt;pre class=&quot;file&quot;&gt;
+Environment =   _condor_CONDOR_HOST=$(GLIDEIN_HOST); &amp;#92;
+                                _condor_COLLECTOR_HOST=$(GLIDEIN_HOST); &amp;#92;
+                                _condor_GLIDEIN_HOST=$(GLIDEIN_HOST); &amp;#92;
+                                _condor_CONDOR_ADMIN=dweitzel@ff.unl.edu; &amp;#92;
+                                _condor_NUM_CPUS=1; &amp;#92;
+                                _condor_UID_DOMAIN=ff.unl.edu; &amp;#92;
+                                _condor_FILESYSTEM_DOMAIN=ff.unl.edu; &amp;#92;
+                                _condor_MAIL=/bin/mail; &amp;#92;
+                                _condor_STARTD_NOCLAIM_SHUTDOWN=1200; &amp;#92;
+                                _campusfactory_wntmp=$(WN_TMP); &amp;#92;
+                                _condor_GLIDEIN_Site=&quot;$(GLIDEIN_Site)&quot;&lt;/pre&gt;
+
+--&gt;
+
+
+&lt;!--  ---+ Service Activation and Deactivation --&gt;
+---+ Starting/Stopping the Factory
+   1. Confirm that the condor executables are in your path:
+   &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% condor_q&lt;/pre&gt;
+   Should output
+   &lt;pre class=&quot;screen&quot;&gt;
+-- Schedd: HOSTNAME : &lt;IP_ADDRESS&gt;
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+
+0 jobs; 0 idle, 0 running, 0 held &lt;/pre&gt;
+   If =condor_q= failes, be sure to source the condor.sh file you created while [[#Installing_Condor][installing condor]].  If sourcing the =condor.sh= file does not fix the problem, confirm that the =condor_master=, =condor_collector=, and =condor_schedd= daemons are running.
+   &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% ps aux | grep condor&lt;/pre&gt;
+   1. Export the correct python path and system path:&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% export PYTHONPATH=$PYTHONPATH:$FACTORY_LOCATION/python-lib
+%UCL_PROMPT% export PATH=$PATH:$FACTORY_LOCATION/bin &lt;/pre&gt;
+   1. Start the Campus Factory:&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% cd $FACTORY_LOCATION
+%UCL_PROMPT% cf start&lt;/pre&gt;
+   1. Stop the Campus Factory:&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% cf stop&lt;/pre&gt;
+&lt;!--   1. Start manually the factory:
+   &lt;pre class=&quot;screen&quot;&gt;
+cd $FACTORY_LOCATION
+condor_submit share/factory.job &lt;/pre&gt;
+--&gt;
+
+---+ Advanced configuration
+
+---++ Campus Factory behind a firewall or on a private network
+In order to flock into the Campus Factory both the Glidein on the worker nodes and the submit host(s) must be able to reach port 9618 on it (Condor Collector):
+   * port 9618 must be open
+   * the host must have a public IP (or at least be reachable by both worker nodes and submit host(s))
+As user you may have no control on the PBS submit host where you are installing the Campus Factory and sometime one of the 2 requirements may not be met.
+
+The solution is to install the Condor Collector and Negotiator for the Campus Factory on a different host. This can be a submit host or a third host with just the Condor Collector and Negotiator.
+
+To make these instructions more generic we will present the second configuration. The submit host and all the worker nodes are behind a firewall and only SSH access (port 22) to the submit host is allowed.
+
+   * Campus grid elements when also the queue headnoe is behind a firewall: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/CampusGridFirewall_15.png&quot; alt=&quot;CampusGridFirewall_15.png&quot; width=&#39;287&#39; height=&#39;412&#39; /&gt;    
+
+The CCB Node has a Condor installation with Collector and Negotiator running. For clarity let&#39;s assume that the CCB hostname (FQDN) is =your_ccb_host.com= and that Condor the Collector is running on the default port (9618).
+
+The Campus Factory configuration must be changed to use CCB:
+&lt;!--   * In the job template (=$FACTORY_LOCATION//share/glidein_jobs/job.submit.template=), replace the GLIDEIN_HOST:&lt;pre class=&quot;file&quot;&gt;GLIDEIN_HOST = your_ccb_host.com&lt;/pre&gt; --&gt;
+   * In the Condor local configuration (=$CONDOR_LOCATION/local.$(HOST)/condor_config.local=), change the definition of the COLLECTOR_HOST (or add it at the end of the file if it is not there). You have to specify an available port (e.g. 39618, different form the default 9618):&lt;pre class=&quot;file&quot;&gt;COLLECTOR_HOST = your_ccb_host.com&lt;/pre&gt; 
+
+If the Campus Factory was already running, you must restart it after these changes.
+
+---++ Running the Campus Factory on an alternative port
+Either the system administrator or other users may be running already Condor on the Campus Factory host. In this case you&#39;ll have to choose an alternative port for the Condor Collector to avoid clashing with the other Condor installation..
+
+In the local Condor configuration file (e.g. =$CONDOR_LOCATION/local.$(HOST)/condor_config.local=) change the definition of the COLLECTOR_HOST (or add it at the end of the file if it is not there). You have to specify an available port (e.g. 39618, different form the default 9618):&lt;pre class=&quot;file&quot;&gt;COLLECTOR_HOST = $(CONDOR_HOST):39618
+&lt;/pre&gt;
+
+&lt;!-- The same port should be set in the job template (=$FACTORY_LOCATION//share/glidein_jobs/job.submit.template=) by adding the port to the GLIDEIN_HOST: &lt;pre class=&quot;file&quot;&gt;GLIDEIN_HOST = example.com:39618
+&lt;/pre&gt;
+--&gt;
+
+If you are using CCB or an alternate Collector because of a Firewall (see above) then you may have to change that port as well and whenever is referenced (if there is another Condor running on that CCB host). 
+
+The submit host (Schedd) configuration values of COLLECTOR_HOST or FLOCK_TO must reflect the port change as well.
+
+If the Campus Factory was already running, you must restart it after these changes.
+
+
+
+---+ Validation of Service Operation 
+
+---+ Troubleshooting
+
+---++ File Locations
+If any of the tests described above have failed or you are just curious to see what’s going 
+on, you could find log and configuration files for each of the module in the following 
+location on a relevant node: 
+|*Module Name*|*Configuration files*| *Log files*| 
+|Condor| $CONDOR_CONFIG&lt;/br&gt;LOCAL_CONDOR_CONFIG&lt;/br&gt; LOCAL_CONDOR_DIR |$CONDOR_LOCATION/local.$(HOST)/log/(NegotiatorLog, CollectorLog) | 
+|!CampusFactory| $FACTORY_LOCATION/etc/campus_factory.conf&lt;br&gt; $FACTORY_LOCATION/share/glidein_jobs/job.submit.template | | 
+|!PBS | | | 
+
+---++ Known Errors
+Here a list of known problems with version 3.1 of the Campus Factory. They will be solved in future releases.
+
+In the Condor Campus Factory configuration file () comment the lines:&lt;pre class=&quot;file&quot;&gt;
+# Location of the PBS_GAHP to be used to submit the glideins.
+#GLITE_LOCATION = $(LIB)/glite
+#PBS_GAHP       = $(GLITE_LOCATION)/bin/batch_gahp
+&lt;/pre&gt;
+These line are already present in the global Condor configuration and the =GLITE_LOCATION= should be =$(LIBEXEC)/glite=.
+
+---+++ BLAH requires jobs in C state
+After job completion PBS normally removes the jobs. BLAH requires the jobs to remain in the job list in &quot;C&quot; (complete) state for at least 5 min (the time between checks from Condor). 
+This can be achieved changing the PBS configuration to [[http://www.clusterresources.com/torquedocs21/2.5completedjobs.shtml][keep completed jobs]]. E.g. for the queue named MYQUEUE: &lt;pre class=&quot;rootscreen&quot;&gt;
+qmgr -c &quot;set queue MYQUEUE keep_completed=300&quot;
+&lt;/pre&gt;
+This will allow also better error tracking.
+
+---+++ The factory requires to be in the same pool of the submit node
+The Condor installation on the factory submits jobs via BLAH to the local queue (PBS, LSF, ...). This does not require interaction with other components. It is the Condor (=starter= and =startd=) on the Worker node that needs to register to the outside collector and allow flocking.
+
+The factory Condor installation and configuration is used also by the factory software to check if the =schedd= have jobs waiting to run. It uses =FLOCK_FROM= to get the name of the =schedd= and queries them using =condor_q -name ...=. This request fails if the factory is not sharing the same negotiator as the =schedd= and the =startd= starting within the glidein.
+A query like =condor_q -name ... -pool ...= will solve the problem. In the mean time use the same negotiator even when it has to be outside the cluster for firewall issues.
+
+---++ How can I resolve this Problem?
+
+---+++ Condor troubleshooting
+If your jobs do not run and you are unable to connect to the Condor Collector on the login node then:
+   1. If a firewall on the Campus Factory node is blocking the Collector port you will need to setup CCB (see above)
+   1. If there are no firewalls Condor may bind to the wrong interface. To solve the problem add to the Condor configuration the =NETWORK_INTERFACE= option.  This will cause Condor to bind and advertise the public IP address.  Set the value to the Public IP address of the factory. &lt;pre class=&quot;file&quot;&gt;
+NETWORK_INTERFACE = &amp;lt;ip_address&gt;&lt;/pre&gt;
+
+---+++ Testing PBS
+Here a simple test job =pbs-test.sub= &lt;pre class=&quot;file&quot;&gt;
+#!/bin/sh
+#PBS -W stagein=input5.txt@itbv-pbs:/home/marco/input.txt
+hostname
+ls
+cat input5.txt
+&lt;/pre&gt;
+Instead of =itbv-pbs:/home/marco/input.txt= substitute node and file that PBS can stage in.
+
+Here are some useful commands that you can use to troubleshoot and investigate a job or the PBS nodes:
+   * =qsub pbs-test.sub= to submit the job
+   * =qstat= to check the queue
+      * =qstat -f JOBID= for more details about the job. The JOBID is the number returned during submission
+   * =tracejob JOBID= have to be run as root on the cluster headnode: looks in the log files for scheduling informations 
+   * =diagnose -j JOBID= 
+   * =qalter -h n JOBID= to remove from hold a job (other statuses are possible)
+   * =qrun= to force a job to run
+      * =qrerun=
+   * =diagnose -n= to print debug information about the nodes
+
+---+++ Common reasons why PBS jobs may not run:
+Problems in the staging of the files:
+   * try a job without staging
+   * check in the node pbs-mom (torque) configuration the command used to stage the files and if there are different commands for different directories. Remember that Condor will probably resolve symbolic links into the actual path.
+   * the default copy command is =scp=. Try if password-less =scp= between the submit node and the worker nodes work
+
+Troubleshooting a job in W state:
+   * Jobs in =W= state probably have been rescheduled to run later because of an error
+   * =qstat -f JOBID= will tell if there was an attempt to run, when and on which node (=exec_host=)
+   * on the node you will find information in torque logs file and in =/var/log/messages= (grep for &quot;pbs_mom&quot;)
+
+---+++ How does Condor look?
+Here the Condor services on the submit host (=ui-gwms=):&lt;pre class=&quot;screen&quot;&gt;
+-bash-3.2$ condor_status -any
+
+MyType               TargetType           Name                          
+
+Scheduler            None                 ui-gwms.uchicago.edu          
+DaemonMaster         None                 ui-gwms.uchicago.edu          
+&lt;/pre&gt;
+Here the Condor services on the Campus Factory (=itb4=):&lt;pre class=&quot;screen&quot;&gt;
+-bash-3.2$ condor_status -any
+
+MyType               TargetType           Name                          
+
+Collector            None                 Marco Personal Condor at itb4.
+Scheduler            None                 itb4.uchicago.edu             
+DaemonMaster         None                 itb4.uchicago.edu             
+Negotiator           None                 itb4.uchicago.edu             
+Submitter            None                 marco@uchicago.edu            
+&lt;/pre&gt;
+
+---+++ The campus factory is not running
+Normally the campus factory should look like &lt;pre class=&quot;screen&quot;&gt;$ condor_q
+
+-- Submitter: marco@login2.pads.ci.uchicago.edu : &lt;192.5.86.6:42349&gt; : login2.pads.ci.uchicago.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+ 380.0   marco           5/18 18:23   0+00:01:58 R  0   0.0  runfactory -c etc/
+ 381.0   marco           5/18 18:23   0+00:00:00 I  0   0.0  glidein_wrapper.sh
+ 382.0   marco           5/18 18:23   0+00:00:00 I  0   0.0  glidein_wrapper.sh
+ 383.0   marco           5/18 18:24   0+00:00:00 I  0   0.0  glidein_wrapper.sh
+ 384.0   marco           5/18 18:24   0+00:00:00 I  0   0.0  glidein_wrapper.sh
+&lt;/pre&gt;
+where the factory process is running locally on the submit host and the glideins are running in the PBS queue.
+
+If the factory process is not running or is quitting shortly after starting:
+   * check the existence of the temp dir specified in =$FACTORY_LOCATION/etc/campus_factory.conf=
+   * start the factory daemon by hand to see possible errors in the output =$FACTORY_LOCATION/bin/runfactory -c $FACTORY_LOCATION/etc/campus_factory.conf=
+
+---+++ Errors in the Campus Factory log file
+If you see an error about the schedd query failing, like:&lt;pre&gt;
+2011-04-08 10:36:39,682 - DEBUG - Schedds to query: [&#39;&#39;]                                                           
+2011-04-08 10:36:39,683 - DEBUG - Running external command: condor_q -name  -const &#39;(GlideinJob =!= true) &amp;&amp;       
+(JobStatus == 1)&#39; -format &#39;&lt;glidein owner=&quot;%s&quot;/&gt;&#39; &#39;Owner&#39;                                                          
+2011-04-08 10:36:39,708 - ERROR - No valid output received from command: condor_q -name  -const &#39;(GlideinJob       
+=!= true) &amp;&amp;  (JobStatus == 1)&#39; -format &#39;&lt;glidein owner=&quot;%s&quot;/&gt;&#39; &#39;Owner&#39;                                            
+2011-04-08 10:36:39,708 - ERROR - stderr = Error: unknown host -const                                              
+&lt;/pre&gt;
+Probably the factory is not submitting glideins because it is not seeing queued jobs.
+Use condor_q manually to see if you are not getting output or there are actually no jobs:&lt;pre class=&quot;screen&quot;&gt;-bash-3.2$ condor_q -name  ui-gwms.uchicago.edu
+Error: Collector has no record of schedd/submitter&lt;/pre&gt;
+   
+If you are not getting output:
+   * the schedd may not be registered at your negotiator
+      * use a command setting also the pool, e.g.=condor_q -name ui-gwms.uchicago.edu -pool ui-gwms.uchicago.edu=
+   * there may be no schedd running on that host
+   * the port on the schedd host may not be accessible
+
+Other reasons why there may be no glidein jobs running on your system.
+   * Check that PSB works correctly (qsub, qstat)
+   * Check that GLITE_LOCATION is set correctly. See above for the known bug, control that the files in the glite directory are actually there, else you may have a wrong version of Condor or may need to apply a patch
+
+---+++ Condor jobs remain Idle
+If the jobs you submitted are not running on your glideins and are remaining Idle
+   * Check that the jobs (glideins) are running in the PBS queue (see above)
+   * Check the Condor =CollectorLog= to see if the Ads from the worker nodes are arriving and are accepted by the Negotiator. You can also control the value of ALLOW_WRITE (=condor_config_val -verbose ALLOW_WRITE=)
+   * Check the Condor =NegotiatorLog= to see if there are problems in mtching the requests
+---+ References
+[[http://sourceforge.net/apps/trac/campusfactory][Here]] the reference documentation on !SourceForge.
+
+Campus Factory [[http://sourceforge.net/projects/campusfactory/files/][release files]]
+
+[[http://digitalcommons.unl.edu/computerscidiss/21/][Derek&#39;s thesis]]
+
+PBS documentation:
+   * Manual: http://www.clusterresources.com/torquedocs21/index.shtml
+   * A brief document: http://hpc.sissa.it/pbs/pbs.html
+
+---+ Next Steps
+The next step is to test the factory.  You can find a guide to running jobs using the factory on [[http://sourceforge.net/apps/trac/campusfactory/wiki/RunningJobs][Running Jobs]] page.
+
+Visit [[ReleaseDocumentation.GlideinWMSCampusGrid][GlideinWMS on the Campus Grid]] to configure a [[Trash.ReleaseDocumentationGlideinWMSFrontendInstall][GlideinWMS frontend]] to operate as a component on the campus grid.
+
+---+ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+   DEAR DOCUMENT OWNER
+   ===================
+
+   Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER          = MarcoMambelli
+
+   Please define the document area, choose one of the defined areas from the next line
+   DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = User
+
+   define the primary role the document serves, choose one of the defined roles from the next line
+   DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager|Documenter)
+   * Local DOC_ROLE       = SysAdmin
+
+   Please define the document type, choose one of the defined types from the next line
+   DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Installation
+   
+   Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+   Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+   change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+   change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+   change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+   DEAR DOCUMENT REVIEWER
+   ======================
+
+   Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = DerekWeitzel
+  
+   Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+   DEAR DOCUMENT TESTER
+   ====================
+
+   Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = MarcoMambelli
+  
+   Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %YES%
+############################################################################################################
+--&gt;
+

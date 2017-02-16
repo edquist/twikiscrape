@@ -1,0 +1,44 @@
+%LINKCSS%
+
+---+ Security information about the VDT&#39;s Signed RPMs
+%TOC%
+
+---++ Verifying the VDT RPMs
+
+We use a GPG key to sign our software packages. Normally =yum= and =rpm= transparently use the GPG signatures to verify the packages have not been corrupted and were created by us. You get our GPG public key when you install the =osg-release= RPM. 
+
+If you wish to verify one of our RPMs manually, you can run:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% rpm --checksig -v %RED%name.rpm%ENDCOLOR%
+&lt;/pre&gt;
+
+For example:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% rpm --checksig -v globus-core-8.0-2.osg.x86_64.rpm 
+globus-core-8.0-2.osg.x86_64.rpm:
+    Header V3 DSA signature: OK, key ID 824b8603
+    Header SHA1 digest: OK (2b5af4348c548c27f10e2e47e1ec80500c4f85d7)
+    MD5 digest: OK (d11503a229a1a0e02262034efe0f7e46)
+    V3 DSA signature: OK, key ID 824b8603
+&lt;/pre&gt;
+
+---++ The VDT Packaging Signing Key
+
+| &lt;b&gt;Location&lt;b&gt; | =/etc/pki/rpm-gpg/RPM-GPG-KEY-OSG= |
+| &lt;b&gt;Download #1&lt;b&gt; | [[%ATTACHURL%/RPM-GPG-KEY-OSG][Twiki]] |
+| &lt;b&gt;Download #2&lt;b&gt; | [[http://vdt.cs.wisc.edu/RPM-GPG-KEY-OSG][UW-Madison]] |
+| &lt;b&gt;Fingerprint&lt;/b&gt; |  =6459 !D9D2 AAA9 AB67 A251  FB44 2110 !B1C8 824B 8603= |
+| &lt;b&gt;Key ID&lt;/b&gt; | =824b8603= |
+
+You can see the fingerprint for yourself:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT%  gpg --with-fingerprint /etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+pub  1024D/824B8603 2011-09-15 OSG Software Team (RPM Signing Key for Koji Packages) &lt;vdt-support@opensciencegrid.org&gt;
+      Key fingerprint = 6459 D9D2 AAA9 AB67 A251  FB44 2110 B1C8 824B 8603
+sub  2048g/28E5857C 2011-09-15
+&lt;/pre&gt;
+
+

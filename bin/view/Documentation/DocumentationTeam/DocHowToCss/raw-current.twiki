@@ -1,0 +1,75 @@
+&lt;div id=&quot;document-status&quot;&gt;
+  &lt;table class=&quot;float-right&quot;&gt;
+    &lt;tr id=&quot;heading&quot;&gt;
+      &lt;td&gt;Robert Engel&lt;/td&gt;
+      &lt;td id=&quot;right&quot;&gt;%S%%S%%S%%S%%S%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;This Page&lt;/td&gt;
+      &lt;td id=&quot;right&quot;&gt;%S%%S%%S%%S%%S%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Reviewer&lt;/td&gt;
+      &lt;td id=&quot;right&quot;&gt;James Weichsel %X%&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/div&gt;
+
+
+---+!! *&lt;nop&gt;%SPACEOUT{%TOPIC%}%*
+%TOC%
+
+---++ *Integrating Cascading Style Sheets into Twiki*
+
+Checkout a working copy of the [[DocRepositoryCss][Content Management Repository]] using the =username= and =password= that was provided to you by Main.RobertEngel.
+
+&lt;div class=&quot;screen-top&quot;&gt;
+&lt;pre class=&quot;screen-content&quot;&gt;
+[robert@osg-job ~]$ svn co --username=your.username svn://osg-vtb.ligo.caltech.edu/home/subversion/repos/OSG-CM/trunk OSG-CM
+A    OSG-CM/twiki
+Checked out revision 1185.
+&lt;/pre&gt;
+&lt;/div&gt;
+
+Skip the %RED%previous%ENDCOLOR% step if you already checked out a working copy. In this case it is only necessary to update the working copy:
+
+&lt;div class=&quot;screen-top&quot;&gt;
+&lt;pre class=&quot;screen-content&quot;&gt;
+[robert@osg-job ~]$ cd OSG-CM
+[robert@osg-job OSG-CM]$ svn update
+At revision 1185.
+&lt;/pre&gt;
+&lt;/div&gt;
+
+Make changes to .css files located in OSG-CM/twiki/css and commit changes to the repository after you are done:
+
+&lt;div class=&quot;screen-top&quot;&gt;
+&lt;pre class=&quot;screen-content&quot;&gt;
+[robert@osg-job ~]$ cd OSG-CM
+[robert@osg-job OSG-CM]$ svn commit
+&lt;/pre&gt;
+&lt;/div&gt;
+
+The web server will sync the Content Management Repository every minute and make the content available as http://osg-job.ligo.caltech.edu/OSG-CM/trunk/twiki/css/ . 
+
+To integrate a style sheet into the source code of the Twiki page you wish to style, just include its %BLUE%URL%ENDCOLOR% inside a %RED%HTML comment%ENDCOLOR% at the end of the page:
+
+&lt;div class=&quot;screen-top&quot;&gt;
+&lt;verbatim&gt;
+&lt;!--
+   * Set USERSTYLEURL = http://osg-job.ligo.caltech.edu/OSG-CM/trunk/twiki/css/sample.css
+--&gt;
+&lt;/verbatim&gt;
+&lt;/div&gt;
+
+---++ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+
+%BR%
+
+%COMPLETE1% %BR%
+%RESPONSIBLE% Main.RobertEngel %BR%
+%REVIEW% Main.JamesWeichel - 07 Oct 2009 %BR%
+%REVCOM%  Under Review %BR%
+%REVFLAG%  %X%  %BR%
+

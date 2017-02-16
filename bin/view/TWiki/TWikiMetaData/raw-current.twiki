@@ -1,0 +1,159 @@
+%TOC%
+%STARTINCLUDE%
+#TWikiMetaData
+---# TWiki Meta Data
+
+_Additional topic data, program-generated or from TWikiForms, is stored in =META= variable name/value pairs_
+
+---++ Overview
+
+TWikiMetaData uses =META= variables to store topic data that&#39;s separate from the main free-form content. This includes program-generated info like FileAttachment and topic movement data, and user-defined TWikiForms info. Use =META= variables to format and display Meta Data.  
+
+---++ Meta Data Syntax
+
+   * Format is the same as in TWikiVariables, except all fields have a key.
+      * =%&lt;nop&gt;META:&amp;lt;type&amp;gt;{key1=&quot;value1&quot; key2=&quot;value2&quot; ...}%=
+
+   * Order of fields within the meta variables is not defined, except that if there is a field with key =name=, this appears first for easier searching (note the order of the variables themselves is defined).
+
+   * Each meta variable is on one line.
+
+   * =\n= (new line) is represented in values by =%&lt;nop&gt;_&lt;nop&gt;N_&lt;nop&gt;= and =&quot;= (double-quotes) by =%&lt;nop&gt;_Q_%=.
+
+&lt;blockquote style=&quot;background-color:#f0f0f0&quot;&gt;
+*Example of Format*
+&lt;pre&gt;
+%&lt;nop&gt;META:TOPICINFO{version=&quot;1.6&quot; date=&quot;976762663&quot; author=&quot;LastEditorWikiName&quot; format=&quot;1.0&quot;}%
+   text of the topic
+%&lt;nop&gt;META:TOPICMOVED{from=&quot;Codev.OldName&quot; to=&quot;Codev.NewName&quot;
+   by=&quot;TopicMoverWikiName&quot; date=&quot;976762680&quot;}%
+%&lt;nop&gt;META:TOPICPARENT{name=&quot;NavigationByTopicContext&quot;}%
+%&lt;nop&gt;META:FILEATTACHMENT{name=&quot;Sample.txt&quot; version=&quot;1.3&quot; ... }%
+%&lt;nop&gt;META:FILEATTACHMENT{name=&quot;Smile.gif&quot; version=&quot;1.1&quot; ... }%
+%&lt;nop&gt;META:FORM{name=&quot;WebFormTemplate&quot;}%
+%&lt;nop&gt;META:FIELD{name=&quot;OperatingSystem&quot; value=&quot;OsWin&quot;}%
+%&lt;nop&gt;META:FIELD{name=&quot;TopicClassification&quot; value=&quot;PublicFAQ&quot;}%
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+
+---++ Meta Data Specifications
+
+The current version of Meta Data is 1.0, with support for the following variables.
+
+---+++ META:TOPICINFO
+
+|  *Key*  |  *Comment*          |
+| version | Same as RCS version |
+| date    | integer, unix time, seconds since start 1970 |
+| author  | last to change topic, is the REMOTE_USER |
+| format  | Format of this topic, will be used for automatic format conversion |
+
+---+++ META:TOPICMOVED
+
+This is optional, exists if topic has ever been moved.  If a topic is moved more than once, only the most recent META:TOPICMOVED meta variable exists in the topic, older ones are to be found in the rcs history.
+
+=%&lt;nop&gt;META:TOPICMOVED{from=&quot;Codev.OldName&quot; to=&quot;Codev.NewName&quot; by=&quot;talintj&quot; date=&quot;976762680&quot;}%=
+
+|  *Key*  |  *Comment*          |
+| from | Full name, i.e., web.topic |
+| to   | Full name, i.e., web.topic |
+| by   | Who did it, is the REMOTE_USER, not &lt;nop&gt;WikiName |
+| date | integer, unix time, seconds since start 1970 |
+
+Notes: 
+   * at present version number is not supported directly, it can be inferred from the RCS history.
+   * there is only one META:TOPICMOVED in a topic, older move information can be found in the RCS history.
+ 
+---+++ META:TOPICPARENT
+
+| *Key*   | *Comment* |
+| name    | The topic from which this was created, %HOMETOPIC% if done from =Go=, othewise topic where =?= or form used.  Normally just topic, but is full web.topic format if parent is in a different Web.  Renaming a Web will then only break a few of these references or they can be scanned and fixed. |
+
+---+++ META:FILEATTACHMENT
+
+| *Key*   | *Comment* |
+| name    | Name of file, no path.  Must be unique within topic |
+| version | Same as RCS revision  |
+| path    | Full path file was loaded from |
+| size    | In bytes |
+| date    | integer, unix time, seconds since start 1970 |
+| user    | the REMOTE_USER, not &lt;nop&gt;WikiName |
+| comment | As supplied when file uploaded |
+| attr    | =h= if hidden, optional |
+
+Extra fields that are added if an attachment is moved:
+
+| *Key*   | *Comment* |
+| movedfrom | full topic name - web.topic |
+| movedby   | the REMOTE_USER, not &lt;nop&gt;WikiName |
+| movedto   | full topic name - web.topic |
+| moveddate | integer, unix time, seconds since start 1970 |
+
+---+++ META:FORM
+
+| *Key*   | *Comment* |
+| name    | A topic name - the topic represents one of the TWikiForms.  Can optionally include the web name (i.e., web.topic), but doesn&#39;t normally |
+
+---+++ META:FIELD
+
+Should only be present if there is a META:FORM entry.  Note that this data is used when viewing a topic, the form template definition is not read.
+
+| *Key*   | *Name*   |
+| name    | Ties to entry in TWikiForms template, is title with all bar alphanumerics and . removed |
+| title   | Full text from TWikiForms template |
+| value   | Value user has supplied via form |
+
+---+++ Recommended Sequence
+
+There is no absolute need for Meta Data variables to be listed in a specific order within a topic, but it makes sense to do so a couple of good reasons:
+
+   * form fields remain in the order they are defined
+   * the =diff= function output appears in a logical order
+
+The recommended sequence is:
+
+   * =META:TOPICINFO=
+   * =META:TOPICPARENT= (optional)
+   * text of topic
+   * =META:TOPICMOVED= (optional)
+   * =META:FILEATTACHMENT= (0 or more entries)
+   * =META:FORM= (optional)
+   * =META:FIELD= (0 or more entries; FORM required)
+
+---++ Viewing Meta Data in Page Source
+
+When viewing a topic the ==Raw Text== link can be clicked to show the text of a topic (i.e., as seen when editing).  This is done by adding &lt;code&gt;raw=on&lt;/code&gt; to URL.  &lt;code&gt;raw=debug&lt;/code&gt; shows the meta data as well as the topic data, ex: &lt;a href=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%WEB%/%TOPIC%?raw=debug&quot;&gt;debug view for this topic&lt;/a&gt;
+
+#MetaDataRendering
+---++ Rendering Meta Data
+
+Meta Data is rendered with the %&lt;nop&gt;META% variable. This is mostly used in the =view=, =preview= and =edit= scripts.
+
+You can render form fields in topic text by using the FORMFIELD variable. Example:%BR%
+=%&lt;nop&gt;FORMFIELD{&quot;TopicClassification&quot;}%= %BR%
+For details, see VarFORMFIELD.
+
+Current support covers:
+
+| *Variable usage:*   | *Comment:*  |
+| =%&lt;nop&gt;META{&quot;form&quot;}%= | Show form data, see TWikiForms. |
+| =%&lt;nop&gt;META{&quot;formfield&quot;}%= | Show form field value. Parameter: ==name=&quot;field_name&quot;==. Example:%BR% =%&lt;nop&gt;META{ &quot;formfield&quot; name=&quot;TopicClassification&quot; }%= |
+| =%&lt;nop&gt;META{&quot;attachments&quot;}%= | Show attachments, except for hidden ones. Options: &lt;br /&gt; \
+    ==all=&quot;on&quot;==: Show all attachments, including hidden ones. |
+| =%&lt;nop&gt;META{&quot;moved&quot;}%= | Details of any topic moves. |
+| =%&lt;nop&gt;META{&quot;parent&quot;}%= | Show topic parent. Options: &lt;br /&gt; \
+    ==dontrecurse=&quot;on&quot;==: By default recurses up tree, at some cost. &lt;br /&gt; \
+    ==nowebhome=&quot;on&quot;==: Suppress &lt;nop&gt;%HOMETOPIC%. &lt;br /&gt; \
+    ==prefix=&quot;...&quot;==: Prefix for parents, only if there are parents, default =&quot;&quot;=. &lt;br /&gt; \
+    ==suffix=&quot;...&quot;==: Suffix, only appears if there are parents, default =&quot;&quot;=. &lt;br /&gt; \
+    ==separator=&quot;...&quot;==: Separator between parents, default is =&quot; &amp;gt; &quot;=. |
+
+---++ Known Issues
+
+At present, there is no Meta Data support for Plugins. However, the format is readily extendable and the =Meta.pm= code that supports the format needs only minor alteration.
+
+
+__Related Topics:__ DeveloperDocumentationCategory, UserDocumentationCategory
+
+
+

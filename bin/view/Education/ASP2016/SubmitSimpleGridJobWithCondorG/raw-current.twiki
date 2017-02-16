@@ -1,0 +1,352 @@
+
+---+!! %SPACEOUT{ &quot;%TOPIC%&quot; }%
+
+
+%STARTINCLUDE%
+%EDITTHIS%
+
+Now we are ready to submit our first job with Condor-G.  The basic procedure is to create a Condor job submit description file.  This file can tell Condor what executable to run, what resources to use, how to handle failures, where to store the job&#39;s output, and many other characteristics of the job submission.  Then this file is given to condor_submit.
+
+There are many options that can be specified in a Condor-G submit description file.  We will start out with just a few. We&#39;ll be sending the job to the computer &quot;%LOGINHOST%&quot; and running under the &quot;jobmanager-fork&quot; job manager.  We&#39;re setting notification to never to avoid getting email messages about the completion of our job, and redirecting the stdout/err of the job back to the submission computer. 
+
+For more information, see the [[http://www.cs.wisc.edu/condor/manual/v6.9/condor_submit.html][condor_submit manual]].
+
+
+%NOTE% Feel free to use your favorite editor, but we will demonstrate with *cat* in the example below.  When using cat to create files, press *Ctrl+D* to close the file &amp;mdash; don&#39;t actually type =[Ctrl+D]= into the file.  Whenever you create a file using cat, we suggest you use cat to display the file and confirm that it contains the expected text.
+
+---+++ Create the Submit File
+Move to our scratch submission directory and create the submit file. Verify that it was entered correctly:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cd ~/condor-tutorial/submit&lt;/userinput&gt;
+$ &lt;userinput&gt;cat &amp;gt; myjob.submit
+executable=myscript.sh
+arguments=TestJob 10
+output=results.output
+error=results.error
+log=results.log
+notification=never
+universe=grid
+grid_resource=gt2 %LOGINHOST%/jobmanager-fork
+queue
+&lt;em&gt;[Ctrl+D]&lt;/em&gt;&lt;/userinput&gt;
+$ &lt;userinput&gt;cat myjob.submit&lt;/userinput&gt;
+
+executable=myscript.sh
+arguments=TestJob 10
+output=results.output
+error=results.error
+log=results.log
+notification=never
+universe=grid
+grid_resource=gt2 %LOGINHOST%/jobmanager-fork
+queue
+&lt;/pre&gt;
+
+
+---+++ Create the Program
+Create a small program to run on the grid:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cat &amp;gt; myscript.sh
+#! /bin/sh
+
+echo &quot;I&#39;m process id $$ on&quot; `hostname`
+echo &quot;This is sent to standard error&quot; 1&amp;gt;&amp;2
+date
+echo &quot;Running as binary $0&quot; &quot;$@&quot;
+echo &quot;My name (argument 1) is $1&quot;
+echo &quot;My sleep duration (argument 2) is $2&quot;
+sleep $2
+echo &quot;Sleep of $2 seconds finished.  Exiting&quot;
+echo &quot;RESULT: 0 SUCCESS&quot;
+&lt;em&gt;[Ctrl+D]&lt;/em&gt; &lt;/userinput&gt;
+$ &lt;userinput&gt;cat myscript.sh&lt;/userinput&gt;
+#! /bin/sh
+
+echo &quot;I&#39;m process id $$ on&quot; `hostname`
+echo &quot;This is sent to standard error&quot; 1&amp;gt;&amp;2
+date
+echo &quot;Running as binary $0&quot; &quot;$@&quot;
+echo &quot;My name (argument 1) is $1&quot;
+echo &quot;My sleep duration (argument 2) is $2&quot;
+sleep $2
+echo &quot;Sleep of $2 seconds finished.  Exiting&quot;
+echo &quot;RESULT: 0 SUCCESS&quot;
+&lt;/pre&gt;
+
+---+++ Test the program
+Make the program executable and test it.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;chmod a+x myscript.sh&lt;/userinput&gt;
+$ &lt;userinput&gt;./myscript.sh TEST 1&lt;/userinput&gt;
+I&#39;m process id 3428 on %LOGINHOST%
+This is sent to standard error
+Thu Jul 10 12:21:11 CDT 2006
+Running as binary ./myscript.sh TEST 1
+My name (argument 1) is TEST
+My sleep duration (argument 2) is 1
+Sleep of 1 seconds finished.  Exiting
+RESULT: 0 SUCCESS
+&lt;/pre&gt;
+
+&lt;!-- ***  Comments plugin to create comments table for section   ***    --&gt;
+
+&lt;span class=&quot;educationWebAddComment&quot;&gt;ADD A COMMENT&lt;/span&gt;
+%STARTMore%
+
+%TABLE{ }%
+|  *COMMENT*  |  *NAME*  |  *DATE*  |
+%COMMENT{ type=&quot;tableappend&quot; }%
+
+%ENDMore%
+&lt;!-- ***  End Comment                                    ***********    --&gt;
+
+
+
+---+++  Submit your test job to Condor-G.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;condor_submit myjob.submit&lt;/userinput&gt;
+
+Submitting job(s).
+Logging submit event(s).
+1 job(s) submitted to cluster 1.
+&lt;/pre&gt;
+
+Run [[http://www.cs.wisc.edu/condor/manual/v6.9/condor_q.html][condor_q]] to see the progress of your job.  You may also want to run =condor_q&amp;nbsp;-globus= at regular intervals to see Globus-specific status information. (See the [[http://www.cs.wisc.edu/condor/manual/v6.9/condor_q.html][condor_q manual]] for more information.)
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;condor_q&lt;/userinput&gt;
+
+
+-- Submitter: %LOGINHOST% : &amp;lt;%LOGINIP%:35688&amp;gt; : %LOGINHOST%
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+   1.0   %LOGINNAME%         7/10 17:28   0+00:00:00 I  0   0.0  myscript.sh TestJo
+
+1 jobs; 1 idle, 0 running, 0 held
+$ &lt;userinput&gt;condor_q -globus&lt;/userinput&gt;
+
+
+-- Submitter: %LOGINHOST% : &amp;lt;%LOGINIP%:35688&amp;gt; : %LOGINHOST%
+ ID      OWNER          STATUS  MANAGER  HOST                EXECUTABLE        
+   1.0   %LOGINNAME%       UNSUBMITTED fork     %OTHERHOST%   %HOMEDIR%/cond
+$ &lt;userinput&gt;condor_q&lt;/userinput&gt;
+
+-- Submitter: %LOGINHOST% : &amp;lt;%LOGINIP%:35688&amp;gt; : %LOGINHOST%
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+   1.0   %LOGINNAME%         7/10 17:28   0+00:00:27 R  0   0.0  myscript.sh TestJo
+
+1 jobs; 0 idle, 1 running, 0 held
+$ &lt;userinput&gt;condor_q -globus&lt;/userinput&gt;
+
+
+-- Submitter: %LOGINHOST% : &amp;lt;%LOGINIP%:35688&amp;gt; : %LOGINHOST%
+ ID      OWNER          STATUS  MANAGER  HOST                EXECUTABLE        
+   1.0   %LOGINNAME%       ACTIVE fork     %OTHERHOST%   %HOMEDIR%/cond
+$ &lt;userinput&gt;condor_q&lt;/userinput&gt;
+
+-- Submitter: %LOGINHOST% : &amp;lt;%LOGINIP%:33785&amp;gt; : %LOGINHOST%
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+   1.0   %LOGINNAME%         7/10 17:28   0+00:00:40 C  0   0.0  myscript.sh       
+
+0 jobs; 0 idle, 0 running, 0 held
+$ &lt;userinput&gt;condor_q -globus&lt;/userinput&gt;
+
+-- Submitter: %LOGINHOST% : &amp;lt;%LOGINIP%:33785&amp;gt; : %LOGINHOST%
+ ID      OWNER          STATUS  MANAGER  HOST                EXECUTABLE        
+   1.0   adesmet       DONE fork     %OTHERHOST%   %HOMEDIR%/cond
+
+$ &lt;userinput&gt;condor_q&lt;/userinput&gt;
+
+
+-- Submitter: %LOGINHOST% : &amp;lt;%LOGINIP%:33785&amp;gt; : %LOGINHOST%
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+
+0 jobs; 0 idle, 0 running, 0 held
+&lt;/pre&gt;
+
+
+
+---+++ Monitoring Progress with =tail=
+In another window, run =tail -f= on the log file for your job to monitor progress. Re-run =tail= when you submit one or more jobs throughout this tutorial. You will see how typical Condor-G jobs progress. Use *&lt;userinput&gt;Ctrl+C&lt;/userinput&gt;* to stop watching the file.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cd ~/condor-tutorial/submit&lt;/userinput&gt;
+$ &lt;userinput&gt;tail -f --lines=500 results.log&lt;/userinput&gt;
+000 (001.000.000) 07/10 17:28:48 Job submitted from host: &lt;%LOGINIP%:35688&gt;
+...
+017 (001.000.000) 03/24 19:13:30 Job submitted to Globus
+    RM-Contact: %LOGINHOST%/jobmanager-fork
+    JM-Contact: https://%LOGINHOST%:34127/28997/1174763610/
+    Can-Restart-JM: 1
+...
+027 (001.000.000) 07/10 17:29:01 Job submitted to grid resource
+    GridResource: gt2 %LOGINHOST%/jobmanager-fork
+    GridJobId: gt2 %LOGINHOST%/jobmanager-fork https://%LOGINHOST%:51277/31413/1174756212/
+...
+001 (001.000.000) 07/10 17:29:01 Job executing on host: gt2 %LOGINHOST%/jobmanager-fork
+...
+005 (001.000.000) 07/10 17:30:08 Job terminated.
+        (1) Normal termination (return value 0)
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+        0  -  Run Bytes Sent By Job
+        0  -  Run Bytes Received By Job
+        0  -  Total Bytes Sent By Job
+        0  -  Total Bytes Received By Job
+...
+
+&lt;/pre&gt;
+
+
+
+---+++ Verifying completed jobs
+When the job is no longer listed in condor_q, or when the log file reports &quot;Job terminated,&quot; the results can be viewed using the [[http://www.cs.wisc.edu/condor/manual/v6.9/condor_history.html][condor_history]] command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;condor_history&lt;/userinput&gt;
+ ID      OWNER            SUBMITTED     RUN_TIME ST   COMPLETED CMD
+   1.0   %LOGINNAME%         7/10 10:28   0+00:00:00 C   ???        %HOMEDIR%/cond
+&lt;/pre&gt;
+
+When the job completes, verify that the output is as expected. The binary name is different from what you created because of how Globus and Condor-G cooperate to stage your file to execute computer.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;ls&lt;/userinput&gt;
+myjob.submit  myscript.sh*  results.error  results.log   results.output
+$ &lt;userinput&gt;cat results.error&lt;/userinput&gt;
+This is sent to standard error
+$ &lt;userinput&gt;cat results.output &lt;/userinput&gt;
+$I&#39;m process id 733 on %LOGINHOST%
+Thu Jul 10 17:28:57 CDT 2003
+Running as binary %HOMEDIR%/.globus/.gass_cache/local/md5/28/fcae5001dbcd99cc476984b4151284/md5/af/355c4959dc83a74b18b7c03eb27201/data TestJob 10
+My name (argument 1) is TestJob
+My sleep duration (argument 2) is 10
+Sleep of 10 seconds finished.  Exiting
+RESULT: 0 SUCCESS
+&lt;/pre&gt;
+
+If you didn&#39;t watch the results.log file with =tail -f=, you will want to examine the logged information:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cat results.log &lt;/userinput&gt;
+&lt;/pre&gt;
+
+&lt;!-- ***  Comments plugin to create comments table for section   ***    --&gt;
+
+&lt;span class=&quot;educationWebAddComment&quot;&gt;ADD A COMMENT&lt;/span&gt;
+%STARTMore%
+
+%TABLE{ }%
+|  *COMMENT*  |  *NAME*  |  *DATE*  |
+%COMMENT{ type=&quot;tableappend&quot; }%
+
+%ENDMore%
+&lt;!-- ***  End Comment                                    ***********    --&gt;
+
+
+---+++ Submitting a job to other hosts
+%OTHERHOST% is also running a little Condor pool. Try submitting a job to it through Condor-G and Globus. 
+
+Create a new submit file:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cat &amp;gt; myjob2.submit
+executable=myscript.sh
+arguments=TestJob 10
+output=results2.output
+error=results2.error
+log=results2.log
+notification=never
+universe=grid
+grid_resource=gt2 %OTHERHOST%/jobmanager-condor
+queue
+&lt;em&gt;[Ctrl+D]&lt;/em&gt;&lt;/userinput&gt;
+$ &lt;userinput&gt;cat myjob2.submit&lt;/userinput&gt;
+executable=myscript.sh
+arguments=TestJob 10
+output=results2.output
+error=results2.error
+log=results2.log
+notification=never
+universe=grid
+grid_resource=gt2 %OTHERHOST%/jobmanager-condor
+queue
+&lt;/pre&gt;
+
+Notice that the setting for the =grid_resource= now refers to =condor= instead of =fork=. Globus will submit the job to Condor on %OTHERHOST% instead of running the job directly.
+
+Submit the job to Condor-G:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;condor_submit myjob2.submit&lt;/userinput&gt;
+Submitting job(s).
+Logging submit event(s).
+1 job(s) submitted to cluster 2.
+&lt;/pre&gt;
+
+You can monitor the job&#39;s progress just like the first job. If you log into %OTHERHOST% in another window, you can see your job in the Condor queue there. Be quick, or the job will finish before you look!
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;ssh %OTHERHOST%&lt;/userinput&gt;
+%LOGINNAME%@%OTHERHOST%&#39;s password: 
+$ &lt;userinput&gt;condor_status&lt;/userinput&gt;
+
+Name          OpSys       Arch   State      Activity   LoadAv Mem   ActvtyTime
+
+vm100@clu1.ph LINUX       INTEL  Unclaimed  Idle       0.000     9  0+00:03:35
+vm10@clu1.phy LINUX       INTEL  Unclaimed  Idle       0.000     9  0+00:03:33
+vm11@clu1.phy LINUX       INTEL  Unclaimed  Idle       0.000     9  0+00:03:34
+vm12@clu1.phy LINUX       INTEL  Unclaimed  Idle       0.000     9  0+00:03:35
+...
+vm99@clu1.phy LINUX       INTEL  Unclaimed  Idle       0.000     9  0+00:03:34
+vm9@clu1.phys LINUX       INTEL  Unclaimed  Idle       0.000     9  0+00:03:32
+
+                     Machines Owner Claimed Unclaimed Matched Preempting
+
+         INTEL/LINUX      100     0       0       100       0          0
+
+               Total      100     0       0       100       0          0
+$ &lt;userinput&gt;condor_q&lt;/userinput&gt;
+
+-- Submitter: %OTHERHOST% : &lt;%LOGINIP%:36311&gt; : %OTHERHOST%
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+  11.0   %LOGINNAME%         7/10 23:04   0+00:00:00 I  0   0.0  data TestJob 10
+
+1 jobs; 1 idle, 0 running, 0 held
+&lt;/pre&gt;
+
+Clean up the results after the second job has finished running:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;rm results.* results2.*&lt;/userinput&gt;
+&lt;/pre&gt;
+
+&lt;!-- ***  Comments plugin to create comments table for section   ***    --&gt;
+
+&lt;span class=&quot;educationWebAddComment&quot;&gt;ADD A COMMENT&lt;/span&gt;
+%STARTMore%
+
+%TABLE{ }%
+|  *COMMENT*  |  *NAME*  |  *DATE*  |
+%COMMENT{ type=&quot;tableappend&quot; }%
+
+%ENDMore%
+&lt;!-- ***  End Comment                                    ***********    --&gt;
+
+
+
+%STOPINCLUDE%
+
+&lt;!--                                                                            
+      * Set LOGINHOST = gridlab1
+      * Set GRIDHOST = tg-login.ncsa.teragrid.org
+      * Set OTHERHOST = gridlab2
+--&gt;
+
+%BOTTOMMATTER%
+-- Main.ForrestChristian editing original Lecture 5 %BR%

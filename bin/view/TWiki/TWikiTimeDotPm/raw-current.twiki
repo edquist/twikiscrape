@@ -1,0 +1,99 @@
+---+ Package =TWiki::Time=
+
+Time handling functions.
+
+
+%TOC%
+
+---++ StaticMethod *parseTime* &lt;tt&gt;($szDate) -&gt; $iSecs&lt;/tt&gt;
+
+Convert string date/time to seconds since epoch.
+   * =$sDate= - date/time string
+
+Handles the following formats:
+   * 31 Dec 2001 - 23:59
+   * 2001/12/31 23:59:59
+   * 2001.12.31.23.59.59
+   * 2001/12/31 23:59
+   * 2001.12.31.23.59
+   * 2001-12-31T23:59:59Z
+   * 2001-12-31T23:59:59+01:00
+   * 2001-12-31T23:59Z
+   * 2001-12-31T23:59+01:00
+
+If the date format was not recognised, will return 0.
+
+
+
+---++ StaticMethod *formatTime* &lt;tt&gt;($epochSeconds,$formatString,$outputTimeZone) -&gt; $value&lt;/tt&gt;
+   * =$epochSeconds= epochSecs GMT
+   * =$formatString= twiki time date format, default =$day $month $year - $hour:$min=
+   * =$outputTimeZone= timezone to display, =gmtime= or =servertime=, default is whatever is set in $TWiki::cfg{DisplayTimeValues}
+=$formatString= supports:
+   | $seconds | secs |
+   | $minutes | mins |
+   | $hours | hours |
+   | $day | date |
+   | $wday | weekday name |
+   | $dow | day number (0 = Sunday) |
+   | $week | week number |
+   | $month | month name |
+   | $mo | month number |
+   | $year | 4-digit year |
+   | $ye | 2-digit year |
+   | $http | ful HTTP header format date/time |
+   | $email | full email format date/time |
+   | $rcs | full RCS format date/time |
+   | $epoch | seconds since 1st January 1970 |
+
+
+---++ StaticMethod *formatDelta* &lt;tt&gt;($s) -&gt; $string&lt;/tt&gt;
+
+Format a time in seconds as a string. For example,
+&quot;1 day, 3 hours, 2 minutes, 6 seconds&quot;
+
+
+
+---++ StaticMethod *parseInterval* &lt;tt&gt;($szInterval) -&gt; [$iSecs,$iSecs]&lt;/tt&gt;
+
+Convert string representing a time interval to a pair of integers
+representing the amount of seconds since epoch for the start and end
+extremes of the time interval.
+
+   * =$szInterval= - time interval string
+
+in yacc syntax, grammar and actions:
+&lt;verbatim&gt;
+interval ::= date                 { $$.start = fillStart($1); $$.end = fillEnd($1); }
+         | date &#39;/&#39; date          { $$.start = fillStart($1); $$.end = fillEnd($3); }
+         | &#39;P&#39; duration &#39;/&#39; date  { $$.start = fillEnd($4)-$2; $$.end = fillEnd($4); }
+         | date &#39;/&#39; &#39;P&#39; duration  { $$.start = fillStart($1); $$.end = fillStart($1)+$4; }
+         ;
+&lt;/verbatim&gt;
+an =interval= may be followed by a timezone specification string (this is not supported yet).
+
+=duration= has the form (regular expression):
+&lt;verbatim&gt;
+   P(&lt;number&gt;&lt;nameOfDuration&gt;)+
+&lt;/verbatim&gt;
+
+nameOfDuration may be one of:
+   * y(year), m(month), w(week), d(day), h(hour), M(minute), S(second)
+
+=date= follows ISO8601 and must include hypens.  (any amount of trailing
+       elements may be omitted and will be filled in differently on the
+       differents ends of the interval as to include the longest possible
+       interval):
+
+   * 2001-01-01T00:00:00
+   * 2001-12-31T23:59:59
+
+timezone is optional and not supported yet.
+
+If the format is not recognised, will return empty interval [0,0].
+
+TODO: timezone
+      testing, especially on non valid strings
+
+
+

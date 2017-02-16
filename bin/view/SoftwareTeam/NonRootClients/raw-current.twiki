@@ -1,0 +1,67 @@
+---+ Project 20: Install Clients Anywhere by Anyone (aka Non-Root Clients)
+
+---++ Description
+
+---+++ Background
+
+Users often need to install client tools in a way that does not work well with RPMs, either because the install must be performed without =root= access or because the entire install must be contained within a single, separate directory hierarchy. These needs correspond to two very common use cases:
+
+   * An end user (or their system administrator) installs the client tools, to allow job submission into the OSG, but does not have root access to the submit machine.
+   * A site administrator installs the worker node client tools on a shared filesystem, which is then mounted on all worker nodes.
+
+The project is often called the “non-root client” project, but that is a misnomer, because it covers both the non-root user and single-directory use cases.
+
+---+++ Goal and Scope
+
+The main goal of this project is to provide packages of client tools that can be installed anywhere by anyone. Specifically, each package should install into any single directory on a filesystem and the install process should work for any user with appropriate permissions.
+
+The project is limited to the contents of two existing RPM metapackages: =osg-wn-client= (the worker node client) and =osg-client= (the full client, a strict superset of the worker node client).
+
+Currently, the plan is to create client installations as downloadable tarballs (i.e., compressed archive files), one for each kind of client (worker node and full), operating system major version (EL5 and EL6), and architecture (32- and 64-bit). Users will download and unpack the appropriate file, then run a script contained therein to finish software relocations. Before actual use, a user will need to source a setup script, much like in Pacman installations.
+
+Because we cannot assume much about the host system, the tarballs and resulting installations will necessarily contain some software components from the underlying OS and EPEL repositories. We will strive to minimize the number of such components, but some will remain. It is important for site administrators to understand that we will not issue updates to our tarballs every time the underlying OS and EPEL repositories change, but rather only when we have normal OSG Software releases.
+
+Further, it is not in the scope of this project to provide a mechanism for updating from one release of a tarball installation to another. For the most part, administrators can simply download and unpack each new version to a separate directory. If a consist path to the current release is needed, a symbolic link can be used.
+
+---+++ Risks
+
+The main risk for this project is the schedule and its effect on the End-Of-Life (EOL) date for OSG 1.2.
+
+While most sites (&gt; 60%) have moved to OSG 3.1 on their Compute Element, there are still many sites that have not upgraded their worker nodes, because they use a shared filesystem to distribute the worker node client tools. We do not have a reporting system in place that can tell us how many sites are affected, but we believe that most ATLAS sites and many smaller (e.g., Tier 3) sites are affected; CMS sites are OK, due to internal policy. If we cannot move OSG 1.2 sites to OSG 3.1 in time, then we may have to move the OSG 1.2 EOL date.
+
+To mitigate the schedule risk, we are making this project one of our two top priorities ([[Java6Migration][Java migration]] being the other). Also, because the worker node client package is a strict subset of the full client, we may be able to release it first, thereby allowing sites to begin upgrading their worker nodes before the full client is available.
+
+---+++ Links
+
+   * [[https://jira.opensciencegrid.org/browse/SOFTWARE-958][SOFTWARE-958]]: Script process for making “stage 1” directory for client tarball
+   * [[NonRootClientsDetails][Technical details]]
+   * [[NonRootClientBeta][Beta testing and usage details]]
+
+---++ Tasks
+
+The main tasks of the project are:
+
+   * Write a script to create the client tarballs from our production RPM repositories
+   * Experiment with removing as much OS and EPEL packages as possible from the installation
+   * Write a post-install script that users run immediately after installation
+   * Write a setup script that users run before use
+   * Manually test all tarballs
+   * Coordinate ITB testing of beta-quality tarballs
+   * Create and populate a production web space for the tarballs (at the GOC?)
+   * Document the use of the client tarballs
+   * Change the OSG Software release process to include the creation and posting of the tarballs
+
+---++ Schedule
+
+Milestones are as follows. Currently, we are assuming a single alpha and single beta release with a reasonable number of smaller issues in each. If more or larger issues are discovered, multiple alpha or beta releases may be needed, pushing back the remaining schedule.
+
+| *Milestone* | *Key People* | *Due Date* | *Status* |
+| 1. Determine requirements and design overall approach | Mat, Tim, !BrianB | 15 February 2013 | %GREEN%Done%ENDCOLOR% |
+| 2. Create initial installation manually and document known challenges | Mat | 8 March 2013 | %GREEN%Done%ENDCOLOR% |
+| 3. Deliver alpha release of tarballs for OSG Software testing | Mat | 27 March 2013 | %GREEN%Done%ENDCOLOR% |
+| 4. Test alpha release | Suchandra, Mat, others | 3 April 2013 | %GREEN%Done%ENDCOLOR% |
+| 5. Deliver beta release of tarballs for external testing (e.g., ITB) | Mat | 9 April 2013 | %GREEN%Done%ENDCOLOR% |
+| 6. Test beta release | Suchandra, external testers | 26 April 2013 | %GREEN%Done%ENDCOLOR% |
+| 7. Deliver initial production release | Mat | 30 April 2013 | %GREEN%Done%ENDCOLOR% |
+
+---++ Notes

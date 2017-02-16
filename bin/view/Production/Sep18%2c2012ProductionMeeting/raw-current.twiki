@@ -1,0 +1,103 @@
+-- Main.DanFraser - 04 Sep 2012
+---++ Action/Significant Items:
+   * 
+
+---++ Attendees:
+   * (to be updated after the meeting) Xin, Armen, Brian, Suchandra, Tony, Marco, Scott T., Mine, Chander
+ 
+---++ CMS (Tony)
+   * Job statistics for last week
+      * 18,875 jobs/day
+
+   * Transfer statisics for last week
+      * ~470 TB/day
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * LHC operation last week was not always stable, with some technical issues, machine development, and technical stop. Current collected luminosity for ATLAS is ~14 fb-1. Discussions on next steps and possible improvement of LHC operations for this year.
+      * US ATLAS production during the last week was overall stable, at the average level around 18-20K running jobs, mostly simulation type.
+   * Job statistics for last week.      
+      * Gratia report: 1.2M pilot jobs run on USATLAS sites, with CPU/walltime ratio of 88%  
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 1.24M
+   * Data Transfer statistics for last week
+      * Data transfer rate was around 300~500TB/day at BNL T1. 
+   * Issues
+
+---++ Grid Operations Center (Rob Q.)
+---+++ Operations Last Week
+   * [[http://tinyurl.com/6nh3glo][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * Production release, [[http://osggoc.blogspot.com/2012/09/goc-service-update-tuesday-september.html][Release note]]
+   * Announced change to morning RSV report
+      * [[http://rsv.grid.iu.edu/daily-reports/2012/09/09/MoU_WLCG_Report-2012-09-09.html][The replacement report]] is available for evaluation/comments.
+   * [[http://osggoc.blogspot.com/2012/09/doe-grids-service-transition.html][DoE grid service transition]] notice sent.
+---++++ WMS Glide In Factory
+   * Upgraded GOC Production Factory to use Condor 7.8.2
+   * Upgraded UCSD Factory to use Condor 7.8.3
+   * Made condor 7.8.3 tarballs available for glideins to use on ITB however Tim discovered 7.8.3 glideins fail on startup on the WNs
+      * We are still investigating and will hold off making them available in production until it gets resolved.
+   * Discovered that glideinWMS 2_6_1 Frontends only work with 2_6_1 Factories.
+      * Requested a special upgrade window for Sept 18, 10 am - 11 am (PDT) to get the GOC Production Factory upgraded right away.
+      * Notified all Frontend admins who are thinking about upgrading to 2_6_1 to wait until after the special upgrade window.
+---+++ Operations This Week
+   * ITB release, reboots required.
+      * adding second instance of TX, lvs enabled
+      * Campus grid form operational
+      * corrected logic error in RSV to SAM uploader.
+---++++ WMS Glide In Factory
+   * [[http://osggoc.blogspot.com/2012/09/special-maintenance-window-for-goc.html][Glidein special maintenance]]
+      * _completed_
+---+++ Follow Up on Upgrade Request (Pre 1.2.25)
+   * 33 Resources Identified by Marco
+      * Ticket for each resources opened on August 29th
+      * 15 Updated
+      * Response from 15 (Not Updated)
+      * 2 in Maintenance (Upgrading)
+      * 1 No Response (Upgrade Status Unknown)
+         * CNIC-OSG (Anand???)
+
+---++ Campus Infrastructures / HTPC (Dan, Brooklin)
+   * A [[https://twiki.grid.iu.edu/bin/view/Trash/Trash/Trash/Trash/CampusGrids/BoSCO][Bosco v1.0 beta update]] has been released with quite a few bug fixes
+      * A bosco instance is up and running at IU
+   * Moving forward we will develop Bosco on a four month schedule - v1.1 is due Jan 2, 2013
+   * We are tracking version features in Jira. [[http://jira.opensciencegrid.org/browse/CAMPUS-19][Here&#39;s the v1.1 feature list]]
+   * We have begun doing architecture and effort analysis for the v1.1 features and will prioritize them next week.
+   * We will begin doing a better job tracking versions and revisions in the release package. V1.1 will contain a bosco_version command.
+
+---++ Software (Tim)
+
+
+---++ Integration (Suchandra)
+
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 3.1.8 / 1.2.29
+      *       47 (2) OSG 3.x (      19 are 3.1.8)
+      *       51 (-6) OSG 1.2.X resources (      20 are 1.2.29)
+      *        2 (0) OSG 1.0.X resources (       0 are 1.0.6)
+      *        0 (0) OSG 1.0.0 resources
+
+
+---++ User Support (Chander, Mats)
+
+
+---++ Security (Mine)
+   * Vulnerabilities/Emergencies/
+      * Java vulnerability. Earlier we classified this as low priority because it affects only the browser. But for the browser, it is a highly critical vulnerability. On a second look, we realize OSG packages java in its rpm distribution. We do not want sites to use the java library from VDT and get attacked although it is a small chance that they use a browser on a CE. We will ask VDT to patch it. 
+      * WLCG CMS incident drill is finished. 8 OSG sites and glideinw wms factories and frontend services participated. The sceurity team is evaluating the sites responses. Overall, sites performed well. 
+      * Completed a job that ran over gatekeepers and check for condor vulnerability. we are finding vulnerable sites.
+
+   * Operations 
+      * SHA-2 transition. The changes will affect CA&#39;s own cert and the CRLs. CA will issue a new cert signed with SHA-2 and distribute new CRLs signed with SHA-2. DOEGrids CA was very helpful in providing us with a test CA. We will obtain the intermediate CA cert and create a new bundle to test in ITB. SL 4.8 which has Openssl  0.9.7.8 will not work with SHA-2. Production team will want to make sure osg sites are beyond this version.  
+      * New IGTF release is coming up. OSG is already running a version behind because we did not have the automated CA update process in place. We cannot delay this release because UK e-science CA is expiring.  If the sites forget to do manual CA update then their RSV probe will fail. However, the security team asked Marco to change the RSV probe such that there is a 8 day grace period. Marco provided this 1 month ago. Currently there are a 19 sites who got the new RSV probe. We will send an announcement to sites that they should perform the manual yum updates. As far as the automated updated process goes: Security team was asked to design the solution. We designed a solution and consulted the following sites:  Nebraska, FermiGrid, Xin, Sarah, Maryland Tier3, Glow Wisconsin. We completed our part and sent our solution  to software team for implementation.
+
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings

@@ -1,0 +1,138 @@
+---++ Coordinates
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-866-740-1260, code 8266135 
+---++ Announcements:
+
+---++ Action/Significant Items: 
+   * Keep a close eye on the oasis-replica VM, the VMs with the workaround on them, and the libvirt bug in Red Hat Bugzilla
+   * Marco will make histogram of 3.1 sites and what subversion they&#39;re at (3.1.0, 3.1.2, etc.) so Rob can contact resource providers
+
+---++ Attendees: Kevin, Rob Q, Tim C, Tim T, Tony, Armen, Marco, Scott, Tom Lee (GOC Ops)
+
+---++ CMS (Tony)
+   * Job statistics for last week
+      * 28,647 jobs/day
+
+   * Transfer statisics for last week
+      * ~308 TB/day
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status.
+      * USATLAS total production over the last week was overall stable, at the average level around 25-32K running jobs.
+   * Job statistics for last week.      
+      * Gratia report: 1.8 M pilots processed, with CPU/Walltime ratio of 91%
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 1.4M
+   * Data Transfer statistics for last week 
+      * Data transfer rate was around ~500TB/day at BNL T1.
+   * Issues
+
+
+---++ Grid Operations Center (Scott T.)
+
+
+---+++ Operations Last Week
+   * [[http://tinyurl.com/ct2mfy6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * Production release, OS updates and reboots.
+   * Relocation of two servers from low power to high power rack
+   * Installation of new server in HP rack.
+      * plots below show effect on power distribution
+   * Increased disk space on repo-itb to 256 GB from 128 GB.
+   * Friday 27/Sep false oom event on VM host for oasis-replica caused a brief outage for one instance of the stratum 1
+      * Original [[https://bugzilla.redhat.com/show_bug.cgi?id=891653][bug report]], new [[https://bugzilla.redhat.com/show_bug.cgi?id=1013758][bug report]].
+      * looks like a patch is moving through the system.
+   * WMS Glide In Factory
+      * Dan Klein covered Factory Ops last week, no issues encountered.
+      * Discovered a glideinWMS bug in v3 that in some cases causes glidein submission to fail
+      * glideinWMS developers supplied a patch, but we decided to postpone the SDSC upgrade to further test the fix.
+   * Another &quot;Sunday Effect&quot; weekend on osg-xsede, hit 14,900 running jobs. Plot below.
+
+---+++ Operations This Week
+   * ITB release, [[http://osggoc.blogspot.com/2013/10/goc-service-update-tuesday-october-8th.html][release note]] is available
+      * update wordpress version on web.grid
+      * New  RSV collector/reporter has been certified
+   * WMS Glide In Factory
+      * Upgraded SDSC to glideinWMS v3 yesterday at 11 am PDT
+   * ITB deployment will determine if disk on repo1/2 needs to be increased.
+   * ~4 hours of degraded service on osg-xsede
+      * Apache logs filled /var.
+   * Morning ATLAS and CMS reports failed, looks like a problem at the WLCG end. Replacement reports sent, web pages updated.
+   * Getting false alarms from glidein, associated with large load caused by downtime on the SDSC factory.
+
+---++ Upcoming
+   * Draft of the [[https://twiki.grid.iu.edu/bin/view/Operations/InternalServiceLevelAgreement][SLA]] for GOC internal services.
+   * Scott on vacation next week.
+   * CMS requests BDII remain at critical priority for at least six months.
+   * update condor on osg-xd machine
+
+---++ Campus Infrastructures Community (Rob G)
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 3.1.24 / 1.2.32
+      *       90 (0) OSG 3.x (      22 are 3.1.24)
+      *       11 (-1) OSG 1.2.X resources (       0 are 1.2.32)
+Here are plots with a distribution of currently installed OSG releases. My preliminary result with a lot of OSG 3.1.2 was the result of a bug. These are the correct results. There is still a long tail, specially 3.1.11 but it is not as bad as I first mentioned: 
+   * tmp131001-osg_releases_sum.png: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/tmp131001-osg_releases_sum.png&quot; alt=&quot;tmp131001-osg_releases_sum.png&quot; width=&#39;851&#39; height=&#39;587&#39; /&gt;    
+   * tmp131001-osg_releases_hist.png: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/tmp131001-osg_releases_hist.png&quot; alt=&quot;tmp131001-osg_releases_hist.png&quot; width=&#39;887&#39; height=&#39;535&#39; /&gt;    
+
+
+---++ Software (Tim C.)
+   * SHA-2 project declared to be done
+   * Still working on HTCondor-CE for PBS
+   * [[SoftwareTeam.SP021_NewVersions][OSG Next project]] — support for new release series
+      * ITB deployment of repository restructuring today
+      * Production deployment of repository restructuring scheduled for 8 October
+      * Final deployment scheduled for 22 October
+      * Aiming for 3.2.0 on 12 November
+   * RSV for VOs (aka Grid Exerciser II) — in progress
+   * Prepare osg-info-services as official replacement for CEMon — ramp up in October
+   * Continued work on automated testing
+   * Transitioning HTCondor RPM and Debian packaging to HTCondor development team
+
+
+---++ Release (!TimT)
+%TABLE{sort=&quot;off&quot;}%
+|  *Version*  |  *Testing*  |  *Freeze*  |  *Release*  | *Notes* |
+| 3.1.25 | 2013-09-23 | 2013-09-30 | 2013-10-08 | jGlobus 2.0.6, !GlideinWMS 2.7.2, gratia-probe |
+| 3.1.26 | 2013-10-28 | 2013-11-04 | 2013-11-12 | |
+| 3.2.0 | 2013-10-28 | 2013-11-04 | 2013-11-12 | |
+| 3.1.27 | 2013-11-25 | 2013-12-02 | 2013-12-10 | Short testing week due to Thanksgiving Holiday |
+| 3.2.1 | 2013-11-25 | 2013-12-02 | 2013-12-10 | Short testing week due to Thanksgiving Holiday |
+
+   * 3.1.25 Release (Currently in testing)
+      * jGlobus 2.0.6
+      * gratia-probe
+      * !GlideinWMS 2.7.2
+
+   * Pushed to 3.1.26
+      * HTCondor-CE (PBS testing and support)
+
+   * Transition RPM and Debian Packaging work to HTCondor group
+
+---++ User Support (Chander, Mats)
+
+---++ Security (Kevin)
+   * No new major incidents or vulnerabilities.
+   * New SL kernels last week, not critical.
+   * Mine expected back next week.
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+-- Main.ScottTeige - 25 Sep 2013
+
+  | * Low power rack: &lt;br /&gt; &lt;img src=&quot;%ATTACHURLPATH%/lp-rack.png&quot; alt=&quot;lp-rack.png&quot; width=&#39;306&#39; height=&#39;634&#39; /&gt;  |* High power rack: &lt;br /&gt; &lt;img src=&quot;%ATTACHURLPATH%/hp-rack.png&quot; alt=&quot;hp-rack.png&quot; width=&#39;303&#39; height=&#39;630&#39; /&gt;|
+
+   * osg-xd running jobs: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/osg-xd.png&quot; alt=&quot;osg-xd.png&quot; width=&#39;965&#39; height=&#39;548&#39; /&gt;    
+
+

@@ -1,0 +1,134 @@
+
+---+!! %SPACEOUT{ &quot;%TOPIC%&quot; }%
+
+%STARTINCLUDE%
+%EDITTHIS%
+
+When an problem occurs in the middleware, Condor-G will &lt;span class=&quot;firstterm&quot;&gt;hold&lt;/span&gt; your job. Held jobs remain in the queue, waiting for user intervention. When you resolve the problem, you can use [[http://www.cs.wisc.edu/condor/manual/v6.7/condor_release.html][condor_release]] to free the job to continue.
+
+Use [[http://www.cs.wisc.edu/condor/manual/v6.9/condor_hold.html][condor_hold]] to manually place jobs on hold (e.g., to delay your run).
+
+For this example, we&#39;ll make the output file non-writable.  The job will be unable to copy the results back and will be placed on hold.
+
+Submit the job again, but this time immediately after submitting it, mark the output file as read-only:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;condor_submit myjob.submit ; chmod a-w results.output&lt;/userinput&gt;
+Submitting job(s).
+Logging submit event(s).
+1 job(s) submitted to cluster 3.
+&lt;/pre&gt;
+
+Watch the job with =tail=.  When the job goes on hold, use *&lt;userinput&gt;Ctrl+C&lt;/userinput&gt;* to exit tail.  Note that condor_q reports that the job is in the =H= or Held state.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;tail -f --lines=500 results.log&lt;/userinput&gt;
+
+000 (003.000.000) 07/12 22:35:44 Job submitted from host: &lt;%LOGINIP%:32864&gt;
+...
+027 (003.000.000) 07/12 22:35:57 Job submitted to grid resource
+    GridResource: gt2 %LOGINHOST%/jobmanager-fork
+    GridJobId: gt2 %LOGINHOST%/jobmanager-fork https://%LOGINHOST%:44026/31670/1174757075/
+...
+001 (003.000.000) 07/12 22:35:57 Job executing on host: gt2 %LOGINHOST%/jobmanager-fork
+...
+012 (003.000.000) 07/12 22:36:52 Job was held.
+        Globus error 155: the job manager could not stage out a file
+        Code 2 Subcode 155
+...
+&lt;userinput&gt;&lt;em&gt;[Ctrl+C]&lt;/em&gt;&lt;/userinput&gt;
+$ &lt;userinput&gt;condor_q&lt;/userinput&gt;
+
+ 
+-- Submitter: %LOGINHOST% : &lt;%LOGINIP%:32864&gt; : %LOGINHOST%
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD
+   2.0   %LOGINNAME%         7/12 22:35   0+00:00:55 H  0   0.0  myscript.sh TestJo
+ 
+1 jobs; 0 idle, 0 running, 1 held
+&lt;/pre&gt;
+
+Fix the problem (make the file writable again), then release the job. You can specifiy the job&#39;s ID, or just use &quot;-all&quot; to release all held jobs.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;chmod u+w results.output&lt;/userinput&gt;
+$ &lt;userinput&gt;condor_release -all&lt;/userinput&gt;
+All jobs released.
+&lt;/pre&gt;
+
+Run =tail -f= in another window to watch the log until the job finishes:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;tail -f --lines=500 results.log&lt;/userinput&gt;
+000 (003.000.000) 07/12 22:35:44 Job submitted from host: &lt;%LOGINIP%:32864&gt;
+...
+027 (003.000.000) 07/12 22:35:57 Job submitted to grid resource
+    GridResource: gt2 %LOGINHOST%/jobmanager-fork
+    GridJobId: gt2 %LOGINHOST%/jobmanager-fork https://%LOGINHOST%:44026/31670/1174757075/...
+...
+001 (003.000.000) 07/12 22:35:57 Job executing on host: %LOGINHOST%
+...
+012 (003.000.000) 07/12 22:36:52 Job was held.
+        Globus error 155: the job manager could not stage out a file
+        Code 2 Subcode 155
+...
+013 (003.000.000) 07/12 22:44:33 Job was released.
+        via condor_release (by user %LOGINNAME%)
+...
+027 (003.000.000) 07/12 22:35:57 Job submitted to grid resource
+    GridResource: gt2 %LOGINHOST%/jobmanager-fork
+    GridJobId: gt2 %LOGINHOST%/jobmanager-fork https://%LOGINHOST%:44026/31670/1174757075/...
+...
+001 (003.000.000) 07/12 22:44:46 Job executing on host: gt2 %LOGINHOST%/jobmanager-fork
+...
+005 (003.000.000) 07/12 22:44:51 Job terminated.
+        (1) Normal termination (return value 0)
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+        0  -  Run Bytes Sent By Job
+        0  -  Run Bytes Received By Job
+        0  -  Total Bytes Sent By Job
+        0  -  Total Bytes Received By Job
+...
+&lt;userinput&gt;&lt;em&gt;[Ctrl+C]&lt;/em&gt;&lt;/userinput&gt;
+&lt;/pre&gt;
+
+After your job has finished running, check that the results have been retreived successfully:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cat results.output&lt;/userinput&gt;
+I&#39;m process id 12528 on %LOGINHOST%
+Sat Jul 12 22:35:53 CEST 2003
+Running as binary %HOMEDIR%/.globus/.gass_cache/local/md5/6d/217f3f7926c06a529143f6129bf269/md5/a7/2af94ba728c69c588e523a99baaefd/data TestJob 10
+My name (argument 1) is TestJob
+My sleep duration (argument 2) is 10
+Sleep of 10 seconds finished.  Exiting
+RESULT: 0 SUCCESS
+&lt;/pre&gt;
+
+Clean up the results before continuing:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;rm results.*&lt;/userinput&gt;
+&lt;/pre&gt;
+
+
+&lt;!-- ***  Comments plugin to create comments table for section   ***    --&gt;
+
+&lt;span class=&quot;educationWebAddComment&quot;&gt;ADD A COMMENT&lt;/span&gt;
+%STARTMore%
+
+%TABLE{ }%
+|  *COMMENT*  |  *NAME*  |  *DATE*  |
+%COMMENT{ type=&quot;tableappend&quot; }%
+
+%ENDMore%
+&lt;!-- ***  End Comment                                    ***********    --&gt;
+
+
+
+%STOPINCLUDE%
+
+%BOTTOMMATTER%
+-- Main.ForrestChristian - 25 Jan 2007 (from original Lecture 5) %BR%

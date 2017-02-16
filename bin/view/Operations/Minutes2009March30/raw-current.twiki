@@ -1,0 +1,67 @@
+---+ Operations Meeting March 30, 2009
+
+   * 13:00 Eastern 
+   * Phone Number 510-665-5437 Meeting ID 786999 
+
+Attending: Jon Bednasz, Steve Timm, Elizabeth, Kyle, Wayne Betts, Keith Chadwick, Igor Sfiligoi, Tom Lee, Sam Hoover, Rob, Doug Olson, Burt, Karthik, Arvind, Soichi, Robert Engel, Robert Rusinko, Terrence Martin
+
+---+ Operations Agenda
+
+---++ Followup items from the [[http://twiki.grid.iu.edu/twiki/bin/view/Operations/Minutes2009March23][previous meeting]]
+
+---++ Hot Topics for the week
+   * New VO Package Released (ALICE and JDEM VOs added) [[http://osggoc.blogspot.com/2009/03/new-vo-package-released-alice-and-jdem.html][Details]]
+   * After the meeting: Discuss robot certs (in RSV context) with Doug, and security team.
+
+---++ OSG RA Items &amp; CA Questions 
+
+* New VOMS cert released for CERN VOMS
+
+---++ Pending Registrations
+
+
+Resource Registration
+
+| Name | Support Center | !ResURL | Site_Verify Status | Other Info | Ticket |
+
+---++ Resources Removed from OSG
+
+---++ GOC Tickets
+
+---+++ Relevant URLs
+   * [[https://oim.grid.iu.edu/gocticket/opentickets][Open GOC Tickets]] | [[http://www.grid.iu.edu/reports/ticketreports.html][OSG Operations Metrics]] 
+
+---+++ Tickets to discuss on call:
+
+| Ticket # | Support Center | Action/Summary | Last Action Date | GOCAssignee | Notes |
+| 6506 | N/A | | 3/30 | Kyle (supposedly) | GGUS is removing assignees from this ticket |
+---+++ Other issues
+
+
+---++ WLCG/OSG/EGEE Issues
+
+---++ Open Discussion of the Operations Group Developments &amp; Plan
+
+---++ Robot or Automated Client Certificates discussion
+---+++ Questions
+   1. Describe the intended use and purpose. - allow for services that do automated tests, etc.  The question is whether the cert can leave the host it was generated on...and can the proxy leave the host as well.  A MyProxy server would be an acceptable solution for this.
+   2. Is the certificate identifying a client or server, or both?
+   3. How many instances of the robot or automated process need access to the private key?
+   4. An individual is responsible for the certificate.  How often will this individual interact with the robot process?  
+   5. How long will it run unattended before someone notices that something has gone wrong? In other words, how will it be monitored?
+   6. Can a certificate with private key stored only on a hardware token be used?  If not, what protections can be used to ensure that the private key is not compromised?
+   7. Why is it not possible to locate the process on a specific host, so a service certificate may be used?
+---+++ Use Cases
+   * RSV
+      * With current OSG policy that proxies derived from service certificates may not leave the host holding the private key of the service certificate then another type of certificate where proxies are allowed to leave the host is desirable.
+
+   * glideinWMS in CMS
+      * Use robot proxies to submit pilot jobs to grid.
+      * Primarily used as clients.
+      * Need &gt;= 36 hr proxy lifetime (7d preferred)
+      * May be able to use hardware token, on linux.
+      * Normally service runs on one host but would like to be able to move or replicate for reliability.
+
+
+-- Main.ArvindGopu - 24 Mar 2009
+

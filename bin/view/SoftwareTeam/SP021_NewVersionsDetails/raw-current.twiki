@@ -1,0 +1,520 @@
+---+!! Support New OSG Versions — Technical Details
+
+%TWISTY{
+  mode=&quot;div&quot;
+  showlink=&quot;Show Table of Contents&quot;
+  hidelink=&quot;Hide Table of Contents&quot;}%
+%TOC{depth=&quot;3&quot;}%
+%ENDTWISTY%
+
+---++ About This Document
+Currently, this page serves as a technical design document for Software team tasks that are part of [[SP021_NewVersions][the project]].
+
+---++ Documentation
+
+The [[Documentation.Release3.WebHome][Release3]] section of the OSG TWiki will continue to be the home for OSG 3.x documentation. When there are differences between release series, they will be described inline when relatively small. For more significant differences, for example between HDFS 0.20 in OSG 3.1 and HDFS 2.0 in OSG 3.2, there will be separate Release3 pages for each version with appropriate labeling on the home page and prominent cross-links between pages.
+
+
+---++ Tarballs and OASIS
+
+Currently, the client tarballs are organized in directories by full version number (e.g., 3.1.21). With multiple release series, there could be many versions to sort through. So, the plan is to add a layer of directories for major release series.
+
+The old and new directory structures are shown below, starting in the tarball directory of the IU-based repository site, http://repo.grid.iu.edu/tarball-install/
+
+&lt;table&gt;
+&lt;tr style=&quot;vertical-align: top;&quot;&gt;&lt;td&gt;
+Old:
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+3.1.19/osg-client-3.1.19-1.el5.i386.tar.gz
+3.1.19/osg-client-3.1.19-1.el5.x86_64.tar.gz
+3.1.19/osg-client-3.1.19-1.el6.i386.tar.gz
+3.1.19/osg-client-3.1.19-1.el6.x86_64.tar.gz
+3.1.19/osg-wn-client-3.1.19-1.el5.i386.tar.gz
+3.1.19/osg-wn-client-3.1.19-1.el5.x86_64.tar.gz
+3.1.19/osg-wn-client-3.1.19-1.el6.i386.tar.gz
+3.1.19/osg-wn-client-3.1.19-1.el6.x86_64.tar.gz
+3.1.20/*
+3.1.21/*
+&lt;/pre&gt;
+&lt;/td&gt;
+&lt;td style=&quot;width: 3em;&quot;&gt;&lt;/td&gt;
+&lt;td&gt;
+New:
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.19/osg-client-3.1.19-1.el5.i386.tar.gz
+&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.19/osg-client-3.1.19-1.el5.x86_64.tar.gz
+&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.19/osg-client-3.1.19-1.el6.i386.tar.gz
+&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.19/osg-client-3.1.19-1.el6.x86_64.tar.gz
+&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.19/osg-wn-client-3.1.19-1.el5.i386.tar.gz
+&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.19/osg-wn-client-3.1.19-1.el5.x86_64.tar.gz
+&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.19/osg-wn-client-3.1.19-1.el6.i386.tar.gz
+&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.19/osg-wn-client-3.1.19-1.el6.x86_64.tar.gz
+&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.20/*
+&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.21/*
+&lt;span style=&quot;color: #12F;&quot;&gt;3.2/&lt;/span&gt;3.2.0/* (same tarball names)
+&lt;/pre&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+Also, the current top-level directory contains a set of convenience symlinks:
+
+&lt;pre class=&quot;screen&quot;&gt;
+osg-client-latest.el5.i386.tar.gz       -&gt; 3.1.21/osg-client-3.1.21-1.el5.i386.tar.gz
+osg-client-latest.el5.x86_64.tar.gz     -&gt; 3.1.21/osg-client-3.1.21-1.el5.x86_64.tar.gz
+osg-client-latest.el6.i386.tar.gz       -&gt; 3.1.21/osg-client-3.1.21-1.el6.i386.tar.gz
+osg-client-latest.el6.x86_64.tar.gz     -&gt; 3.1.21/osg-client-3.1.21-1.el6.x86_64.tar.gz
+osg-wn-client-latest.el5.i386.tar.gz    -&gt; 3.1.21/osg-wn-client-3.1.21-1.el5.i386.tar.gz
+osg-wn-client-latest.el5.x86_64.tar.gz  -&gt; 3.1.21/osg-wn-client-3.1.21-1.el5.x86_64.tar.gz
+osg-wn-client-latest.el6.i386.tar.gz    -&gt; 3.1.21/osg-wn-client-3.1.21-1.el6.i386.tar.gz
+osg-wn-client-latest.el6.x86_64.tar.gz  -&gt; 3.1.21/osg-wn-client-3.1.21-1.el6.x86_64.tar.gz
+&lt;/pre&gt;
+
+Proposed changes:
+   * Deprecate the symlinks but leave them in place (for now), pointing to the correct paths
+   * Add a README file to the directory to explain the tarballs, refer to the TWiki, and say that the old links are deprecated
+   * Add new convenience symlinks *within* the series directories
+
+The new symlinks will look like this:
+
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;span style=&quot;color: #12F;&quot;&gt;# In http://repo.grid.iu.edu/tarball-install/&lt;/span&gt;&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;
+osg-client-latest.el5.i386.tar.gz       -&gt; 3.1.21/osg-client-3.1.21-1.el5.i386.tar.gz
+osg-client-latest.el5.x86_64.tar.gz     -&gt; 3.1.21/osg-client-3.1.21-1.el5.x86_64.tar.gz
+osg-client-latest.el6.i386.tar.gz       -&gt; 3.1.21/osg-client-3.1.21-1.el6.i386.tar.gz
+osg-client-latest.el6.x86_64.tar.gz     -&gt; 3.1.21/osg-client-3.1.21-1.el6.x86_64.tar.gz
+osg-wn-client-latest.el5.i386.tar.gz    -&gt; 3.1.21/osg-wn-client-3.1.21-1.el5.i386.tar.gz
+osg-wn-client-latest.el5.x86_64.tar.gz  -&gt; 3.1.21/osg-wn-client-3.1.21-1.el5.x86_64.tar.gz
+osg-wn-client-latest.el6.i386.tar.gz    -&gt; 3.1.21/osg-wn-client-3.1.21-1.el6.i386.tar.gz
+osg-wn-client-latest.el6.x86_64.tar.gz  -&gt; 3.1.21/osg-wn-client-3.1.21-1.el6.x86_64.tar.gz
+
+&lt;span style=&quot;color: #12F;&quot;&gt;# In http://repo.grid.iu.edu/tarball-install/&lt;/span&gt;&lt;span style=&quot;color: #F60;&quot;&gt;3.2/&lt;/span&gt;
+osg-client-latest.el5.i386.tar.gz       -&gt; 3.2.0/osg-client-3.2.0-1.el5.i386.tar.gz
+osg-client-latest.el5.x86_64.tar.gz     -&gt; 3.2.0/osg-client-3.2.0-1.el5.x86_64.tar.gz
+osg-client-latest.el6.i386.tar.gz       -&gt; 3.2.0/osg-client-3.2.0-1.el6.i386.tar.gz
+osg-client-latest.el6.x86_64.tar.gz     -&gt; 3.2.0/osg-client-3.2.0-1.el6.x86_64.tar.gz
+osg-wn-client-latest.el5.i386.tar.gz    -&gt; 3.2.0/osg-wn-client-3.2.0-1.el5.i386.tar.gz
+osg-wn-client-latest.el5.x86_64.tar.gz  -&gt; 3.2.0/osg-wn-client-3.2.0-1.el5.x86_64.tar.gz
+osg-wn-client-latest.el6.i386.tar.gz    -&gt; 3.2.0/osg-wn-client-3.2.0-1.el6.i386.tar.gz
+osg-wn-client-latest.el6.x86_64.tar.gz  -&gt; 3.2.0/osg-wn-client-3.2.0-1.el6.x86_64.tar.gz
+&lt;/pre&gt;
+
+---+++ Implementation: Tarball Downloads
+
+   * Write a script to make the new directory structure and move existing tarballs into it
+   * Change the script that creates symlinks in =tarball-install= (script is in /root; we can access it, but need to coordinate with GOC, because it may reside elsewhere)
+      * Change existing symlinks to refer to new directory structure
+      * Add new set of top-level symlinks per major release
+
+Deployment process (ITB and production):
+
+   1. Run script to make new dirs and move tarballs
+   1. Run script to set up symlinks
+
+%RED%TODO: How do new directories get created with future releases and series?%ENDCOLOR%
+
+---+++ Proposed Structure: OASIS Installations
+
+OASIS installations have not been fully implemented yet, so there is no &quot;Old&quot; layout to migrate from. But in [[http://jira.opensciencegrid.org/SOFTWARE-1126][SOFTWARE-1126]], there is a proposed layout that we will modify before the initial release.
+
+&lt;table&gt;
+&lt;tr style=&quot;vertical-align: top;&quot;&gt;&lt;td&gt;
+Original Proposal:
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+osg-wn-client/3.1.21/el5-i386/
+osg-wn-client/3.1.21/el5-x86_64/
+osg-wn-client/3.1.21/el6-i386/
+osg-wn-client/3.1.21/el6-x86_64/
+osg-wn-client/current -&amp;gt; 3.1.21
+&lt;/pre&gt;
+&lt;/td&gt;
+&lt;td style=&quot;width: 3em;&quot;&gt;&lt;/td&gt;
+&lt;td&gt;
+New Proposal:
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+osg-wn-client/&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.21/el5-i386/
+osg-wn-client/&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.21/el5-x86_64/
+osg-wn-client/&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.21/el6-i386/
+osg-wn-client/&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;3.1.21/el6-x86_64/
+osg-wn-client/&lt;span style=&quot;color: #F60;&quot;&gt;3.1/&lt;/span&gt;current -&amp;gt; 3.1.21
+osg-wn-client/&lt;span style=&quot;color: #12F;&quot;&gt;3.2/&lt;/span&gt;3.2.0/*/
+osg-wn-client/&lt;span style=&quot;color: #12F;&quot;&gt;3.2/&lt;/span&gt;current -&amp;gt; 3.2.0
+osg-wn-client/&lt;span style=&quot;color: #12F;&quot;&gt;local/&lt;/span&gt; -&amp;gt; $(OASIS_WN_CLIENT)
+&lt;/pre&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+In the above table, =$(OASIS_WN_CLIENT)= will be a CVMFS configuration variable.  For the version of oasis-config distributed with OSG version 3.X.Y, this will default to the value of =3.2/current= (this forces the admin to take some minimal explicit action to change between release series).  Having an admin-managed config variable will also allow admins to manage the version cleanly with puppet.
+
+---++ Subversion
+
+Most of our Subversion repository structure will remain as is; only the packaging area must change. The basic plan is to use the trunk for the current release series (e.g., 3.2) and have branches for all other major release series (3.1, upcoming, etc.).
+
+The old and new directory structures are shown below, starting at the Subversion directory for packaging: &lt;pre class=&quot;screen&quot;&gt;$SVN/native/redhat&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;tr style=&quot;vertical-align: top;&quot;&gt;&lt;td&gt;
+Old:
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+branches
+branches/&lt;em style=&quot;color: gray;&quot;&gt;developer-branches&lt;/em&gt;
+
+
+tags
+trunk
+&lt;span style=&quot;color: #F60;&quot;&gt;upcoming&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td style=&quot;width: 3em;&quot;&gt;&lt;/td&gt;&lt;td&gt;
+New:
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+branches
+branches/&lt;em style=&quot;color: gray;&quot;&gt;developer-branches&lt;/em&gt;
+&lt;span style=&quot;color: #F60;&quot;&gt;branches/osg-3.1&lt;/span&gt;
+&lt;span style=&quot;color: #F60;&quot;&gt;branches/upcoming&lt;/span&gt;
+tags
+trunk
+
+&lt;/pre&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+---+++ Implementation
+
+Following a change to the meaning of =trunk=, users can re-base an existing checkout of =trunk= for OLD development by using the =svn switch= command.
+
+Implementation notes:
+
+   * To simplify, we will schedule this work *after* the Java packages have been moved from current =upcoming= back to current =trunk= (i.e., 3.1)
+   * We will schedule Subversion changes in advance, to avoid surprises and reduce risk of damaged workspaces
+   * Ideally, developers will commit unsaved changes to Subversion before the changes
+   * =osg-build= will need some small changes to handle the change in name to =trunk=; see the verify_correct_branch() function in osgbuild/svn.py
+   * We will need to update OSG Software developer documentation a little bit
+
+
+---++ Yum
+
+---+++ Yum Repository Structure
+
+This is a chance to fix the structure of our Yum repository directories, to make them more closely resemble other repositories like Scientific Linux. That is, the structure starts with the name of the repository itself (=osg=) and then the release series (=3.1=, =3.2=, =upcoming=). Within each release series, the structure will remain similar to the current one, with directory layers for operating system (currently =el5= and =el6=) and the repository name (but without the now-redundant =osg-= prefix).
+
+The old and new directory structures are shown below, starting in the tarball directory of the IU-based repository site, http://repo.grid.iu.edu/
+
+&lt;table&gt;&lt;tr style=&quot;vertical-align: top;&quot;&gt;&lt;td&gt;
+Old:
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+3.0/
+3.0/el5/
+3.0/el5/osg-contrib
+3.0/el5/osg-development
+3.0/el5/osg-release
+3.0/el5/osg-testing
+&lt;span style=&quot;color: #F60;&quot;&gt;3.0/el5/osg-upcoming-development
+3.0/el5/osg-upcoming-release
+3.0/el5/osg-upcoming-testing&lt;/span&gt;
+3.0/el6/... (same as el5)
+&lt;/pre&gt;&lt;/td&gt;&lt;td style=&quot;width: 3em;&quot;&gt;&lt;/td&gt;&lt;td&gt;
+New:
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+osg/3.1/
+osg/3.1/el5/
+osg/3.1/el5/contrib
+osg/3.1/el5/development
+osg/3.1/el5/release
+osg/3.1/el5/testing
+osg/3.1/el6/... (same as el5)
+&lt;span style=&quot;color: #12F;&quot;&gt;osg/3.2/
+osg/3.2/el5/
+osg/3.2/el5/contrib
+osg/3.2/el5/development
+osg/3.2/el5/release
+osg/3.2/el5/testing
+osg/3.2/el6/... (same as el5)&lt;/span&gt;
+&lt;span style=&quot;color: #F60;&quot;&gt;osg/upcoming/
+osg/upcoming/el5/
+osg/upcoming/el5/development
+osg/upcoming/el5/release
+osg/upcoming/el5/testing
+osg/upcoming/el6/... (same as el5)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+To ease the transition, we will provide a set of compatibility symlinks from the old structure to the new:
+
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+3.0/
+3.0/el5/
+3.0/el5/osg-contrib               -&amp;gt; ../../osg/3.1/el5/contrib
+3.0/el5/osg-development           -&amp;gt; ../../osg/3.1/el5/development
+3.0/el5/osg-release               -&amp;gt; ../../osg/3.1/el5/release
+3.0/el5/osg-testing               -&amp;gt; ../../osg/3.1/el5/testing
+3.0/el5/osg-upcoming-development  -&amp;gt; ../../osg/upcoming/el5/development
+3.0/el5/osg-upcoming-release      -&amp;gt; ../../osg/upcoming/el5/release
+3.0/el5/osg-upcoming-testing      -&amp;gt; ../../osg/upcoming/el5/testing
+3.0/el6/... (same as el5)
+&lt;/pre&gt;
+
+Finally, there are the convenience symlinks that we provide for the latest version of osg-release. Currently, we have:
+
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+osg-el5-release-latest.rpm -&gt; 3.0/el5/osg-release/x86_64/osg-release-xxxxx.rpm
+osg-el6-release-latest.rpm -&gt; 3.0/el6/osg-release/x86_64/osg-release-xxxxx.rpm
+&lt;/pre&gt;
+
+The proposal is to:
+   * Deprecate and preserve the existing symlinks, but resolve to the new paths
+   * Add a set of “latest” symlinks to *each* numbered release series directory (e.g., for =3.1= and =3.2= but not =upcoming=)
+
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+&lt;span style=&quot;color: #12F;&quot;&gt;# In http://repo.grid.iu.edu/&lt;/span&gt;
+osg-el5-release-latest.rpm -&gt; &lt;span style=&quot;color: #F60;&quot;&gt;osg/3.1/&lt;/span&gt;osg-3.1-el5-release-latest.rpm
+osg-el6-release-latest.rpm -&gt; &lt;span style=&quot;color: #F60;&quot;&gt;osg/3.1/&lt;/span&gt;osg-3.1-el6-release-latest.rpm
+
+&lt;span style=&quot;color: #12F;&quot;&gt;# In http://repo.grid.iu.edu/&lt;/span&gt;&lt;span style=&quot;color: #F60;&quot;&gt;osg/3.1/&lt;/span&gt;
+osg-3.1-el5-release-latest.rpm -&gt; el5/release/x86_64/osg-release-xxxxx.rpm
+osg-3.1-el6-release-latest.rpm -&gt; el6/release/x86_64/osg-release-xxxxx.rpm
+
+&lt;span style=&quot;color: #12F;&quot;&gt;# In http://repo.grid.iu.edu/&lt;/span&gt;&lt;span style=&quot;color: #F60;&quot;&gt;osg/3.2/&lt;/span&gt;
+osg-3.2-el5-release-latest.rpm -&gt; el5/release/x86_64/osg-release-xxxxx.rpm
+osg-3.2-el6-release-latest.rpm -&gt; el6/release/x86_64/osg-release-xxxxx.rpm
+&lt;/pre&gt;
+
+---+++ Yum Repository Definitions (*.repo)
+
+Mostly, the definitions of the =*.repo= files will remain unchanged for each OSG release series (3.1, 3.2, …), except that the description will be updated to include the release series, and the paths in the =baseurl= and =mirrorlist= attributes will be updated to match the new repository structure.
+
+Importantly, we will *NOT* change the names of the repositories from one release series to the next, in principle making it easier to upgrade from OSG 3.1 to OSG 3.2. The current =osg-release= RPM has all =.repo= files marked as =%config=, so there are two upgrade options we could pursue: (a) have people =rvm -Uvh= on the 3.2 release RPM, then merge in info from =.rpmnew= files as needed (potentially leaving a mix of 3.1 and 3.2 repos), or (b) have people =rpm -e osg-release=, possibly leaving behind =.rpmsave= files, then install the new =osg-release= (3.2) and merge in customizations (the latter sounds better).
+
+For example, here is a fragment from the current =osg-el6.repo= file:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[osg]
+&lt;span style=&quot;color: #F60;&quot;&gt;name=OSG Software for Enterprise Linux 6 - $basearch&lt;/span&gt;
+&lt;span style=&quot;color: #F60;&quot;&gt;#baseurl=http://repo.grid.iu.edu/3.0/el6/osg-release/$basearch&lt;/span&gt;
+&lt;span style=&quot;color: #F60;&quot;&gt;mirrorlist=http://repo.grid.iu.edu/mirror/3.0/el6/osg-release/$basearch&lt;/span&gt;
+failovermethod=priority
+priority=98
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+consider_as_osg=yes
+&lt;/pre&gt;
+
+New:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[osg]
+&lt;span style=&quot;color: #F60;&quot;&gt;name=OSG Software 3.1 for Enterprise Linux 6 - $basearch&lt;/span&gt;
+&lt;span style=&quot;color: #F60;&quot;&gt;#baseurl=http://repo.grid.iu.edu/osg/3.1/el6/release/$basearch&lt;/span&gt;
+&lt;span style=&quot;color: #F60;&quot;&gt;mirrorlist=http://repo.grid.iu.edu/mirror/osg/3.1/el6/release/$basearch&lt;/span&gt;
+failovermethod=priority
+priority=98
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+consider_as_osg=yes
+&lt;/pre&gt;
+
+---+++ Implementation
+
+   * Create a new version of Soichi’s mash system that installs packages from koji into the new repositories
+      * The Software team will offer to help with this task
+   * Create a script to make and populate the new directories on a =repo*.grid.iu.edu= machine
+      a. Create new directory structure
+      a. Run mash script to populate new areas (or should this step by done manually?)
+   * Create a script to change =3.0= directories to symlinks
+      a. Move old =3.0= directory to archival path
+      a. Make symlinks at old =3.0= directory paths
+   * Create a deployment rollback script, at least for the =3.0= directories (the new stuff should be harmless and easily deleted)
+      a. Delete =3.0= directory structure
+      a. Move old =3.0= directory back in place
+
+%RED%Need to identify all OSG TWiki documents that will need to change.%ENDCOLOR%
+
+Testing the new repositories:
+   * Do lots of manual and automated testing using the new =*.repo= files from osg-release-itb
+
+---+++ Other Consequences
+
+We would like the ability to run automated tests on different release series, so changing the Yum structure implies some eventual changes to osg-test:
+
+   * Make a configuration option to pick OSG version to test (e.g., 3.1 vs. 3.2)
+   * Update bootstrap-osg-test to use the correct URLs and to take an OSG version
+   * Change reporting to include release series (3.1, 3.2, Upcoming)
+
+Also, we should change OSG Software internal documentation to reflect the new layout.
+
+
+---++ Koji
+
+At very least, we would need to add koji tags to separate 3.1 from 3.2 builds. Given that, it seems worthwhile to overhaul the tags to parallel the yum repository structure.
+
+---+++ Tags
+
+&lt;table&gt;&lt;tr style=&quot;vertical-align: top;&quot;&gt;&lt;td&gt;
+&lt;h4&gt;Old:&lt;/h4&gt;
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+&lt;span style=&quot;color: #F60;&quot;&gt;el5-osg&lt;/span&gt;-contrib
+&lt;span style=&quot;color: #F60;&quot;&gt;el5-osg&lt;/span&gt;-development
+&lt;span style=&quot;color: #F60;&quot;&gt;el5-osg&lt;/span&gt;-prerelease
+&lt;span style=&quot;color: #F60;&quot;&gt;el5-osg&lt;/span&gt;-release
+&lt;span style=&quot;color: #F60;&quot;&gt;el5-osg&lt;/span&gt;-testing
+&lt;span style=&quot;color: #F60;&quot;&gt;el6-osg&lt;/span&gt;-* (same as el5)
+
+
+
+&lt;span style=&quot;color: #F60;&quot;&gt;el*-osg-upcoming&lt;/span&gt;-* (same as el5, no contrib)
+
+&lt;span style=&quot;color: #F60;&quot;&gt;el*-osg&lt;/span&gt;-release-&lt;i&gt;VERSION&lt;/i&gt;
+
+&lt;span style=&quot;color: #F60;&quot;&gt;el*-osg-upcoming&lt;/span&gt;-release-&lt;i&gt;VERSION&lt;/i&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td style=&quot;width: 3em;&quot;&gt;&lt;/td&gt;&lt;td&gt;
+&lt;h4&gt;New:&lt;/h4&gt;
+&lt;pre class=&quot;screen&quot; style=&quot;padding: 1ex;&quot;&gt;
+&lt;span style=&quot;color: #F60;&quot;&gt;osg-3.1-el5&lt;/span&gt;-contrib
+&lt;span style=&quot;color: #F60;&quot;&gt;osg-3.1-el5&lt;/span&gt;-development
+&lt;span style=&quot;color: #F60;&quot;&gt;osg-3.1-el5&lt;/span&gt;-prerelease
+&lt;span style=&quot;color: #F60;&quot;&gt;osg-3.1-el5&lt;/span&gt;-release
+&lt;span style=&quot;color: #F60;&quot;&gt;osg-3.1-el5&lt;/span&gt;-testing
+&lt;span style=&quot;color: #F60;&quot;&gt;osg-3.1-el6&lt;/span&gt;-* (same as el5)
+
+&lt;span style=&quot;color: #12F;&quot;&gt;osg-3.2-el*-*&lt;/span&gt; (same as 3.1)
+
+&lt;span style=&quot;color: #F60;&quot;&gt;osg-upcoming-el*&lt;/span&gt;-* (same as 3.1, no contrib)
+
+&lt;span style=&quot;color: #F60;&quot;&gt;osg-3.1-el*&lt;/span&gt;-release-&lt;i&gt;VERSION&lt;/i&gt;
+&lt;span style=&quot;color: #12F;&quot;&gt;osg-3.2-el*-release-&lt;i&gt;VERSION&lt;/i&gt;&lt;/span&gt;
+&lt;span style=&quot;color: #F60;&quot;&gt;osg-upcoming-el*&lt;/span&gt;-release-&lt;i&gt;VERSION&lt;/i&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+NOTE: The &quot;VERSION&quot; for a specific release of upcoming corresponds to the highest-numbered production release e.g. we release 3.2.0, 3.1.26 and upcoming, the koji tag will be osg-upcoming-el*-release-3.2.0.
+
+---+++ Build Targets
+
+When requesting a build, osg-build provides (conceptually) a bundle of source code and a build target, where the target associates (1) an internal repository to use to satisfy build dependencies with (2) the Koji tag to apply to the resultant build products. The plan is to expand the set of targets to include series-specific ones, plus the default ones which correspond to trunk builds, and reorder the name components to match the new Koji tags.
+
+&lt;table&gt;&lt;tr style=&quot;vertical-align: top;&quot;&gt;&lt;td&gt;
+&lt;h4&gt;Old&lt;/h4&gt;
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Target* | *Build Tag* | *Destination Tag* |
+| =el5-osg= | =el5-osg-build= | =el5-osg-development= |
+| =el6-osg= | =el6-osg-build= | =el6-osg-development= |
+| =el5-osg-upcoming= | =el5-osg-upcoming-build= | =el5-osg-upcoming-development= |
+| =el6-osg-upcoming= | =el6-osg-upcoming-build= | =el6-osg-upcoming-development= |
+&lt;/td&gt;&lt;td style=&quot;width: 3em;&quot;&gt;&lt;/td&gt;&lt;td&gt;
+&lt;h4&gt;New&lt;/h4&gt;
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Target* | *Build Tag* | *Destination Tag* |
+| =osg-el5= | =osg-3.1-el5-build= | =osg-3.1-el5-development= |
+| =osg-el6= | =osg-3.1-el6-build= | =osg-3.1-el6-development= |
+| =osg-3.1-el5= | =osg-3.1-el5-build= | =osg-3.1-el5-development= |
+| =osg-3.1-el6= | =osg-3.1-el6-build= | =osg-3.1-el6-development= |
+| =osg-3.2-el5= | =osg-3.2-el5-build= | =osg-3.2-el5-development= |
+| =osg-3.2-el6= | =osg-3.2-el6-build= | =osg-3.2-el6-development= |
+| =osg-upcoming-el5= | =osg-upcoming-el5-build= | =osg-upcoming-el5-development= |
+| =osg-upcoming-el6= | =osg-upcoming-el6-build= | =osg-upcoming-el6-development= |
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+Long term, the =osg-el*= targets will map to the build and destination tags for the current series (e.g., 3.1 today, 3.2 next, etc.). The process for updating the targets is in the Implementation section below.
+
+---+++ osg-build
+
+The =osg-build= script already has a =--repo= option to select the correct destination repository (family). We will add to the list of accepted values and define the semantics a bit differently to support many release series automatically (i.e., without code changes for each new series). Also, for source-code repository builds =osg-build= will default to the correct setting of the =--repo= option, based on the directory within the source code repository.
+
+&lt;table&gt;&lt;tr style=&quot;vertical-align: top;&quot;&gt;&lt;td&gt;
+&lt;h4&gt;Old&lt;/h4&gt;
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Repo Option* | *Subversion Path* | *Koji Build Target* |
+| _None_ | =trunk= | =el*-osg= |
+| =osg= | =trunk= | =el*-osg= |
+| =upcoming= | =upcoming= | =el*-osg-upcoming= |
+&lt;/td&gt;&lt;td style=&quot;width: 3em;&quot;&gt;&lt;/td&gt;&lt;td&gt;
+&lt;h4&gt;New&lt;/h4&gt;
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Repo Option* | *Subversion Path* | *Koji Build Target* |
+| _None_ | =trunk= | =osg-el*= |
+| =osg= | =trunk= | =osg-el*= |
+| =osg-3.1= | =branches/osg-3.1= | =osg-3.1-el*= |
+| =osg-3.2= | =branches/osg-3.2= | =osg-3.2-el*= |
+| =osg-&lt;em&gt;N&lt;/em&gt;.&lt;em&gt;M&lt;/em&gt;= | =branches/osg-&lt;em&gt;N&lt;/em&gt;.&lt;em&gt;M&lt;/em&gt;= | =osg-&lt;em&gt;N&lt;/em&gt;.&lt;em&gt;M&lt;/em&gt;-el*= |
+| =upcoming= | =branches/upcoming= | =osg-upcoming-el*= |
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+---+++ Implementation
+
+The full implementation of the koji changes entails the greatest OSG Software team effort, due to the number of scripts and other systems affected. The list below covers all the known, major changes, but a complete and detailed plan will be worked out later. In particular, we will look into setting up a test instance of koji for experimenting with changes before implementation.
+
+   * Change osg-built, osg-promote, release scripts, etc.
+   * Change internal documentation
+   * Will affect Soichi’s mash downloader (but we knew that, and we should offer to help)
+   * Change koji targets, including some new build tags
+
+When we want to start developing OSG 3.2.*, we do these tasks:
+
+
+With those changes:
+
+   * =osg-build= (no --repo) still uses =trunk=, applies =osg-el*= targets, and hence builds into 3.2
+   * =osg-build --repo=osg-3.1= uses =branches/osg-3.1=, applies =osg-3.1-el*= targets, and builds into 3.1
+
+
+---++ Deployment
+
+---+++ One-Time Deployment of New System
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Date* | *Owner* | *Change* |
+| 2013-08-21 | !TimC | Subversion: Move =upcoming= to =branches/upcoming=; osg-build: Fix path to =branches/upcoming= |
+| 2013-09-03 | Mat | Tarballs: Deploy tarball directory changes to ITB host (=repo-itb.grid.iu.edu=) |
+| 2013-09-06 | Carl | Koji: Create temporary tags =osg-3.1-el5-*= (&lt;span style=&quot;color: #F60;&quot;&gt;NOT&lt;/span&gt; =-el6-=) to allow testing of mash |
+| ^ | Carl | Koji: Add build targets =osg-el5=, =osg-el6=, =osg-3.1-el5= (new tags), =osg-3.1-el6= (old tags) |
+| 2013-09-09 | Mat | Tarballs: Update “how to make release” documentation |
+| 2013-09-10 | Mat | Tarballs: Deploy tarball directory changes to production host (=repo.grid.iu.edu=) |
+| ^ | !TimT | Tarballs: Update external documentation (Documentation.Release3.InstallOSGClientTarball, Documentation.Release3.InstallWNClientTarball) |
+| ^ | !TimT | Tarballs: Announce change in structure to sites |
+| ^ | !BrianL | Yum: Update =osg-release-itb= package in =osg-testing= repository (pointing to old URLs) |
+| 2013-09-17 | Mat | Koji: Finish and test changes to osg-build and osg-promote |
+| ^ | Carl | Koji: Finish and test changes to mash in Fermicloud or local machine |
+| ^ | !BrianL | Yum: Finish migration scripts and testing in Fermicloud |
+| 2013-09-18 | Mat | Mat on vacation |
+| 2013-10-01 | !BrianL | Yum: Deploy new directory structure to ITB host (=repo-itb.grid.iu.edu=)&lt;span style=&quot;color: #F60;&quot;&gt;*&lt;/span&gt; |
+| ^ | !BrianL | Yum: Update =osg-release= package in =osg-development= repository |
+| 2013-10-02 | Mat | Mat returns to work, world-weary and jetlagged |
+| 2013-10-03 | ? | Add testing &#39;3.2&#39; tags to Koji and repo-itb. We will only have 3.2-development and 3.2-build, and only a handful of packages in 3.2-development. |
+| 2013-10-08 | Carl | Koji: Remove test tags and targets (must be done before deploying mash) |
+| 2013-10-08 | !BrianL | Yum: Deploy new directory structure to production host (=repo.grid.iu.edu=)&lt;span style=&quot;color: #F60;&quot;&gt;*&lt;/span&gt; |
+| ^ | !BrianL | Yum: Update =osg-release= package in =osg-release= repository |
+| ^ | !BrianL | Yum: Schedule/wait for mirrors to pick up the changes |
+| ^ | !TimT | Yum: Update OSG TWiki documentation |
+| 2013-10-22 | Carl | Koji: rename old tags and targets to new (coincides with GOC deployment date) |
+
+---++++ * Yum Deployment
+
+   1. Install new mash script(s)
+   1. &lt;s&gt;Run the script that creates and populates the new directories&lt;/s&gt; Run script to update .mash files
+   1. Run mash update script itself
+   1. Verify the new contents — same number of packages per dir? same sizes? what?
+   1. Run the script that changes the =3.0= structures
+   1. Verify symlinks (via making fermicloud machines and doing test installs from &#39;osg-release-itb&#39;)
+
+   * [[%ATTACHURL%/oct1-repo-itb-deployment-plan.txt][oct1-repo-itb-deployment-plan.txt]]: script-like deployment plan for repo-itb on oct1
+
+---+++ Routine Deployment of New Series
+
+---+++# Subversion
+
+The current existing release series is called OLD (e.g., 3.1) and the new release series is called NEW (e.g., 3.2).
+
+   1. Notify users to stop committing until further notice
+   1. Copy =trunk= to &lt;code&gt;branches/osg-&lt;em&gt;OLD&lt;/em&gt;&lt;/code&gt;
+   1. Merge changes from =branches/upcoming= to =trunk=, as desired
+   1. Copy =trunk= to =tags/osg-&lt;em&gt;NEW&lt;/em&gt;-start=
+   1. Copy =branches/upcoming= to =tags/upcoming-to-&lt;em&gt;NEW&lt;/em&gt;=
+   1. Delete from =branches/upcoming= everything that was merged above
+   1. Delete from =trunk= everything that is no longer needed with commit messages explaining why
+   1. Notify users that changes are done
+
+---+++# Koji
+
+   1. Add tags: =osg-&lt;em&gt;N&lt;/em&gt;.&lt;em&gt;M&lt;/em&gt;-el*-build=, =osg-&lt;em&gt;N&lt;/em&gt;.&lt;em&gt;M&lt;/em&gt;-el*-{development,testing,prerelease,release,contrib}=
+   1. Add build targets: =osg-&lt;em&gt;N&lt;/em&gt;.&lt;em&gt;M&lt;/em&gt;-el*= &amp;rarr; (=osg-&lt;em&gt;N&lt;/em&gt;.&lt;em&gt;M&lt;/em&gt;-el*-build=, =osg-&lt;em&gt;N&lt;/em&gt;.&lt;em&gt;M&lt;/em&gt;-el*-development=)
+   1. Change existing build targets: =osg-el*= &amp;rarr; (=osg-&lt;em&gt;N&lt;/em&gt;.&lt;em&gt;M&lt;/em&gt;-el*-build=, =osg-&lt;em&gt;N&lt;/em&gt;.&lt;em&gt;M&lt;/em&gt;-el*-development=)
+   1. Change inheritance of =osg-el*-upcoming-build=: inherit from =osg-&lt;em&gt;N&lt;/em&gt;.&lt;em&gt;M&lt;/em&gt;-el*-build= instead of the previous series
+
+---+++# Yum
+   1. Run mash script to create new version directory and populate it (details to come later)
+
+

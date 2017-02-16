@@ -1,0 +1,96 @@
+---+ How do I update the VO package?
+
+---+++ Login to funafuti.uits.indiana.edu. 
+
+   &lt;verbatim&gt;$ cd /home/wwws/OSG/pacman/tarballs/vo-version&lt;/verbatim&gt;
+
+---+++ Copy current files to previous version files.
+
+   &lt;verbatim&gt;$ cp edg-mkgridmap.osg edg-mkgridmap.osg.prev&lt;/verbatim&gt;
+   &lt;verbatim&gt;$ cp gums.template gums.template.prev&lt;/verbatim&gt;
+
+---+++ Update the three files that will require updates/additions (*How? Are there &#39;gotchas&#39;?*)
+
+   * edg-mkgridmap.osg
+   * gums.template
+   * vomses
+
+Make sure the *install-vo.sh* file is set to permissions of 775.
+
+---+++ Create diff files for review
+
+&lt;verbatim&gt;$ diff edg-mkgridmap.osg edg-mkgridmap.osg.prev &gt; edg-mkgridmap.osg.diff&lt;/verbatim&gt;
+&lt;verbatim&gt;$ diff gums.template gums.template.prev &gt; gums.template.diff&lt;/verbatim&gt;
+
+---+++ Communicate with the VO-Admins 
+
+Make sure they have seen and agree to the new package. The mail should include a link to the new VO package directory and provide a time line for feedback. Here is an example from the SBGrid VO Addition.
+
+&lt;pre&gt;
+VO Admins,
+
+There is a new VO Package to be release on Wednesday that includes
+the new SBGrid VO. Please review the files at http://software.grid.iu.edu/
+pacman/tarballs/vo-version/ for comment.
+
+Thanks,
+Rob
+&lt;/pre&gt;
+
+---+++ Copy the vomses file to the client VO package
+
+&lt;verbatim&gt;$ cd home/wwws/OSG/pacman/tarballs&lt;/verbatim&gt;
+
+&lt;verbatim&gt;$ cp vo-version/vomses vo-client/vomses&lt;/verbatim&gt; 
+
+---+++ Create the new tarballs
+
+The # in the below commands can be determined by looking at the previous version of the tarballs being used in /home/wwws/OSG/pacman/vo-package and /home/wwws/OSG/pacman/vo-client.
+
+&lt;verbatim&gt;$ tar czvf vo-package-&lt;#&gt;.tar.gz vo-versions/&lt;/verbatim&gt; 
+&lt;verbatim&gt;$ tar czvf vo-client-0.6-&lt;#&gt;.tar.gz vo-client-0.6/&lt;/verbatim&gt; 
+
+---+++ Update the pacman files to point at the new tarballs.
+
+&lt;verbatim&gt;$ cd /home/wwws/OSG/pacman&lt;/verbatim&gt;
+
+---+++ Edit _vo-package.pacman_ and _vo-client.pacman_ to refer to the new tarball version number. 
+
+   1. In _vo-package.pacman_ you will update this line:
+
+&lt;verbatim&gt;download    = { &#39;unix&#39;: &#39;vo-package-7.tar.gz&#39; }&lt;/verbatim&gt;  (In this case 7 is the version number that will be updated.)
+
+   2. In _vo-client_ you will update the following lines. (In this case 11 is the version number that will be updated.) (*Again, change the version number to the next in the sequence.*)
+
+&lt;verbatim&gt;description (&#39;OSG VO Client v0.6.0-11&#39;)
+downloadUntar (&#39;http://software.grid.iu.edu/pacman/tarballs/vo-client-0.6-11.tar.gz&#39;
+, &#39;VO&#39;)&lt;/verbatim&gt;
+
+---+++ Test the package
+
+Install the package on your ITB node:
+
+&lt;verbatim&gt;pacman -update OSG:vo-package&lt;/verbatim&gt;
+
+---+++ Send announcement
+
+&lt;pre&gt;
+Support Centers,
+
+There is a new VO package which includes removals of the VOMS instances of iVDGL, GROW, and GADU.
+
+All OSG resources and GUMS administrators are encouraged to upgrade as soon as possible to remove these no longer used VOMS.
+
+For resources OSG Version 0.8.0 and higher:
+
+pacman -update OSG:vo-package
+
+For OSG Client users please use (Note: This works for both 0.8 and 1.0 releases.):
+
+pacman -update OSG:vo-client-0.6
+
+Please contact the GOC with any questions.
+&lt;/pre&gt;
+
+
+-- Main.TimSilvers - 17 Oct 2008

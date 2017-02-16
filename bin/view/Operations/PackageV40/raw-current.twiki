@@ -1,0 +1,264 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;VO Packages&quot; }%*
+
+%TOC{depth=&quot;2&quot;}%
+
+---+ v40
+
+---++ LBNE VO Addition
+
+[[https://ticket.grid.iu.edu/goc/10929][Ticket]]
+
+---+++ vomses Addition
+&lt;verbatim&gt;
+&quot;lbne&quot; &quot;voms.fnal.gov&quot; &quot;15029&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=http/voms.fnal.gov&quot; &quot;lbne&quot;
+&lt;/verbatim&gt; 
+
+---+++ edg-mkgridmap Addition
+&lt;verbatim&gt;
+#USER-VO-MAP lbne LBNE - 52 - Eileen Berman (berman@fnal.gov)
+group vomss://voms.fnal.gov:8443/voms/lbne lbne
+&lt;/verbatim&gt;
+
+---+++ UNIX Account Addition
+&lt;verbatim&gt;lbne,lbnepro,lbnegli,lbneana&lt;/verbatim&gt;
+
+---+++ GUMS template addition
+
+&lt;verbatim&gt;
+&lt;groupMapping name=&quot;lbne&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;LBNE&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/lbne/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;lbne&quot; 
+    voGroup=&quot;/lbne&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbne&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;lbne-production&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;LBNE&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/lbne/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;lbne-production&quot; 
+    voGroup=&quot;/lbne&quot; 
+    voRole=&quot;Production&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbnepro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;lbneana&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;LBNE&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/lbne/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;lbneana&quot; 
+    voGroup=&quot;/lbne&quot; 
+    voRole=&quot;Analysis&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbneana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;lbnegli&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;LBNE&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/lbne/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;lbnegli&quot; 
+    voGroup=&quot;/lbne&quot; 
+    voRole=&quot;pilot&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbnegli&quot;/&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Added &lt;verbatim&gt; lbne, lbne-production, lbneana, lbnegli &lt;/verbatim&gt; into hostGroup className
+
+%RED% 
+Temporary additions while the LBNE VO is rolled out. 
+%ENDCOLOR%
+
+&lt;verbatim&gt;
+&lt;!-- 52A Fermilab LBNE SubVO (This will be removed when the LBNE VO is fully active.)--&gt;
+
+&lt;groupMapping name=&quot;fermilbne&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;LBNE&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;fermilbne&quot; 
+    voGroup=&quot;/fermilab/lbne&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; 
+    groupName=&quot;lbne&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;fermi-lbne-production&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;LBNE&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;fermi-lbne-production&quot; 
+    voGroup=&quot;/fermilab/lbne&quot; 
+    voRole=&quot;Production&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; 
+    groupName=&quot;lbnepro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+
+&lt;groupMapping name=&quot;fermilbneana&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;LBNE&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;fermilbneana&quot; 
+    voGroup=&quot;/fermilab/lbne&quot; 
+    voRole=&quot;Analysis&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; 
+    groupName=&quot;lbneana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;fermilbnegli&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;LBNE&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;fermilbnegli&quot; 
+    voGroup=&quot;/fermilab/lbne&quot; 
+    voRole=&quot;pilot&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; 
+    groupName=&quot;lbnegli&quot;/&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Added &lt;verbatim&gt; fermilbne, fermilbne-production, fermilbneana, fermilbnegli &lt;/verbatim&gt; into hostGroup className
+
+
+---++ LBNE Fermigrid Sub-VO Removed
+
+---+++ gums.template Deletion
+
+&lt;verbatim&gt;
+&lt;groupMapping name=&quot;lbne&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;lbne&quot; 
+    voGroup=&quot;/fermilab/lbne&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbne&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;lbne-production&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;lbne-production&quot; 
+    voGroup=&quot;/fermilab/lbne&quot; 
+    voRole=&quot;Production&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbnepro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;lbneana&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;lbneana&quot; 
+    voGroup=&quot;/fermilab/lbne&quot; 
+    voRole=&quot;Analysis&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbneana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;lbnegli&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;lbnegli&quot; 
+    voGroup=&quot;/fermilab/lbne&quot; 
+    voRole=&quot;pilot&quot; 
+    sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+    sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbnegli&quot;/&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+And remove &lt;verbatim&gt; lbne, lbne-production, lbneana, lbnegli &lt;/verbatim&gt; from hostGroup className
+
+---++ GROW VO Removal
+
+[[https://ticket.grid.iu.edu/goc/10877][Ticket]]
+
+---+++ edg-mkgridmap.osg Removed
+&lt;verbatim&gt;
+# USER-VO-MAP grow GROW -- 36 -- Jeff DeReus (jeffrey-dereus@uiowa.edu)
+group vomss://grow-voms.its.uiowa.edu:8443/voms/GROW grow
+&lt;/verbatim&gt;
+
+---+++ gums.template Removed
+&lt;verbatim&gt;
+&lt;groupMapping name=&quot;grow&quot; accountingVo=&quot;grow&quot; accountingDesc=&quot;GROW&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+     url=&quot;https://grow-voms.its.uiowa.edu:8443/voms/GROW/services/VOMSAdmin&quot; 
+     persistenceFactory=&quot;mysql&quot; 
+     name=&quot;GROW&quot; 
+     voGroup=&quot;/GROW&quot; 
+     sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+     matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&quot;true&quot;/&gt;
+     &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;grow&quot;/&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Removed &lt;verbatim&gt;grow&lt;/verbatim&gt; from hostGroup className
+
+---+++ vomses Removed
+&lt;verbatim&gt;
+&quot;GROW&quot; &quot;grow-voms.its.uiowa.edu&quot; &quot;15002&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=grow-voms.its.uiowa.edu&quot; &quot;grow&quot;
+&lt;/verbatim&gt;
+---++ GLOW VOMS Address Change
+
+[[https://ticket.grid.iu.edu/goc/11072][Ticket]]
+
+---+++ gums.template and edg-mkgridmap.osg
+
+Replaced instances of
+
+&lt;verbatim&gt;
+glow-voms.cs.wisc.edu:8443/edg-voms-admin/GLOW
+&lt;/verbatim&gt;
+with
+&lt;verbatim&gt;
+glow-voms.cs.wisc.edu:8443/voms/GLOW
+&lt;/verbatim&gt;
+
+---+ VO Package Files Location
+
+   * For ITB VO Files see:
+
+http://software-itb.grid.iu.edu/pacman/tarballs/vo-package/
+
+   * For Production VO Files see:
+
+http://software.grid.iu.edu/pacman/tarballs/vo-package/
+
+-- Main.RobQ - 02 Sep 2011

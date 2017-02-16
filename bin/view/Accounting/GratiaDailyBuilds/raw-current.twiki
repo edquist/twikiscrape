@@ -1,0 +1,81 @@
+---+!! &lt;nop&gt;Gratia Daily Builds
+
+&lt;!--
+   * Set VIEWTHISTOPIC = &lt;div class=&quot;twikiSmall&quot;&gt;&lt;a href=&quot;%TOPIC%&quot;&gt;View this section&lt;/a&gt;&lt;/div&gt;
+--&gt;
+
+%TOC%
+
+%STARTINCLUDE%
+
+---++ Gratia Daily Builds
+
+%VIEWTHISTOPIC%
+
+On a daily basis ( __gr6x3__ cron), a script is run to bring down the HEAD node of the Gratia svn source forge repository and perform a __&#39;__ _make release_ __&#39;__.
+
+This allows developers to always have the latest Gratia build available for installation on their test instance.
+
+Additionally, these daily builds will be used to perform daily upgrades of the Gratia instances described in the [[#Daily_installs_and_upgrades][Daily installs and upgrades]] section of this document.
+
+In svn, the script resides in __./gratia/build-scripts/nightly-build.sh__ .
+
+*Cron entry:*
+&lt;verbatim&gt;
+########################################################################
+#-----------------------------------------------------------------------
+# Nightly gratia build in /home/gratia/gratia-builds
+#-----------------------------------------------------------------------
+05 0 * * *  /home/gratia/cron-scripts/nightly-build.sh --mail gratia-builds@fnal.gov
+#
+########################################################################
+&lt;/verbatim&gt;
+
+*Usage: nightly-build.sh [--dir directory] [--mail addresses] [--files n] [--help]*
+&lt;verbatim&gt;
+This script will perform an export of the HEAD of the Gratia SVN repository
+and then perform a &#39;make release&#39; on the software.  
+
+NOTE: Since it is an export, you will not be able to effect any
+      commits in this area.
+
+It will create a directory called gratia-builds in your $HOME
+area unless overridden using the --dir argument. If the directory does not
+exist, it will create it.
+
+Parent source directory.. /home/gratia/gratia-builds/gratia-2008-08-14
+Log file................. /home/gratia/gratia-builds/gratia-2008-08-14.log
+
+SVN: svn
+
+Arguments:
+   --dir   - the parent directory for the gratia-builds directory
+   --mail  - email address(es) to be used on completion of the build.
+   --files - number of build directories to retain in /home/gratia/gratia-builds
+             Since the source directory and log files are timestamped by day,
+             this argument allows you to specify the number (not days) of
+             builds to retain.  This is a housekeeping thing.
+             It is not perfect either.  If you have too many successive days
+             with failures, the symlink to the last good build will be
+             invalid.
+             Default: 7
+
+Cron entry note: do not redirect stdout/stderr to /dev/null or you may be
+                 oblivious to any uncaught errors.
+
+If you run this more than once per day, the parent source directory will be
+overwritten each time.  However the log file will be appended to.
+
+On success, it will create a symbolic link to the newly built gratia source
+directory called:
+  /home/gratia/gratia-builds/gratia-latest
+
+An email notification upon completion will be sent to:
+  gratia-operation@fnal.gov
+&lt;/verbatim&gt;
+
+%STOPINCLUDE%
+
+-- Main.JohnWeigand - 20 Aug 2008
+-- Main.ChrisGreen - 28 Oct 2009
+

@@ -1,0 +1,159 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Ted Hesselroth
+   * Neha Sharma
+   * Doug Strain
+   * Tanya Levshina
+
+
+---+++ Guests
+   * Dave Dykstra
+   * Gabriele Garzoglio
+   * Alain Roy
+
+
+---++ Status report
+&lt;!-- DESCRIPTION --&gt;
+Abhishek:
+&lt;pre class=&quot;screen&quot;&gt;
+no report
+&lt;/pre&gt;
+
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* bestman2
+  - jetty scalability and optimization
+* dCache endpoint switching for daily storage testing
+  - having some SFN path problem: receiving support from FNAL.
+ 
+srm://gwdca04.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/data/fermilab/srmtester
+  - will  test soon again
+* Support for multiple files request for 3rd party transfer in srm-copy
+from dCache to bestman: some strange error that we have not encountered
+before, and we&#39;re trying to duplicate the problem in a debuggable
+environment with the above dCache endpoint.
+* Support the VU SRM endpoint for accessing gsiftp backend storage.
+&lt;/pre&gt;
+
+Doug:
+&lt;pre class=&quot;screen&quot;&gt;
+Pigeon Tools:  Fixed packaging and many bugs related to it.
+-  Engage VO: BNL_ATLAS now working, Vanderbilt and UFlorida partially working, in contact with other Storage Elements.
+-  xrootd configuration: Began doing xrootd configuration for vdt
+&lt;/pre&gt;
+
+Neha:
+&lt;pre class=&quot;screen&quot;&gt;
+- modified gratia install script to use db name as specified by user 
+- modified gratia storage/transfer probes README files in gratia svn repository as asked by tanya
+- built new gratia probes - 1.06.16c-1
+- upgraded gratia probes on gridworks
+- tracked down repairTag script for Jose and asked desy about dcache database sanity script (answer is no)
+- meeting with andrew,tanya, doug to discuss andrew&#39;s work on gratia probes
+- Tickets
+&lt;/pre&gt;
+Ted:
+&lt;pre class=&quot;screen&quot;&gt;
+Wrote preliminary iRODS evaluation report,  put on OSG docdb. Made BPMN
+diagrams for some of the processes proposed. Made powerpoint of some of
+the content for presentation to OSG Storage.
+&lt;/pre&gt;
+
+Tanya:
+&lt;pre class=&quot;screen&quot;&gt;
+Meetings:
+          doc telecon
+          pilot and site testing discussion (Dan and others)
+          with Alain and Dan (standalone SE &amp; GIP/Cemon for t3)
+          with Dan and  Miron to discuss iRods
+          with Andrew, Doug and Neha (dcache probe knowledge transfer)
+          
+Tech. work:
+          tested dcache vdt-installation 3.0.1 (found problem with StorageElement dupilcate definition - will discuss with Brian)
+          tested vdt cache for new ITB release:
+                    BeStMan2
+                    srm-fermi-client 1.9.5-16
+                    srm-lbnl-client 2.0.0 against BeStMan1/BeStMan2
+          discussed xrootd configuration modifications with Doug
+          answered CMS T1 questions about xrootd. Catalin has successfully installed it using OSG doc.
+          continued with Haifeng BeStMan2 stress tests after tuning more parameters on fgitb315:
+                   * from 600-1600 clients (lcg-ls) the processing rate is about ~130-140 Hz (compare with 65Hz for BeStMan1)
+          participated in  debugging of problems at Glow and Vanderbilt SEs for Engage (reported  by pigeon tools) 
+&lt;/pre&gt;
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+Ted&#39;s IRODs presentation 
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+A powerpoint presentation for use at today&#39;s meeting has been added to
+the docdb page for the preliminary report.
+
+https://osg-docdb.opensciencegrid.org:440/cgi-bin/ShowDocument?docid=967
+
+Below are some questions that have been asked and answered during the meeting:
+   * _Q_. Can you give thumb up or down on your evaluation of iRODS and its usability for OSG?&lt;br/&gt;
+ _A_. No definite opinion. This is a question we should answer  after we have a thorough discussion
+   * _Q_. How responsive are iRODS support group/developers?&lt;br/&gt;
+ _A_. Mailing list is active and looks like problems have been fix fast.  They have responded to our questions.
+   * _Q_. Do you envision iRODS running as a central service.&lt;br/&gt;
+ _A_. Yes for now, but nothing could preclude us having iRODS install as an appliance  on a site used explicitly for public storage. iRODS servers can talk to each other.   
+   * _Q_. Should microservices be written in C?&lt;br/&gt;
+ _A_. Not necessarily, we can use a wrapper on top of any executable.
+   * _Q_. There is a notion of collection (same path) but not a notion of data set. It could be useful to select all the files in the same data set and file could belong to multiple data sets.&lt;br/&gt;
+ _A_. It could be possible to use file metadata to indicate datasets it belongs to.   
+   * _Q_. How file transfer via srm could be synced with metadata update?&lt;br/&gt;
+ _A_. File transfer via srm should be executed with the custom written script. It will take care of synchronization of metadata. 
+   * _Q_. Can we move data without waiting for a user to initiate the request?&lt;br/&gt;
+ _A_. No at the moment, we will need to figure out how to manage delegation.
+ 
+We went through teh half of the slides. We will need to have another meeting when Ted returns from vacation. We have to concentrate on  features outlined in blueprint in order to see if iRODS can satisfy all of them.
+---++ Second agenda Item
+&lt;!-- DESCRIPTION --&gt;
+Tickets
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
++++++++++
+New tickets
++++++++++
+
+Closed:
+
+8827 - OSG Storage: Xrootd: How are data transfers distributed among various data servers
+
+8799 - OSG Storage: Engage Access on GLOW
+
+8800 - OSG Storage: Engage Access on MIT_CMS
+
+8801 - OSG Storage: Engage VO Access on Purdue-RCAC
+
+8802 - OSG Storage: Supporting Engage VO on SWT2_CPB
+
+8803 - OSG Storage: Resource Specific Issue on UConn-OSG_SE
+
+8804 - OSG Storage: Engage VO access on UFlorida-PG
+++++++++
+Old tickets
+++++++++
+
+Closed:
+
+8805 - OSG Storage: Resource Specific Issue on Vanderbilt_SE
+
+8603 - OSG Storage: dCache: Increasing Log level on Gridftp doors/Specify Pinboard Dump directory
+
+8630 - OSG Storage: dCache: &quot;[CONNECTION_ERROR]&quot; from FTS to our dCache/SRM headnode
+
+Follow up in progress:
+
+8785 - OSG Storage: dCache: Issues upgrading dCache at UIUC using vdt-dcache package
+
+8602 - OSG Storage: dCache: Replication Failure
+
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 02 Jul 2010

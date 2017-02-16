@@ -1,0 +1,125 @@
+---++ Action/Significant Items: 
+
+   * Next week this meeting will be moving to the Operations Ready Talk coordiantes.
+      * Phone: +1-866-740-1260, code 8266135
+   * Rob will start conversation with Mats and Brian about Condor mechanisms to limit jobs when swapping starts. This happened over the weekend on osg-xsede see graphs at the bottom of agenda.
+
+---++ Attendees:  
+
+---++ CMS (Tony)
+
+
+---++ Atlas (Armen &amp; Xin)
+
+
+   * General production status.
+      * USATLAS production over the last week was generally stable, at the average level around 20-22K running jobs, mostly simulation type. During the weekend the production started to run out of jobs, it was mostly recovered by Monday, but this may happen again this week.
+   * Job statistics for last week.      
+      * Gratia report: 1.5M pilot jobs run on USATLAS sites, with CPU/walltime ratio of 89%
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 1.5 M
+   * Data Transfer statistics for last week
+      * Data transfer rate was around ~450TB/day at BNL T1. 
+   * Issues
+
+---++ Grid Operations Center (Scott T.)
+---+++ Operations This Week 
+   * [[http://tinyurl.com/ct2mfy6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * ITB release, [[http://osggoc.blogspot.com/2013/05/goc-service-update-tuesday-may-14th-at.html][release note]] is available.
+   * load issues on osg-xsede persist. Plots attached at the bottom of this agenda.
+   * 24 hour Oasis maintenance completed without problems.
+   * WMS Glide IN Factory
+      * Discovered glideinWMS 2.7 (5/7) bug where factory was not autocleaning logs, UCSD and CERN factory disks filled up.
+         * glideinWMS team immediately released 2.7.1 pre-release (5/8) with bug fix and we applied it to UCSD and CERN
+         * GOC factory disk started filling due to serving frontends 100% while UCSD and CERN recovered, but everything has since stabled out.
+      * Encountered HTCondor bug on all factories (5/10) - grid managers were crashing due to missing voms extension on CMS pilot proxies. This has been patched and fixed since 7.8.7 but we are still running 7.8.6 in production.
+         * CMS has fixed the bad proxies and we recovered over the weekend.
+      * Changed default glidein HTCondor to 64 bit version for running on workernodes (UCSD only until we confirm there are no issues).
+
+---+++ Operations This Week
+   * Production release. Completed without issues.
+   * Security issue addressed on all GOC servers. 
+   * Memory in purchacing for osg-xsede, will bring total to 144 GB (from 48 GB)
+   * CAMon - DOEGrids reporting node (unused after PKI transition) turned off.
+   * Rob, Scott, Soichi at FNAL May 22-24. A [[https://opensciencegrid.org/bin/view/Operations/FNALOpsF2FMar2013][draft agenda]] is available
+   * WMS Glide In Factory
+      * Action taken to upgrade all factories to latest HTCondor this week.
+   * http://tinyurl.com/pacmansites
+
+---++ Campus Infrastructures / HTPC (Dan, Brooklin)
+
+---++ Software (Tim)
+   * Release 3.1.18 is out today!
+      * HTCondor 7.8.8 (head of stable series)
+      * Oracle Java 1.6p45
+      * !jGlobus 2.0.5 patch fixes CRL reload issues in !BeStMan 2
+      * Small updates for client tarballs
+
+   * [[Documentation/Release3.Java6Migration][Java migration from Oracle JDK 6]]
+      * All updated packages are in osg-upcoming-testing
+      * Announcement / request for testing to go out soon
+
+   * Current projects
+      * Hadoop 2.0
+      * HTCondor-CE
+      * SLURM support (Suchandra)
+
+   * Other projects
+      * HTCondor RPM work
+      * Automated testing system (osg-test)
+
+---++ Integration (Suchandra)
+   * SLURM/CE
+      * After Brian&#39;s changes, Igor was able to run 5k jobs with under 10 held, investigating remaining job holds
+   * Gratia probes
+      *  PBS probes changes being committed, should fix job efficiency issues 
+   * PKI Testing
+      * Doing another round of testing, should be done this week
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 3.1.18 / 1.2.32
+      *       75 (8) OSG 3.x (       1 are 3.1.18)
+      *       28 (-5) OSG 1.2.X resources (       1 are 1.2.32)
+
+---++ User Support (Chander, Mats)
+
+OSG-XSEDE hosts had problems last weekend as number of jobs running was in the range of 13K to 15K.  Mats has implemented new throttling on number of active jobs and GOC has started the process of obtaining more memory for the system.  On May 12, we achieved 372K opportunistic hours for vo=osg in one day -- a new high.
+
+   * OSG-XEDE active jobs May12-14: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/OSG-XSEDE_running_jobs.JPG&quot; alt=&quot;OSG-XSEDE_running_jobs.JPG&quot; width=&#39;716&#39; height=&#39;376&#39; /&gt;    
+
+User support is starting a dialog with !IceCube to enable greater use of the OSG production fabric by this community; their computing coordinator will start some testing using vo=osg (since the !IceCube VO is not yet broadly accepted).
+
+We are talking with Snowmass LPC community to &quot;break&quot; the dependency to CMS software and thus gain access to Fermigrid and ATLAS sites for their production.
+
+---++ Security (Mine)
+   * Vulnerabilities/Incidents
+      * Linux 0-day vulnerability. Important vulnerability. High level risk, easily elevates to root. Open to epxloit by any local user. Sent out the announcement and mitigation method to OSG sites. There will be more epxloits coming out of this vulnerability. We will send out more notices. 
+   * Operations
+      * Traceability document is moving into broader circulation. We are scheduled to present at Fermilab Security Board
+      * Two VOs are identified who may benefit from existing CILogon Basic CA certs CSIU and UC3 which are at Indiana Univ and U of Chicago respectively. Cilogon already cooperating with both universities to issue certs to their staff/student. 
+      * Long-lived proxies. SAZ and lcmaps have ways for sites to configure the proxy lifetimes. SAZ developers claim they are very close to provide an rpm to be included in OSG. Once tools are available, sites will decide whether they want to limit proxy lifetimes and which tools to use. We will make the information available. 
+
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+
+
+
+-- Main.RobQ - 27 Mar 2013
+   * condor_q summary: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/jobs.png&quot; alt=&quot;jobs.png&quot; width=&#39;966&#39; height=&#39;548&#39; /&gt;    
+
+   * Memory use: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/memory.png&quot; alt=&quot;memory.png&quot; width=&#39;904&#39; height=&#39;658&#39; /&gt;    
+
+   * April Ticket Metrics &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/Screen_Shot_2013-05-14_at_4.27.04_PM.png&quot; alt=&quot;Screen_Shot_2013-05-14_at_4.27.04_PM.png&quot; width=&#39;1268&#39; height=&#39;723&#39; /&gt;    
+

@@ -1,0 +1,295 @@
+%LINKCSS%
+
+---+!! Tutorial: Building, Packaging and Running Applications on a Real Grid
+
+---++ Objectives
+
+   * Write and Gridify an application
+   * Access OSG/TeraGrid and run simple applications
+   * Monitor the status of grid sites
+   * Understand the issues involved in distributing an application
+   * Package the application
+
+
+---++ Table of Contents
+%TOC%
+
+---++ Conventions
+
+In this exercise:
+
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;userinput&gt;The code that you can directly key in will appear in this color&lt;/userinput&gt;
+&lt;replaceable&gt;The code that you can need to change before typing in will appear in this color&lt;/replaceable&gt;
+The probable response from the system appears in this color.
+&lt;/pre&gt;
+
+
+
+&lt;a name=&quot;write&quot;&gt;&lt;/a&gt;
+---++ Writing the application
+Write a simple application to find whether a number is a prime or not. [[http://www.cise.ufl.edu/~lchitnis/grid/summer-grid/prime.c.html][Sample code]] is available. The program takes three inputs:
+   1. The Number in question
+   1. Starting factor (&amp;gt;1)
+   1. Ending factor 
+
+
+It outputs =YES= if the number is a prime and =NO= if it is not.
+
+
+Write (read &#39;copy-paste&#39;) the program and save it as &quot;=prime.c=&quot; . Compile and execute it locally on the laptop / gridlab machine.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LOGINNAME%@%LOGINHOST% ~]&lt;userinput&gt;gcc -w -o prime prime.c&lt;/userinput&gt;
+.
+.
+[%LOGINNAME%@%LOGINHOST% ~]&lt;userinput&gt;./prime 1000 2 1000&lt;/userinput&gt;
+NO
+&lt;/pre&gt;
+
+
+%NOTE% You may ignore any compilation warnings for now, as long as there are no errors and you got the correct response.
+
+
+
+&lt;a name=&quot;gridify&quot;&gt;&lt;/a&gt;
+---++ Readying the application for the Grid
+We know that it takes long time to divide the number with all the factors.
+So, we will distribute the application to various sites. Each site will 
+divide the number with different range of factors. This is equivalent to running
+
+&lt;pre class=&quot;screen&quot;&gt;
+./prime 1000 2 250
+./prime 1000 251 500
+./prime 1000 501 750
+./prime 1000 751 1000
+&lt;/pre&gt;
+
+on a single machine. A negative answer from any of the sites indicates that a factor other than 1 and the number itself exists and hence it is NOT a prime number.
+
+
+&lt;a name=&quot;run&quot;&gt;&lt;/a&gt;
+---+++ Running a job on !TeraGrid/OSG sites
+
+Check your proxy.&lt;pre class=&quot;screen&quot;&gt;
+[%LOGINNAME%@%LOGINHOST% ~]$ &lt;userinput&gt;grid-proxy-info &lt;/userinput&gt;
+&lt;/pre&gt;
+
+Initialize your proxy (if it is not initialized or is about to expire)
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LOGINNAME%@%LOGINHOST% ~]$ &lt;userinput&gt;grid-proxy-init &lt;/userinput&gt;
+Your identity: /DC=org/DC=doegrids/OU=People/CN=John Doe 876747
+Enter GRID pass phrase for this identity:
+Creating proxy ....................................................... Done
+Your proxy is valid until: Mon Jul 11 01:00:53 2005
+&lt;/pre&gt;
+
+&lt;!-- ***  Comments plugin to create comments table for section   ***    --&gt;
+
+&lt;span class=&quot;educationWebAddComment&quot;&gt;ADD A COMMENT&lt;/span&gt;
+%STARTMore%
+
+%TABLE{ }%
+|  *COMMENT*  |  *NAME*  |  *DATE*  |
+%COMMENT{ type=&quot;tableappend&quot; }%
+
+%ENDMore%
+&lt;!-- ***  End Comment                                            ***    --&gt;
+
+
+
+---++ Finding Sites
+
+There is a list of sites that you can probably submit to [[https://twiki.grid.iu.edu/twiki/bin/view/Education/RioGrandeGSGridResources][here]]. There are some local resources (the workshop machines), some TeraGrid machines and some Open Science Grid machines.
+
+---+++ To find a site on OSG
+
+[[http://www.ivdgl.org/gridcat/home/][GridCat]] (&lt;span class=&quot;firstterm&quot;&gt;Grid Catalog&lt;/span&gt;) is one of the monitoring tools available that can be used to get a good view of your Grid. For instance, it can provide [[http://osg-itb.ivdgl.org/gridcat/index.php?site_name=osgitb][a summary of the sites that are in the OSG-ITB VO]].
+  
+You can use this to check the status of any of the OSG sites lists in the resource list above.
+
+---+++ Checking authentication
+
+Use =globusrun= to verify that you are authorized to use a site and can authenticate to it:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LOGINNAME%@%LOGINHOST% ~]$ &lt;userinput&gt;globusrun -a -r %GRIDHOST%/jobmanager-fork&lt;/userinput&gt;
+GRAM Authentication test successful
+&lt;/pre&gt;
+
+
+---++ Testing a Site
+
+Let&#39;s test a site, using GRAM2:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LOGINNAME%@%LOGINHOST% ~]$ &lt;userinput&gt;globus-job-run %GRIDHOST% /bin/date&lt;/userinput&gt;
+Sun Jul 10 23:25:25 CDT 2005
+&lt;/pre&gt;
+
+Copy your application to the site. &lt;b&gt;&lt;font color=&quot;red&quot;&gt;Wait !&lt;/font&gt;&lt;/b&gt; You don&#39;t know where to copy the files. Is there any temporary directory available? But, how do you find it?
+
+If you plan to use any of the OSG sites, and you are authorized to do so (GRAM Authentication test successful), go to the [[http://osg-itb.ivdgl.org/gridcat/index.php?site_name=osgitb][GridCat]]
+page again.
+   
+   1. Choose &#39;Grid Environment* from the *view* drop down menu.
+   1. In the table, find the OSG site you plan to use.
+   1. Under that listing, the *Logical Disk Name* =$app= is the APPDIR you will be using. 
+   
+The APPDIR is where you should copy your applications. (After making a separate directory, of course. You don&#39;t want your application to be messed up by other students, do you?).
+
+
+---+++ Finding $TG_CLUSTER_SEARCH for &lt;nop&gt;TeraGrid
+If you plan to use the !TeraGrid sites, you need to know the value for =$TG_CLUSTER_SCRATCH=. The string to which this variable is mapped onto on the remote site is the directory where you can temporarily &quot;stage&quot; your application (your APPDIR). You can use the [[http://www.teragrid.org/userinfo/jobs/environment.php][TerraGrid Programming Environment page]] to look up the correct =$= variable that you need. In your case, its going to be the =$TG_CLUSTER_SCRATCH= variable. 
+
+To look up the value of this variable, we are going to &quot;peek&quot; into the remote site using =gsissh=. This will use your grid proxy to authenticate you into a remote grid site.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LOGINNAME%@%LOGINHOST% ~]$ &lt;userinput&gt;gsissh tg-login.sdsc.teragrid.org&lt;/userinput&gt;
+.
+.
+Directory: /home/ac/%LOGINNAME%
+Tue Jun 27 17:48:22 CDT 2006
+%LOGINNAME%@tg-login.sdsc&gt; &lt;userinput&gt;/usr/bin/env | grep &quot;TG_CLUSTER_SCRATCH&quot;&lt;/userinput&gt;
+TG_CLUSTER_SCRATCH=/gpfs/%LOGINNAME%
+%LOGINNAME%@tg-login.sdsc&gt; &lt;userinput&gt;exit&lt;/userinput&gt;
+&lt;/pre&gt;
+
+Use this =TG_CLUSTER_SCRATCH= as the APPDIR for the following part of the exercise for this grid site. You need to do this for each of the !TeraGrid site that you plan to use.
+
+%NOTE% If the =TG_CLUSTER_SCRATCH= var is not defined (blank), *STOP!* Ask your TAs for further instructions!
+
+
+Now you can go ahead and 
+   1. Create your workspace in the APPDIR
+   1. &quot;Stage-in&quot; your application with =globus-url-copy=
+   1. Execute your application
+
+Remember to replace =SITE=, =APPDIR= and =YOURUSERNAME= with values that are appropriate for you.
+
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LOGINNAME%@%LOGINHOST% ~]$ &lt;userinput&gt;globus-job-run &lt;replaceable&gt;SITE&lt;/replaceable&gt; /bin/mkdir &lt;replaceable&gt;APPDIR/YOURUSERNAME&lt;/replaceable&gt;&lt;/userinput&gt;
+[%LOGINNAME%@%LOGINHOST% ~]$ &lt;userinput&gt;globus-url-copy file://`pwd`/prime gsiftp://&lt;replaceable&gt;SITE&lt;/replaceable&gt;/&lt;replaceable&gt;APPDIR&lt;/replaceable&gt;/&lt;replaceable&gt;YOURUSERNAME&lt;/replaceable&gt;/prime&lt;/userinput&gt;
+[%LOGINNAME%@%LOGINHOST% ~]$ &lt;userinput&gt;globus-job-run &lt;replaceable&gt;SITE&lt;/replaceable&gt; /bin/chmod +x &lt;replaceable&gt;APPDIR&lt;/replaceable&gt;/&lt;replaceable&gt;YOURUSERNAME&lt;/replaceable&gt;/prime&lt;/userinput&gt;
+[%LOGINNAME%@%LOGINHOST% ~]$ &lt;userinput&gt;globus-job-run &lt;replaceable&gt;SITE&lt;/replaceable&gt; &lt;replaceable&gt;APPDIR&lt;/replaceable&gt;/&lt;replaceable&gt;YOURUSERNAME&lt;/replaceable&gt;/prime 200 2 200&lt;/userinput&gt;
+NO
+&lt;/pre&gt;
+
+&lt;!-- ***  Comments plugin to create comments table for section   ***    --&gt;
+
+&lt;span class=&quot;educationWebAddComment&quot;&gt;ADD A COMMENT&lt;/span&gt;
+%STARTMore%
+
+%TABLE{ }%
+|  *COMMENT*  |  *NAME*  |  *DATE*  |
+%COMMENT{ type=&quot;tableappend&quot; }%
+
+%ENDMore%
+&lt;!-- ***  End Comment                                            ***    --&gt;
+
+
+
+---+++ EXTRA CREDIT: Make the application distributed. 
+
+Write a small program that calculates the number of jobs required and divides them equally among the three sites. 
+
+&lt;pre class=&quot;programlisting&quot;&gt;
+root = &lt;font color=&quot;#2e8b57&quot;&gt;&lt;b&gt;int&lt;/b&gt;&lt;/font&gt;(sqrt(num));
+inc = &lt;font color=&quot;#ff00ff&quot;&gt;10&lt;/font&gt;;
+njobs = &lt;font color=&quot;#2e8b57&quot;&gt;&lt;b&gt;int&lt;/b&gt;&lt;/font&gt;((root - &lt;font color=&quot;#ff00ff&quot;&gt;2&lt;/font&gt;)/inc) + &lt;font color=&quot;#ff00ff&quot;&gt;1&lt;/font&gt;;
+
+start = &lt;font color=&quot;#ff00ff&quot;&gt;2&lt;/font&gt;;
+
+
+&lt;font color=&quot;#853e26&quot;&gt;&lt;b&gt;for&lt;/b&gt;&lt;/font&gt;(i = &lt;font color=&quot;#ff00ff&quot;&gt;0&lt;/font&gt;;i &amp;lt; njobs; ++i) {
+        end = start + inc;
+        &lt;font color=&quot;#5151fb&quot;&gt;/*&lt;/font&gt;&lt;font color=&quot;#5151fb&quot;&gt; choose a site &lt;/font&gt;&lt;font color=&quot;#5151fb&quot;&gt;*/&lt;/font&gt;
+        &lt;font color=&quot;#5151fb&quot;&gt;/*&lt;/font&gt;&lt;font color=&quot;#5151fb&quot;&gt; run the job on the site with globus-job-run with appropriate&lt;/font&gt;
+&lt;font color=&quot;#5151fb&quot;&gt;           arguments &lt;/font&gt;
+
+&lt;font color=&quot;#5151fb&quot;&gt;           globus-job-run $site $num $start $end&lt;/font&gt;
+&lt;font color=&quot;#5151fb&quot;&gt;           &lt;/font&gt;&lt;font color=&quot;#5151fb&quot;&gt;*/&lt;/font&gt;
+        start = end + &lt;font color=&quot;#ff00ff&quot;&gt;1&lt;/font&gt;;
+}
+&lt;/pre&gt;
+
+You may want to try this out later if it is taking too much time. Go on ahead and complete the easy parts first! 
+
+
+
+
+&lt;a name=&quot;condor-g&quot; /&gt;
+---++Using Condor-G to submit jobs to OSG/TeraGrid
+%INCLUDE{ &quot;UsingCondorGToSubmitJobs&quot; }%
+
+
+
+&lt;a name=&quot;together&quot; /&gt;
+---++ Putting it all together (Optional)
+Write a script to submit jobs to multiple sites automatically. I have created a small application package that has
+all the required tools. It contains:
+   * Makefile to compile your application
+   * script for distributing the jobs
+
+&lt;pre class=&quot;screen&quot;&gt;
+[%LOGINNAME%@%LOGINHOST% ~]$ &lt;userinput&gt;./script.pl&lt;/userinput&gt;
+Usage: ./script.pl &amp;lt;task number&amp;gt;
+    1 - Make dir
+    2 - Copy exes
+    3 - Run prime jobs
+    4 - Grep output
+    5 - Remove dir
+&lt;/pre&gt;
+
+
+---++ A Condor-G submission file
+Download the [[http://www.cise.ufl.edu/~lchitnis/grid/summer-grid/dprime.tar.gz][dprime.tar.gz package]]. Modify the script to fit your needs.
+
+You need to tailor some variables in =script.pl=:
+   * Change the value of the =$me= variable to your username &amp;mdash; *must do*
+   * Change the number you want to test for primality (the =$num= variable) &amp;mdash; *not mandatory*
+
+&lt;!-- ***  Comments plugin to create comments table for section   ***    --&gt;
+
+&lt;span class=&quot;educationWebAddComment&quot;&gt;ADD A COMMENT&lt;/span&gt;
+%STARTMore%
+
+%TABLE{ }%
+|  *COMMENT*  |  *NAME*  |  *DATE*  |
+%COMMENT{ type=&quot;tableappend&quot; }%
+
+%ENDMore%
+&lt;!-- ***  End Comment                                            ***    --&gt;
+
+ 
+&lt;a name=&quot;packaging&quot; /&gt;
+---++Packaging your application
+%INCLUDE{ &quot;PackagingYourGridApplication&quot; }%
+
+
+&lt;a name=&quot;ref&quot; /&gt;
+---++References
+   * [[http://www.utm.edu/research/primes/][Prime number information]]
+   * [[http://www.ivdgl.org/gridcat/home/][GridCat]]
+    &lt;!--   * [[http://monalisa.cacr.caltech.edu][Trash.ReleaseDocumentationMonALISA]] --&gt;
+   * [[http://www.cs.wisc.edu/condor/manual/v6.6.5/index.html][Condor Manual]]
+   * [[http://physics.bu.edu/pacman/htmls][Pacman Documentation]]
+   * [[%ATTACHURL%/dprime.tar.gz][dprime.tar.gz package]]
+
+
+&lt;!--                                                                            
+      * Set LOGINHOST = workshop1.ci.uchicago.edu
+      * Set LOGINIP = 131.193.181.56
+      * Set GRIDHOST = tg-login.sdsc.teragrid.org
+      * Set OTHERHOST = workshop2.ci.uchicago.edu
+      * Set CERTSUBJECT = /O=Grid/OU=OSG/CN=Training User 99
+      * Set LOGINNAME = train99
+      * Set HOMEDIR = /home/%LOGINNAME%
+
+
+Main.BenClifford - 2007 Mar
+Main.ForrestChristian - 24 Mar 2007 - Added VARIABLES
+
+--&gt;   

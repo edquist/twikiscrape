@@ -1,0 +1,105 @@
+&lt;style type=&quot;text/css&quot;&gt;
+code em, pre em { color: red; font-weight: normal; font-style: normal; }
+&lt;/style&gt;
+
+---+ Installing and Using !StashCache
+
+%TOC{depth=&quot;3&quot;}%
+
+---++ About This Guide
+
+This document describes how to install a !StashCache cache, a server that caches files locally rather than serving files to the !StashCache federation. The installation utilizes !XRootD and HTCondor for file storage and monitoring, respectively.
+
+%NOTE% Currently, !StashCache is only supported on EL6 hosts.
+
+---++ Before Starting
+
+Before starting the installation process, consider the following points:
+
+   * *User IDs:* If they do not exist already, the installation will create the Linux user IDs =condor= and =xrootd=
+   * *Service certificate:* The !StashCache service uses a host certificate at =/etc/grid-security/host*.pem=
+   * *Network ports:* The !StashCache service must talk to the central collector on port 9619 (TCP) and !XRootD services on port 1094 (TCP)
+   * *Hardware requirements:* We recommend that a !StashCache server has at least 10Gbps connectivity, 1TB of disk space, and 8GB of RAM.
+
+As with all OSG software installations, there are some one-time steps to prepare in advance:
+
+   * Ensure the host has [[SupportedOperatingSystems][a supported operating system]]
+   * Obtain root access to the host
+   * Prepare [[YumRepositories][the required Yum repositories]]
+   * Install [[InstallCertAuth][CA certificates]]
+
+
+---++ Installing the !StashCache daemon
+
+The !StashCache daemon consists of an !XRootD server and an HTCondor-based service for collecting and reporting statistics about the cache. To simplify installation, OSG provides convenience RPMs that install all required software with a single command:
+
+&lt;ol&gt;
+%INCLUDE{&quot;Documentation/Release3/OSGReleaseSeries&quot; section=&quot;Update&quot;}%
+  &lt;li&gt;
+    &lt;p&gt;Install the !StashCache metapackage from OSG&#39;s upcoming repository:&lt;/p&gt;
+    &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% yum install stashcache-daemon fetch-crl stashcache-cache-server --enablerepo=osg-upcoming&lt;/pre&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Mount the disk that will be used for the cache to =/stash=.
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+---++ Configuring !StashCache
+
+The following section describes required configuration to have a functional !StashCache cache. 
+
+---+++ Modifying the !XRootD configuration
+
+Modify =XROOTD_DEFAUL_OPTIONS= in the !XRootD system configuration, =/etc/sysconfig/xrootd=, so that it uses the configuration file provided by the =stashcache-cache-server= package: 
+
+&lt;pre class=&quot;file&quot;&gt;
+XROOTD_DEFAULT_OPTIONS=&quot;-l /var/log/xrootd/xrootd.log -c &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;/etc/xrootd/xrootd-stashcache-cache-server.cfg&lt;/span&gt; -k fifo&quot;
+&lt;/pre&gt;
+
+#OptionalConfiguration
+---+++ Optional configuration
+
+The following configuration is not required to have a functional !StashCache cache. The default configuration should be sufficient so you should make changes to the configuration only if you have specific reasons to do so.
+
+---++++ Adjust disk utilization
+To adjust the disk utilization of your !StashCache cache, modify the values of =pfc.diskusage= in =/etc/xrootd/xrootd-stashcache-cache-server.cfg=:
+&lt;pre class=&quot;file&quot;&gt;
+pfc.diskusage &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;0.98 .99&lt;/span&gt;
+&lt;/pre&gt;
+
+The first value and second values correspond to the low and high usage watermarks, respectively, in percentages. When the high watermark is reached, the !XRootD service will automatically purge cache objects down to the low watermark. 
+
+---++ Using !StashCache
+
+---+++ Managing !StashCache and associated services
+Ensure that your =/stash= disk is mounted, and then start the =fetch-crl= and =condor= service:
+
+%TABLE{sort=&quot;off&quot;}%
+| *Software* | *Service name* | *Notes* |
+| Fetch CRL | On EL 6: =fetch-crl-boot= and =fetch-crl-cron= %BR% On EL 5: =fetch-crl3-boot= and =fetch-crl3-cron= | See [[InstallCertAuth#Start_Stop_fetch_crl_A_quick_gui][CA documentation]] for more info |
+| HTCondor | =condor= | |
+
+Start the services in the order listed and stop them in reverse order. As a reminder, here are common service commands (all run as =root=):
+
+%TABLE{sort=&quot;off&quot;}%
+| *To &amp;hellip;* | *Run the command &amp;hellip;* |
+| Start a service | =service &lt;em&gt;SERVICE-NAME&lt;/em&gt; start= |
+| Stop a service | =service &lt;em&gt;SERVICE-NAME&lt;/em&gt; stop= |
+| Enable a service to start during boot | =chkconfig &lt;em&gt;SERVICE-NAME&lt;/em&gt; on= |
+| Disable a service from starting during boot | =chkconfig &lt;em&gt;SERVICE-NAME&lt;/em&gt; off= |
+
+---+++ Validating !StashCache
+
+To verify that your cache is being monitored properly, run the following command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% condor_status -any -l -const &quot;Name==\&quot;xrootd@`hostname`\&quot;&quot;
+&lt;/pre&gt;
+
+Where &lt;span style=&quot;background-color: #D1CAF2;&quot;&gt;hostname&lt;/span&gt; is the string returned by the =hostname= command. The output of the above command should provide an HTCondor !ClassAd that details the status of your cache.
+
+---++ Getting Help
+
+To get assistance, please use the [[Documentation.HelpProcedure][this page]].
+
+

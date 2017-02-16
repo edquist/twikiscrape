@@ -1,0 +1,82 @@
+---+ Project 19: Migrate from Oracle JDK 6
+
+---++ Description
+
+---+++ Background
+
+Currently, several of our packages are Java-based, and we build them against the Oracle JDK 6. Oracle is officially discontinuing public support for Java 6 at the end of February 2013, including security fixes. This is a problem for us due to the numerous security flaws in Java that people keep discovering. Therefore we must move away from Oracle JDK 6.
+
+---+++ Goal and Scope
+
+Migrate all active Java-based software components in OSG Software to the !OpenJDK 7 implementation of Java 7 for both build and runtime environments.
+
+The scope of this project is necessarily broad, given the security implications of staying with Java 6. Not only will we rebuild nearly all Java-based packages that we include in OSG Software 3.1 and conduct functional integration tests on them, but also we will try to fix problems that we find with the software or builds. If we create software patches, we will submit them upstream as possible. If we cannot fix broken software, we will strive to work closely with the upstream developers to get the issues resolved quickly and to keep OSG management informed of roadblocks.
+
+By default, the scope of this project does not include rebuilding or fixing of software packages that we do not include in OSG Software 3.1 but that our software depends on. However, if we must update external software packages to make our packages work, then we will copy the currently external ones into our system and make patches as needed. We consider this approach to be a last resort.
+
+Also, the scope of this project does not include OSG Software 1.2 (Pacman) at all. Rebuilding and updating the Java packages therein would be very time consuming, and the End-Of-Life date for OSG Software 1.2 is approaching rapidly (mid-May, 2013).
+
+---+++ Risks
+
+The two main risks for this project are the schedule and the magnitude of the change for production sites.
+
+*Schedule:* At the outset of this project, we simply do not know what technical problems we will encounter while rebuilding and retesting our Java software. It is generally known and understood that switching major versions of Java can break a Java-based software component, and that switching from one Java implementation (i.e., from Oracle JDK to !OpenJDK) can break things. We are making both kinds of changes at once. Even in preliminary test builds of a few components, several issues came up immediately. And while we have not announced a delivery date for this project, Java 6 reaches its End-Of-Life at the end of February 2013, so the pressure to deliver increases steadily after that date. To mitigate the risks of schedule uncertainty and slippage, we will:
+
+   * Complete an initial, rapid pass of test builds to help us understand the (initial) technical challenges to solve
+   * Triage problems into must-fix and would-be-nice-to-fix categories (at least), to focus on critical challenges
+   * Communicate clearly the uncertainty in delivery estimates, especially early in the process when the uncertainty is greatest
+
+*Magnitude of change:* We will rebuild and, ultimately, release every Java component in our software stack as part of this project. While the total number of packages is not high (16 so far), they include several important components (e.g., VOMS Admin, GUMS, Gratia, !BeStMan 2). To reduce the risks associated with these changes, we will:
+
+   * Avoid introducing new versions of the upstream software wherever possible, so that the only change is the rebuild
+   * Change as little as possible in the packages to rebuild and release
+   * Do a lot of regression testing (tasks listed below), including internal testing, ITB testing, and an initially limited production release
+
+---+++ Links
+
+   * [[Documentation/Release3.Java6Migration][High level summary of plans]]
+   * [[https://jira.opensciencegrid.org/browse/SOFTWARE-890][SOFTWARE-890]]: Move away from unsupported Oracle Java JDK 6
+   * [[https://jira.opensciencegrid.org/browse/SOFTWARE-891][SOFTWARE-891]]: List all OSG software components using Oracle JDK 6
+   * [[https://jira.opensciencegrid.org/browse/SOFTWARE-892][SOFTWARE-892]]: Pick a replacement for Oracle JDK 6
+   * [[Java6MigrationDetails][Technical details]]
+   * [[Documentation.Release3.InstallSoftwareWithOpenJDK7][User instructions for upgrading to JDK 7]]
+
+---++ Tasks
+
+The main tasks of the project are:
+
+   * Identify all OSG Software 3.1 packages that depend on Java
+   * Rebuild all Java packages against !OpenJDK 7
+   * Test all rebuilt packages at the unit test level (if available) and at the functional integration level, manually and with our automated test suite
+   * Coordinate ITB testing of beta-quality packages
+   * As needed, patch software to build and/or function correctly
+   * Promote all Java packages through the Upcoming repository series, ultimately up to Upcoming-production
+   * Coordinate production testing of packages Upcoming-production
+   * Promote final packages through the standard repository series, ultimately to production
+   * Communicate the change process and known issues to the OSG community, especially site administrators
+   * Report software bugs and submit patches upstream to external software developers
+   * Develop and release a new or modified RSV probe to check on enabled Java release
+
+---++ Schedule
+
+&lt;!--
+   * Set PENDING =  &lt;div style=&quot;color: white; background-color: #AAA; padding-left: 1em; padding-right: 1em;&quot;&gt;Waiting&lt;/div&gt;
+   * Set ON_TRACK = &lt;div style=&quot;color: white; background-color: #0A0; padding-left: 1em; padding-right: 1em;&quot;&gt;On&amp;nbsp;Track&lt;/div&gt;
+   * Set BEHIND =   &lt;div style=&quot;color: white; background-color: #F60; padding-left: 1em; padding-right: 1em;&quot;&gt;Behind&lt;/div&gt;
+   * Set AT_RISK =  &lt;div style=&quot;color: white; background-color: #C00; padding-left: 1em; padding-right: 1em;&quot;&gt;At&amp;nbsp;Risk&lt;/div&gt;
+   * Set SKIPPED =  &lt;div style=&quot;color: white; background-color: #C00; padding-left: 1em; padding-right: 1em;&quot;&gt;Skipped&lt;/div&gt;
+   * Set COMPLETE = &lt;div style=&quot;color: white; background-color: #000; padding-left: 1em; padding-right: 1em;&quot;&gt;Done&lt;/div&gt;
+--&gt;
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Milestone* | *State* | *People* | *Est. Start* | *Est. Finish* | *Act. Finish* | *Notes* |
+| 1. Complete plan, including packages and target JDK | %COMPLETE% | Mat, !TimC | | | 2013-02-08 | |
+| 2. Attempt all preliminary builds and document results | %COMPLETE% | All | | | 2013-03-01 | |
+| 3. Test packages internally and fix problems | %COMPLETE% | Carl, Neha | | | 2013-05-03 | |
+| 4. Promote packages to Upcoming-Testing | %COMPLETE% | Carl | | | 2013-05-08 | |
+| 5. Test packages in ITB and other volunteer sites | %COMPLETE% | !TimT | | 2013-05-31 | 2013-07-08 | Testers were busy |
+| 6. Release packages to Upcoming | %COMPLETE% | !TimT | | 2013-06-04 | 2013-07-09 | Delayed due to testing |
+| 7. Deploy and test packages in production | %COMPLETE% | !TimT, !RobQ | | 2013-08-30 | | Some RPMs become available 2013-08-13 |
+| 8. Develop RSV probe for Java | %COMPLETE% | Mat | | 2013-07-30 | 2013-07-26 | |
+| 9. Release new RSV probe | %COMPLETE% | !TimT | 2013-07-30 | 2013-08-13 | | |
+| 10. Release Java packages to OSG 3.1 | %COMPLETE% | Mat, !TimT | 2013-08-26 | 2013-09-10 | 2013-09-10 | |

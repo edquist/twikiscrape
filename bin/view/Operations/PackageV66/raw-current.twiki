@@ -1,0 +1,97 @@
+---+ v66 - To Be Released 05/09/16
+
+[[https://ticket.grid.iu.edu/29263][Ticket 29263]]
+
+[[https://jira.opensciencegrid.org/browse/SOFTWARE-][Jira Ticket SOFTWARE-]]
+
+---++ Update vo-client package to Remove CompBioGrid
+
+---++++Removed
+
+&lt;verbatim&gt;
+edg-mkgridmap.config
+
+Removed: https://ticket.grid.iu.edu/29495
+#-------------------
+# USER-VO-MAP compbiogrid CompBioGrid -- 29 -- Fei Gao (fgao@uchc.edu)    
+group vomss://vdvoms.vcell.uchc.edu:8443/voms/CompBioGrid compbiogrid
+
+vomsdir
+Removed: https://ticket.grid.iu.edu/29495
+-/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=voms/voms.cam.uchc.edu
+-/DC=com/DC=DigiCert-Grid/O=DigiCert Grid/CN=DigiCert Grid CA-1
+
+
+gums.template
+&lt;!-- 29 CompBioGrid --&gt;
+&lt;groupMapping name=&#39;compbiogrid&#39; accountingVo=&#39;compbiogrid&#39; accountingDesc=&#39;CompBioGrid&#39;&gt;
+     &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;     
+     url=&#39;https://vdvoms.vcell.uchc.edu:8443/voms/CompBioGrid/services/VOMSAdmin&#39;     
+     persistenceFactory=&#39;mysql&#39;      
+     name=&#39;compbiogrid&#39;            
+     voGroup=&quot;/CompBioGrid&quot;           
+     sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;           
+     sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;      
+     matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&#39;true&#39; /&gt;
+     &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39;            
+     groupName=&#39;compbiogrid&#39; /&gt;
+&lt;/groupMapping&gt;
+
+&lt;hostGroups&gt; CompBioGrid
+&lt;/hostGroups&gt;
+
+vomses
+&quot;CompBioGrid&quot; &quot;voms.cam.uchc.edu&quot; &quot;15001&quot; &quot;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=voms/voms.cam.uchc.edu&quot; &quot;CompBioGrid&quot;
+&lt;/verbatim&gt;
+
+---++ Update vo-client package to Remove NEES VO 
+
+---++++Removed
+
+Vomses File 
+
+&lt;verbatim&gt;
+&quot;nees&quot; &quot;voms1.fnal.gov&quot; &quot;15030&quot; &quot;/DC=org/DC=opensciencegrid/O=Open Science Grid/OU=Services/CN=voms1.fnal.gov&quot; &quot;nees&quot;
+&quot;nees&quot; &quot;voms2.fnal.gov&quot; &quot;15030&quot; &quot;/DC=org/DC=opensciencegrid/O=Open Science Grid/OU=Services/CN=voms2.fnal.gov&quot; “nees&quot;
+&lt;/verbatim&gt;
+
+Gums.template
+
+&lt;verbatim&gt;
+&lt;!-- 47 NEES --&gt;
+&lt;groupMapping name=&#39;nees&#39; accountingVo=&#39;nees&#39; accountingDesc=&#39;NEES&#39;&gt;
+     &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+     url=&#39;https://voms.fnal.gov:8443/voms/nees/services/VOMSAdmin&#39;
+     persistenceFactory=&#39;mysql&#39;
+     name=&#39;nees&#39;
+     voGroup=&quot;/nees&quot;
+     sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+     sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;
+      matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&#39;true&#39; /&gt;
+     &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39; 
+     groupName=&#39;nees&#39; /&gt;
+&lt;/groupMapping&gt;
+
+
+&lt;hostGroups&gt;
+&lt;hostGroup className=“nees” 
+&lt;/hostGroups&gt;
+&lt;/verbatim&gt;
+
+Edg-mkgridmap.config
+
+&lt;verbatim&gt;
+#-------------------
+#USER-VO-MAP nees NEES - 47 - Steven Clark (clarks@purdue.edu)
+group vomss://voms.fnal.gov:8443/voms/nees nees
+&lt;/verbatim&gt;
+
+---++ Cleanup vomses / lsc files
+
+---+++ Remove obsolete lsc files
+
+---+ VO Package Files Location
+
+https://github.com/opensciencegrid/osg-vo-config
+
+-- Main.ChrisPipes - 18 Apr 2016

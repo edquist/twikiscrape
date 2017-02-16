@@ -1,0 +1,191 @@
+---+ !StashCache Project Details
+
+Go to [[SW023_XrootdAcrossOsg][main project page]].
+
+---++ Design Questions
+
+   * It might be good to settle on and consistently use a range of dataset sizes that we are targeting initially. For a lower bound, is it 1 GB, 10 GB, 100 GB? For an initial upper bound that we are willing to support, is it 100 GB, 1 TB, 10 TB?
+
+   * What does it mean for a Source to “subscribe” to the central OSG Redirector? The usage of “subscribe” in this case may be specialized computer jargon and we should strive to find a plainer term or phrase that everyone will understand.
+
+   * In the initial description of the overall architecture, I think it would help to describe the purpose of Sources a little more. Something like “A *Source* is a place where users upload their shared input data files, with the intent that users upload any given file just once regardless of how many times it will be used by their jobs.” Or whatever is accurate.
+
+   * What does it mean that “jobs discover and download files from the local cache”? I think that there is a lot to unpack there. Do jobs discover files or caches? And whichever it is, what does that mean? Are we just trying to say that job will have the means to find one or more nearest caches, for some definition of “nearest”?
+
+   * Does the Redirector really need to contact each Source? I thought that the namespace was designed such that a given path identifies its Source.
+
+   * In the overview introduction, there is mention of the need for cleaning out caches (“automated eviction”). How and where does that happen in !StashCache? Presumably, the individual caches clean out stale contents. What about the Sources? Is the clean-up policy the responsibility of the VO? If so, what tools do we give the VO to manage a Source?
+
+   * In the Component Architecture section of the overview, what is a Source server? It would be nice to spell out the main software components that form such a thing. Is !XRootD involved? If so, which parts of it? The document says “The OSG will provide packaging for this server,” so presumably there are specific software components to install and configure.
+
+   * How much storage is each cache server (again, we need a consistent name!) expected to provide, at a minimum? Frank’s presentation mentioned 48&amp;nbsp;TB, the whiteboard notes at UCSD had 90&amp;nbsp;TB, the overview document has &gt;&amp;nbsp;10&amp;nbsp;TB. Is it possible at this time to declare a single lower bound?
+
+   * Also in the Component Architecture, is it possible to be more explicit about the software components needed for each pilot and/or for each job environment?
+
+---++ [[SW023_StashCacheNOvAFluxTests][NOvA Flux file performance tests]]
+
+---++ Meeting Notes
+
+---+++ 19 March 2015 – Weekly conference call
+
+1:00 p.m. CT%BR%*Attending:* Anna, Bo, Chander, Jeff, Lincoln, Marian, Robert, Tanya, !TimC
+
+*Announcement*
+   * !BrianB had to leave work suddenly to deal with a sick child, so could not make it
+   * Status updates should take into account what we are willing to share publicly at the AHM next week
+
+*Software updates (WBS 2)*
+   * Robert – gathering !XRootD information
+      * The [[https://jira.opensciencegrid.org/browse/SOFTWARE-1793][JIRA ticket]] has more details, but essentially some information (e.g., current cache usage) is easy to collect, some less so, and some rather difficult (so far)
+      * One useful bit of information that does not seem easy to get yet is the capacity of the cache. There was a nice discussion of the problem and some possible solutions. For instance, there is a =caches.json= file that contains metadata for each cache server, but currently it is distributed only to the clients and in any case is currently updated only manually. Ultimately, it was agreed that !XRootD itself should provide this information and so someone (Robert?) will email Matevz and Alya with a feature request. Robert noted that there appears to be a hook for requesting this information already, but it is not implemented yet. Until this feature is implemented and Robert’s function can use it, we may need a temporary system where the cache capacities are manually maintained and merged into other cache statistics, maybe even at the Collector level.
+      * Matevz and Alya are still working on the cache clearing functionality; oddly, it works with the code from github but not in the RPM build – !TimC offered assistance from the OSG Software team, if desired
+   * Software team efforts are stalled by other work, just getting underway (and see below about cache server metapackage)
+   * Anna – stashcp changes and the =stash= HTCondor file transfer plugin
+      * The stashcp changes are essentially done, version 2.1 is in github and OASIS
+      * The file transfer plugin is working just as of today, so it still needs testing. Plus, it is unclear what the semantics of a recursive file transfer request should be. Anna will investigate the current semantics of “regular” HTCondor file transfers (which depend on the final character of the input path) and of the HTTP file transfer plugin, then propose to the !StashCache mailing list a design for the Stash plugin.
+   * Lincoln – runtime environment
+      * Initial development is complete, now testing
+      * Mats has already added stuff to the glideinWMS wrapper
+
+*Deployment updates (WBS 3)*
+   * Operations was not represented on the call, so no updates there
+   * Cache servers
+      * University of Chicago: As noted in a previous meeting, their cache server is done, unless software or packaging updates force changes
+      * UCSD: They have the machines and are waiting on or just received the disks
+      * !TimC suggested that OSG Software put together an initial cache server metapackage right after the AHM, then UCSD (and later) would use it to install software on their cache server
+
+---+++ 26 February 2015 – Weekly conference call
+
+1:00–2:00 p.m. CT
+
+*Overview document*
+   * !BrianB wrote an overview document and version 2 is now uploaded to [[SW023_XrootdAcrossOsg][the main project page]]
+   * Can multiple VOs share the same Redirector and Caches?
+      * Yes, but there are separate namespaces to avoid filesystem conflicts
+      * But OSG must monitor VO usage, because otherwise one VO could take advantage of the system and use all of the resources
+      * Yet, as a matter of principle, we will not limit VOs to a subset of the whole cache
+      * The overview document should contain a list of guiding principles, so we know what they are and when they are causing us problems
+   * For the range of shared input datasets we are hoping to support, let’s use 5&amp;nbsp;GB to 5&amp;nbsp;TB
+   * Do OSG worker nodes have enough space to handle these cached datasets?
+      * Long term, we plan to use the POSIX preload library to transfer data over the network on demand, so complete files will not be stored on worker nodes
+      * In the meantime, we need to mention disk space on worker nodes
+
+*Operations*
+   * At first, start with local control and management of Cache Servers
+      * Then aim to view and set configuration remotely
+      * The initial offering will be “ITB grade” services, meaning in particular that the GOC will watch over them but will not fix problems
+      * Eventually, we need to make sure that the transition to production is done right
+   * What will remote control of Cache Servers look like?
+      * Functions supported: start/restart services, [missed one], view and set configuration, and get service status and information
+   * Stages of pilot operations:
+      * Frank prefers to run things as pilots until we are “dead certain” that they are ready for production
+      * Stage 1: All-Hands Meeting
+      * Stage 2: Summer
+      * Stage 3: Late fall or early winter
+   * Terminology update: the term “Origin Server” was settled on
+   * The OSG Connect Origin Server at UChicago, owned by Lincoln, is done
+
+*WBS Review*
+(Sorry, no notes)
+
+---+++ 19 February 2015 – Weekly conference call
+
+1:00–2:00 p.m. CT%BR%*Attending:* (may be incomplete) Anna, !BrianB, Chander, Ilija, Lincoln, !RobG, Robert, !TimC
+
+   * Addition to the agenda:
+      * Convert TWiki items to 1–2 page white-paper about the project
+      * Document planned architecture and design, plus user perspective
+      * The intended audience is this group of stakeholders and developers
+      * One basic question to answer: How do we know when we are done?
+
+   * Operations – !RobQ has a conflict yet this week, will be available next week to discuss Operations
+
+   * AAA updates
+      * WBS 2.7 (cache consistency): Ilija is working on this and the cache cleanup issue from Anna; aiming for Monday updates
+      * WBS 2.6
+         * Browse through test preload library
+         * Port lazy downloading code (DONE); lazy caching allows us to do latency hiding; written as !XRootD client plugin, owned by AAA, probably will end up in !XRootD some day
+
+   * Anna
+      * WBS 2.3: HTCondor is not installed somewhere (?), working on that
+      * WBS 2.4: start next week
+
+   * Software: assigning people to tasks soon
+
+
+---+++ 12 February 2015 – Weekly conference call
+
+1:00–2:00 p.m. CT%BR%*Attending:* Bo, Chander, Frank, Jeff, Tim, !RobG, Ilija, Lincoln, Anna, Tanya, Robert
+
+   * Frank gave high-level charge
+      * About one third of OSG’s hours went to non-CMS/ATLAS users, which should be considered a success
+      * Data over about a few GB doesn’t work in OSG
+      * We want to make it easy to do 10&amp;nbsp;TB instead of 10&amp;nbsp;GB
+      * Set up !XRootD caches – 10 sites with $5,000 in hardware, about 48&amp;nbsp;TB cache connected to 10&amp;nbsp;Gb/s network
+      * We have a few customers with 100&amp;nbsp;GB–10&amp;nbsp;TB data across OSG
+      * It is an assumption that the input files are read-only
+      * It is fair to claim success if the input files are 10&amp;nbsp;GB or greater
+      * Users will upload about 1&amp;nbsp;TB data into custodian [later named “origin server”], then cached across OSG
+      * It is explicitly out-of-scope to deal with cache thrashing; OSG will have to manage users and caches manually
+   * Reviewed high-level deliverables in [[SW023_XrootdAcrossOsg][the project plan]]
+   * Chander: is there a set of constraints on the project?
+      * Can we say that “no compute is required to do anything to participate”?
+      * Generally, there are no extra requirements on sites to participate – everything is in the origin servers, caches, glidein pilot environment, and OASIS
+      * Users do not see !XRootD protocol details - only our defined interfaces (cp, file transfer, posix).
+      * “Do we make VOs register their source endpoints?”
+         * Yes: We have this be “invite only” right now (OSG VO [XD allocation, Connect], Simons Foundation, and IF). Not open to other VOs until the system is delivered.
+         * Only thing required is !XRootD API; we can open up in the future.
+      * Suggestion from Chander: Look at the notes from the !iRODS project.
+      * How many origin servers can a site have?
+   * !TimC: How does this look to the user?
+      * All software and environment variables are setup by the pilot; possibly pulling software from OASIS.
+      * The POSIX-complaint preload library method for accessing data is the most ambitious, lower priority, and maybe at a later date
+      * Pilot will need to figure out the location of the nearest cache (or skip it altogether if it’s running at the source site!).
+   * Anna:  Updates since Xrootd workshop:
+      * Improve monitoring information from stashcp itself.
+      * Waiting on software update from !XRootD.
+      * 7 caches: UC (one testing, one production), IU, BU (broken?), UNL, UCSD, Illinois
+      * All underneath https://github.com/OSGConnect/StashCache
+   * Note to self: Need to make diagrams!
+   * Milestones:
+      * Beta version: AHM.  All components (RPMs) in place at some level.
+      * Version 1: HTCondor Week.
+      * After that, move out to “regularly scheduled areas”.
+   * Review of responsibilities: see updated twiki pages.
+   * Try to squeeze this to a 30 minute meeting (1:30–2:00?)
+
+---+++ 29 January 2015 – UCSD
+
+*Attending:* Brian Bockelman, Tim Cartwright, Rob Gardner, Bo Jayatilaka, Rob Quick, Frank Würthwein
+
+The notes below are mostly transcribed (with a few clarifications) from whiteboard notes of a project brainstorming session. The &lt;a href=&quot;%ATTACHURLPATH%/stashcache-whiteboard-2015-01-29.png&quot;/&gt;original whiteboard photo&lt;/a&gt; is attached for reference.
+
+90 TB Stash with !XRootD at University of Chicago &amp;rarr; Custodian A
+
+Proxy caches:
+   * University of Chicago, UCSD, Indiana University, Boston University
+   * (BNL, UNL, UW, SLAC)
+
+Top-level namespace [as agreed upon by all present]:
+   * =/stash= – for OSG Connect users
+   * =/osgxd= – for OSG-XD users
+   * =/&lt;em&gt;VO-NAME&lt;/em&gt;= – for VO members (where VO names are according to OIM)
+
+Changes:
+   * Add OSG redirector
+   * Each cache has some HTCondor information to push info to collector at Indiana University:&lt;br&gt;(OSG Software team will write cron/Python to do this)
+      * Total size of cache
+      * Amount of data in cache
+      * “Heartbeat” [= Timestamp of last report?]
+      * Amount of data written today
+      * &amp;hellip;
+   * HTCondor master runs the !XRootD server
+   * Explicit HTCondor group within OSG VO pool
+      * Business rule for !ClassAd attribute that declares “I want to use data federation”
+   * Use chirp in combination with =stashcp= to put success/failure/performance [information] into !ClassAd
+   * Plugin for HTCondor such that files from cache can be used as part of HTCondor file transfer
+   * Streamline the setup scripts that establish OSG runtime environment
+   * AAA to do a code review of preload library
+
+Brian B. and Tim C. will take care of all of the above changes except for the first one (“Add OSG redirector”)
+

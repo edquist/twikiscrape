@@ -1,0 +1,52 @@
+---+!! Topic for INCLUDE-ing to create a &quot;where used&quot; in a BASETOPIC
+%STARTSECTION{ &quot;IncludingAll&quot; }%
+This topic is intended to be used as an include in all documents.  It will provide some cross-references for a twikit topic:
+
+   1. One showing all twiki topics where this topic is referenced with an INCLUDE
+   1. Then a link which will find all &quot;links&quot; to this topic in the &lt;b&gt;Integration&lt;/b&gt; documentation
+   1. Finally, a link which will find all &quot;links&quot; to this topic in &lt;b&gt;ALL&lt;/b&gt; documentation
+
+&lt;noautolink&gt;
+The syntax for using this on a page is:
+
+&lt;verbatim&gt;
+   %INCLUDE{&quot;Integration.WhuReferences&quot;}%
+&lt;/verbatim&gt;
+
+or, easier on you:
+
+&lt;verbatim&gt;
+   %WHU%
+&lt;/verbatim&gt;
+
+It should almost always be placed AFTER the =&lt;nop&gt;%STOPINCLUDE&lt;nop&gt;%= in the topic.  This will allow it to be visible when the topic is accessed directly, but it will not appear when a topic is INCLUDE&#39;d in another topic.
+&lt;/noautolink&gt;
+
+&lt;hr/&gt;
+&lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+*Major updates*:%BR%
+&lt;!--Future editors should add their signatures beneath yours!--&gt;
+-- Main.JohnWeigand - 18 Oct 2006 %BR%
+-- Main.ForrestChristian - 2006 NOV 07 (added =[ ]*[\&quot;]= to search string) %BR%
+-- Main.ForrestChristian - 30 Jan 2007: made two searches, one for the current web and the other for all other webs, so that we didn&#39;t get topics from other webs that had the same name  %BR%
+
+&lt;hr/&gt;
+========== Start of  INCLUDE ===================
+%STARTINCLUDE%
+&lt;hr/&gt;
+Twiki topics in [[%BASEWEB%.WebHome][%BASEWEB%]] web containing an &quot;INCLUDE&quot; of this page: %BR% 
+| Section | Topic | Last Updated by |
+%SEARCH{ search=&quot;INCLUDE\{.*%BASETOPIC%[ ]*&quot; type=&quot;regex&quot; nosummary=&quot;on&quot; nosearch=&quot;on&quot; noheader=&quot;on&quot; web=&quot;%BASEWEB%&quot; format=&quot;| [[$web.WebHome][$web]] | [[$web.$topic][$topic]] | [[$wikiusername][$wikiname - $date]] |&quot;}%
+
+
+Twiki topics in all others webs containing an &quot;INCLUDE&quot; of this page: %BR% 
+| Section | Topic | Last Updated by |
+%SEARCH{ search=&quot;INCLUDE\{[ ]*[\&quot;]*%BASEWEB%[\\\.]*%BASETOPIC%[ ]*[\&quot;]&quot; type=&quot;regex&quot; nosummary=&quot;on&quot; nosearch=&quot;on&quot; noheader=&quot;on&quot; web=&quot;all, -%BASEWEB%&quot; format=&quot;| [[$web.WebHome][$web]] | [[$web.$topic][$topic]] | [[$wikiusername][$wikiname - $date]] | &quot; nototal=&quot;on&quot; }%
+
+
+[[/twiki/bin/oops/%BASEWEB%/%BASETOPIC%?template=backlinksweb][All references to this document in the *%BASEWEB%* web only]]  %BR%  [[/twiki/bin/oops/%BASEWEB%/%BASETOPIC%?template=backlinksallwebs][All references to this document in *all* webs]]
+
+%STOPINCLUDE%
+========== End of  INCLUDE ===================
+%ENDSECTION{ &quot;IncludingAll&quot; }%

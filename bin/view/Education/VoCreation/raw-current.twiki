@@ -1,0 +1,261 @@
+---+ Possible questions: 
+
+[1] how do I create a VO? Do I need some paperwork? Do I need to have some documents with rules and norms? Where can I found a template?
+
+[2] Where do I register it? Am I allowed to register my VO as an OSG VO if my country has not yet the infrastructure? Will then the &quot;Americans&quot; ask me for something as a compensation?
+
+[3] How do I advertise my VO? Which is the necessary amount of information required to advertise a VO (VOMS url, main project URL...)?
+
+[4] How do I install a VOMS server? Where? VOMS server Administration?
+
+[5] GUMS ?
+
+[6] How do I manage security?
+
+[7] How do I gridify my application? Which part will be pre-installed and which part is sent along with the jobs? How do I pre-install that software in the sites?
+
+[8] How do I handle my data?
+
+[9] Do I need a site to create a VO, or I can create a VO that just uses opportunistic resources?
+
+[10] How do I contact sites, in my country or different one, to ask them to give support to my VO? How do I negotiate quotas and priorities? Is there a set of rules for this negotiations?
+
+[11] If I am a site, how do I setup those rules?
+
+[12] How do I quote the Grid Infrastructure in my papers? How can I account the benefits, in term of cost saved thanks to the Grid?
+
+[13] As a NGI level, how do we develop an Trash/Engagement program?
+
+[14] ...
+
+
+---+ Answers:
+
+ -- For [1]
+
+                http://www.opensciencegrid.org/About/Getting_Started_with_OSG/Form_New_VO
+ 
+ -- For [2] and [3], I am looking for any link about how to register a new VO in OIM.
+ I also sent an email to Rob Quick asking about documentation on the process to request GOC to include the new VO in the GOC templates,
+ but I didn&#39;t get any answer from him yet.
+
+ -- For [4] and [5]:
+   
+                https://twiki.grid.iu.edu/bin/view/Documentation/Release3/NavOsgVO
+ 
+ -- For [7], gridification, I sent an email to Alain Roy and Zachary Miller.
+ I only heard from Alain saying the only info he has is the slides from the Madison Schools and Sao Paulo School.
+ I just sent another email to Zach asking for the slides from the lectures in Sao Paulo:
+        - Turning science problems into HTC jobs
+        - Decomposing and running large jobs
+ 
+ On the VO software installation, I got this link
+ 
+                https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationLocalStorageConfiguration#OSG_APP
+ 
+ and these notes:
+ 
+        &quot;&quot;&quot;&lt;br&gt;
+        This is really up to the VO, I think. Some VOs send wrapper scripts as job to OSG sites, then
+        transfer and install the other related software on the local disk on worker nodes; most VOs pre-install
+        most part of the VO software, like runtime libraries and other supporting tools under OSG_APP/ area,
+        and only send a &quot;master&quot; script, with other controlling parameters, as jobs to the sites. Some VOs&#39; jobs
+        are very simple to start with, so they can pack everything in a job and transfer input files on a per job basis.
+ 
+        To do pre-installation, below are the recommended steps:
+ 
+        1) create a VO software manager role in VOMS, and do software installation under this role, no matter whose cert is used;
+
+        2) create a vo specific subdir under OSG_APP/ area
+
+        3) send grid jobs, using globus clients or condor-g, to remote site, and run the installation job from worker nodes
+
+        4) The job payload can download and/or compile the codes once it lands on the worker node; after it&#39;s done, add an
+           entry to OSG_APP/etc/grid3-locations.txt, so that the software info can be published to BDII
+
+        5) OSG_APP/etc/grid3-locations.txt is writable by all VOs, and shared as well. So be sure not to wipe out existing info in
+           that file, and keep the file permission as is after modification.
+
+        6) VO software manager should manage the installed software on the grid, clean up old ones if not needed.
+        &lt;br&gt;&quot;&quot;&quot;
+ 
+ -- For [11], I asked Marco Mambelli about implementation of policies, quotas, etc at the site level, for each type of local batch system.
+ The answer was:
+ 
+        &quot;&quot;&quot;&lt;br&gt;
+        there is no document with sites configurations documenting how to implement the different policies.
+        Some work in that direction was made by the SVOPME SBIR with Tech-X:
+ 
+        https://ice.txcorp.com/trac/svopme/wiki/WikiStart
+        &lt;br&gt;&quot;&quot;&quot;
+ 
+ -- For [12], I think we can analyze the content of this paper and get from it some lessons on how to quantify benefits:
+ 
+        http://osg-docdb.opensciencegrid.org/cgi-bin/ShowDocument?docid=813
+ 
+ -- For [13], the answer I got from John McGee was
+ 
+        &quot;&quot;&quot;&lt;br&gt;
+        not directly related, but possibly useful:
+        http://osg-docdb.opensciencegrid.org/0008/000859/001/TG09-TechTrack-RENCI-final.pdf
+        &lt;br&gt;&quot;&quot;&quot;
+
+---+ Other info: 
+
+https://twiki.grid.iu.edu/bin/view/Documentation/SupportCenterDocHub
+
+---+ Comments from South American collaborators (verbatim):
+---++ Colombia
+&lt;pre&gt;
+The steps that we following until now are:
+-	Diego like Grid Colombia sys-admin create the GCBIO in the GUMS.
+-	In Universidad de los Andes design a specials steps to obtain a
+certificate for below to GRID Colombia and be member of the GCBIO
+
+-	Then we select who sites assign to this VO.
+
+o	Universidad Autónoma ce
+o	Universidad de Caldas ce
+
+-	Diego Created the steps to register ce  certificates in the VOMS.
+-	https://gc-voms.javeriana.edu.co:8443/voms/gcbio/
+steps in the ce
+--------------- En el CE
+useradd gcbio 
+mkdir /home/rootshared
+cd /etc/
+cp passwd group shadow gshadow /home/rootshared
+--------------------En los Worker
+cd /home/rootshared
+echo s | cp passwd  /etc/
+echo s | cp group /etc/
+echo s | cp shadow /etc/
+echo s | cp gshadow /etc/
+chmod 400 /etc/shadow /etc/gshadow
+------------ Esto va en la parte superior de el archivo edg-mkgridmap.conf
+group vomss://gc-voms.javeriana.edu.co:8443/voms/gcbio gcbio
+------------ Esto va en cualuqier parte del archivo vomses en el clienteOSG
+&quot;gcbio&quot; &quot;gc-voms.javeriana.edu.co&quot; &quot;15003&quot;
+&quot;/DC=org/DC=doegrids/OU=Services/CN=http/gc-voms.javeriana.edu.co&quot; &quot;gcbio&quot;
+-------
+
+I think that we need a lot of things,  like:
+Write the vo proposal 
+create a support group for the VO.
+Organize the  vo community 
+create a site where people can reports VO problems.
+Crate a document with the services that the VO will be support.
+&lt;/pre&gt;
+
+---++ Brazil
+
+&lt;pre&gt; 
+Starting with the specific: The technical setup was straight forward. 
+You need to setup a VOMS server, that is quite simple compared with other OGS services. 
+We tweaked our systems to better integrate to our LDAP system, 
+creating a 2 level access (internal vs. external resources). 
+But you don&#39;t need this, specially if you are going to use pilot jobs.
+
+In a broader sense: The learning curve of grid technology is really steep. 
+Issuing certificates, globus commands, static linked applications... 
+This is really difficulty, specially considering that our typical user is a scientist, not a computer geek.
+
+In our experience we had a significant improve when we decide to install the applications 
+for the users and to provide a simplified submission system, based in wrapper scripts. 
+
+The important thing is to understand what are your users needs 
+(large datasets (input or output), applications, progress files, MPI or SMP, processing time, memory...) 
+and try to simplify the usual workflow. 
+For instance, having a myproxy server and automatically generate and renew certificates for the internal users helped a lot. 
+&lt;/pre&gt;
+
+---++ Comments after joining VO Forum phone meeting:
+&lt;pre&gt;
+
+Comments from Jose:
+
+I think the most important ideas from the meeting are:
+
+-- we should explain in the documentation that a VO can
+  -- bring just users
+  -- bring just resources
+  -- both
+and depending on the case, some steps are needed or not.
+
+-- OSG (maybe GOC, maybe sites like FNAL) can host some central services, but not as a general rule. It will be studied case by case, and decision will be made base on
+  -- number of users
+  -- usage
+  -- lifetime
+and in any case, it would be intended to be temporary until the VOs grow and get expertise to do it by themselves.
+
+-- adding links/doc on glideinWMS (I think I sent an email yesterday pointing out that)
+
+Maybe we should contact again Engage team to ask for all notes/docs etc they have.
+
+Comments from Jim:
+
+A few more notes:
+
+1) Ask if the text and links on the Nav page lead to answers to the questions in: https://twiki.grid.iu.edu/bin/view/Education/VoCreation
+
+2) Make sure all the links point to the latest Release3 documents
+
+3) Include more background info and the options (like hosting of VOMS below)
+
+4) Include the steps involved in setting up a VO
+&lt;/pre&gt;
+
+&lt;br&gt;&lt;br&gt;
+&lt;a name=&quot;VO_Registration&quot;&gt;&lt;/a&gt;
+---+ Comments on VO registration (from my process trying to create my own VO):
+
+As a generic comment, I think the process should be simplified. It makes the process of registering the VO in OIM to look like a big deal, and it should not be. For new small VOs, with no expertise, the process of creating the VO and registering it in OIM should be as easy as possible. 
+
+Comments on http://www.opensciencegrid.org/About/Getting_Started_with_OSG/Form_New_VO
+
+   * Item 1 ask for &quot;A Charter statement describing the purpose of the VO. This should be concise, yet long enough to scope intended usage of OSG resources.&quot;
+          It doesn&#39;t say if it has to be sent by email, or it is part of the OIM form. 
+          An example would be nice. 
+
+   * link in item 2 is broken: https://twiki.grid.iu.edu/twiki/bin/view/Documentation/VOAlphabetSoup#VOMS_and_its_extensions
+
+   * item 4 points to https://oim.grid.iu.edu/oim/home  That web page is confusing.
+          I would recommend to point directly to https://oim.grid.iu.edu/oim/vo  and click on &quot;add new virtual organization&quot; button (top-right corner), or to use directly the link https://oim.grid.iu.edu/oim/voedit
+
+
+Commments on https://twiki.grid.iu.edu/bin/view/Operations/OIMRegistrationInstructions (pointed from http://www.opensciencegrid.org/About/Getting_Started_with_OSG/Form_New_VO)
+
+   * I recommend to provide for a dummy example for those variables that make sense. 
+
+   * for the name, I would recommend to use only capital letters and no symbols. Job frameworks, VO tools, users monitors, etc. sometimes have to parse info, 
+          including the name of the VO, and characters that can be interpreted as regexp (&#39;.&#39;,&#39;*&#39;,&#39;/&#39;,&#39;?&#39;, &#39;-&#39;, etc) can be a problem. 
+
+   * the concept of Support Center is not very well explained. 
+
+   * Why &quot;Description&quot; and &quot;Community&quot; as separated fields? Actually, why is the &quot;Community&quot; field even needed?  
+          Why &quot;Description&quot; is different that &quot;Application Description&quot;?
+
+   * &quot;External Assignment ID&quot; is not explained in the documentation, but it is in the form.
+
+   * what happens if the project is so small or so new that it doesn&#39;t even have an URL yet? 
+
+   * &quot;AUP URL&quot; is defined as &quot;URL for a human readable statement of the VOs usage policy&quot;. 
+          What does &quot;usage policy&quot; means? Why is this needed? An example?
+
+   * URL of the VOMS server is required. I think the GOC should give support on technical things, like deploying VOMS server. But that only can happen once the VO has been registered, so we are here trapped in a catch-22 loop. 
+        On the other hand, GOC can host VOMS servers for small VOs. That could be an option in the form (which again cannot be if the VOMS must be installed before regsitering in OIM).&lt;br&gt;&lt;br&gt;
+     I have been talking about this with Rob Quick. He agrees that GOC could host VOMS servers for other VOs (right now is doing it for OSGEDU, MIS, and CSIU) but not to administrate them.        
+
+
+
+   * What is the difference between &quot;Primary URL&quot; and &quot;Purpose URL&quot;?
+
+   * Definition of &quot;Support URL&quot; can be confusing. It says &quot;URL that OSG will provide...&quot;, it can be taken as an URL that OSG will assign to the VO. 
+
+   * Items &quot;Description&quot; and &quot;Community&quot; are listed twice.
+
+   * Description of &quot;Report Names&quot; is not clear. I suggest to include here the email address gratia-operation@opensciencegrid.org and/or a clearer explanation. 
+     
+
+-- Main.JoseCaballero - 01 Nov 2011
+

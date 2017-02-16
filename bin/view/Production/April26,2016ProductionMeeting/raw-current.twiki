@@ -1,0 +1,101 @@
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-812-856-7060, 231000# 
+   * [[https://bridge.iu.edu/webapp/#/][Video Link]]
+
+---++ Announcements:   
+
+---++ Action/Significant Items: 
+   * IU instance of the OSG VOMS to be shut down (after proper notice, etc.) 2nd maintenance window in May
+   * Meeting canceled for 10/May due to Staff Retreat
+
+---++ Attendees:  
+   * Scott, Rob, Tim T, Jeny, Armen, Kyle
+
+---++ Apologies: 
+   * Bo, Xin, Tim C.
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status.
+      * LHC started collisions with stable beams since Friday. USATLAS total production over the past week was stable, at the average level of 53-60K running job slots.  
+      * Degraded performance for transfers from BNL to CERN reported last week. BNL switched the primary circuit to the secondary circuit with different path, which recovered the throughput to normal levels. The investigation of the primary path found a faulty fiber optic module installed at one of routers at CERN. Until replacement the production traffic will continue using the secondary circuit.   
+   * Job statistics for last week.      
+      * Gratia report: 2.0M pilots, 3.9M walltime hours, and CPU/walltime ratio of 85% (for single core jobs)
+      * 1.5M real Jobs reported from the Atlas dashboard.  
+
+---++ FIFE - !Fabric for Frontier Experiments (Tanya)
+
+---++ CMS (Tony)
+
+---++ Grid Operations Center (Scott)
+
+   * [[http://tinyurl.com/pzkjq32][GOC Services Availability/Reliability]]
+   * &lt;a href=&quot;http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on&quot;&gt;Current status: &lt;img src=&quot;http://steige.grid.iu.edu/steige/status_current.png&quot;&gt; &lt;/a&gt;
+   * &lt;a href=&quot;http://reports.grid.iu.edu/reports/&quot;&gt;Reports current: &lt;img src=&quot;http://steige.grid.iu.edu/steige/status_reports.png&quot;&gt;&lt;/a&gt;
+   * [[http://maddash.aglt2.org/maddash-webui/index.cgi?dashboard=OSG%20Grid%20Operations%20Center%20Test%20Mesh%20Config][PerfSonar]] service
+&lt;img src=&quot;http://gratiaweb2.grid.iu.edu/gratiastatic/today/osg_wall_hours.png&quot;/&gt;
+&lt;img src=&quot;http://osg-flock.grid.iu.edu/monitoring/condor/condor_7day.png&quot;  style=&quot;width: 75%; height: 75%&quot; &gt;&lt;br&gt;
+   * Production release, running long but no reported problems, [[http://osggoc.blogspot.com/2016/04/goc-service-update-tuesday-april-26.html][Release note]]
+   * Some internal housekeeping work
+
+&lt;!-- ---++ Networking (Shawn) --&gt;
+
+---++ Production Support (Bo)
+&lt;img src=&quot;http://reports.grid.iu.edu/reports/opp-week.png&quot;&gt;
+   * Opportunistic production down (CMS activity ramped up)
+   * Several &quot;complaints&quot; from Syracuse that slots were remaining unfilled for extended periods of time. Follow up on going
+   * Sent email to Samuel Viscapi about FermiLAT (https://ticket.grid.iu.edu/29511), awaiting response. 
+
+
+---++ Software (Tim T. for Tim C.)
+   * Late items for May release development freeze:
+      * HTCondor-CE tweaks
+      * CVMFS 2.2.2 (for main OSG 3.3 production)
+   * Making progress on !BeStMan on EL&amp;nbsp;7, but not ready for May
+   * Active site support: Harvard, Texas Tech, UCR, UNESP, Utah
+
+
+---++ Release (Tim T.)
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| May | 3.3.12 / 3.2.38 | 2016-04-25 | 2016-05-02 | 2016-05-10 | |
+| June | 3.3.13 / 3.2.39 | 2016-05-31 | 2016-06-06 | 2016-06-14 | 5 week cycle |
+| July | 3.3.14 / 3.2.40 | 2016-06-27 | 2016-07-05 | 2016-07-12 | |
+
+[[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.3.12%2C%203.2.38%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][May 10th Release]]
+
+   * OSG 3.2.38 and OSG 3.3.12
+      * Expecting VO Package v66
+   * OSG 3.3.10 Only
+      * Testing: Remove GRAM for OSG CE metapackage
+      * Testing: HTCondor 8.4.6
+      * Testing: safe cron behavior for osg-info-services
+      * Testing: osg-build: package CILogon OSG CA cert (internal tool)
+      * Testing: Pegasus 4.6.1
+      * Testing: fix BLAH memory requests for PBS
+      * Testing: CVMFS 2.2.1 in OSG 3.3 (was already in upcoming)
+      * Testing: osg-pki-tools
+      * Testing: osg-configure
+         * many small changes
+         * OSG CE BOSCO changes
+      * Testing: osg-system-profiler: get SELinux audit log
+   * OSG 3.2.36 Only
+      * Nothing
+
+---++ Security
+   * Vulnerabilities/Incidents
+      * NSS vulnerability at CVE-2016-1979 rated as &#39;Moderate&#39;. Security updates from RedHat and Scientific Linux are available.
+   * Operations
+      * OSG CA transition
+         * Transition for VOs scheduled for May 10th: NERSC, SURAGrid, DREAM, LBNL, CompBioGrid, LQCD, BNL, LZ, CIGI, SCDA.
+            * Changes in vo-client package are being done [[https://ticket.opensciencegrid.org/29547][https://ticket.opensciencegrid.org/29547]]
+               * DREAM and SURAGrid are managed in the same VOMS server, waiting for the new DN.
+               * CIGI also needs to send the new DN
+            * CompBioGrid has requested to be disabled [[https://ticket.grid.iu.edu/29495][https://ticket.grid.iu.edu/29495]]
+            * Atlas fix has not been tested yet [[https://jira.opensciencegrid.org/browse/OSGPKI-399][https://jira.opensciencegrid.org/browse/OSGPKI-399]]
+            * Fix for issue with host certificate request including many alt names ready to be deployed in production [[https://ticket.opensciencegrid.org/29357][https://ticket.opensciencegrid.org/29357]]
+
+
+-- Main.ScottTeige - 25 Apr 2016
+

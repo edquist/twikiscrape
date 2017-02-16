@@ -1,0 +1,255 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+
+---+ Daily Operations
+
+All of the admin operations must be done as root on the Hadoop namenode unless
+otherwise noted.
+
+---++ Restarting the Namenode
+*The namenode is the most critical piece of your infrastructure*.  You _could_ restart it without care, but we recommend you be sufficiently paranoid for production systems.
+
+Prior to restarting the namenode, follow these steps:
+   1 Set the namenode into safemode using the following command: =hadoop dfsadmin -safemode enter=.  Wait 1 minute.
+   1 Locate the namenode metadata files.  This is usually found in =${hadoop.tmp.dir}/dfs/name/current=, and will be in a different location depending on how you set up your datanode.  You may want to check the last edited timestamp to verify you are looking at the right files.  Copy these to the same directory structure on the secondary namenode.
+   1 Start up the name node process manually on the secondary namenode using the command =hadoop-daemon.sh --config /etc/hadoop start namenode=.
+   1 Locate the namenode process&#39;s log on the secondary namenode (the one you just started manually in the previous step).  It is often in =/var/log/hadoop=, but may differ based on your cluster&#39;s configuration.   Wait until the namenode appears to have started normally and fully processed the metadata.  If there are any errors or failures, the manually-started namenode should die with an exception.  In this case, contact the osg-hadoop mailing list _immediately_ - turning off your namenode will definitely damage your site&#39;s metadata.
+   1 If all goes well, shut off your namenode and continue with your maintenance.
+
+Ninety-nine times out of one hundred, there will be no error, and these extra steps will just cost you an extra 5 minutes of downtime.  This will provide you with the ability to avoid one-in-a-hundred type failures that can cause data loss.
+
+*FAILURE TO FOLLOW THESE STEPS COULD RESULT IN DATA LOSS*.  Regardless of how unlikely such data loss would be, doing the above will eliminate almost all possibility.
+
+---++ Starting and Stopping Hadoop Daemons
+
+---+++ Init Scripts
+
+&lt;verbatim&gt;
+/etc/init.d/hadoop [start|stop]
+&lt;/verbatim&gt;
+
+Hadoop can be started with 
+&lt;pre class=&quot;rootscreen&quot;&gt;
+service hadoop start
+&lt;/pre&gt;
+
+This will detect what kind of node (datanode, namenode, secondary namenode, etc) and start/stop services appropriately.
+
+
+_Note about manual shutdowns:_  We recommend using the init scripts to start and stop daemons.
+Care must be taken during any manual shutdown and startup scripts as environment variables must be set correctly.
+Note that the init.d script sources files =/etc/sysconfig/hadoop= and =/etc/hadoop/conf/hadoop-env.sh=.  Once
+environment is correctly set up, the following should be run as the hadoop user =/usr/lib/hadoop/bin/hadoop-da
+emon.sh start datanode= (where datanode should substituted with namenode on the name node).  This should only 
+be done in testing circumstances as the init scripts are much more reliable and start the process as a daemon.
+
+
+---+++ Manually Mounting FUSE
+
+First, you should add a line in =/etc/fstab= with the following information
+&lt;pre class=&quot;file&quot;&gt;
+hdfs# %RED%/mnt/hadoop%ENDCOLOR% fuse server=%RED%namenode%ENDCOLOR%,port=9000,rdbuffer=32768,allow_other 0 0
+&lt;/pre&gt;
+Change the directory and the location of the namenode hostname.
+
+Once done, you can mount and umount with the following:
+
+Mounting:
+&lt;pre class=&quot;rootscreen&quot;&gt;
+mount /mnt/hadoop
+&lt;/pre&gt;
+
+Unmounting:
+&lt;pre class=&quot;rootscreen&quot;&gt;
+umount /mnt/hadoop
+&lt;/pre&gt;
+
+It is possible to manually mount with the following command, though using the =/etc/fstab= file is much easier.
+&lt;verbatim&gt;
+fuse_dfs -oserver=hadoop-name -oport=9000 /mnt/hadoop -oallow_other -ordbufffer=131072
+&lt;/verbatim&gt;
+
+---++ Hadoop Filesystem
+
+&lt;verbatim&gt;
+hadoop fsck / -blocks
+&lt;/verbatim&gt;
+
+A successful check will end with these words:
+
+&lt;verbatim&gt;
+The filesystem under path &#39;/&#39; is HEALTHY
+&lt;/verbatim&gt;
+
+A unsuccessful check will end with the following:
+
+&lt;verbatim&gt;
+The filesystem under path &#39;/&#39; is CORRUPTED
+&lt;/verbatim&gt;
+
+For general information about HDFS, use =dfsadmin=:
+
+&lt;verbatim&gt;
+hadoop dfsadmin -report
+&lt;/verbatim&gt;
+
+Similar information can be found on the name node&#39;s =dfshealth= webpage; for
+example: http://dcache-head.unl.edu:8088/dfshealth.jsp.
+
+To get the current safemode status:
+
+&lt;verbatim&gt;
+hadoop dfsadmin -safemode get
+&lt;/verbatim&gt;
+
+To leave or enter safemode:
+
+&lt;verbatim&gt;
+hadoop dfsadmin -safemode leave
+
+hadoop dfsadmin -safemode enter
+&lt;/verbatim&gt;
+
+---++ FUSE
+
+If you see the message &quot;Transport endpoint is not connected&quot; on nodes where
+FUSE is mounted, this means that the FUSE mount has died. Connect to the node,
+unmount the file system, and remount it:
+
+&lt;verbatim&gt;
+umount /mnt/hadoop
+mount /mnt/hadoop
+ls /mnt/hadoop
+&lt;/verbatim&gt;
+
+---+ Decommissioning Data Nodes
+
+First, add the node&#39;s ip address or fully qualified name to the =hosts_exclude= file. Then, run:
+
+&lt;verbatim&gt;
+hadoop dfsadmin -refreshNodes
+&lt;/verbatim&gt;
+
+The namenode logs will almost immediately log the start of the decommissioning process:
+
+&lt;verbatim&gt;
+2009-03-26 10:57:31,794 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Start Decommissioning node 10.3.255.254:50010
+&lt;/verbatim&gt;
+
+The namenode web interface will also show the node in the state =Decommission In Progress=.
+During the decommissioning process you will see lots of messages from the namenode asking to replicate blocks that are located on the decommissioned nodes:
+
+&lt;verbatim&gt;
+2009-03-26 11:08:46,814 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* ask 10.3.255.195:50010 to replicate blk_1327555646282055693_11908 to datanode(s) 10.3.255.230:50010
+&lt;/verbatim&gt;
+
+The decommissioning is complete when you see the following message in the logs:
+
+&lt;verbatim&gt;
+Decommission complete for node 172.16.1.55:50010
+&lt;/verbatim&gt;
+
+Note: The namenode must see the transition from normal host to excluded host in
+order for it to realize a node is being decommissioned. If you stop the
+namenode, add the file to the hosts_exclude, then start the namenode again, the
+namenode will have the following complaints in the log: 
+
+&lt;verbatim&gt;
+ProcessReport from unregisterted node: node055:50010
+&lt;/verbatim&gt;
+
+This is because the namenode thinks it is being contacted by a node
+which was never in the system at all, not by a node which should be
+decommissioned.
+
+---+ Cleaning Up a CORRUPT Filesystem
+
+When the namenode is in safemode, no edits to the filesystem are
+allowed. First, run =fsck= and determine the extent of the
+damage.  If it is acceptable to delete or otherwise move aside the
+damaged files, turn off safemode, and move the file using the
+following command:
+
+&lt;verbatim&gt;
+hadoop fsck -move
+&lt;/verbatim&gt;
+
+This moves any files with problematic blocks into =/lost+found= in
+the Hadoop namespace.
+
+---+ Restoring from a checkpoint
+
+First, shut down the namenode. The namenode keeps two checkpoint
+images:
+
+   * =dfs/namesecondary/current/=
+   * =dfs/namesecondary/previous.checkpoint/=
+
+Copy all the files from one of these directories into
+=dfs/name/current/=.
+
+Start the namenode again, and watch the logs for activities.
+
+---+ Fixing Stuck and Under Replicated Files
+
+Sometimes, a small number of blocks may remain under-replicated.
+This often corresponds with blocks that were written during or
+shortly before or after a namenode crash. Block replications
+should occur fairly quickly (no more than 10 minutes); if the block
+remains under-replicated longer than that, proceed with the
+following instructions.
+
+First, confirm that the file has under-replicated blocks:
+
+&lt;verbatim&gt;
+hadoop fsck &lt;file_name&gt;
+&lt;/verbatim&gt;
+
+Then, set the desired number of replicas to the current
+(insufficient) number of observed replicas:
+
+&lt;verbatim&gt;
+hadoop fsck -setrep &lt;file_name&gt; &lt;actual_replicas&gt;
+&lt;/verbatim&gt;
+
+Using =fsck=, verify that the file no longer appears to have
+under-replicated blocks. Then, reset the replication policy for the
+file to the desired number:
+
+&lt;verbatim&gt;
+hadoop fsck -setrep &lt;file_name&gt; &lt;desired_replicas&gt;
+&lt;/verbatim&gt;
+
+Verify again that Hadoop has begun to replicate the blocks using
+=fsck=.
+
+If several files are affected, a variation of the following script
+might help:
+
+&lt;verbatim&gt;
+hadoop fsck / | awk &#39;{print $1}&#39; | grep user | tr -d &#39;:&#39; | sort | uniq &gt; /tmp/stuck_replicas
+cat /tmp/stuck_replicas | xargs -t -i hadoop fs -setrep 2 {}
+hadoop fsck / # Make sure everything is happy
+cat /tmp/stuck_replicas | xargs -t -i hadoop fs -setrep 3 {}
+hadoop fsck / # Watch and see if everything becomes happy
+&lt;/verbatim&gt;
+
+---+ Port Forwarding for the Hadoop Web Interface
+
+This only needs to be done once:
+
+&lt;verbatim&gt;
+/sbin/iptables -t nat -A PREROUTING -p tcp --dport 8088 -i eth0 -j DNAT --to-destination 172.16.100.8:50070
+/sbin/iptables -t nat -A PREROUTING -p tcp --dport 8089 -i eth0 -j DNAT --to-destination 172.16.1.3:50030
+&lt;/verbatim&gt;
+
+---+ Running the Balancer
+
+You may see that your datanode usage may become uneven (this is especially common for heterogeneous sites).  Optimally, all datanodes should have about the same percentage used.
+
+To run the balancer once, execute this from the namenode:
+&lt;verbatim&gt;
+hadoop-daemon.sh —config /etc/hadoop start balancer -threshold 3
+&lt;/verbatim&gt;
+
+Several sites have taken to adding this to =/etc/cron.hourly= to make the balancer run at all times.  If the balancer takes more than an hour to run (definitely possible, especially the first time it is run), a second one will refuse to start - so you don&#39;t need to worry about the cron job causing a pileup of processes.

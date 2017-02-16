@@ -1,0 +1,244 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%DOC_STATUS_TABLE%
+%TOC%
+
+---+ Installation
+
+---++ Quick Start
+
+Quickstart for the impatient.  This assumes you already have [[HadoopInstallation][Hadoop]] installed on the Xrootd server.
+
+ &lt;verbatim&gt;
+rpm -Uhv https://repo.grid.iu.edu/osg-release-latest.rpm
+yum --enablerepo=osg-testing install xrootd-server
+vi /etc/xrootd/xrootd.cfg # Edit appropriately (see below)
+vi /etc/xrootd/Authfile # Edit appropriately (see below)
+service xrootd start
+service cmsd start
+&lt;/verbatim&gt;
+
+---++ Xrootd/HDFS architecture explanation
+
+Xrootd is a very flexible distributed storage system.  The Xrootd/HDFS integration is designed to allow you to safely export your HDFS system to the wide / metro area network and to allow several sites to share a single, unified namespace.  Currently (and by design), this integration is read-only.  This allows users to collaborate, but provides encouragement to not bypass the &quot;normal&quot; data placement mechanisms.
+
+We currently use two Xrootd daemons: &quot;xrootd&quot; and &quot;cmsd&quot;.  The xrootd daemon is the workhorse of the system and provides the data access.  Its job is to read data from disk (with the HDFS module enabled, read data from HDFS) and to export it to the client.  The cmsd is the &quot;Cluster Management System&quot; daemon; these work with the xrootd and each other to determine daemon liveness, file status, and work to create the distributed system.  Each node in Xrootd runs both cmsd and xrootd.
+
+In each distributed Xrootd system, there are at least two &quot;special&quot; roles.  There must be one &quot;manager&quot; cmsd which is in charge of determining overall system status. each manager can manage 64 other nodes; managers can manage other managers to form a tree, or can be peers to form a more resilient system.  If you are familiar with P2P systems, these are similar to &quot;supernodes&quot;.  The second role is the &quot;redirector&quot;, a special xrootd instance that is on the same host as the manager cmsd.  Clients initiate contact with a redirector instance; this instance does not actually move data, but further instructs the client where to find its desired data.
+
+Here&#39;s the approximate way the data location goes:
+1) Client contacts the redirector xrootd, asking for file X.
+2) Redirector Xrootd asks manager cmsd to find the best copy of file X.
+3) Manager cmsd queries all managed cmsd instances to find a copy of X.
+4) Each cmsd queries the attached xrootd for file X.
+5) If the file is found, this information travels from the datanode xrootd, to the cmsd, then to the manager xrootd
+6) The manager determines the best xrootd to serve data (also taking into consideration server load, for example).
+7) The redirector xrootd instructs the client where to find file X.
+8) The client connects to the optimal data server and starts the session.
+
+The whole process can be done in the order of milliseconds; mostly, it depends on network latencies and the speed of the underlying file systems.
+
+Of course, there are many more details to this; better descriptions of the algorithms for finding data are at http://xrootd.slac.stanford.edu/.
+
+---++ Prerequisites
+
+The Xrootd server has the following prerequisites:
+
+   1 You must also have already [[HadoopInstallation][installed]] Hadoop &lt;s&gt;using FUSE&lt;/s&gt;.
+   1 Xrootd is preconfigured to look for the host certificate and key in =/etc/grid-security/xrd/xrd*.pem=.  These files must exist and be readable by the =xrootd= user.  Using certificates in a different directory or with different names will require modifying =/etc/xrootd/xrootd.cfg=.  Make sure =/etc/grid-security/xrd/xrdcert.pem= exists with mode 644, and =/etc/grid-security/xrd/xrdkey.pem= exists with mode 400 (not 600; xrootd is unnecessarily picky here!)
+   1 The installation includes the latest CA Certificates package from the OSG as well as the fetch-crl CRL updater.
+   1 It is highly recommended that you make sure your CRLs in =/etc/grid-security/certificates= exist and are up to date by running fetch-crl manually before starting xrootd the first time.  Otherwise xrootd will attempt to download CRLs itself when it starts up.
+   1 The rpm/yum installation will create a &#39;xrootd&#39; system account and group (uid,gid &lt; 500) on the host system for running the xrootd process. If you would like to control the uid/gid that is used, then you should create the &#39;xrootd&#39;&#39; user and group manually before installing the rpms.
+
+---++ YUM Installation
+
+Remember, in order to use xrootd, you must have the [[HadoopInstallation][Hadoop]] &lt;s&gt;and the FUSE kernel module&lt;/s&gt; already installed on your system in order to use the yum installer.
+
+To configure your local installation for the yum repository, [[HadoopInstallation#Yum_install][follow the advice here]] to install the correct =caltech-hadoop= package for your site.
+
+After installing the osg-release yum configuration package, you can install the xrootd server with:
+
+&lt;verbatim&gt;
+yum install --enablerepo=osg-testing xrootd
+&lt;/verbatim&gt;
+
+---+ Configuration
+
+---++ File locations
+
+As much as possible, we attempt to use standard binary, library, and file locations in the RPM packaging.
+
+| *Location* | *Needs editing?* | *Description* |
+| /etc/xrootd/xrootd.cfg | Yes | The master configuration file for xrootd and cmsd |
+| /etc/xrootd/Authfile | Yes | The site&#39;s authorization file |
+| /etc/xrootd/lcmaps.cfg | Maybe | LCMAPS configuration for GUMS callout |
+| /etc/grid-security/xrd/xrdcert.pem | Yes | Certificate file, PEM formatted |
+| /etc/grid-security/xrd/xrdkey.pem | Yes | Certificate keyfile, PEM formatted |
+| /var/run/xrootd | No | Inter-process communication sockets and PID files |
+| /var/log/xrootd | No | Log files |
+
+---++ Xrootd.cfg
+
+This sample configuration file is shipped with the RPM.  It is configured using the file locations listed above.
+
+This configuration file, if used, will have your server join the global cluster centered at xrootd.unl.edu.  In the future, we will provide sample configs for larger sites that may want to have their own manager as a peer to the UNL one.
+
+&lt;verbatim&gt;
+# Port specifications; only the redirector needs to use a well-known port
+# &quot;any&quot; will cause rooted to bind to any available port.  Change as needed for firewalls.
+xrd.port 1094
+
+# The roles this server will play.
+all.role server
+all.role manager if xrootd.unl.edu
+
+# The known managers
+all.manager srm.unl.edu:1213
+
+# Allow any path to be exported; this is further refined in the authfile.
+all.export / nostage
+
+# Hosts allowed to use this xrootd cluster
+cms.allow host *
+
+### Standard directives
+# Simple sites probably don&#39;t need to touch these.
+# Logging verbosity
+xrootd.trace emsg login stall redirect
+ofs.trace none
+xrd.trace conn
+cms.trace all
+
+# Integrate with CMS TFC, placed in /etc/storage.xml
+oss.namelib /usr/lib64/libXrdCmsTfc.so file:/etc/xrootd/storage.xml?protocol=hadoop
+
+# Turn on authorization
+ofs.authorize 1
+acc.authdb /etc/xrootd/Authfile
+acc.audit deny grant
+
+# Security configuration
+sec.protocol /usr/lib64 gsi -certdir:/etc/grid-security/certificates -cert:/etc/grid-security/xrd/xrdcert.pem -key:/etc/grid-security/xrd/xrdkey.pem -crl:1 -authzfun:libXrdLcmaps.so -authzfunparms:--osg,--lcmapscfg,/etc/xrootd/lcmaps.cfg,--loglevel,0|useglobals -gmapopt:10 -gmapto:0
+
+xrootd.seclib /usr/lib64/libXrdSec.so
+xrootd.fslib /usr/lib64/libXrdOfs.so
+ofs.osslib /usr/lib64/libXrdHdfs.so
+all.adminpath /var/run/xrootd
+all.pidpath /var/run/xrootd
+
+cms.delay startup 10
+cms.fxhold 60s
+
+if exec xrootd
+  xrd.report xrootd.t2.ucsd.edu:9931 every 30s all
+  xrootd.monitor all auth flush 30s mbuff 1472 window 5s dest files io info user xrootd.t2.ucsd.edu:9930
+fi
+&lt;/verbatim&gt;
+
+For now, write the following into Authfile:
+&lt;verbatim&gt;
+u * /store lr
+&lt;/verbatim&gt;
+This allows anyone to read from /store.  You can add specific directives for usernames from the grid-mapfile.  If you would like uscms0313 to have access to /foo, add:
+&lt;verbatim&gt;
+u uscms0313 /store/foo lr
+&lt;/verbatim&gt;
+
+When using LCMAPS, note that it is necessary to replace the default value for the *sec.protocol* configuration directive with the value suggested in */etc/xrootd/lcmaps.cfg*, typically:
+
+&lt;verbatim&gt;
+sec.protocol /usr/lib64 gsi -certdir:/etc/grid-security/certificates -cert:/etc/grid-security/xrd/xrdcert.pem -key:/etc/grid-security/xrd/xrdkey.pem -crl:3 -
+authzfun:libXrdLcmaps.so -authzfunparms:--osg,--lcmapscfg,/etc/xrootd/lcmaps.cfg,--loglevel,0 -gmapopt:10 -gmapto:0
+&lt;/verbatim&gt;
+
+---++ Running Xrootd
+
+Start the xrootd and cmsd servers with one command
+
+&lt;verbatim&gt;
+service xrootd start
+service cmsd start
+&lt;/verbatim&gt;
+
+To start xrootd automatically at boot time:
+
+&lt;verbatim&gt;
+chkconfig xrootd on --level 345
+chkconfig cmsd on --level 345
+&lt;/verbatim&gt;
+
+---++ Validation and Debugging
+
+Now, test the clients:
+
+&lt;verbatim&gt;
+xrdcp root://xrootd.unl.edu//some/path/in/your/HDFS /tmp/test
+&lt;/verbatim&gt;
+
+Note that you give a path in your HDFS, but you use xrootd.unl.edu as the server.  This is because xrootd will form a global network of servers.
+
+If xrootd won&#39;t start, try invoking xrootd manually with the &#39;-d&#39; flag at the end of the command:
+
+&lt;verbatim&gt;
+runuser -s /bin/bash - xrootd -c &quot;/usr/bin/xrootd.sh -d&quot;
+runuser -s /bin/bash - xrootd -c &quot;cmsd -c /etc/xrootd/xrootd.cfg -d&quot;
+&lt;/verbatim&gt;
+
+---+ TODO:
+
+   * LFN-to-PFN translation for each site based on the CMS TFC.  Some work has been started, but help would be greatly appreciated.
+   * Better authorization.  Currently, your username in the Authfile is HASH.0 where HASH is the output of &lt;verbatim&gt;openssl x509 -noout -hash -in ~/.globus/usercert.pem&lt;/verbatim&gt;.  This is really weird - it should integrate with PRIMA.
+   * Have the authfile method complemented by native HDFS permissions.
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = DouglasStrain
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Troubleshooting
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = NehaSharma
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %IN_PROGRESS%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = NehaSharma
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %NO%
+############################################################################################################
+--&gt;

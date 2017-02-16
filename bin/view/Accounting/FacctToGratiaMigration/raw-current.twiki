@@ -1,0 +1,24 @@
+---+Migrating from facct to the Gratia psacct probe
+
+&lt;OL&gt;
+&lt;LI&gt;Start the Gratia ps accounting service:
+
+     =/etc/rc.d/init.d/gratia-psacct=
+
+&lt;LI&gt;Remove or comment-out the fermilab accounting entries from *root&#39;s crontab* (or
+elsewhwere if appropriate):
+
+&lt;verbatim&gt;#00 23 * * * /usr/lib/acct/runacct 1&gt;/var/adm/acct/nite/acct.log 2&gt;&amp;1
+#00 05 1 * * /usr/lib/acct/monacct 1&gt;/var/adm/acct/fiscal/monacct.log 2&gt;&amp;1&lt;/verbatim&gt;
+
+&lt;LI&gt; Run:
+
+     =chkconfig facct off=
+
+&lt;LI&gt;Make sure =ProbeConfig= is customized according to README.
+
+&lt;LI&gt;Run facct-catchup from the =&lt;gratia-top-dir&gt;/probe/psacct directory=.
+
+&lt;/OL&gt;
+
+-- Main.ChrisGreen - 08 Jan 2007

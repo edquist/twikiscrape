@@ -1,0 +1,108 @@
+%DOC_STATUS_TABLE%
+
+---+!! Installation of VO Application Software on OSG Sites
+%TOC%
+
+
+---++ About This Document
+This page provides OSG-wide guidelines and policies on software installation for a %LINK_GLOSSARY_VO% (VO).  A VO may want to install software on a site if it is too large to transfer per job, or if it is too complicated to setup on each job execution.
+
+The OSG has set aside a special area for VO&#39;s to install software, pointed to by the environment variable =$OSG_APP=.  
+
+---++ Installation
+In order to support the most grid resources, it is suggested that the application support a RHEL platform, whether [[http://www.redhat.com/rhel/][RHEL]], [[http://centos.org/][CentOS]], or [[http://www.scientificlinux.org/][Scientific Linux]].
+
+Software installation suggestions:
+   * Support RHEL5 (or equivalent)
+   * Application statically compiled
+      * Or bring your own libraries
+   * Easy installation (tar file)
+
+---+++ Installation Area and space
+Installation is done in the directory pointed to by =$OSG_APP=.  It is good practice to install under a VO specific directory, under =$OSG_APP=, for example: =$OSG_APP/%RED%vo%ENDCOLOR%=.  
+
+=$OSG_APP= considerations:
+   * =$OSG_APP= is guaranteed, if it exists at all, to be visiable and readable from all worker nodes.
+   * =$OSG_APP= is guaranteed writable from the gatekeeper.
+   * =$OSG_APP= is *not* guaranteed to be writable by all worker nodes.
+
+The size of a VO&#39;s =$OSG_APP= area is limited on a site-by-site basis.  There is no standard quota. 
+
+---++ Installation Procedure
+
+The installation commands should be put into a script and sent to the remote gatekeeper as a fork job (via globus-job-run or !CondorG). This job should not unduly tax the CE (eg by compiling software).
+
+An example fork job would have the following condor-g submit file
+&lt;pre class=&quot;file&quot;&gt;
+universe = grid
+grid_resource = gt2 red.unl.edu/jobmanager-fork
+executable = install.sh
+output = install.out
+error = install.err
+log = install.log
+x509userproxy = /tmp/x509up_u1234
+queue
+&lt;/pre&gt;
+
+=install.sh= could be something like (replacing %RED%vo%ENDCOLOR% with your vo name):
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/sh
+. $OSG_GRID/setup.sh
+
+cd $OSG_APP/%RED%vo%ENDCOLOR%
+
+# test if software is already installed, if not, install away!
+if [ ! -d Rosetta-0.1 ]
+then
+    wget http://webserver.com/Rosetta-0.1.tar.gz
+    tar -xzf Rosetta-0.1.tar.gz
+    rm -f Rosetta-0.1.tar.gz
+fi
+&lt;/pre&gt;
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = TerrenceMartin
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = VO
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = VOManager
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Installation
+
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = DerekWeitzel
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+############################################################################################################
+--&gt;
+

@@ -1,0 +1,139 @@
+---+ OSG Connect Exercise
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; border: 1px solid black; padding: 0.5em;&quot;&gt;
+---+++ Objective of this exercise
+Learn to submit jobs through OSG Connect, optionally use OSG OASIS.
+&lt;/div&gt;
+
+For this exercise, we thought it might be interesting to analyze a set of images from the University of Chicago Photographic Archive (http://photoarchive.lib.uchicago.edu/). Our motivation is that it&#39;s a common claim that older photographs look much darker than recent ones. With our job, we&#39;ll analyze the luminance of photographs in the archive and compare that to the date of the photograph. 
+
+---++ Signing up for OSG Connect
+Hopefully you&#39;ve already signed up for OSG Connect, if not please visit this page: [[UserSchool14Connect]]
+
+Once you&#39;ve signed up, SSH to =login.osgconnect.net= with the username and password you created. 
+
+---++ Getting the data and software.
+We&#39;ve conveniently made the tutorial data and software available to you by simply typing =tutorial userschool2014=. It should create a directory with the necessary files at =~/osg-userschool2014=.
+
+The input dataset is a file called =manifest.txt=. This file contains a list of JPEG images stored on our Stash server and the date of each image.
+
+The =luminance= python script does most of the heavy lifting for us, but in order to our analysis we must first decompess the JPEG images. To take care of that, we&#39;ve provided a version of the =djpeg= tool that you can send along with your jobs. 
+
+---++ Determining the job requirements.
+The subset of the archive that we want to analyze is about 5600 files, and the task is pleasingly parallel.
+
+How long should the job run for? If our job runs too long, then we might be preempted and kicked off of opportunistic resources. If our jobs are too short, then we add a lot of unnecessary overhead and load on the scheduler. Let&#39;s find out how long a single image takes to analyze:
+
+&lt;pre&gt;./luminance 0 1 &lt; manifest.txt&lt;/pre&gt;
+%TWISTY{
+showlink=&quot;Show output&quot;
+hidelink=&quot;Hide output&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+[lincolnb@login01 osg-userschool2014]$ ./luminance 0 1 &lt; manifest.txt
+/* Running on host: login01.osgconnect.net */
+[1880, 0.525493],
+/* 1 photos analyzed in 1.11s (1.11/s) */
+&lt;/pre&gt;
+%ENDTWISTY%
+
+Notice that =luminance= takes two arguments. The first argument is the line in the file where you want to start processing, and the second argument is where you want to end processing (noninclusive).  I choose to do about 200 images per job. This way they&#39;re long enough to see them run via =condor_q=, but not so long that we have to wait around forever to move on with the exercise. 
+
+---++ Creating the submit file
+If we have 5600 files, chunked into 200 files per job, we&#39;ll need to create about 28 different jobs. Remember that =luminance= takes input as chunks of the file, so our submit file will look something like this:
+&lt;pre&gt;
+Universe = vanilla
+
+Error = log/job.error.$(Cluster)-$(Process)
+Output = log/job.output.$(Cluster)-$(Process)
+Log = job.log.$(Cluster)
+
+Executable = luminance
+Input = manifest.txt
+Transfer_input_files = djpeg
+
+Arguments = 0 200
+Queue
+
+Arguments = 200 400
+Queue
+
+(and so on and so on)
+&lt;/pre&gt; 
+
+You&#39;re free to copy and paste to create the submit file -- but why not write it via script? Try writing a script to generate your submit file that creates the queue and arguments lines via a loop.
+
+%TWISTY{
+showlink=&quot;You may use my solution if you get stuck&quot;
+hidelink=&quot;Hide output&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+#!/bin/sh
+
+cat &lt;&lt;&#39;EOF&#39;
+Universe = vanilla
+
+Error = log/job.error.$(Cluster)-$(Process)
+Output = log/job.output.$(Cluster)-$(Process)
+Log = job.log.$(Cluster)
+
+Executable = luminance
+Input = manifest.txt
+Transfer_input_files = djpeg
+EOF
+
+# We have about 5600 photos to analyze. Block them off by 200s and
+# submit enough jobs to handle.
+chunk=${1-200}
+max=${2-5600}
+
+i=0
+while [ $i -lt $max ]; do
+	echo Arguments = $i $chunk
+	echo Queue 1
+	echo
+	i=$(($i + $chunk))
+done
+&lt;/pre&gt;
+%ENDTWISTY%
+
+
+---++ Post-processing the output
+
+When we wrote this example, we already had a pretty good idea of how we wanted to visualize the results -- you may have noticed that the output format of the job is JSON (Javascript Object Notation) with comments. This lets us simply concatinate the output files together, embed them in an HTML page, and view the output with Google Charts. 
+
+We&#39;ve provided two files to help you accomplish this, &quot;scatter_pre.html&quot; and &quot;scatter_post.html&quot;. These contain all of the HTML boilerplate to visualize the output. You can join all of the files together like so:
+
+&lt;pre&gt;cat scatter_pre.html log/job.output.* scatter_post.html &gt; scatter.html&lt;/pre&gt;
+
+To view the output, you can move scatter.html to your public HTML area (~/public) and view it from the web (http://stash.osgconnect.net/+YOURUSERNAMEHERE/scatter.html) or transfer the resulting HTML file back to your laptop via Globus Connect Personal (see below)
+
+---++ Globus transfer (optional) 
+You can get Globus Connect Personal from here: https://www.globus.org/globus-connect-personal
+
+Once you&#39;ve installed Globus Connect Personal, you can start a transfer here: https://portal.osgconnect.net/xfer/StartTransfer
+
+One endpoint will be your laptop, as configured in the Globus Connect Personal installation; the other endpoint will be called &quot;osgconnect#stash&quot;. 
+
+You should be able to transfer the &quot;scatter.html&quot; file to your laptop and view it locally. 
+
+---++ Challenge - Rewrite the job to use djpeg from OASIS
+If you have time, try rewriting the exercise such that your HTCondor job loads the =djpeg= program from OASIS. Some hints:
+   1. Write a wrapper script that loads the &#39;module&#39; tool as in the lecture.
+   1. Load the tool via =module load jpeg=
+   1. Edit line 78 of the =luminance= program to be =tmpfp = os.popen(&#39;djpeg &gt;tmp.x&#39;, &#39;w&#39;)=
+   1. Change the HTCondor submit file to contain the following:
+&lt;pre&gt;
+Executable = wrapper.sh
+Transfer_input_files = luminance, manifest.txt
+Requirements = HAS_CVMFS_oasis_opensciencegrid_org =?= True
+&lt;/pre&gt;
+
+-- Main.LincolnBryant - 05 Jul 2014
+

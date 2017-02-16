@@ -1,0 +1,160 @@
+---+!! %TWIKIWEB%.PatternSkin Customization
+
+*Questions and answers on configuring page elements.* For styling your TWiki, see PatternSkinCssCookbook.
+
+%TOC%
+
+---++ Logo questions
+
+---+++ How can I change the web logo?
+
+By default the logo at the top left of each web points to the image with name =logo.gif= that is attached to each web&#39;s WebPreferences. &lt;br /&gt;
+The default variables that cause this behavior are defined in [[%WIKIPREFSTOPIC%]].
+
+Redefine your custom variables in [[%LOCALSITEPREFS%]] (to keep %WIKIPREFSTOPIC% intact):
+&lt;pre&gt;
+      * Set &lt;nop&gt;WEBLOGONAME = logo.gif
+      * Set &lt;nop&gt;WEBLOGOIMG = /twiki/pub/Main/TWikiPreferences/osg-logo.png
+      * Set &lt;nop&gt;WEBLOGOURL = %&lt;nop&gt;SCRIPTURLPATH{&quot;view&quot;}%/%&lt;nop&gt;BASEWEB%/%&lt;nop&gt;HOMETOPIC%
+      * Set &lt;nop&gt;WEBLOGOALT = Home
+&lt;/pre&gt;
+
+There are 2 ways to change the logo in a web:
+
+*Using logo.gif:*
+&lt;blockquote&gt;
+   * Create a new image named =logo.gif= and attach it to the web&#39;s WebPreferences topic. %TWIKIWEB%.PatternSkin&#39;s stylesheet assumes the logo is 40px high. More about that later.
+   * You can also upload the image with FTP to =/pub/YourWeb/WebPreferences/=.
+&lt;/blockquote&gt;
+*Using a new filename:*
+&lt;blockquote&gt;
+   * Attach whatever image and attach it to the web&#39;s WebPreferences topic. Then add to the WebPreferences (under _Custom web preferences_):
+&lt;pre&gt;
+      * Set &lt;nop&gt;WEBLOGONAME = your-logo-name.gif-or-png
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+
+---+++ How do I set a site-wide logo?
+
+There is a bunch of site-wide logo variables in [[%LOCALSITEPREFS%]]: =WIKILOGOIMG=, =WIKILOGOURL= and =WIKILOGOALT=.
+To change only the web logo image to site-wide, in [[%LOCALSITEPREFS%]] set:
+&lt;pre&gt;
+   * Set &lt;nop&gt;WEBLOGOIMG = %&lt;nop&gt;WIKILOGOIMG%
+&lt;/pre&gt;
+
+
+---+++ My logo does not fit the top bar
+
+The top bar is 64 pixels high by default.
+
+*Using templates:*
+&lt;blockquote&gt;
+Change the height of the top bar in =templates/viewtopbar.pattern.tmpl=:
+&lt;verbatim&gt;
+%TMPL:DEF{&quot;topbardimensions&quot;}%
+#patternTopBar,
+#patternClearHeaderCenter,
+#patternClearHeaderLeft,
+#patternClearHeaderRight,
+#patternTopBarContentsOuter {
+	height:64px; /* top bar height; make room for header columns */
+	overflow:hidden;
+}
+%TMPL:END%
+&lt;/verbatim&gt;
+Only change the number.
+&lt;/blockquote&gt;
+
+*Using style sheets:*
+&lt;blockquote&gt;
+Create a new stylesheet with above definition in it, attach it to a topic and point =USERLAYOUTURL= to that topic attachment. See %TWIKIWEB%.PatternSkinCssCookbook about creating custom styles.
+&lt;/blockquote&gt;
+
+---+++ I want to change the white space above and below the logo
+
+Change the table style in %TWIKIWEB%.WebTopBar. Default top padding is 11px.
+
+---++ Top bar questions
+
+---+++ I want to set or change the top background image
+
+The image at the top is called &quot;header art&quot; - commonly the top image found on blog sites. The image that is displayed by default is set by the variable =WEBHEADERART=, defined in [[%WIKIPREFSTOPIC%]].
+
+Redefine your custom variables in [[%LOCALSITEPREFS%]] (to keep %WIKIPREFSTOPIC% intact):
+&lt;pre&gt;
+   * Set WEBHEADERART = %&lt;nop&gt;PUBURLPATH%/%&lt;nop&gt;TWIKIWEB%/PatternSkin/TWiki_header.gif
+   * Set WEBHEADERBGCOLOR = somehexcolor (no quotes, for example: #ffffff)
+&lt;/pre&gt;
+
+You can also set =WEBHEADERART= per web, by defining the variable in the Web&#39;s !WebPreferences.
+
+---+++ I want to have the web color in the top bar
+
+Redefine =WEBHEADERBGCOLOR= in [[%LOCALSITEPREFS%]] (to keep %WIKIPREFSTOPIC% intact):
+&lt;pre&gt;
+   * Set WEBHEADERBGCOLOR = %&lt;nop&gt;WEBBGCOLOR%
+&lt;/pre&gt;
+
+---+++ I want to remove the Jump and Search boxes from the top bar 
+
+If you have localization enabled, you will also see a language dropdown box at the far right.
+
+You can remove these items from %TWIKIWEB%.WebTopBar.
+
+---+++ I want to hide the top bar
+
+*Using templates:*
+&lt;blockquote&gt;
+The view template is populated like this:
+&lt;verbatim&gt;
+%TMPL:INCLUDE{&quot;page&quot;}%
+%TMPL:INCLUDE{&quot;viewtopbar&quot;}%
+%TMPL:INCLUDE{&quot;viewtoolbar&quot;}%
+%TMPL:INCLUDE{&quot;viewleftbar&quot;}%
+%TMPL:INCLUDE{&quot;viewrightbar&quot;}%
+%TMPL:INCLUDE{&quot;viewtopicactionbuttons&quot;}%
+%TMPL:INCLUDE{&quot;viewbottombar&quot;}%
+&lt;/verbatim&gt;
+Each included template draws a part of the screen. Omit =%&lt;nop&gt;TMPL:INCLUDE{&quot;viewtopbar&quot;}%= to hide the top bar, or in a view template clear it using =%&lt;nop&gt;TMPL:INCLUDE{&quot;viewtopbar&quot;}%%TMPL:END%=
+&lt;/blockquote&gt;
+
+*Using style sheets:*
+&lt;blockquote&gt;
+See PatternSkinCssCookbookNoTopBar.
+&lt;/blockquote&gt;
+
+---++ Left bar questions
+
+---+++ I want to hide the left bar
+
+*Using templates:*
+&lt;blockquote&gt;
+Omit =%&lt;nop&gt;TMPL:INCLUDE{&quot;viewleftbar&quot;}%= to hide the left bar, or in a view template clear it using =%&lt;nop&gt;TMPL:INCLUDE{&quot;viewleftbar&quot;}%%TMPL:END%=
+&lt;/blockquote&gt;
+
+*Using style sheets:*
+&lt;blockquote&gt;
+See PatternSkinCssCookbookNoLeftBar.
+&lt;/blockquote&gt;
+
+---++ Other page parts
+
+---+++ I want to hide the edit buttons from certain users
+
+It may defy the wiki-ness of your TWiki installation, but in certain circumstances it could be useful to hide the edit buttons from users that are not logged in, for instance for customers.
+
+Create in the template directory the file =view.customer.tmpl=. &#39;Empty&#39; =topicaction= and =toolbar= by writing in the template:
+&lt;verbatim&gt;
+%TMPL:INCLUDE{&quot;view.pattern&quot;}%
+%TMPL:DEF{&quot;topicaction&quot;}%%TMPL:END%
+%TMPL:DEF{&quot;toolbar&quot;}%%TMPL:END%
+&lt;/verbatim&gt;
+
+In %MAINWEB%.TWikiGuest, set the cover to 
+&lt;verbatim&gt;
+   * Set COVER = customer
+&lt;/verbatim&gt;
+
+By default this topic is editable only by !TWikiAdminGroup members.
+
+

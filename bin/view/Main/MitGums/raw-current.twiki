@@ -1,0 +1,273 @@
+This is a collection of knowledge gathered from [[https://ticket.grid.iu.edu/goc/13516][GOC Ticket #13516]].
+
+---++ Cause of the problem
+
+The root of the problem didn&#39;t actually exist in any GLOW specific configuration, the issue was a missing =voGroup= attribute in the &#39;NEBioGrid&#39; =vomsUserGroup=. The chain of events goes something like:
+
+   1. GUMS goes through the list of =groupToAccountMappings= in =hostToGroupMapping= that matches the host the request comes from. &#39;sbgrid&#39; comes before &#39;GLOW&#39; in this list.
+   1. GUMS now checks the =groupToAccountMapping= = &#39;sbgrid&#39; and checks to see if the request comes from a VO member of =userGroups= = &#39;sbgrid, NEBioGrid&#39;. 
+   1. It doesn&#39;t match on =vomsUserGroup= = &#39;sbgrid&#39; and moves onto =vomsUserGroup= = &#39;NEBioGrid&#39;
+   1. =matchFQAN= is set to &#39;vo&#39; so it tries to see if the =voGroup= attribute matches the request. Since none exists it fails and never reaches the &#39;GLOW&#39; =groupToAccountMapping=.
+
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Relevant GUMS entries&quot;}%
+&lt;verbatim&gt;
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;vomsUserGroup
+        name=&#39;sbgrid&#39;
+        access=&#39;read all&#39;
+        description=&#39;&#39;
+        vomsServer=&#39;sbgrid&#39;
+        matchFQAN=&#39;vo&#39;
+        acceptProxyWithoutFQAN=&#39;true&#39;
+        voGroup=&#39;/SBGrid&#39;/&gt;
+
+&lt;vomsUserGroup
+        name=&#39;NEBioGrid&#39;
+        access=&#39;read all&#39;
+        description=&#39;&#39;
+        vomsServer=&#39;NEBioGrid&#39;
+        matchFQAN=&#39;vo&#39;
+        acceptProxyWithoutFQAN=&#39;true&#39;/&gt;
+
+&lt;groupToAccountMapping
+        name=&#39;sbgrid&#39;
+        description=&#39;&#39;
+        accountingVoSubgroup=&#39;sbgrid&#39;
+        accountingVo=&#39;SBGrid&#39;
+        userGroups=&#39;sbgrid, NEBioGrid&#39;
+        accountMappers=&#39;sbgrid, NEBioGrid&#39;/&gt;
+
+&lt;hostToGroupMapping
+        groupToAccountMappings=&#39;cmsdcmon1, localUsers, cdf, fermilab, minos, usminos, ukminos, minossoft, miniboone, gadu, grase, ivdgl, mis, fmri, sdss, star, newUsatlasProd, newUsatlasSoft, newUsatlas, newAtlas, uscmsuser, cmsuser, uscmst2admin, uscmssoft, uscmsprod, cmshipro, uscmsprio, uscmsphedex, uscmsfrontier, cmslcgadmin, cmsuser-null, dzeroana, dzeroservice, dzerouser, dosar, des, des-production, gridex, nanohub, geant4, hcc, i2u2, mariachi, osg, nwicg, ops, gugrid, gpn, compbiogrid, ilc, nysgrid, sbgrid, GLOW, cigi, gums-test&#39;
+        description=&#39;&#39;
+        cn=&#39;*.fnal.gov&#39;/&gt;
+&lt;/pre&gt;
+&lt;/verbatim&gt;
+%ENDTWISTY%
+
+---++ What we know
+
+A job submitted with a proxy with GLOW VO credentials to MIT&#39;s CE fails but there aren&#39;t any issues with other VOs (attempted with a fermilab and a CMS VO):
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT% voms-proxy-init -voms GLOW -cert test/usercert.pem -key test/userkey.pem 
+Enter GRID pass phrase:
+Your identity: /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047
+Creating temporary proxy ....................... Done
+Contacting  glow-voms.cs.wisc.edu:15001 [/DC=org/DC=doegrids/OU=Services/CN=glow-voms.cs.wisc.edu] &quot;GLOW&quot; Done
+Creating proxy ................................................................................................. Done
+
+Your proxy is valid until Tue Sep 17 06:11:50 2013
+
+%UCL_PROMPT% globus-job-run localhost /usr/bin/whoami     
+GRAM Job submission failed because authentication with the remote server failed (error code 7)
+
+%UCL_PROMPT% voms-proxy-info -all
+subject   : /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047/CN=proxy
+issuer    : /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047
+identity  : /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047
+type      : proxy
+strength  : 1024 bits
+path      : /tmp/x509up_u1758
+timeleft  : 11:59:49
+key usage : Digital Signature, Key Encipherment, Data Encipherment
+=== VO GLOW extension information ===
+VO        : GLOW
+subject   : /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047
+issuer    : /DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=glow-voms.cs.wisc.edu
+attribute : /GLOW/Role=NULL/Capability=NULL
+timeleft  : 11:59:49
+uri       : glow-voms.cs.wisc.edu:15001
+
+&lt;/pre&gt;
+
+When submitting a job from the CE, the only log file we see affected is =/var/log/tomcat5/gums-service-cybersecurity.log=, where our request is being denied. When submitting a job with no associated VO, we see entries in =/var/log/tomcat5/gums-service-admin.log= that say it&#39;s a null mapping so this would seem to imply that GLOW VO users aren&#39;t finishing out the mapping logic.
+
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;XML Entry in gums-service-cybersecurity.log&quot;}%
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;verbatim&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;samlp:Response xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot; InResponseTo=&quot;ID-1169479693&quot; Version=&quot;2.0&quot;&gt;
+   &lt;saml:Assertion xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot; Version=&quot;2.0&quot;&gt;
+      &lt;saml:Statement xmlns:xacml-saml=&quot;urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:assertion&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:type=&quot;xacml-saml:XACMLAuthzDecisionStatementType&quot;&gt;
+         &lt;XACMLcontext:Request xmlns:XACMLcontext=&quot;urn:oasis:names:tc:xacml:2.0:context:schema:os&quot; xsi:type=&quot;XACMLcontext:RequestType&quot;&gt;
+            &lt;XACMLcontext:Subject SubjectCategory=&quot;urn:oasis:names:tc:xacml:1.0:subject-category:access-subject&quot; xsi:type=&quot;XACMLcontext:SubjectType&quot;&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/subject/subject-x509-id&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/subject/subject-x509-issuer&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;/DC=com/DC=DigiCert-Grid/O=DigiCert Grid/CN=DigiCert Grid CA-1&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/subject/certificate-serial-number&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;-1&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/subject/validity-not-before&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#dateTime&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;2013-09-16T19:05:12Z&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/subject/validity-not-after&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#dateTime&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;2013-09-17T07:10:12Z&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+            &lt;/XACMLcontext:Subject&gt;
+            &lt;XACMLcontext:Resource xsi:type=&quot;XACMLcontext:ResourceType&quot;&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;urn:oasis:names:tc:xacml:1.0:resource:resource-id&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;http://authz-interop.org/xacml/resource/resource-type/ce&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+            &lt;/XACMLcontext:Resource&gt;
+            &lt;XACMLcontext:Resource xsi:type=&quot;XACMLcontext:ResourceType&quot;&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/resource/dns-host-name&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;t2bat0210.cmsaf.mit.edu&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+            &lt;/XACMLcontext:Resource&gt;
+            &lt;XACMLcontext:Resource xsi:type=&quot;XACMLcontext:ResourceType&quot;&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/resource/resource-x509-id&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;/DC=org/DC=doegrids/OU=Services/CN=t2bat0210.cmsaf.mit.edu&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+            &lt;/XACMLcontext:Resource&gt;
+            &lt;XACMLcontext:Resource xsi:type=&quot;XACMLcontext:ResourceType&quot;&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/resource/resource-x509-issuer&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+            &lt;/XACMLcontext:Resource&gt;
+            &lt;XACMLcontext:Action xsi:type=&quot;XACMLcontext:ActionType&quot;&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;urn:oasis:names:tc:xacml:1.0:action:action-id&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;http://authz-interop.org/xacml/action/action-type/execute-now&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+            &lt;/XACMLcontext:Action&gt;
+            &lt;XACMLcontext:Environment xsi:type=&quot;XACMLcontext:EnvironmentType&quot;&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;urn:oasis:names:tc:xacml:1.0:environment:current-dateTime&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#dateTime&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;2013-09-16T21:37:18Z&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/environment/pep-oblig-supported&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;http://authz-interop.org/xacml/obligation/afs-token&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/environment/pep-oblig-supported&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;http://authz-interop.org/xacml/obligation/secondary-gids&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/environment/pep-oblig-supported&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;http://authz-interop.org/xacml/obligation/uidgid&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+               &lt;XACMLcontext:Attribute AttributeId=&quot;http://authz-interop.org/xacml/environment/pep-oblig-supported&quot; DataType=&quot;http://www.w3.org/2001/XMLSchema#string&quot; xsi:type=&quot;XACMLcontext:AttributeType&quot;&gt;
+                  &lt;XACMLcontext:AttributeValue xsi:type=&quot;XACMLcontext:AttributeValueType&quot;&gt;http://authz-interop.org/xacml/obligation/username&lt;/XACMLcontext:AttributeValue&gt;
+               &lt;/XACMLcontext:Attribute&gt;
+            &lt;/XACMLcontext:Environment&gt;
+         &lt;/XACMLcontext:Request&gt;
+         &lt;xacml-context:Response xmlns:xacml-context=&quot;urn:oasis:names:tc:xacml:2.0:context:schema:os&quot;&gt;
+            &lt;xacml-context:Result&gt;
+               &lt;xacml-context:Decision&gt;Deny&lt;/xacml-context:Decision&gt;
+               &lt;xacml-context:Status&gt;
+                  &lt;xacml-context:StatusCode Value=&quot;http://oasis/names/tc/xacml/1.0/status/ok&quot; /&gt;
+               &lt;/xacml-context:Status&gt;
+               &lt;xacml:Obligations xmlns:xacml=&quot;urn:oasis:names:tc:xacml:2.0:policy:schema:os&quot;&gt;
+                  &lt;xacml:Obligation FulfillOn=&quot;Permit&quot; ObligationId=&quot;http://authz-interop.org/xacml/obligation/username&quot; /&gt;
+               &lt;/xacml:Obligations&gt;
+            &lt;/xacml-context:Result&gt;
+         &lt;/xacml-context:Response&gt;
+      &lt;/saml:Statement&gt;
+   &lt;/saml:Assertion&gt;
+&lt;/samlp:Response&gt;
+&lt;/verbatim&gt;
+&lt;/pre&gt;
+%ENDTWISTY%
+
+9/17/13 - Now when I submit a job with a GLOW VO proxy, I don&#39;t see a response stanza in the XML output.
+
+---+++ gums-service-developer.log
+
+After turning on DEBUG output for gov.bnl.gums in =/etc/gums/log4j-service.properties=, I submitted a job with no associated VO and got denied as expected. Additionally, =gums-service-admin.log= shows it mapping to &#39;null&#39;.
+
+&lt;pre class=&quot;screen&quot;&gt;
+17 Sep 2013 11:37:01,220 TP-Processor16 service.GUMSXACMLMappingServiceImpl [DEBUG]: Checking access on &#39;/DC=org/DC=doegrids/OU=Services/CN=t2bat0210.cmsaf.mit.edu&#39; for &#39;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047&#39; with fqan &#39;null&#39;
+17 Sep 2013 11:37:01,255 TP-Processor16 service.GUMSXACMLMappingServiceImpl [DEBUG]: Denied access on &#39;/DC=org/DC=doegrids/OU=Services/CN=t2bat0210.cmsaf.mit.edu&#39; for &#39;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047&#39; with fqan &#39;null&#39;
+&lt;/pre&gt;
+
+Now when trying with the GLOW VO, I get more output but there are a few blank lines in the logs and I don&#39;t get a &quot;Denied Access&quot; or &quot;Credentials mapped&quot; response. There are no corresponding entries that show up in =gums-service-admin.log=
+
+&lt;pre class=&quot;screen&quot;&gt;
+17 Sep 2013 11:39:39,445 TP-Processor22 service.GUMSXACMLMappingServiceImpl [DEBUG]: Checking access on &#39;/DC=org/DC=doegrids/OU=Services/CN=t2bat0210.cmsaf.mit.edu&#39; for &#39;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047&#39; with fqan &#39;/GLOW/Role=NULL/Capability=NULL&#39;
+17 Sep 2013 11:39:39,465 TP-Processor22 service.GUMSXACMLMappingServiceImpl [DEBUG]:
+17 Sep 2013 11:39:39,567 TP-Processor24 service.GUMSXACMLMappingServiceImpl [DEBUG]: Checking access on &#39;/DC=org/DC=doegrids/OU=Services/CN=t2bat0210.cmsaf.mit.edu&#39; for &#39;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047&#39; with fqan &#39;/GLOW/Role=NULL/Capability=NULL&#39;
+17 Sep 2013 11:39:39,583 TP-Processor24 service.GUMSXACMLMappingServiceImpl [DEBUG]:
+&lt;/pre&gt;
+
+I get the same problem when submitting via an osgedu VO.
+
+---++ Red Herrings?
+
+---+++ VOMS GLOW error in catalina.out
+
+There seems to be an issue with GUMS trying to reach out to glow-voms.cs.wisc.edu but:
+
+   1. The VO members in GLOW seem to be up to date. 
+   2. These errors do not correspond to each failed job submission.
+
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Error in catalina.out&quot;}%
+&lt;pre class=&quot;screen&quot;&gt;
+AxisFault
+ faultCode: {http://schemas.xmlsoap.org/soap/envelope/}Server.userException
+ faultSubcode:
+ faultString: org.glite.security.voms.admin.persistence.error.VOMSDatabaseException: Cannot open connection
+ faultActor:
+ faultNode:
+ faultDetail:
+        {http://xml.apache.org/axis/}hostname:glow-voms.cs.wisc.edu
+
+org.glite.security.voms.admin.persistence.error.VOMSDatabaseException: Cannot open connection
+        at org.apache.axis.message.SOAPFaultBuilder.createFault(SOAPFaultBuilder.java:222)
+        at org.apache.axis.message.SOAPFaultBuilder.endElement(SOAPFaultBuilder.java:129)
+        at org.apache.axis.encoding.DeserializationContext.endElement(DeserializationContext.java:1087)
+        at org.apache.xerces.parsers.AbstractSAXParser.endElement(Unknown Source)
+        at org.apache.xerces.impl.XMLNSDocumentScannerImpl.scanEndElement(Unknown Source)
+        at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl$FragmentContentDispatcher.dispatch(Unknown Source)
+        at org.apache.xerces.impl.XMLDocumentFragmentScannerImpl.scanDocument(Unknown Source)
+        at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
+        at org.apache.xerces.parsers.XML11Configuration.parse(Unknown Source)
+        at org.apache.xerces.parsers.XMLParser.parse(Unknown Source)
+        at org.apache.xerces.parsers.AbstractSAXParser.parse(Unknown Source)
+        at org.apache.xerces.jaxp.SAXParserImpl$JAXPSAXParser.parse(Unknown Source)
+        at javax.xml.parsers.SAXParser.parse(Unknown Source)
+        at org.apache.axis.encoding.DeserializationContext.parse(DeserializationContext.java:227)
+        at org.apache.axis.SOAPPart.getAsSOAPEnvelope(SOAPPart.java:696)
+        at org.apache.axis.Message.getSOAPEnvelope(Message.java:435)
+        at org.apache.axis.handlers.soap.MustUnderstandChecker.invoke(MustUnderstandChecker.java:62)
+        at org.apache.axis.client.AxisClient.invoke(AxisClient.java:206)
+        at org.apache.axis.client.Call.invokeEngine(Call.java:2784)
+        at org.apache.axis.client.Call.invoke(Call.java:2767)
+        at org.apache.axis.client.Call.invoke(Call.java:2443)
+        at org.apache.axis.client.Call.invoke(Call.java:2366)
+        at org.apache.axis.client.Call.invoke(Call.java:1812)
+        at org.glite.security.voms.VOMSCompatibilitySoapBindingStub.getGridmapUsers(VOMSCompatibilitySoapBindingStub.java:344)
+        at gov.bnl.gums.userGroup.VOMSUserGroup.retrieveMembers(VOMSUserGroup.java:466)
+        at gov.bnl.gums.userGroup.VOMSUserGroup.updateMembers(VOMSUserGroup.java:352)
+        at gov.bnl.gums.CoreLogic.updateGroupsImpl(CoreLogic.java:457)
+        at gov.bnl.gums.CoreLogic.updateGroups(CoreLogic.java:214)
+        at gov.bnl.gums.GUMS$1.run(GUMS.java:90)
+        at java.util.TimerThread.mainLoop(Timer.java:512)
+        at java.util.TimerThread.run(Timer.java:462)
+&lt;/pre&gt;
+%ENDTWISTY%
+
+---+++ gums.config diff
+
+There were some differences between MIT&#39;s GUMS config and a working [with GLOW] Fermicloud VM GUMS config. Changes were made on the Fermicloud VM to match what was on MIT and the Fermicloud GUMS server was still functional.
+
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;verbatim&gt;
+--- mit            2013-09-16 15:59:07.494967495 -0500
++++ fermi          2013-09-16 15:56:51.108528790 -0500
+@@ -9,12 +9,12 @@
+ &lt;vomsUserGroup
+-name=&#39;GLOW&#39;
+-access=&#39;read all&#39;
++name=&#39;glow&#39;
++access=&#39;read self&#39;
+ description=&#39;&#39;
+ vomsServer=&#39;glow&#39;
+-matchFQAN=&#39;exact&#39;
+-acceptProxyWithoutFQAN=&#39;false&#39;
++matchFQAN=&#39;vo&#39;
++acceptProxyWithoutFQAN=&#39;true&#39;
+ voGroup=&#39;/GLOW&#39;/&gt;
+&lt;/verbatim&gt;
+&lt;/pre&gt;
+
+-- Main.BrianLin - 16 Sep 2013

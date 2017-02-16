@@ -1,0 +1,72 @@
+---+ Network  Datastore Plan 
+
+| Version | Name | Date | 
+| 0.1 | Shawn !McKee | 6/2/2014 | 
+
+---++ Introduction
+The  OSG networking area has  focused  on deploying  and  configuring !perfSONAR-PS  instances  at all  OSG  and  WLCG  sites and  has  setup  prototype  services to  monitor the  basic  !perfSONAR-PS  services at these  sites  as well  as a dashboard, the ESnet provided [[https://code.google.com/p/esnet-perfsonar/wiki/MaDDashAPI][MaDDash]], to  track the resulting  metrics.  *The next critical step  is  to  create a scalable  &quot;datastore&quot; responsible  for  hosting all  the  network  metrics produced  by this  !perfSONAR-PS  infrastructure.*    This datastore  will  become  the  source  of  network  data  for  OSG (and  WLCG) for  both users  and  services needing information  about  the  networks interconnecting  our  resources.  Details on  what  is  required is  listed  below.
+
+The team will consist of members of the OSG Networking,  Operations, Technology and Security groups, as well as members from the  [[https://twiki.cern.ch/twiki/bin/view/LCG/NetworkTransferMetrics][WLCG  Network  and  Transfer  Metrics  Working  Group]]  and  ESnet.
+
+---++ Scope
+
+Creation  of  a new  datastore for  network  metrics  inside  OSG.   Primarily  Operations  related.
+
+---++ Risks
+
+Since no  existing  datastore for  network  metrics  in  currently  in  production  the  risks in this effort are  minimal.   We  are  targeting  the  creation  of  a  new capability  to store network metrics building  upon  the  perfSONAR-PS  developers  work on their  new Measurement  Archive with a  RESTful  interface  that  is  being release  with  v3.4  of  the  perfSONAR-PS  Toolkit.         Will the  MA work for our  use-case?   Discussions  with  Andy Lake indicate that the  MA should  be suitable  for  our  needs but  there  is  always potential problems in  using  software designed  for one  use-case to  fulfill a (slightly)  different use-case.
+
+OSG  will  be  hosting  this  new  datastore and  there  are some  risks associated  with  the  additional resources  required  by the  service. How  much  disk space,  processing and  I/O  power  will  be  required  to  effectively host  this  service?    Out  initial  estimates are  that  one VM will be required  to  host  the  OSG Network monitoring  components  (!MaDDash  and  [[http://omdistro.org/start][OMD]]) while  another  instance  should  be  sufficient to  host  the  datastore.    Data-size will  depend  upon  the number of  !perfSONAR-PS  hosts monitored and  the  detail  of  the  data  kept.   Latency instances typically gather  around 1GB/week  while  bandwidth  instances  are  about 1/3rd  that data volume.     To  keep  all  data would  require about ~200 GB/week of  storage.     Details  on  IOPS and  processing power are  yet  to  be  determined but  a  single VM  should  be  sufficient. 
+
+Data  must  be gathered  from  all  OSG  and  WLCG  perfSONAR-PS  instances,  stored in  the  new  datastore  and made  available  for  users,  applications  and  services  both  inside  and  outside  of  OSG  Operations.   There  are potential  security risks  associated  with  exposing  the  datastore to  users  outside OSG  Operations.    
+
+---++ Strategy
+
+We  intend  to  use the new Measurement  Archive(MA)  under development  for  the  next  release  of  perfSONAR-PS as the  basis  for  our  datastore.  Details  on  the  MA  are  at  https://code.google.com/p/perfsonar-ps/wiki/MeasurementArchiveClientGuide while deployment information is at http://antg-dev.es.net/esmond-docs/rpm_install.html.   In  addition to deployment  of  the  MA  as the  new  OSG Network Datastore,  we will  also  need  to  deploy a reliable  service  for collecting  the  data  from  the  remote  instances  and  storing it  in  the  datastore.   Finally  we will need  to  provide  a User  API to  access the data that is optimized for  well-known  use-cases:  1)  User  GUIs,  2)  WLCG dashboard  queries,  3)  Higher level network  services (ANSE project).
+
+
+---++ Network Datastore Schedule, Tasks and Activities
+
+This is an estimated timeline and will be adjusted based on the  planned datastore activities. &lt;/br&gt;&lt;/br&gt;
+
+| *Date* | *Task* | *Responsible Team* | *Completed* | 
+| %RED%6/11/2014%ENDCOLOR% | Identify OSG  resources  to  host  datastore | Operations  |  |
+| %RED%6/19/2014%ENDCOLOR% | Input on  configuration and tuning  of  MA | ESnet /  Networking /  Technology |  | 
+| %RED%6/25/2014%ENDCOLOR% | [[http://antg-dev.es.net/esmond-docs/rpm_install.html][Deploy PS MA  on  OSG  Resources]] | Operations |  | 
+| %RED%7/9/2014%ENDCOLOR% | Creation/integration of  *collector* to feed datastore | Networking /  Operations |  |
+| %RED%7/23/2014%ENDCOLOR% | Creation of  user  API  to datastore | Networking /  Operations |   |
+| %RED%8/6/2014%ENDCOLOR% | Security review of  datastore  and API | Security |  | 
+| %RED%7/23/204 - 8/6/2014%ENDCOLOR% | Testing  of datastore for WLCG use-cases | WLCG WG |  | 
+| %RED%8/20/2014%ENDCOLOR% | Service *in production*  regularly gathering network  metrics | Networking  /  Operations |   | 
+
+
+---++ Management Controls 
+
+This  plan needs approval from  the  OSG  Executive  Team and effort  from Networking, Operations  and  Technology  will  be  required  to  deliver  in  a  timely  way.
+During the weekly Area Coordinator calls we can  ask  for  input  and  feedback  as  we  progress.
+
+---++ Network Datastore Team
+
+| *Name* | *Role* | 
+| Shawn !McKee | Networking -  Oversees  project and integration outside  OSG |
+| Rob Quick | Production - Oversees planning and schedule | 
+| Brian Bockleman | Consultation  on  Datastore deployment/tuning/configuration | 
+| Soichi  Hayashi | Operations -  Primary deployer and integrator for  datastore inside  OSG |
+| Mine Altunay | Security Review for Deployment  and  User API | 
+| Marian  Babik | WLCG  Network and  Transfer  Metrics  WG  - Testing | 
+| Andy Lake | ESnet Consultation on !MaDDash/MA/Datastore  integration and operation | 
+
+
+---++ Relevant  URLs
+
+The  prototype  monitoring service examples:
+
+   * [[https://maddash.aglt2.org/WLCGperfSONAR/check_mk/index.py?start_url=%2FWLCGperfSONAR%2Fcheck_mk%2Fdashboard.py][WLCG OMD  monitoring]]  (Use  WLCGps/WLCG)
+   * [[http://maddash.aglt2.org/maddash-webui/index.cgi?dashboard=US%20ATLAS%20Sites][USATLAS  example  MaDDash  monitoring]]
+---++ Appendix A - Network  Datastore Plan Approval
+
+| *Name* | *Role* | *Approval Date* | 
+ 
+
+-- Main.ShawnMcKee - 02 Jun 2014
+

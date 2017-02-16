@@ -1,0 +1,110 @@
+---+ Determining Storage Requirements
+
+---++ About this exercise
+This exercise&#39;s goal is to learn to think critically about an application&#39;s data needs.  In this exercise we will attempt to understand the input and output of the bioinformatics application [[http://blast.ncbi.nlm.nih.gov/][BLAST]].
+
+&lt;!-- OSG Summer School 2011 Defaults
+   * Local VO= %URLPARAM{&quot;INPUT_VO&quot; encode=&quot;quote&quot; default=&quot;osgedu&quot;}%
+   * Local UCL_HOST = %URLPARAM{&quot;INPUT_HOST&quot; encode=&quot;quote&quot; default=&quot;learn&quot;}%
+   * Local UCL_USER = %URLPARAM{&quot;INPUT_USER&quot; encode=&quot;quote&quot; default=&quot;user&quot;}%
+   * Local UCL_DOMAIN = %URLPARAM{&quot;INPUT_DOMAIN&quot; encode=&quot;quote&quot; default=&quot;chtc.wisc.edu&quot;}%
+   * Local GATEKEEPER = %URLPARAM{&quot;INPUT_GATEKEEPER&quot; encode=&quot;quote&quot; default=&quot;red.unl.edu&quot;}%
+   * Local UCL_CWD= %URLPARAM{&quot;INPUT_CWD&quot; encode=&quot;quote&quot; default=&quot;~/blastparts&quot;}%
+   * Local BATCH_SYSTEM = %URLPARAM{&quot;BATCH_SYSTEM&quot; encode=&quot;quote&quot; default=&quot;condor&quot;}%
+   * Local REMOTE_ROOT = %URLPARAM{&quot;INPUT_REMOTE_ROOT&quot; encode=&quot;quote&quot; default=&quot;/mnt/hadoop/user&quot;}%
+   * Local REMOTE_SRM = %URLPARAM{&quot;INPUT_SRM&quot; encode=&quot;quote&quot; default=&quot;red-srm1.unl.edu:8443&quot;}%
+   * Local REMOTE_GRIDFTP= %URLPARAM{&quot;INPUT_GRIDFTP&quot; encode=&quot;quote&quot; default=&quot;red-gridftp12.unl.edu&quot;}%
+   * Local SURL = srm://%REMOTE_SRM%/srm/v2/server?SFN=%REMOTE_ROOT%
+   * Local TURL= gsiftp://%REMOTE_GRIDFTP%/%REMOTE_ROOT%
+   * Local OSG_DATA=%URLPARAM{&quot;INPUT_OSG_DATA&quot; encode=&quot;quote&quot; default=&quot;/osg/data&quot;}%
+   * Local BLAST_DB_SUBMIT=%URLPARAM{&quot;INPUT_BLAST_DB_SUBMIT&quot; encode=&quot;quote&quot; default=&quot;/share/blast&quot;}%
+   * Local VDT_LOCATION=/opt/osg-client
+--&gt;
+
+---++ Prerequisite 
+
+   * Login on submission node &lt;pre class=&quot;screen&quot;&gt;
+ssh %UCL_USER%@%UCL_HOST%.%UCL_DOMAIN%
+&lt;/pre&gt;
+   * Make a directory for this exercise&lt;pre class=&quot;screen&quot;&gt;
+mkdir -p %UCL_CWD%
+cd %UCL_CWD%
+&lt;/pre&gt;
+
+---++ Understanding blastx
+The executable used for blast is ==blastx==.  Copy it from the previous day&#39;s exercise.  The goal of this exercise is to understand ==blastx== enough to be able to copy all files necessary for a single blast search into a directory.  ==blastx== is executed with: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% blastx -db %RED%[database_file]%ENDCOLOR% -query %RED%[query_file]%ENDCOLOR%
+&lt;/pre&gt;
+
+The we will copy a single file from yesterday&#39;s ==pdbaa== database directory until Blast works.  This may require copying files into a directory, running ==blastx==, ==blastx== failing, then copying more files into a directory.  Repeat until ==blastx== successfully completes.  Make a note of the files in the directory and create a shell script that will copy those files into a directory and run ==blastx==.
+
+
+
+%TWISTY{
+showlink=&quot;Show hint&quot;
+hidelink=&quot;Hide hint&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+Here&#39;s the command line that you should end up with to start ==blastx==:
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% ./blastx -db pdbaa -query mouse.fa
+&lt;/pre&gt;
+%ENDTWISTY%
+
+---++ Script 
+Create a shell script that will copy the files for a yeast search into a directory.  
+
+Now that you know what files are required by blastx in order to run, create a shell script that will copy the files for a yeast search into a directory.  
+
+%TWISTY{
+showlink=&quot;Show example script&quot;
+hidelink=&quot;Hide example script&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/sh
+mkdir example_dir
+cp blastx example_dir/
+cp mouse.fa example_dir/
+cp pdbaa.aa example_dir/
+
+cd example_dir
+./blastx -db ./pdbaa -query ./mouse.fa
+&lt;/pre&gt;
+%ENDTWISTY%
+
+---+++ Input requirements
+The input to blast is a database (files), it&#39;s queries, and the executable.
+
+How to determine a file size: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% ls -lh %RED%file%ENDCOLOR%
+&lt;/pre&gt;
+
+How to determine the size of a directory: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% du -sh %RED%directory%ENDCOLOR%
+&lt;/pre&gt;
+
+Make a note of the files required for a run of ==blastx==.  This will be important in future exercises.  
+
+---+++ Output requirements
+The output that we care about is sent to stdout.
+
+---++ Possible storage possibilities
+Once you have completed the script, you will have a list of files that are required for running ==blastx==.  This will help in finding what files need to be stored.  Can you answer some of the questions:
+
+   * How much disk space is required for the mouse blast run? 
+   * How many files are needed for the runs?
+   * Assuming the each file is read completely by BLAST, and since you know how long blastx runs (time it!):
+      * At what rate are files read in?  
+      * How many MB/s?
+
+
+---++ Up next!
+
+Next you will create a HTCondor submit script to transfer the Blast input files in order to run Blast on a worker nodes.
+
+-- Main.DerekWeitzel - 06 Jul 2016

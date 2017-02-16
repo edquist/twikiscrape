@@ -1,0 +1,137 @@
+---+!! *&lt;nop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%DOC_STATUS_TABLE%
+%TOC{depth=&quot;2&quot;}%
+
+---++ MWT2 Feasibility Study
+---+++ Background &amp; Motivation
+Currently MWT2_IU and UC function as separate clusters, using dCache on the SE.  Our goal is to unify the clusters, to:
+   * Provide more storage ( by not having duplicate copies of data at each site),
+   * Replace duplicate services with fail-over services
+   * Reduce overhead by having only one set of configurations to manage
+In a storage, we&#39;re looking for:
+   * Something easy to manage
+   * Good read, write and analysis performance 
+   * Doesn’t introduce new stability or reliability issues 
+   * Fail-over capability
+---+++ Site Description
+&lt;img src=&quot;https://twiki.grid.iu.edu/twiki/pub/Trash/ReleaseDocumentationBestmanGatewayXrootdUseCases/mwt2-network-uc.png&quot;&gt;&lt;img  src=&quot;https://twiki.grid.iu.edu/twiki/pub/Trash/ReleaseDocumentationBestmanGatewayXrootdUseCases/mwt2-network-iu.png&quot;&gt;
+
+At IU we have 44 regular data servers, and 3 high performance.  At UC we have 37 regular, 3 high performance.  Regular servers are 4-core, 8GB mem, ~3TB storage with 1 core reserved for the storage service.  High performance nodes are 8-core, 32GB mem, 48TB storage. 
+
+In our setup, the network presents several potential issues:
+   * Latency between the sites is ~5.3 ms
+   * At IU, all nodes have public IP addresses, but the switch implements ACLs to prevent incoming connections based on  a whitelist.
+   * At UC, the worker nodes are on a private network with NAT access to the outside. The storage nodes are dual-homed with public and private IPs
+
+&lt;img src=&quot;https://twiki.grid.iu.edu/twiki/pub/Trash/ReleaseDocumentationBestmanGatewayXrootdUseCases/mwt2-network-uc-obs.png&quot;&gt;
+&lt;img src=&quot;https://twiki.grid.iu.edu/twiki/pub/Trash/ReleaseDocumentationBestmanGatewayXrootdUseCases/mwt2-network-iu-obs.png&quot;&gt;
+
+---+++ Test Setup 1 &amp; 2
+In testing, our goal was to answer these questions:
+   * Can a private-ip worker node read &amp; write to a public-only dataserver? a public-only redirector? 
+   * Does a dual-homed public/private ip dataserver handle requests from public and private ips correctly? Does a public/private ip redirector? 
+   * What is read &amp; write speed compared to dCache with dccp? 
+      * When connecting to a high-performance storage node? To a combination worker/storage node? 
+      * When connecting between sites with xrdcp vs within the site with dccp
+
+We will be benchmarking, so this is designed to be a prototype of a complete cross-site system.  The number of dataservers is kept low in the initial installation, to enable testing of individual read and write speeds. Later tests will add more to measure total throughput.
+
+For the Dataservers, we want at least 1 each of a low- and high-performance node,  1 each of a node with public/private and public-only ips, and one each of a node at IU and UC.
+
+For the Redirector, we want to test once with a public-only node, and once with a public/private node.
+
+*Setup 1*: Public redirector
+| *Role* | *Hostname* | *Location* | *Network* | *Speed* |
+| Redirector | iut2-s1 | IU | Public | 10G |
+| Data Server | iut2-s3 | IU | Public | 10G |
+| | iut2-c034 | IU | Public | 1G |
+| | uct2-s3 | UC | Public &amp; Private | 10G |
+| | uct2-c034 | UC | Public &amp; Private | 1G |
+| Worker node | iut2-c042 | IU | Public | 1G |
+| | uct2-c035 | UC | Private | 1G | 
+
+*Setup 2*: Public &amp; Private redirector
+| *Role* | *Hostname* | *Location* | *Network* | *Speed* |
+| Redirector | uct2-s1 | UC | Public &amp; Private | 10G |
+| Data Server | iut2-s3 | IU | Public | 10G |
+| | iut2-c034 | IU | Public | 1G |
+| | uct2-s3 | UC | Public &amp; Private | 10G |
+| | uct2-c034 | UC | Public &amp; Private | 1G |
+| Worker node | iut2-c042 | IU | Public | 1G |
+| | uct2-c035 | UC | Private | 1G | 
+
+See the [[https://twiki.grid.iu.edu/twiki/pub/Trash/ReleaseDocumentationBestmanGatewayXrootdUseCases/mwt2_configs.tar.gz][Config files]] for other settings.
+
+---+++ Results
+   *  The private-ip worker nodes were able to read and write in both tests with no adjustment
+   *  The public/private data servers and redirector answer requests on the correct interfaces.
+   * Since our machines exist in different domains, cms must explicitly allow both, by adding these lines to all xrootd.cfg: &lt;pre class=&quot;screen&quot;&gt;cms.allow host iut2-*.iu.edu
+cms.allow host uct2-*.uchicago.edu&lt;/pre&gt;
+   * For data servers behind the switch ACLs, xrd must be configured to listen on a static port, using =xrd.port N=, and that port allowed through for &amp; clients.   Because the cmsd cannot be configured for a static port, all ports must be allowed from the redirector.
+   * It is possible to have all xrootd instances use the same config file by using if constructs, as documented in the [[http://xrootd.slac.stanford.edu/doc/dev/Syntax_config.htm][Xrootd Config Syntax Guide]].  I didn&#39;t use that for the test, and it caused problems in keeping the config files consistent.
+   * Compared Xrootd with xrdcp to dCache with dccp
+      * Read speed doubled
+      * Write speed was doubled for large files.  In Xrootd there is a 5 second delay in creating files, which hurt performance on files &lt;300MB.   The speed stayed within an acceptable range.
+   * The difference in speed between  the worker/storage and high-performance nodes was not as high as expected.  The high-performance nodes may need further tuning
+   * WAN speed was very bad on first test.   The client machine is running kernel =2.6.9-78.0.17=, which requires manual tuning to good WAN performance. I added these parameters to =/etc/sysctl.conf= and ran =sysctl -p /etc/sysctl.conf=:&lt;pre class=&quot;screen&quot;&gt;net.ipv4.tcp_rmem = 4096 87380 20000000
+net.ipv4.tcp_wmem = 4096 87380 20000000
+net.core.rmem_max = 20000000
+net.core.wmem_max = 20000000&lt;/pre&gt; 
+
+Final speeds were:
+
+| *Direction* | *dCache with dccp* | *Xrootd WAN with untuned client* | *with tuned client* |
+| *Read* | 32MB/s | 30MB/s | 73MB/s |
+| *Write* | 20MB/s | 20MB/s | 33MB/s |
+
+
+---++ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = SarahWilliams
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Knowledge
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %NO%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = 
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = 
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = 
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = 
+
+
+############################################################################################################
+--&gt;
+

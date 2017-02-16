@@ -1,0 +1,54 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+---+ Monday Exercise 3.1: A Brief Detour Through the Mandelbrot Set
+
+Before we dive into a more complicated DAG, let&#39;s get a more interesting job. I&#39;m tired of this lazy, sleepy job that only does trivial mathematics. Let&#39;s make pretty pictures!
+
+We have a small program that draws pictures of the Mandelbrot set. You can [[https://secure.wikimedia.org/wikipedia/en/wiki/Mandelbrot_set][read about the Mandelbrot set on Wikipedia]], or you can simply appreciate the pretty pictures. It&#39;s a fractal.
+
+We have a simple program that can draw the Mandelbrot set. It&#39;s called =goatbrot=, and you can find it in =/share/goatbrot/goatbrot=.
+
+---++ Running goatbrot from the Command Line
+
+You can generate the Mandelbrot set with two simple commands. 
+
+   1. Generate a PPM image of the Mandelbrot set:\
+       &lt;pre class=&quot;screen&quot;&gt;%UCL_PROMPT_SHORT% &lt;strong&gt;/share/goatbrot/goatbrot -i 1000 -o tile_000000_000000.ppm -c 0,0 -w 3 -s 1000,1000&lt;/strong&gt;&lt;/pre&gt;
+   1. Convert the image to the JPEG format:\
+       &lt;pre class=&quot;screen&quot;&gt;%UCL_PROMPT_SHORT% &lt;strong&gt;convert tile_000000_000000.ppm mandel.jpg&lt;/strong&gt;&lt;/pre&gt;
+
+The =goatbroat= program takes several parameters. Let&#39;s break them down:
+
+   * =-i 1000= The number of iterations. Bigger numbers generate more accurate images but are slower to run. 
+   * =-o tile_000000_000000.ppm= The output file to generate. 
+   * =-c 0,0= The center point of the image. Here it is the point (0,0).
+   * =-w 3= The width of the image. Here is 3.
+   * =-s 1000,1000= The size of the final image. Here we generate a picture that is 1000 pixels wide and 1000 pixels tall. 
+
+---++ Dividing the Work into Smaller Pieces
+
+The Mandelbrot set can take a while to create, particularly if you make the iterations large or the image size large. What if we broke the creation of the image into multiple invocations then stitched them together? Once we do that, we can run the each goatbroat in parallel in our cluster. Here&#39;s an example you can run by hand. 
+
+   1. Run goatbroat 4 times:\
+       &lt;pre class=&quot;screen&quot;&gt;/share/goatbrot/goatbrot -i 1000 -o tile_000000_000000.ppm -c -0.75,0.75 -w 1.5 -s 500,500
+/share/goatbrot/goatbrot -i 1000 -o tile_000000_000001.ppm -c 0.75,0.75 -w 1.5 -s 500,500
+/share/goatbrot/goatbrot -i 1000 -o tile_000001_000000.ppm -c -0.75,-0.75 -w 1.5 -s 500,500
+/share/goatbrot/goatbrot -i 1000 -o tile_000001_000001.ppm -c 0.75,-0.75 -w 1.5 -s 500,500&lt;/pre&gt;
+   1. Stitch them small images together into the complete image (in JPEG format):\
+       &lt;pre class=&quot;screen&quot;&gt;montage  tile_000000_000000.ppm tile_000000_000001.ppm tile_000001_000000.ppm tile_000001_000001.ppm -mode Concatenate -tile 2x2 mandel.jpg&lt;/pre&gt;
+
+This will produce the same image as above. We divided the image space into a 2&amp;times;2 grid and ran =goatbrot= on each section of the grid. The =montage= program simply stitches the files together and writes out the final image in JPEG format.
+
+---++ Try it!
+
+Run the commands above, make sure you can create the Mandelbrot image. When you create the image, you might wonder how you can view it. If you&#39;re comfortable with =scp= you can copy it back to your computer to view it. Otherwise you can view it in your web browser in three easy steps.
+
+   1. *Make your web directory* (You only need to do this once.) &lt;pre class=&quot;screen&quot;&gt;cd ~&lt;br&gt;mkdir ~/public_html&lt;br&gt;chmod 0711 .&lt;br&gt;chmod 0755 public_html&lt;/pre&gt;
+   1. *Copy the image into your web directory* &lt;pre class=&quot;screen&quot;&gt;cp mandle.jpg ~/public_html/&lt;/pre&gt;
+   1. *Look at it in your web browser* Just change the %RED%USER%ENDCOLOR% to your user name: &lt;pre class=&quot;screen&quot;&gt;http://osg-ss-submit.chtc.wisc.edu/~%RED%USER%ENDCOLOR%/mandle.jpg&lt;/pre&gt;
+
+
+-- Main.GregThain - 07 Jul 2014

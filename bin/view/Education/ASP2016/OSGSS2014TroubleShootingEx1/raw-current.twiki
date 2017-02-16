@@ -1,0 +1,188 @@
+---+!!Troubleshooting Exercises 
+%TOC{depth=&quot;3&quot;}%
+
+---+ Introduction
+In the second part of our exercises we will continue to work with BLAST application, now adding storage into the picture.
+
+---+ Customize this Document
+
+&lt;!-- OSG Summer School 2011 Defaults
+   * Local VO= %URLPARAM{&quot;INPUT_VO&quot; encode=&quot;quote&quot; default=&quot;osgedu&quot;}%
+   * Local UCL_HOST = %URLPARAM{&quot;INPUT_HOST&quot; encode=&quot;quote&quot; default=&quot;osg-ss-submit&quot;}%
+   * Local UCL_USER = %URLPARAM{&quot;INPUT_USER&quot; encode=&quot;quote&quot; default=&quot;user&quot;}%
+   * Local UCL_DOMAIN = %URLPARAM{&quot;INPUT_DOMAIN&quot; encode=&quot;quote&quot; default=&quot;chtc.wisc.edu&quot;}%
+   * Local GATEKEEPER = %URLPARAM{&quot;INPUT_GATEKEEPER&quot; encode=&quot;quote&quot; default=&quot;red.unl.edu&quot;}%
+   * Local UCL_CWD= %URLPARAM{&quot;INPUT_CWD&quot; encode=&quot;quote&quot; default=&quot;~/trouble_part1&quot;}%
+   * Local WORKING_DIR= %URLPARAM{&quot;INPUT_WORKING_DIR&quot; encode=&quot;quote&quot; default=&quot;~/trouble_part1&quot;}%
+   * Local BATCH_SYSTEM = %URLPARAM{&quot;BATCH_SYSTEM&quot; encode=&quot;quote&quot; default=&quot;condor&quot;}%
+   * Local REMOTE_ROOT = %URLPARAM{&quot;INPUT_REMOTE_ROOT&quot; encode=&quot;quote&quot; default=&quot;/mnt/hadoop/user&quot;}%
+   * Local REMOTE_SRM = %URLPARAM{&quot;INPUT_SRM&quot; encode=&quot;quote&quot; default=&quot;red-srm1.unl.edu:8443&quot;}%
+   * Local REMOTE_GRIDFTP= %URLPARAM{&quot;INPUT_GRIDFTP&quot; encode=&quot;quote&quot; default=&quot;red-gridftp.unl.edu&quot;}%
+   * Local SURL = srm://%REMOTE_SRM%/srm/v2/server?SFN=%REMOTE_ROOT%
+   * Local TURL= gsiftp://%REMOTE_GRIDFTP%/%REMOTE_ROOT%
+   * Local OSG_DATA=%URLPARAM{&quot;INPUT_OSG_DATA&quot; encode=&quot;quote&quot; default=&quot;/osg/data&quot;}%
+   * Local BLAST_DB_SUBMIT=%URLPARAM{&quot;INPUT_BLAST_DB_SUBMIT&quot; encode=&quot;quote&quot; default=&quot;/share/blast&quot;}%
+   * Local VDT_LOCATION=/opt/osg-client
+--&gt;
+
+%ICON{&quot;warning&quot;}% %RED% Please change your user name and click on the Customize button!%ENDCOLOR%
+&lt;form action=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%WEB%/%TOPIC%&quot;&gt;
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      %RED%Login Name%ENDCOLOR%
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_USER&quot; value=&quot;%UCL_USER%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      VO
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_VO&quot; value=&quot;%VO%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Host Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_HOST&quot; value=&quot;%UCL_HOST%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Domain Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_DOMAIN&quot; value=&quot;%UCL_DOMAIN%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+    &lt;td&gt;
+      Exercise Path
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_WORKING_DIR&quot; value=&quot;%WORKING_DIR%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+     &amp;nbsp;
+     &lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;Customize&quot; /&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/form&gt;
+
+---+ Exercises 
+---++ Prerequisite 
+
+   * Login on submission node &lt;pre class=&quot;screen&quot;&gt;
+ssh %UCL_USER%@%UCL_HOST%.%UCL_DOMAIN%
+&lt;/pre&gt;
+   * Make a directory for this exercise&lt;pre class=&quot;screen&quot;&gt;
+mkdir -p %UCL_CWD%
+cd %UCL_CWD%
+&lt;/pre&gt;
+
+For these exercises, we&#39;ll submit a job that needs access to the CHTC&#39;s Gluster filesystem. We won&#39;t actually do anything with Gluster, other than verify that it is there.
+
+Copy and paste the following as a script called &quot;gluster.sh&quot;: 
+&lt;pre&gt;
+GLUSTER_LOCATION=/mnt/gluster
+
+echo &quot;I am a short job running on node&quot; `hostname`
+
+stat $GLUSTER_LOCATION &gt; /dev/null
+
+if [ $? -eq &#39;0&#39; ]; then
+  echo &quot;Gluster is mounted at $GLUSTER_LOCATION!&quot;
+else
+  echo &quot;Could not find Gluster :(&quot;
+fi
+&lt;/pre&gt;
+
+Make sure to =chmod +x gluster.sh=. 
+
+Create an HTCondor submit file to go with it and include the following requirements line:
+
+&lt;pre&gt;
+Requirements = (Has_Gluster =?= True)
+&lt;/pre&gt;
+
+---++ Exercise 1: Fix a stuck job
+
+Once you&#39;ve created the submit file, go ahead and submit your job. 
+
+Will this job ever run? After submitting, analyze the job with =condor_q -better-analyze [Job ID]=.
+
+%TWISTY{
+showlink=&quot;Click to see expected output&quot;
+hidelink=&quot;Hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;file&quot;&gt;
+The Requirements expression for your job reduces to these conditions:
+
+         Slots
+Step    Matched  Condition
+-----  --------  ---------
+[0]           0  Has_Gluster is true
+&lt;/pre&gt;
+%ENDTWISTY%
+
+We can also see how many nodes match our requirement with =condor_status=:
+&lt;pre&gt;
+condor_status -constraint Has_Gluster
+&lt;/pre&gt; 
+
+Does =condor_status= show any slots that match Has_Gluster? No -- I have led you astray and given you a bad requirements line :)
+
+The actual ClassAd that we want is named *HasGluster* not _Has_Gluster_. At this point, we can either remove our old job and resubmit, or we can edit the job in queue with =condor_qedit=. 
+
+&lt;pre&gt;
+condor_qedit [Job ID] Requirements &#39;HasGluster =?= True&#39;
+&lt;/pre&gt; 
+
+Try to run =condor_q -better [Job ID]= again. Has the output changed?
+
+---++ Exercise 2: Investigate why a job is held
+
+Did the job in the previous exercise finish? It should have eventually started after fixing the requirements line, but you may now see it in H state (Held). Why? Try investigating with =condor_q -hold [Job ID]=
+
+%TWISTY{
+showlink=&quot;Click to see expected output&quot;
+hidelink=&quot;Hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;file&quot;&gt;
+Error from slot1@e233.chtc.wisc.edu: Failed to execute &#39;/var/lib/condor/execute/slot1/dir_27964/condor_exec.exe&#39;: (errno=8: &#39;Exec format error&#39;)
+&lt;/pre&gt;
+%ENDTWISTY%
+
+The reason for this error is not obvious. _Hint: Go back and look at the shell script again_
+
+%TWISTY{
+showlink=&quot;Click to see the answer&quot; 
+hidelink=&quot;Hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+The shell script is missing the interpeter line, =#!/bin/bash=. Without it, HTCondor will fail to run the job.
+%ENDTWISTY%
+
+---++ Exercise 3: Try condor_ssh_to_job
+This exercise is a bit more open-ended. Try to create a submit file that runs the &quot;sleep&quot; command. Sleep takes integer seconds as an argument, so try to have your job do something like &quot;sleep 3600&quot;.
+
+Submit the job, and once it&#39;s running, use &quot;condor_ssh_to_job [Job ID]&quot; to SSH to the remote execution host.
+
+Try to answer the following questions: 
+
+What is =condor_exec.exe=? What do =_condor_stderr= and =_condor_stdout= correspond to?
+

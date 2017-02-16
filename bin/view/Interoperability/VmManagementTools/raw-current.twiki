@@ -1,0 +1,32 @@
+---+ VM Management Tools
+---++ Introduction
+The wide (and incompatible) variety of virtualization-enabled grids and cloud services call for a set of management tools to provide a single and consistent interface.  These tools, part of the [[https://sites.google.com/site/extenci/][ExTENCI]] project, aim to automate some of the more-tiresome aspects of using multiple clouds and VEGgies.  Intended for a single user, the core of these tools is a common catalog of information about the services that user can access (including image storage services), the corresponding identification or authorization information, and the user&#39;s virtual machines.
+---++ Overview of Functionality
+These tools support the EC2 and S3 cloud protocols, as implemented by Amazon Web Services, Nimbus. !OpenStack, and Eucalyptus.  They&#39;re intended to simplify the staging of VM images to different cloud services, but also support basic control functionality, appropriate for testing those images once staged.  The tool =extenci-test-vm= automates the stage-instantiate-shutdown-destage cycle, pausing in the middle to allow you to test the new instance.  Everything that it does can be duplicated by calling one of =extenci-catalog=, which manipulates the common catalog; =extenci-stage=, which uploads images; or =extenci-control=, which uses Condor to start and stop instances of an image.  This functionality can also be accessed through the tools&#39; library API.
+---++ Limitations and Preparations
+   1. The [[http://open.eucalyptus.com/downloads][euca2ools]] must be in your PATH in order to run these tools.
+   2. In order to use =extenci-control=, the [[http://www.cs.wisc.edu/condor][Condor]] tools =condor_submit=, =condor_q=, and =condor_rm= must be in your PATH and configured to use a Condor with the EC2 Grid Universe, which implies version 7.7.0 or later; the tools will work the &quot;personal&quot; Condor you can install as an unprivileged user.
+   3. The tools need certain files in the =~/.extenci= directory; the download includes an example which you&#39;ll have to customize in order to use, and instructions on how to do so.   Note that no security information is stored in the catalog itself; instead, everything is stored in files on disk.  (This is conventional for your private and public keys, but not for your Amazon user ID, access key ID, or secret access key.)
+   4.  The tool is oblivious to image file format, except to recognize and preserve the &#39;.gz&#39; suffix for gzip-compressed files when staging them; this permits Nimbus to recognize and decompress such images.
+---++ Usage with Examples
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;code&gt;%UCL_PROMPT_SHORT% extenci-test-vm vmImageFileName Amazon m1.large&lt;/code&gt;
+&lt;/pre&gt;
+
+This will stage (bundle, upload, and register) the virtual machine image =vmImageFileName= to Amazon, run it as an m1.large instance, tell you its IP, and then wait for you to confirm if it&#39;s working properly.  It will terminate the instance when you answer, unstaging the image if you said it wasn&#39;t.
+
+-- Main.ToddLMiller - 14 June 2012
+
+---++ Downloads
+
+   * [[%ATTACHURL%/extenci-tools-51.tar.gz][extenci-tools-51.tar.gz]]: Build 51 of the !ExTENCI VM management tools.
+   * [[%ATTACHURL%/extenci-tools-49.tar.gz][extenci-tools-49.tar.gz]]: Build 49 of the !ExTENCI VM management tools.
+   * [[%ATTACHURL%/extenci-tools-27.tar.gz][extenci-tools-27.tar.gz]]: Build 27 of the !ExTENCI VM management tools.
+
+---++ Contact
+
+Contact Todd L Miller (tellmiller) at gmail (.com) if you have questions about these tools.
+
+---++ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+

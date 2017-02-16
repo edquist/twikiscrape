@@ -1,0 +1,163 @@
+---+!!&lt;nop&gt;Publishing Supported VOs for a Compute Element (CE)
+%TOC%
+%STARTINCLUDE%
+
+---++Introduction
+In the OSG environment, it is necessary to identify the set of VOs that a Compute Element (CE) supports, resource availability data about those nodes  and to collect accounting data for those nodes.
+
+The VO identity is used in the following OSG systems:
+   * &lt;nop&gt;Trash.ReleaseDocumentationMonALISA - uses grid3-user-vo-map.txt
+   * GIP - uses grid3-user-vo-map.txt
+   * VORS - uses the registration databases for sites and then aliases when conflicts occur
+   * VOMS Monitor - uses edg-mkgridmap.conf
+   * Gratia - uses grid3-user-vo-map.txt
+   * &lt;nop&gt;GridCat - uses grid3-user-vo-map.txt (expected to be deprecated so not addressed specifically)
+
+In addition, the VO name is also used in the following:
+   * DOE certification site
+
+Unfortunately there is little consistency as to the value used to identify the VO.  The purpose of this document is to identify the known problems and provide resolution.
+
+---++VO Name Usage in the Various Components
+
+---+++&lt;nop&gt;Trash.ReleaseDocumentationMonALISA
+uses grid3-user-vo-map.txt
+
+
+---+++GIP - 
+uses grid3-user-vo-map.txt
+
+
+---+++VORS
+uses the registration databases for sites and then aliases when conflicts occur
+
+
+---+++VOMS Monitor
+uses edg-mkgridmap.conf
+
+
+---+++Gratia
+usesgrid3-user-vo-map.txt
+
+
+---+++&lt;nop&gt;GridCat
+uses grid3-user-vo-map.txt (expected to be deprecated so not addressed specifically)
+
+---++grid3-usr-vo-map.txt file
+---+++Historical Background.
+At this time a little background and explanation of one file, &lt;i&gt;grdi3-user-vo-map.txt&lt;/i&gt;,  is needed to better understand the problem.  This file was intended to be used for just this purpose.
+
+The &lt;i&gt;grid3-user-vo-map.txt&lt;/i&gt; file was originally used only by &lt;nop&gt;Trash.ReleaseDocumentationMonALISA in the collection of user job metrics.  Since the user data was captured by UNIX account, this file was established to perform the conversion.  
+&lt;pre&gt;
+#voi  &lt;b&gt;List of identifiers that the UNIX account is initially translated to on the uncommented line&lt;/b&gt;
+#VOc  &lt;b&gt;List of the VOs that the #voi entries are translated to.  There is a 1 for 1 mapping to #voi.&lt;/b&gt;
+UNIX_account   #voi_entry &lt;b&gt;Maps the UNIX account to #voi indentifier&lt;/b&gt;
+&lt;/pre&gt;
+The translation from UNIX account to reportable VO is actually a double translation:
+   * first the UNIX account is translated to the #voi entry on based on the uncommented line entry
+   * then the #voi identifier is converted to the reportable VO name using the #voi and #VOc entries (these must be paired lists).
+In the example below, UNIX accounts uscms001, uscms002 and uscmsadmin will all have their metrics reported as the USCMS VO.  The metrics collected for ivdgl001 and ivdgl002 users will have their metrics reported as iVDGL.
+&lt;pre&gt;
+#voi  uscms cms ivdgl            
+#VOc USCMS USCMS iVDGL    
+uscms001 uscms
+uscms002 uscms
+   :
+uscmsadmin cms
+  :
+ivdgl001 ivdgl
+ivdgl002 ivdgl
+&lt;/pre&gt;
+
+
+There are 2 main problems with the use of the &lt;i&gt;grid3-user-vo-map.txt&lt;/i&gt; file:
+   * Integrity of the data
+   * (Mis-)use of the data
+
+---+++Integrity of the data
+For those sites using the &lt;i&gt;edg-mkgridmap&lt;/i&gt; cron script to update their &lt;i&gt;grid-mapfile&lt;/i&gt;, the &lt;i&gt;grid3-user-vo-map.txt&lt;/i&gt; file had to be manually maintained.  In many cases, this was not being done.  Keeping this file accurate on a manual basis is pretty much an impossible task as there are no tools to detect changes in the many VO&#39;s memberships.
+
+For those sites using GUMS, the &lt;i&gt;grid3-user-vo-map.txt&lt;/i&gt; is mechanically updated using the &lt;i&gt;gums-host-cron&lt;/i&gt; cron script.  No direct manual maintanence is required.
+
+In both cases, it is possible to have a &lt;i&gt;grid-mapfile&lt;/i&gt; entry or an account mapping from GUMS for a UNIX account that does not exist and the user, while authorized, will not be capable of running a job.  If this condition exists for all members of a particular VO, then that VO is not being supported by that site.
+
+On 9/20/06 a conference call was held to address this data integrity issue with the following participants: Shaewon Wang, Leigh Grundhoefer, John Weigand and Alain Roy.   The following enhancements were decided on and will be available with the VDT 1.6.0 release (ITB 0.5.1+).
+
+
+---++++Sites using edg-mkgridmap
+New script: &lt;i&gt;VDT_LOCATION/osg-vo-map/sbin/&lt;b&gt;generate-vo-map&lt;/b&gt;&lt;/i&gt; script (courtesty of Alain Roy):
+
+This script will use the &lt;i&gt;VDT_LOCATION/edg/edg-mkgridmap.conf&lt;/i&gt; to generate a &lt;i&gt;grid3-user-vo-map.txt&lt;/i&gt; file.  The format of the configuration file will be changed to include the reportable VO name as the second token in the commented line above the VOMS server entry.
+&lt;pre&gt;
+#1 cdf CDF Subir Sarkar (subir.sarkar@cnaf.infn.it)
+group vomss://voms.cnaf.infn.it:8443/voms/cdf cdf
+#2 fermilab FermiLab -- Fermilab Grid Support Center (helpdesk-admin@fnal.gov)
+group vomss://voms.fnal.gov:8443/voms/fermilab fermilab
+#3 ukminos FermiLab -- Fermilab Grid Support Center (helpdesk-admin@fnal.gov)
+group vomss://voms.fnal.gov:8443/voms/fermilab/ukminos ukminos
+   : 
+&lt;/pre&gt;
+This script will create the &lt;i&gt;grid3-user-vo-map.txt&lt;/i&gt; by re-reading the newly generated &lt;i&gt;grid-mapfile&lt;/i&gt; in conjunction with the configuration file resulting in:
+&lt;pre&gt;
+#voi cdf fermilab ukminos          &lt;b&gt;... this is the sub-classification within a reportable VO name&lt;/b&gt;
+#VOc CDF Fermilab Fermilab    &lt;b&gt;.... this is the reportable VO name&lt;/b&gt;
+cdf cdf
+fermilab fermilab
+minos ukminos
+&lt;/pre&gt;
+
+&lt;b&gt;This script will be incorporated in the &lt;i&gt;edg-mkgridmap&lt;/i&gt; cron script&lt;/b&gt;
+
+
+---++++Sites using GUMS
+These sites already have the &lt;i&gt;grid3-user-vo-map.txt&lt;/i&gt; file created using the gums-host-cron script.
+
+The &lt;i&gt;gums.config&lt;/i&gt; contains the quivalent information as the &lt;i&gt;edg-mkgridmap.conf&lt;/i&gt; for reportable VO and sub-classifications.
+---++++All sites (edg-mkgridmap and GUMS)
+New script: &lt;i&gt;VDT_LOCATION/osg-vo-map/sbin/&lt;b&gt;check-vo-map&lt;/b&gt;&lt;/i&gt; script (courtesy of Alain Roy)
+
+This script addresses the issue of a VO having either no members or none of the members of a VO having UNIX accounts available.  It will verify that each potential UNIX account is, in fact, available by doing a &#39;bin/id&#39;.  If an account does not exist, it will drop that entry from the user vo map file replacing the existing file with the modified one.  
+
+This script will generate the following additional files when complete:
+   * &lt;i&gt;osg-supported-vos.txt&lt;/i&gt; - This will contain the list of all VOs for which at least one member can be authorized and has an established UNIX account.
+   * &lt;i&gt;osg-undefined-accounts.txt&lt;/i&gt; - This will contain a list of all accounts that can be authorized/assigned, but no UNIX account exists.
+
+&lt;b&gt;This script will be incorporated in both the &lt;i&gt;edg-mkgridmap&lt;/i&gt; and &lt;i&gt;gums-host-cron&lt;/i&gt; scripts.&lt;/b&gt;
+
+
+
+---+++(Mis-)use of the data
+With the exception of &lt;nop&gt;Trash.ReleaseDocumentationMonALISA, all the middleware that uses the &lt;i&gt;grid3-user-vo-map.txt&lt;/i&gt; appears to be using:
+   * either the #voi entry associated with the uncommented UNIX-to-#voi line.
+   * or mapping correctly to the #VOc entry, but converting it to lower case before using it.
+
+A meeting was held on 12/6/06 to address this issue with the following participants:  Shaewon Wang, Horst Severini, Rob Quick, John Roeshek and John Weigand.  It was agreed that  the #VOc value should be used. This allows for the mixed-case VO value such as iVDGL.  The  major issue will be acceptance of this by all the reporting/data collection systems.
+
+&lt;b&gt;Open issue:&lt;/b&gt;
+
+---++Action items
+   1 Shaewon will look into how EGEE is assigning VO names.  Are they using GIP output, another source... whatever? 
+
+
+
+
+       
+
+
+
+
+
+
+
+%STOPINCLUDE%
+
+&lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+*Major updates*:%BR%
+&lt;!--Future editors should add their signatures beneath yours!--&gt;
+-- Main.JohnWeigand - 13 Nov 2006&lt;br&gt;
+
+
+
+%INCLUDE{&quot;Trash/Integration.WhuReferences&quot;}%
+

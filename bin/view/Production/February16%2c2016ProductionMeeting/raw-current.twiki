@@ -1,0 +1,141 @@
+  * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-812-856-7060, 231000# 
+   * [[https://bridge.iu.edu/webapp/#/][Video Link]]
+
+---++ Announcements:   
+
+   * [[https://indico.fnal.gov/conferenceDisplay.py?confId=10571][OSG All Hands Meeting:]] 14-18/Mar, Clemson.
+      * [[http://citi.clemson.edu/osg-ahm-2016/registration/][Registration]] is open
+   * [[http://www.ncsa.illinois.edu/Conferences/ARCC/][Advancing Research Computing on Campuses:]] 22-26/Mar, Urbana.
+
+---++ Action/Significant Items: 
+   * A router between New York and London failed, effected transfers from CERN to US and hence production.
+   * Believed to be recovering at the time of the meeting
+
+---++ Attendees:
+   * Scott, Kyle, Jeny, Tim C, Tim T, Neha, Tony, Armen.
+
+---++ Apologies:
+   * Rob Q. (conflict), Bo (travel), Tanya (conflict)
+
+---++ CMS (Tony)
+   * CMS Production for the week:
+      * 12,404,813 hours
+      * 783,086 pilots
+
+   * SELinux 
+      * Would like guidance on how to configure SELinux for OSG software
+      * When FNAL moves to SLF7, SELinux will be required.  Other OS variants will include CentOS 7
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status.
+      * USATLAS total production over the past week was overall quite stable, at the average level of 48-56K running job slots. 
+   * Job statistics for last week.      
+      * Gratia report: 1.6M pilots, 3.1M walltime hours, and CPU/walltime ratio of 64% (for single core jobs)
+      * 1.7M real Jobs reported from the Atlas dashboard.  
+   * Data Transfer rate is ~ 550TB/day at BNL tier1 last week.
+
+---++ FIFE - !FabrIc for Frontier Experiments (Tanya)
+Last two weeks:
+   * !Mu2e - 181,811	jobs, 477,102 Wall Hours 99.9% success rate
+   * !NOvA -  105,519.66 Wall Hours - low success rate due to missing X11 libs on multiple sites.
+   * DES (Gravitational Waves! )  used OSG - 13 sites 13,021 Wall Hours. 
+   * Microboone use OSG - 5 sites, 8,692 Wall Hours
+
+---++ Grid Operations Center (Scott)
+
+   * [[http://tinyurl.com/pzkjq32][GOC Services Availability/Reliability]]
+   * &lt;a href=&quot;http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on&quot;&gt;Current status: &lt;img src=&quot;http://steige.grid.iu.edu/steige/status_current.png&quot;&gt; &lt;/a&gt;
+   * &lt;a href=&quot;http://reports.grid.iu.edu/reports/&quot;&gt;Reports current: &lt;img src=&quot;http://steige.grid.iu.edu/steige/status_reports.png&quot;&gt;&lt;/a&gt;
+   * [[http://maddash.aglt2.org/maddash-webui/index.cgi?dashboard=OSG%20Grid%20Operations%20Center%20Test%20Mesh%20Config][PerfSonar]] service
+&lt;img src=&quot;http://gratiaweb2.grid.iu.edu/gratiastatic/today/osg_wall_hours.png&quot;/&gt;
+&lt;img src=&quot;http://osg-flock.grid.iu.edu/monitoring/condor/condor_7day.png&quot;  style=&quot;width: 75%; height: 75%&quot; &gt;&lt;br&gt;
+   * &lt;img src=&#39;http://osgconnect.net/accounting-summary/data/osg/daily_hours_by_project.png&#39;&gt;
+   * Scaling to ~150k jobs: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/150k.png&quot; alt=&quot;150k.png&quot; width=&#39;589&#39; height=&#39;297&#39; /&gt;    
+   * OSG-Connect
+      * Issues with stash2 resulted in problems submitting new jobs over the weekend
+      * Globus upgrade on Saturday might have caused login issues briefly
+   *  Grid Operations Center
+      * ITB release:
+      * implement [[https://ticket.opensciencegrid.org/28342][28342]], [[https://ticket.opensciencegrid.org/28461][28461]], [[https://ticket.grid.iu.edu/28470][28470]], [[https://jira.opensciencegrid.org/browse/OIM-133][OIM-133]] and  [[https://jira.opensciencegrid.org/browse/OO-121][OO-121]]
+      * !GratiaWeb: fix 12 month report
+      * Oasis: resize shared volume
+      * OIM: Address certificate revocation issue
+      * Perfsonar: check_mk installation, upgrade psds to OSG 3.3
+
+---++ Networking (Shawn)
+
+---++ Production Support (Bo)
+&lt;img src=&quot;http://reports.grid.iu.edu/reports/opp-week.png&quot;&gt;
+   * Met with AMS (http://www.ams02.org) last week while at CERN. Would like to use a considerable amount of computing in the next week for GEANT4-based simulation. Plan on setting up a dedicated schedd at MIT to flock to local resources and the OSG 
+      * Set up OSG Project &quot;AMS&quot; 
+   * Watching opportunistic flow as CMS jobs in the US tanked overnight due to networking problems
+
+
+---++ Software (Tim C.)
+   * Gratia brokenness
+      * When processing job IDs, if any local job precedes the first remote job from HTCondor-CE, all subsequent remote job IDs are quarantined
+      * Fix #1: Change parsing of HTCondor’s !GridJobId attribute for batch system job ID ([[https://jira.opensciencegrid.org/browse/GRATIA-185][GRATIA-185]])
+      * Fix #2: Make searches for &lt;code&gt;gratia_certinfo_*&lt;/code&gt; files more robust ([[https://jira.opensciencegrid.org/browse/GRATIA-186][GRATIA-186]])
+   * March:
+      * Ship a new version of Gratia (see above)
+      * Ship an initial version of HTCondor-CE-Bosco
+      * Ship the HDFS plugins (!GridFTP and !XRootD) for EL&amp;nbsp;7
+      * Possibly update to later patchlevel of Hadoop 2.0.0
+      * Update to an improved GRAM PBS jobmanager in which the SEG works
+      * Update to HTCondor 8.4.4 and (in Upcoming) HTCondor 8.5.2
+      * Small tweaks to HTCondor-CE
+      * Keep working on EL&amp;nbsp;7
+   * Lots of site support, especially with CEs (Clemson, Colorado, FIU, Harvard, MIT, Northwestern)
+   * Internal stuff&amp;hellip;
+
+
+---++ Release (Tim T.)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| March | 3.3.10 / 3.2.36 | 2016-02-22 | 2016-02-29 | 2016-03-08 | |
+| April | 3.3.11 / 3.2.37 | 2016-03-28 | 2016-04-04 | 2016-04-12 | 5 week cycle |
+| May | 3.3.12 / 3.2.38 | 2016-04-25 | 2016-05-02 | 2016-05-10 | |
+
+3.3 series is the primary focus; only security updates and critical bug fixes for 3.2 series
+
+   * OSG 3.3.10 Only
+      * EL7 Support
+         * xrootd-hdfs
+         * !GridFTP-HDFS plugin
+      * GUMS 1.5.2
+      * HTCondor 8.4.4
+      * GFAL environment variables in tarballs
+      * Upcoming
+         * Nothing yet
+   * OSG 3.2.36 and OSG 3.3.10
+      * osg-ca-certs-updater: remove check for *-ca-certs-compat packages
+   * OSG 3.2.36 Only
+      * Nothing yet
+
+---++ Security (Jeny, Mine) 
+   * Vulnerabilities/Incidents
+      * No new vulnerabilities/incidents affecting OSG
+      * CILogon reported a security problem with accepting Digicert certificates. A request of producing a self-signed certificate was made to GOC [[https://ticket.opensciencegrid.org/28515][https://ticket.opensciencegrid.org/28515]]
+   * Operations
+      * OSG CA transition
+         * A user from Gluex VO renewed his user certificate today and got a certificate signed by DigiCert. [[https://ticket.grid.iu.edu/goc/28505][https://ticket.grid.iu.edu/goc/28505]]
+         * Revocation requests from Digicert certificates going to CILogon [[https://jira.opensciencegrid.org/browse/OIM-133][https://jira.opensciencegrid.org/browse/OIM-133]]
+         * OIM info for VOs under Fermilab still shows DigiCert as certificate signer: [[https://oim.grid.iu.edu/oim/vo?id=48][https://oim.grid.iu.edu/oim/vo?id=48]]: request sent to GOC through email.
+      * Announcement for Globus GSI clients moving to STRICT_RFC2818 
+
+*Action items*
+   * VOs scheduled for transition in March:
+      * Fusiongrid, ORNL, DOSAR, SBGrid, NYSGRID, ESGF, LHCB, Glast.org, T2K, DES, Nanohub, Xenon, GPN
+      * DOSAR, SBGrid, NYSGRID VOs are updating their VOMS server certificates to CILogon: updates on vo-client packages are required: v64.
+      * *February 19th* (at the latest) Security team open tickets for updates in vo-client package.
+      * *March 1st* Switching backend for these VOs for ITB-release
+      *  *March 8th* Production release on March 8th.
+      * *March 8th*  Software team releases vo-client package v64 in OSG 3.3.10/3.2.36
+
+-- Main.ScottTeige - 16 Feb 2016
+

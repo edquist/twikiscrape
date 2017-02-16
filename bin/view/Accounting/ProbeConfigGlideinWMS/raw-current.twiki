@@ -1,0 +1,174 @@
+---+!! !HTCondor/GlideinWMS Probe Configuration
+&lt;!--
+   * Local SUPPORTED_OS = Red Hat Enterprise Linux 5, 32 and 64 bit and variants (Scientific Linux 5 and !CentOS) 
+--&gt;
+%TOC%
+
+---+ Overview
+This probe reports the usage in a HTCondor system
+
+This probe will read the GLIDEIN_ResourceType startd attribute to identify on which Resource the job ran.  This attribute needs to be set by the !GlideinWMS Factory (The OSG factories already have this set).  If this attribute does not exist, the probe will fall back to GLIDEIN_Site, and finally the !FileSystemDomain of the host.
+
+The usage will be forwarded to the production Gratia collector (gratia-osg-prod.opensciencegrid.org) by default.
+
+This document refers to a probe installed to a Submit host submitting directly or indirectly (flocking) to a [[Documentation/Release3.NavTechGlideinWMS][GWMS System]] (GWMS Frontend, Submit host, ...). 
+If you are installing/configuring a Compute Element check the [[Documentation/Release3/InstallComputeElement#7_2_Configuring_your_CE_to_use_C][CE install guide]] instead.
+The underlying probe is the same but the configuration differs.
+
+---+ Requirements and Preparation
+
+The Probe assumes that condor binaries (=condor_history= for example) are in the default path (=/usr/bin=).  If they are not, please see section [[#NonStandardCondor][Non-Standard Condor]]
+
+Host requirements (bare-bone installation):
+   * Probe must be installed on the VO&#39;s schedd.
+   * Currently most of our testing has been done on Scientific Linux 5.
+   * Root access
+   * Allow outbound network connection, on port 80, to the Gratia collector (default is http://gratia-osg-prod.opensciencegrid.org).  Gratia does not support HTTP proxies.
+
+To be part of OSG your Submit host must be registered in OIM (e.g. as Submit Node). To register your resource:
+   * Use your user certificate.  [[Documentation.Release3.CertificateUserGet][Here]] are instructions to request a user certificate.
+   * Register in OIM as described in Operations.OIMRegistrationInstructions
+
+%INCLUDE{&quot;Documentation.Release3.YumRepositories&quot; section=&quot;OSGRepoBrief&quot; TOC_SHIFT=&quot;+&quot;}%
+
+---+ Installation
+   1. Install the !GlideinWMS Gratia Probe:\
+   &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% yum install gratia-probe-glideinwms &lt;/pre&gt;
+   1. Edit the ProbeConfig located in =/etc/gratia/condor/ProbeConfig=.  First, edit the =SiteName= and =ProbeName= to be a unique identifier for your !GlideinWMS Submit host.  There can be multiple probes (with different names) per site.   If you haven&#39;t already, you should register your !GlideinWMS submit host in [[https://oim.grid.iu.edu/oim/home][OIM]].  Then you can use the name you used to register the resource.
+   &lt;pre class=&quot;file&quot;&gt;
+ProbeName=&quot;condor:&amp;lt;hostname&gt;&quot;
+SiteName=&quot;HCC-GlideinWMW-Frontend&quot;   &lt;/pre&gt;
+   Next, turn the probe on by editing the =EnableProbe=:
+   &lt;pre class=&quot;file&quot;&gt;
+EnableProbe=&quot;1&quot;   &lt;/pre&gt;
+   1. Reconfigure HTCondor:\
+   &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% condor_reconfig&lt;/pre&gt;
+   1. Start the services, and add them to be started automatically when the system reboots: &lt;pre class=&quot;screen&quot;&gt;
+$ service gratia-probes-cron start
+$ chkconfig --level 345 gratia-probes-cron on &lt;/pre&gt;
+
+
+---+ Usage Graphs
+Usage graphs can be found under the heading Glidein Bar Graphs at 
+http://gratiaweb.grid.iu.edu/gratia/xml
+
+Specifically, [[http://gratiaweb.grid.iu.edu/gratia/xml/glidein_hours_bar_smry][this page]] may be useful.  Replace the variable =probe= with the name of your probe that you configured above.
+
+*NOTE:* Usage could be delayed up to a few hours after the job has completed.
+
+---+ Unusual Use Cases
+---++ Users without Certificates
+If you have users that submit jobs without a certificate explicitly declared in the submit file, you will need to add =MapUnknownToGroup= to the ProbeConfig.  In the file =/etc/gratia/condor/ProbeConfig=, add the value after the =EnableProbe=.
+
+&lt;pre class=&quot;file&quot;&gt;
+    ...
+    SuppressGridLocalRecords=&quot;0&quot;
+    EnableProbe=&quot;1&quot;
+    %RED%MapUnknownToGroup=&quot;1&quot;%ENDCOLOR%
+
+    Title3=&quot;Tuning parameter&quot;
+    ...
+&lt;/pre&gt;
+
+Further, if you want to record all usage as coming from a single VO, you can configure the probe to override the &#39;guessed&#39; VO.  In the below example, replace the %RED%Engage%ENDCOLOR% with a registered VO that you would like to report as.  If you don&#39;t have a VO that you are affiliated with, you may use Engage.
+
+&lt;pre class=&quot;file&quot;&gt;
+...
+    MapUnknownToGroup=&quot;1&quot;
+    %RED%MapGroupToRole=&quot;1&quot;%ENDCOLOR%
+    %RED%VOOverride=&quot;Engage&quot;%ENDCOLOR%
+...
+&lt;/pre&gt;
+
+#NonStandardCondor
+---++ Non-Standard Condor Install
+If Condor is installed in a non-standard location (ie not RPMs, or relocated RPM outside =/usr/bin=), then you need to tell the probe where to find the Condor binaries.  This can be done with a script with a special attribute in =/etc/gratia/condor/ProbeConfig=, =CondorLocation=.  Point it to the location of the Condor install, such that =CondorLocation/bin/condor_version= exists.  
+
+
+---+++ No RPM install of Condor
+By default, the gratia probe will also install Condor, if it hasn&#39;t already been installed by RPM (or YUM).   To disable this, you need to install =empty-condor= in order to trick yum into believing you already have condor.
+&lt;pre class=&quot;screen&quot;&gt;
+yum install empty-condor gratia-probe-condor &lt;/pre&gt;
+
+---+++ New Data Directory
+In =/etc/gratia/condor/ProbeConfig=, the value of =DataFolder= (near the bottom) needs to be the same as the Condor configuration variable =PER_JOB_HISTORY_DIR=.  You can get the value of =PER_JOB_HISTORY_DIR= with the command:
+&lt;pre class=&quot;screen&quot;&gt;
+condor_config_val PER_JOB_HISTORY_DIR &lt;/pre&gt;.
+
+---++ Different collector and other customizations
+By default the probe reposts to the OSG Gratia service (Collector). To change that you must edit the configuration file, =/etc/gratia/condor/ProbeConfig=, and replace the OSG production host with your desired one:
+&lt;pre class=&quot;file&quot;&gt;
+...
+    CollectorHost=&quot;gratia-osg-prod.opensciencegrid.org:80&quot;
+    SSLHost=&quot;gratia-osg-prod.opensciencegrid.org:443&quot;
+    SSLRegistrationHost=&quot;gratia-osg-prod.opensciencegrid.org:80&quot;
+...
+&lt;/pre&gt;
+
+You can find more information about the content of the configuration file and how to change it in Accounting.ProbeConfig and Accounting.ProbeConfigCondor .
+
+
+---+ References
+Some links about OSG Accounting with Gratia:
+   * [[Accounting.WebHome][OSG Accounting (Gratia)]]
+   * [[Accounting.ProbeConfig][Gratia probes configuration]]
+   * [[Accounting.ProbeConfigCondor][Gratia HTCondor probe]]
+The !GlideinWMS 
+   * [[Documentation/Release3.NavTechGlideinWMS][The Glidein Workflow Management System]]
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+
+   DEAR DOCUMENT OWNER
+   ===================
+
+   Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER          = MarcoMambelli
+
+   Please define the document area, choose one of the defined areas from the next line
+   DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = General
+
+   define the primary role the document serves, choose one of the defined roles from the next line
+   DOC_ROLE = (Scientist|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+   Please define the document type, choose one of the defined types from the next line
+   DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Navigation
+   
+   Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+   Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+   change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+   change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+   change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+   DEAR DOCUMENT REVIEWER
+   ======================
+
+   Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       =  TanyaLevshina
+  
+   Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %IN_PROGRESS%
+
+
+   DEAR DOCUMENT TESTER
+   ====================
+
+   Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = 
+  
+   Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+ 
+--&gt;

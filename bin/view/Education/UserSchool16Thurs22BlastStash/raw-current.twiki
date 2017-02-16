@@ -1,0 +1,161 @@
+---+ !!Using !StashCache
+
+This tutorial will use a [[http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&amp;PAGE_TYPE=BlastHome][BLAST]] workflow to demonstrate the functionality of !StashCache for transferring input files to jobs.
+
+We will use the input from [[UserSchool15Thu21BlastSplitProxy][Exercise 2.1]].  But, instead of using the web proxy squid, we will use !StashCache.
+
+!StashCache is a distributed set of caches spread across the U.S.  They are connected with high bandwidth connections to each other, and to the data origin servers.
+
+%ATTACHURL%/Screen_Shot_2016-07-06_at_4.15.32_PM.png
+
+There are two methods to using !StashCache.  We are in the middle of a transition from one to another.  They are:
+
+   1. *stashcp* (old): A command line program to copy files from Stash with ==cp== like syntax.
+   2. *StashCache-over-CVMFS* (new): A much more intuitive and fault tolerant method for accessing stash files.  But not yet available on all resources.
+
+In the below tutorials, we will use *stashcp*, but also demonstrate how the *StashCache-over-CVMFS* works.
+
+---++ Getting Started
+
+   1. Log Into login.osgconnect.net.
+   1. Transfer all of the files from the previous [[UserSchool15Thu21BlastSplitProxy][Exercise 2.1]] to login.osgconnect.net.
+
+---++ New Commands
+
+   1. !StashCache provides a public space for you to store data which can be accessed through the caching servers.  First, you need to move your blast database into this public directory.
+   &lt;pre class=&quot;screen&quot;&gt;
+$ mkdir ~/public/blastdb
+$ cp [db_files] ~/public/blastdb
+&lt;/pre&gt; 
+   1. Next, we can test stash by running stashcp from the login node.
+   &lt;pre class=&quot;screen&quot;&gt;
+$ module load stashcp
+$ stashcp /user/%RED%username%ENDCOLOR%/public/blastdb/dbfile ./
+&lt;/pre&gt;
+   Notice that we had to include the ==/user/== and ==username== in the file path for stashcp.  This is required so that it is unique per user on the system.
+   1. Now, write a wrapper script which will download all of the files in the blast database using ==stashcp==.
+
+%TWISTY{
+showlink=&quot;Show hint&quot;
+hidelink=&quot;Hide hint&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+Here&#39;s an example wrapper script which should work.  Yours could look different:
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/sh
+
+module load stashcp
+
+stashcp /user/%RED%username%ENDCOLOR%/public/blastdb/file1 ./
+stashcp /user/%RED%username%ENDCOLOR%/public/blastdb/file2 ./
+stashcp /user/%RED%username%ENDCOLOR%/public/blastdb/file3 ./
+&lt;/pre&gt;
+%ENDTWISTY%
+
+---++ New Submit File
+
+In the previous exercise, you put each file in the submit file and used the HTTP plugin built into HTCondor in order to transfer files to remote worker nodes.  In this exercise, we will use the wrapper script that you wrote above to download each of the files.
+
+The submit file also includes new attributes that mandate that stashcp be available.
+
+&lt;pre class=&quot;file&quot;&gt;
++WantsStashCache = true
+&lt;/pre&gt;
+
+This line tells the Glidein that stashcache, and stashcp, is required by the job.
+
+&lt;pre class=&quot;file&quot;&gt;
+universe = vanilla
+executable = blast_wrapper.sh
+arguments = -db pdbaa -query mouse.fa
+output  = job.out
+error = job.error
+log = job.log
++WantsStashCache = true
+queue
+&lt;/pre&gt;
+
+The wrapper needs to download all of the necessary files, including the blast binaries, query files, and database.  When you submit this job, the wrapper will use ==stashcp== to copy the Blast database to the job&#39;s directory.
+
+
+---++ Using !StashCache-over-CVMFS
+
+Next, we will show the use of !StashCache-over-CVMFS.  This is an abbreviated tutorial.
+
+   1. First log into the OSG Connect submit host (login.osgconnect.net), download the tutorial files using the *tutorial* command, and cd into the newly created directory:
+   &lt;pre class=&quot;screen&quot;&gt;
+$ tutorial stashcache-blast
+$ cd tutorial-stashcache-blast
+&lt;/pre&gt;
+   1. The tutorial-stashcache-blast directory contains a number of files, described below:
+      * HTCondor submit script: *blast.submit*
+      * Job wrapper script: *blast_wrapper.sh*
+      * Query files: *query_0.fa  query_1.fa*
+   2. In addition to these files, the following input files are needed for the jobs:
+      * database file: *nt.fa*
+      * database index files: *nt.fa.nhr  nt.fa.nin  nt.fa.nsq*
+
+   These files are currently being stored in ==/cvmfs/stash.osgstorage.org/user/eharstad/public/blast_database/==.
+
+---++ The CVMFS Submit File
+
+First, let&#39;s take a look at the HTCondor job submission script:
+
+&lt;pre class=&quot;file&quot;&gt;
+universe = vanilla
+
+executable = blast_wrapper.sh
+arguments  = blastn -db /cvmfs/stash.osgstorage.org/user/eharstad/public/blast_database/nt.fa -query $(queryfile)
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files = $(queryfile)
+
++WantsCvmfsStash = true
+requirements = (GLIDEIN_ResourceName == &quot;MWT2&quot; || GLIDEIN_ResourceName == &quot;Nebraska&quot; || GLIDEIN_ResourceName ==  &quot;Sandhills&quot;)
+	
+output = job.out.$(Cluster).$(Process)
+error = job.err.$(Cluster).$(Process)
+log = job.log.$(Cluster).$(Process)
+
+# For each file matching query*.fa, submit a job
+queue queryfile matching query*.fa
+&lt;/pre&gt;
+
+The executable for this job is a wrapper script, `blast_wrapper.sh`, that takes as arguments the blast command that we want to run on the compute host.  We specify which query file we want transferred (using HTCondor) to each job site with the *transfer_input_files* command.
+
+Note the one additional line that is required in the submit script of any job that uses !StashCache:
+
+&lt;pre class=&quot;file&quot;&gt;
++WantsCvmfsStash = true
+&lt;/pre&gt;
+
+Finally, since there are multiple query files, we submit them with the command `queue queryfile matching query*.fa` command.  Because we have used the $(queryfile) macro in the name of the query input files, only one query file will be transferred to each job.
+
+---++ The Wrapper Script
+
+Now, let&#39;s take a look at the job wrapper script which is the job&#39;s executable:
+
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash
+# Load the blast module
+module load blast
+
+&quot;$@&quot;
+&lt;/pre&gt;
+
+The wrapper script loads the blast modules so that it can access the Blast software on the compute host.
+
+You are now ready to submit the jobs:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ condor_submit blast.submit
+&lt;/pre&gt;
+
+ Each job should run for approximately 3-5 minutes.  You can monitor the jobs with the condor_q command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ condor_q &lt;userid&gt;
+&lt;/pre&gt;
+

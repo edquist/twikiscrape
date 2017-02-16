@@ -1,0 +1,80 @@
+---+ Install and Configure RSV on OSG SEs
+%TOC%
+
+%STARTINCLUDE%
+%BR%
+---+ Install and Configure RSV on OSG SEs
+%EDITTHIS%
+%BR%
+
+
+---++ RSV background
+
+&lt;p&gt; The OSG-RSV package does not come by default with any of the OSG Storage element packages (it is included by default with the OSG CE). You will have to install it separately, preferably in a different directory from the SE itself.  Separating the installation from your SE tools makes it easier to update the components separately.
+
+---++ !RSV Installation
+
+&lt;p&gt;Instructions to install RSV.  Modify the installation path below as desired:
+
+&lt;pre class=&quot;screen&quot;&gt;
+ mkdir &lt;b&gt;/opt/rsv&lt;/b&gt;
+ cd &lt;b&gt;/opt/rsv&lt;/b&gt;
+ pacman -get %VDT_CACHE_URL%:OSG-RSV
+ . setup.sh&lt;/pre&gt;
+
+&lt;p&gt;Once downloaded, additional configuration steps are necessary as documented below.
+
+
+---++ RSV configuration steps
+
+%INCLUDE{&quot;Trash/Trash/MonitoringInformation/PreConfigCheckListRsv&quot;}%
+
+---+++ !RSV running on a storage element door that runs on an OSG-CE node 
+
+&lt;p&gt; If your storage element door runs on an OSG-CE node, then you can configure !RSV using the =configure-osg= script, and its associated =config.ini= file.
+
+Edit the [RSV] section in the =config.ini= -- each variable in the section is commented upon in detail. Or you can also refer to the [[https://twiki.grid.iu.edu/bin/view/ReleaseDocumentation/ConfigurationFileHelp#Included_topic_Configuration_AN7][RSV section of the config.ini twiki page]].
+
+---+++ !RSV running on a storage element door that is independent of an OSG-CE node 
+%INCLUDE{&quot;Trash/Trash/MonitoringInformation/ConfigureRsvV2AdvSeSrmServcertNogums&quot;}%
+
+%INCLUDE{&quot;Trash/Trash/MonitoringInformation/ConfigureRsvV2AdvSeBestmanServcertNogums&quot;}%
+
+%INCLUDE{&quot;Trash/Trash/MonitoringInformation/StartRsvV2&quot;}%
+
+To verify that RSV is functioning correctly, see the [[Trash/Trash/MonitoringInformation/ValidateRsvV2Configuration][RSV Validation Page]]
+
+---++ Using an existing !Apache server on machine to host !RSV info
+ &lt;p&gt; If you already have an Apache server running on the machine you install !RSV on, then you can configure it to serve !RSV local result web pages. 
+ &lt;p&gt;Disable the Apache that was installed with RSV.  Assuming RSV was installed at &lt;b&gt;/opt/rsv&lt;/b&gt;:
+&lt;pre class=&quot;screen&quot;&gt;
+cd &lt;b&gt;/opt/rsv&lt;/b&gt;
+. setup.sh
+vdt-control --off apache
+vdt-control --disable apache
+&lt;/pre&gt;
+ &lt;p&gt; Add the following stanza to your &lt;tt&gt;httpd.conf&lt;/tt&gt; file.  Make sure to correct the &lt;b&gt;bolded&lt;/b&gt; path below to point at your RSV installation:
+&lt;pre class=&quot;screen&quot;&gt;
+# Set options for RSV&#39;s HTML directory
+&amp;lt;Directory &quot;&lt;b&gt;/opt/rsv&lt;/b&gt;/osg-rsv/output/html&quot;&amp;gt;
+    Options None
+    AllowOverride None
+    Order Allow,Deny
+    Allow from all
+&amp;lt;/Directory&amp;gt;
+
+# Create alias for RSV output directory
+Alias /rsv &lt;b&gt;/opt/rsv&lt;/b&gt;/osg-rsv/output/html
+&lt;/pre&gt;
+
+Then force Apache to reload its configuration, or restart it.
+
+%STOPINCLUDE%
+%BR%
+%COMPLETE2% %BR%
+%RESPONSIBLE%  Main.ArvindGopu - 09 May 2008 %BR%
+%REVIEW% Main.XinZhao, Main.WeiYang  -  30 May 2008 %BR%
+%REVCOM% Xin, Wei: can you review please?
+
+
+

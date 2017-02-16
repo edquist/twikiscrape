@@ -1,0 +1,85 @@
+
+---+ BDII Round Robin Setup - Project Plan
+
+---++ Background
+
+The OSG BDII was determined to be a critical service provided by the OSG GOC. The following page lays out the plan to achieve one of [[https://twiki.grid.iu.edu/bin/view/Operations/BdiiPlan][the goals the GOC made/makes]] in preparation for the LHC turn on and the increased load expected from the ATLAS and CMS VOs.
+
+In addition to the existing production BDII server (is.grid.iu.edu), the GOC has installed a second CEMon-BDII collector, which will ultimately allow us to do DNS round-robin of the OSG BDII service.  The first step towards this goal is for OSG site administrators to reconfigure  their CEMon to send GIP data to two collectors -- =is1=/=is2.grid.iu.edu= -- instead of just one (currently is.grid.iu.edu). 
+
+---++ &lt;a name=&quot;upgrade_cemon&quot;&gt;&lt;/a&gt;(OSG SITE LEVEL) Upgrade CEMon 
+
+See which of the following scenarios applies to your site, and then follow the instructions in each of those sections:
+
+---+++ &lt;a name=&quot;upgrade_cemon_configure_osg&quot;&gt;&lt;/a&gt;OSG 1.0 resources that use configure_osg.py
+
+   * Find out if you have osg-config package, and if so which one:
+   &lt;pre&gt;cd $VDT_LOCATION
+. setup.sh
+pacman -lc | grep -i osg-config 
+ [X] osg-config, update from [OSG]
+ [ ] osg-config-1.0.0, update from [OSG] &lt;/pre&gt;
+
+   * Upgrade configure_osg.py package
+      * If you found =osg-config=, then do:
+   &lt;pre&gt;pacman -update OSG:osg-config&lt;/pre&gt;
+      * If you found =osg-config-1.0.0=, then do:
+   &lt;pre&gt;pacman -get OSG:osg-config&lt;/pre&gt;
+
+   * Re-run configure_osg.py
+      * If you are using =$VDT_LOCATION/monitoring/config.ini= as your configuration file
+    &lt;pre&gt;$VDT_LOCATION/monitoring/configure-osg.py -c&lt;/pre&gt;
+      * If you are using a different configuration (.ini) file
+    &lt;pre&gt;$VDT_LOCATION/monitoring/configure-osg.py -c -f &amp;lt;foo.ini&amp;gt;&lt;/pre&gt;
+      * See Configure_osg.py twiki help page for more information.
+
+   * Check =$VDT_LOCATION/glite/etc/glite-ce-monitor/cemonitor-config.xml= to ensure both =is1.grid.iu.edu= and =is2.grid.iu.edu= are configured; 
+   * Then remove old stanza that points to is.grid.iu.edu -- it should look like this:
+   &lt;pre&gt;&amp;lt;subscription id=&quot;subscription-http___is_grid_iu_edu_14001-OSG_CE-RAW&quot;
+         monitorConsumerURL=&quot;http://is.grid.iu.edu:14001&quot;
+         sslprotocol=&quot;SSLv3&quot;
+         retryCount=&quot;-1&quot;&amp;gt;
+      &amp;lt;topic name=&quot;OSG_CE&quot;&amp;gt;
+         &amp;lt;dialect name=&quot;RAW&quot; /&amp;gt;
+      &amp;lt;/topic&amp;gt;
+      &amp;lt;policy rate=&quot;300000&quot;&amp;gt;
+      &amp;lt;/policy&amp;gt;
+ &amp;lt;/subscription&amp;gt;&lt;/pre&gt;
+
+---+++ &lt;a name=&quot;upgrade_cemon_old&quot;&gt;&lt;/a&gt;OSG 0.8 resources and/or OSG 1.0 resources that do NOT use configure_osg.py
+
+   * Run configure_cemon twice to send data to the two collectors:
+   &lt;pre&gt; $VDT_LOCATION/vdt/setup/configure_cemon --vdt-install $VDT_LOCATION \
+          --server y --consumer http://is1.grid.iu.edu:14001 \ 
+	  --topic OSG_CE --dialect RAW
+ $VDT_LOCATION/vdt/setup/configure_cemon --vdt-install $VDT_LOCATION \
+          --server y --consumer http://is2.grid.iu.edu:14001 \
+	  --topic OSG_CE --dialect RAW&lt;/pre&gt;
+   * Check one of the following files to ensure both =http://is1.grid.iu.edu:14001= and =http://is2.grid.iu.edu:14001= are configured; :
+      * 1.0 Admins: Check =$VDT_LOCATION/glite/etc/glite-ce-monitor/cemonitor-config.xml= 
+      * 0.8 Admins: Check =$VDT_LOCATION/glite/etc/glite-ce-monitor=
+   * Then remove the old &quot;&amp;lt;subscription&amp;gt; ... &amp;lt;/subscription&amp;gt;&quot; stanza that points to is.grid.iu.edu -- it should look like this possibly with minor differences:
+   &lt;pre&gt;&amp;lt;subscription id=&quot;subscription-http___is_grid_iu_edu_14001-OSG_CE-RAW&quot;
+         monitorConsumerURL=&quot;http://is.grid.iu.edu:14001&quot;
+         sslprotocol=&quot;SSLv3&quot;
+         retryCount=&quot;-1&quot;&amp;gt;
+      &amp;lt;topic name=&quot;OSG_CE&quot;&amp;gt;
+         &amp;lt;dialect name=&quot;RAW&quot; /&amp;gt;
+      &amp;lt;/topic&amp;gt;
+      &amp;lt;policy rate=&quot;300000&quot;&amp;gt;
+      &amp;lt;/policy&amp;gt;
+ &amp;lt;/subscription&amp;gt;&lt;/pre&gt;
+
+---+++ &lt;a name=&quot;upgrade_cemon_verify&quot;&gt;&lt;/a&gt;Verify that new setup works as expected
+
+Once you&#39;ve configured your CEMon to upload to both production collectors, using one of the instruction sets above, you should see your resource, and its raw/processed LDIF data files in both [[http://is1.grid.iu.edu/cgi-bin/status.cgi]] and [[http://is2.grid.iu.edu/cgi-bin/status.cgi]]. If you don&#39;t see LDIF data file links for your resource on either of the webpages. then please [[https://ticket.grid.iu.edu/goc/other][contact the GOC by filing a ticket]].
+
+
+---++ &lt;a name=&quot;enable_roundrobin&quot;&gt;&lt;/a&gt;(OSG GOC LEVEL) Make is.grid.iu.edu round robin to is1 and is2 -- change date: Jan 30 2009
+
+The GOC plans to enable DNS level round robining of the BDII service (=is.grid.iu.edu= pointing to =is1= and =is2=) on Jan 30th 2009 at 9 AM EST (13:00 UTC). 
+
+We hope that all OSG sites would have upgraded their CEMons by then given that we&#39;ve sent out 3 notifications, and then filed individual tickets to track any resources that were not updated despite the three notifications.
+
+-- Main.ArvindGopu - 23 Jan 2009
+

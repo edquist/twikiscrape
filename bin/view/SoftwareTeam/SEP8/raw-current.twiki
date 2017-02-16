@@ -1,0 +1,70 @@
+%TOC%
+
+---+  Software Enhancement Proposal 8: Move ITB caches to Software-ITB Server
+
+| *SEP* | 8 |
+| *Title* | Move ITB caches to Software-ITB Server |
+| *Comment Period Ends:* |  2010-05-01  |
+| *Last Modified:* | 2010-04-14 | 
+| *Created:* | 2010-04-14 |
+| *Author:* | ArvindGopu |
+| *Status:* | Accepted |
+| *Type:* | Process |
+
+---++ Motivation
+
+For a long time, the GOC has wished for the ITB testers to use an ITB server instead of an itb/ directory on the production software cache server to retrieve ITB pacman data. The ITB team has now agreed to move forward with this proposal. We have been asked to lay out the steps this will entail. I expect the process to be fairly simple though the transition for existing ITB installations may need to some tweaking? 
+
+*GOC Reference*: JIRA tickets SOFT-4 (and SOFT-3 specifically for the CA Distribution testing)
+
+---+++ Details
+
+Right now ITB testers use this URL: http://software.grid.iu.edu/itb to get the ITB cache data. This has several drawbacks including:
+
+   1. This restricts the ITB to only be able to seamlessly test the latest OSG version; for example, in the past several months http://software.grid.iu.edu/itb represents the ITB version of the OSG 1.2.x cache. 
+      * While there is a cumbersome way to test changes to OSG 1.0.x tree there is no seamless way for the ITB to do this test.
+      * While the ITB has indeed been testing changes to the VO-package in the last several months, the URL it uses (/itb) makes it so the test is not identical to a production test on the OSG 1.2.x cache or the OSG 1.0.x cache
+   1. This restricts the ITB from testing CADistribution changes (See related ticket SOFT-3) since http://software.grid.iu.edu/cadist represents only the production CA distribution; 
+      * Ditto with the YUM and APT repos held at http://software.grid.iu.edu/yum and http://software.grid.iu.edu/apt
+   1. The GOC has to touch the production software cache (servers: software1 and software2 fronted by DNS RR entry software) anytime the ITB cache needs to be updated.
+
+---++ Proposed Change
+
+Starting from the next round of ITB testing toward OSG 1.2.11 i.e. OSG-ITB 1.1.22, we would like the ITB testers to use URLs based on the [[http://software-itb.grid.iu.edu]] server. Benefits include getting around all of the problems listed above; plus having *uniform URLs for various pieces of software*. For example:
+   1The production URL for the OSG 1.0.x cache is [[http://software.grid.iu.edu/pacman]]
+      * The ITB URL would be [[http://software-itb.grid.iu.edu/pacman]]
+      * The ITB URL for VO-package testing on OSG 1.0.x installs would be within in this URL
+   1. The production URL for the OSG 1.2.x cache is [[http://software.grid.iu.edu/osg-1.2]]
+      * The ITB URL would be [[http://software-itb.grid.iu.edu/osg-1.2]]
+      * The ITB URL for VO-package testing on OSG 1.2.x installs would be within in this URL
+   1. The production URL for the CADist (got via pacman) is [[http://software.grid.iu.edu/cadist]]
+      * The ITB URL would be [[http://software-itb.grid.iu.edu/cadist]]
+   1. The production URL for the CADist (got via YUM) is [[http://software.grid.iu.edu/yum]]
+      * The ITB URL would be [[http://software-itb.grid.iu.edu/yum]]
+   1.The production URL for the CADist (got via APT) is [[http://software.grid.iu.edu/apt]]
+      * The ITB URL would be [[http://software-itb.grid.iu.edu/apt]]
+   1.The production URL for the software cache home page is [[http://software.grid.iu.edu/]]
+      * The ITB URL would be [[http://software-itb.grid.iu.edu/]]
+
+
+---++ Expected Impact
+   * All ITB sites will have to do a one-time new installation; They will not be able to get updates to their existing installation. 
+      * Scot suggested GOC could forward http://software.grid.iu.edu/itb to point to the new server location; it&#39;s not clear if the ITB will require this; and if it was done, it can only be done for the OSG 1.2.x ITB testers.
+   * A change in procedures for the ITB team to use when they test various pieces of OSG software; and for the GOC to handle ITB update requests separately on the ITB server.
+      * Addition of standardized mechanisms to test things that are not being tested using *standard operating procedures* right now by the ITB (example: OSG 1.0.x cache, VO-package, etc.)
+   * A one-time change to the documentation, configuration of the vdt-update-certs process, and other applicable install scripts to point to the software-itb server.
+
+
+---++ Affected Communities
+
+   * ITB, GOC, Security Team
+
+---++ Minimum Time for Public Discussion
+
+   * Two weeks? 
+
+---++ Questions
+
+   * ??
+
+-- Main.ArvindGopu - see updated date in header

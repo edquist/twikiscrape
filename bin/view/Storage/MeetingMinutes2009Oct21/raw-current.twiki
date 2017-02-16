@@ -1,0 +1,143 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   *  Andrew Baranovski 
+   *  Brian Bockelman
+   *  Ted Hesselroth 
+   *  Neha Sharma
+   *  Alex Sim 
+   *  Tanya Levshina
+   *  Abhishek Rana - apologies 
+
+---+++ Guests
+   * Wei Yang  (SLAC)
+   * Ian Stokes-Rees (Harvard)
+   * Michael Thomas (Caltech)
+
+---++ Status report
+&lt;!-- DESCRIPTION --&gt;
+
+Andrew:
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;/pre&gt;
+Ted:
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;/pre&gt;
+Neha:
+&lt;pre class=&quot;screen&quot;&gt;
+tickets followup and maintenance
+&lt;/pre&gt;
+
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* Support
+  - support for westgrid.ca user accessing bestman at SLAC
+    * update the globus cryptix lib to the newer
+  - srm-copy not runing with JRE 1.6 at NERSC
+    * remove an unused java package that caused class not found error
+
+* srm-client 2.2.1.3.3 release
+  - fix srm-copy for unused java package
+  - fixes -help and -version caused by the above fix.
+  - not critical to include in VDT release, and will be included in the
+next one with other fixes.
+&lt;/pre&gt;
+
+Tanya:
+&lt;pre class=&quot;screen&quot;&gt;
+ Meetings:
+         Meeting with GlueX VO representative
+         Tier-3 coordinators meeting
+
+  Email discussions:
+       xrootd used space script &amp; code for static space token
+       dcache release for testing
+       SCEC status
+       Changes to DOEGrids Certificate profile (cert attributes)
+       Support with Setting up BestMan Gateway - T3 CMS at Virginia
+       New options/log redirection for Bestman package in VDT
+   
+  Technical work:
+        Tested bestman 2.2.1.3.2 release and srm-lbnl client for VDT
+        Modified/tested script and c code that reports used space for a static quota for xrootd
+        Reconfigured BeStMna-gateway to test &quot;usedBytesCommand&quot; option 
+        Built vdt-dache release with dcache-server 1.9.5-4 and installed it on test node    
+&lt;/pre&gt;
+
+Abhishek:
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;/pre&gt;
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+Bestman-gateway/Xrootd and static space tokens/xrootd &quot;used bytes&quot; script (Tanya, Alex, Wei) 
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Tanya has tested &quot;used bytes&quot; script &amp; c code provided by Wei and asked Alain to include it into VDT distribution.
+Alain has raised the concern that code is not a part of any release , does not have an &quot;owner&quot;  or a release version. Tanya has asked Wei to include this code with !XrootdFS release. The script will be used by  !BeStMan-gateway with underlying Xrootd. It requires xrootd libraries so it makes sense to release it together with !XrootdFS. Wei agreed but pointed out that if executed on !XrootdFS node just C executable should be sufficient (no need to have a script). Tanya will try it.
+
+Question to Alex: When !BeStman-gateway is configured with static space tokens and underlying DFS reports that amount of used space exceeded the allocated quota  !BeStMan still proceeds with executing srm-cp command that is failing (in case of HDFS) or succeeding (in case of Xrootd). Is it possible/needed to modify !BeStMan to honor quota limitation? 
+
+---++ Second Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+SCEC status
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+from Mats:
+&lt;pre class=&quot;screen&quot;&gt;
+Still trying to unpack. I starting to think that the tar/unpack approach is not the way to do this.
+&lt;/pre&gt;
+
+Brian has talked to Mats , proposed different approaches. 
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+Different file access mechanisms (SRM/GridFTP, HTTP, Xrootd, scp) at Nebraska 
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+[[http://t2.unl.edu/Members/brian/FileAccessOSGStorage.pdf][Brian&#39;s presentation]]
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Tickets
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+++++++++++++++++++++++++
+New tickets
+++++++++++++++++++++++++
+
+Need to follow up:
+
+7659 - dCache - Conflicting values w.r.t space reservation
+
+++++++++++++++++++++++++
+Old tickets
+++++++++++++++++++++++++
+
+Closed:
+
+7627 - Bestman - Unable to authenticate certs issued by Westgrid CA (Canada)
+
+Follow up in progress:
+
+6967/7010 - dCache - File replicas not being removed
+
+7615 - Hadoop- EOF errors while doing third party transfer using srmcp/srm-copy
+
+7505/7574 - dCache - Site losing data due to files being marked as non-sticky 
+
+No update:
+
+7448 - dCache - Poor PNFS/Chimera performance on upgrade from 1.9.2-5 to 1.9.4.-x
+
+7326 - dCache - misleading error message when using dccp to transfer  data
+
+6971 - dCache - Problem with pnfs register command
+
+6908 - dCache - log4j errors when restarting dcache 1.9.2-5
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 22 Oct 2009

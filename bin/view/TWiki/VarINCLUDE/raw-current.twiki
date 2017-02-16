@@ -1,0 +1,19 @@
+#VarINCLUDE
+
+---+++ INCLUDE{&quot;page&quot;} -- include other topic or web page
+   * Syntax: =%&lt;nop&gt;INCLUDE{&quot;page&quot; ...}%=
+   * Supported parameters:
+     | *Parameter:* | *Description:* | *Default:* |
+     | =&quot;SomeTopic&quot;= | The name of a topic located in the current web, i.e. =%&lt;nop&gt;INCLUDE{&quot;WebNotify&quot;}%= | |
+     | =&quot;Web.Topic&quot;= | A topic in another web, i.e. =%&lt;nop&gt;INCLUDE{&quot;%TWIKIWEB%.SiteMap&quot;}%= | |
+     | =&quot;http://...&quot;= | A full qualified URL, i.e. =%&lt;nop&gt;INCLUDE{&quot;http://twiki.org:80/index.html&quot;}%=. Supported content types are =text/html= and =text/plain=. &lt;br /&gt; %I% if the URL resolves to an attachment file on the server this will _automatically_ translate to a server-side include. | |
+     | =pattern=&quot;...&quot;= | A RegularExpression pattern to include a subset of a topic or page | none |
+     | =rev=&quot;2&quot;= | Include a previous topic revision; N/A for URLs | top revision |
+     | =raw=&quot;on&quot;= | When a page is included, normally %WIKITOOLNAME% will process it, doing the following: 1) Alter relative links to point back to originating host, 2) Remove some basic HTML tags (html, head, body, script) and finally 3) Remove newlines from tags spanning multiple lines. If you prefer to include _exactly_ what is in the source of the originating page set this to =on=. | disabled |
+     | =warn=&quot;off&quot;= | Warn if topic include fails: Fail silently (if =off=); output default warning (if set to =on=); else, output specific text (use =$topic= for topic name) | =%&lt;nop&gt;INCLUDEWARNING%= [[TWikiPreferences][preferences]] setting |
+     | =section=&quot;name&quot;= | Includes only the specified named section, as defined in the included topic by the [[#VarSTARTSECTION][STARTSECTION]] and [[#VarENDSECTION][ENDSECTION]] variables| |
+     | =PARONE=&quot;val 1&quot;%BR% PARTWO=&quot;val 2&quot;= | Any other parameter will be defined as a variable within the scope of the included topic. The example parameters on the left will result in =%&lt;nop&gt;PARONE%= and =%&lt;nop&gt;PARTWO%= being defined within the included topic. | |
+   * __Note:__ !JavaScript in included webpages is filtered out as a security precaution per default (disable filter with =raw= parameter)
+   * Examples: See IncludeTopicsAndWebPages
+   * Related: [[#VarBASETOPIC][BASETOPIC]], [[#VarBASEWEB][BASEWEB]], [[#VarINCLUDINGTOPIC][INCLUDINGTOPIC]], [[#VarINCLUDINGWEB][INCLUDINGWEB]], [[#VarSTARTINCLUDE][STARTINCLUDE]], [[#VarSTOPINCLUDE][STOPINCLUDE]], [[#VarSTARTSECTION][STARTSECTION]], [[#VarENDSECTION][ENDSECTION]]
+

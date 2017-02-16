@@ -1,0 +1,15 @@
+---+!! Language selection dropdown
+
+*To be included where a language selection is needed, for instance in the top bar or left bar.*
+
+Note: this dropdown is only shown if localization is enabled.%BR%
+Test: %IF{&quot;context i18n_enabled&quot; then=&#39;&lt;span style=&quot;color:green; font-weight:bold;&quot;&gt;localization is enabled&lt;/span&gt;&#39; else=&#39;&lt;span style=&quot;color:red; font-weight:bold;&quot;&gt;localization is not enabled&lt;/span&gt;&#39;}% %BR%
+
+Usage:
+&lt;verbatim&gt;
+%INCLUDE{%TWIKIWEB%.LanguageSelector}%
+&lt;/verbatim&gt;
+
+Result:
+
+%STARTINCLUDE%%IF{&quot;context i18n_enabled&quot; then=&#39;&lt;form name=&quot;%INCLUDINGWEB%%INCLUDINGTOPIC%ChangeLanguage&quot; action=&quot;%SCRIPTURLPATH{&quot;oops&quot;}%/%BASEWEB%/%BASETOPIC%&quot; method=&quot;get&quot;&gt;&lt;select name=&quot;language&quot; onchange=&quot;document.%INCLUDINGWEB%%INCLUDINGTOPIC%ChangeLanguage.submit()&quot;&gt;%LANGUAGES{format=&quot;&lt;option $marker value=\&quot;$langtag\&quot;&gt;$langname&lt;/option&gt;&quot; selection=&quot;%LANGUAGE%&quot; separator=&quot; &quot;}%&lt;/select&gt;&lt;input type=&quot;hidden&quot; name=&quot;template&quot; value=&quot;oopslanguagechanged&quot; /&gt;&lt;noscript&gt;&lt;input class=&quot;twikiButton&quot; type=&quot;submit&quot; value=&quot;%MAKETEXT{&quot;Change language&quot;}%&quot; /&gt;&lt;/noscript&gt;&lt;/form&gt;&#39;}%%STOPINCLUDE%

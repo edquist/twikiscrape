@@ -1,0 +1,181 @@
+&lt;!--
+   * Set EDITTHISTEXT = &lt;div class=&quot;twikiSmall&quot;&gt;&lt;a href=&quot;%TOPIC%&quot;&gt;edit this section&lt;/a&gt;&lt;/div&gt;
+--&gt;
+
+---+!! GRAM Trash/Auditing Notes
+
+&lt;!--
+   * Set BUG5712 = [[http://bugzilla.globus.org/globus/show_bug.cgi?id=5712][Bug 5712]] - Local_job_id format variations
+   * Set BUG5713 = [[http://bugzilla.globus.org/globus/show_bug.cgi?id=5713][Bug 5713]] - Failed database connection loses audit records
+   * Set BUG5714 = [[http://bugzilla.globus.org/globus/show_bug.cgi?id=5714][Bug 5714]] - Additional data (FQAN) in audit records
+   * Set BUG5725 = [[http://bugzilla.globus.org/globus/show_bug.cgi?id=5725][Bug 5725]] - housekeeping for the _auditRecord_ database
+   * Set BUG5776 = [[http://bugzilla.globus.org/globus/show_bug.cgi?id=5776][Bug 5776]] - Need for one INFO log message. Currently none.
+   * Set BUG5777 = [[http://bugzilla.globus.org/globus/show_bug.cgi?id=5777][Bug 5777]] - Database connection times out
+   * Set BUG5778 = [[http://bugzilla.globus.org/globus/show_bug.cgi?id=5778][Bug 5778]] - No error message on db update failure
+
+--&gt;
+
+%TOC%
+
+%STARTINCLUDE%
+
+---++ Description
+Gratia has a requirement to be able to report grid usage data for:
+   * VOs 
+   * VO subgroups
+   * Individual grid users (DN)
+   * Roles
+
+All of the above information is contained within the proxy certificate when the job request is received on the CE node for a VOMS proxy.  For a VOMS proxy, the VO/Subgroup/Role information is commonly referred to as the FQAN (Fully Qualified Attribute Name).
+
+If a user uses a grid proxy (does not have the extended attributes), only the DN is available. 
+
+Currently (1/17/2008) the only reliable data available, in the GRAM audit log entry and batch queue systems, to Gratia is the DN of the grid user.   Gratia is currently able to determine the user&#39;s VO using the _$VDT_LOCATION/monitoring/osg-user-vo-map.txt_ file which provides a mapping of UNIX account to VO, but this file has been prone to data integrity problems at many sites.  The only reliable means of capturing this information is at the time the proxy is read during the authorization process.  This would require changes to the GRAM auditing data that is maintained.  The GRAM audit records also provide a link to the job id used in each of the batch queue systems which Gratia relies on for the accounting data.
+
+This topic addresses:
+   * The changes necessary to make the FQAN data available in the GRAM audit records.
+   * Configuring a Compute Element (CE) for GRAM auditing.
+
+%RED%Note: This is very much a &quot;work in process&quot;.  Very few details have been worked out  (Last update 2/21/2008)%ENDCOLOR%
+
+---+++ Interim Solution - &lt;nop&gt;JobManager.pm (2/1/2008)
+Although this document addresses the use of GRAM Trash/Auditing to satisfy the Gratia accounting requirements in the long term, for OSG 1.0 an interim solution involving modifications to _&lt;nop&gt;JobManager.pm_ is being developed and tested by Main.ChrisGreen.
+
+---++ Other Use Cases / Requirements 
+There have been a several related email threads related to use of GRAM Trash/Auditing since we (Gratia) started looking at this GRAM  feature.  This section is intended as a point of reference to these.
+
+---+++ Site Admins (Shreyas Cholia)
+[[http://listserv.fnal.gov/scripts/wa.exe?A2=ind0802a&amp;L=osg-int&amp;T=0&amp;P=2378][tracking user from WS-GRAM logs - Feb 6 2008]]%BR%
+[[http://listserv.fnal.gov/scripts/wa.exe?A2=ind0802&amp;L=osg-sites&amp;T=0&amp;P=2852][WS-GRAM logging follow up - Feb 20 2008]]
+
+---+++ AGLT2 (Shawn &lt;nop&gt;McKee)
+[[http://listserv.fnal.gov/scripts/wa.exe?A2=ind0802c&amp;L=osg-int&amp;T=0&amp;P=1542][Experience with gram auditing/OSG at AGLT2 - Feb 20 2008]]
+
+---+++ Globus gram-user mail list
+[[http://www.globus.org/mail_archive/gram-user/2008/02/msg00015.html][gram-user - Audit logging feature requests]]
+
+---++ GRAM proposal (1/11/2008)
+For general information on GRAM Auditing, refer to these Globus GRAM documents:
+   * GRAM2 (pre-web services): %BR% http://www-unix.globus.org/toolkit/docs/4.0/execution/prewsgram/Pre_WS_GRAM_Audit_Logging.html
+   * GRAM4 (web services): %BR% http://www.globus.org/toolkit/docs/4.0/execution/wsgram/WS_GRAM_Audit_Logging.html
+
+
+A conference call was held on Friday 1/11/2008 to discuss the changes necessary to make the additional data (FQAN) available in the GRAM audit record. Attendees:
+   * Rachana Ananthakrishnan (ranantha@mcs.anl.gov)
+   * Stuart Martin (smartin@mcs.anl.gov)
+   * John Weigand  (weigand@fnal.gov)
+
+The Globus proposal for collecting the additional data (basically FQAN) is to create a 2nd audit table which would be joined to the current one (_gram_audit_table_). The _job_grid_id_ would be the joining column and essentially make this 2nd table similar in  nature to the &lt;nop&gt; _JobUsageRecord_Meta_ in Gratia where it is an  just an extension of  the &lt;nop&gt; _JobUsageRecord_ .
+
+
+---+++ Changes for GRAM4 (web services)
+Currently in OSG, the parsing of a VOMS proxy for FQAN data is only performed in the PRIMA/GUMS callout.  This callout ( _OSGAuthorization_ ) is defined as a PDP (Policy Decision Point) in the Globus authorization framework.
+   * It parses the proxy extracting the user&#39;s subject (DN) and extended attributes (FQAN, if available).
+   * Formats a XACML/SAML authorization request and sends it to a GUMS server.
+   * The GUMS server determines if the user is authorized and returns a PERMIT/DENY to the _OSGAuthorization_ PDP.  Additionally, for a successful authorization (PERMIT), a UNIX account name is returned to the _OSGAuthorization_ PDP.
+
+To support the majority of OSG sites which are using grid map file as a PDP (this is the standard/default Globus PDP), the parsing of the proxy information will need to be broken out from the _OSGAuthorization_ PDP and performed in a PIP (Policy Information Point).  PIPs are expected to collect attributes and store them for use by PDPs in the authorization process or in the invocation chain.
+
+Additionally, there is a optional 2nd PDP in use at some sites called SAZ which is a whitelist/blacklist form of PDP.  This SAZ PDP only authorizes services for users submitting requests with VOMS proxies as it is DN/VO that forms the authorization policy.
+
+The diagram below depicts the proposed OSG CE PEP authorization chain:
+   * The OSG PIP would be the only process that parses the proxy certificate and it would make available all the required attributes for the OSG PEP (PRIMA/GUMS callout) and SAZ PEP.
+   * The OSG PEP would be the current _OSGAuthorization_ PDP minus the proxy parsing.
+   * The OSG SAZ would be the current ????? PDP (not sure this is really available) minus the proxy parsing.
+
+OSG PEP authz chain: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/pip-pdp.png&quot; alt=&quot;pip-pdp.png&quot; width=&#39;464&#39; height=&#39;371&#39; /&gt;
+
+
+
+The OSG PIP would be the process responsible for creating the 2nd _gram_audit_table_ in the _auditDatabase_ containing the FQAN data associated with service request.   This assumes that the _job_grid_id_ is available to the PIP.
+
+
+
+
+Globus 4.0 documentation for a PIP/PDP can be found here:%BR%
+   * configuration: http://www.globus.org/toolkit/docs/4.0/security/authzframe/security_descriptor.html#s-authzframe-secdesc-configAuthz
+   * code: http://www.globus.org/toolkit/docs/4.0/security/authzframe/security_descriptor.html#s-authzframe-secdesc-customAuthz
+
+Tim Freeman and Rachana wrote an article for IBM developers working on writing custom authorizations, including a code example. The web page has been discontinued, but an archive is here:%BR%
+ http://web.archive.org/web/20051215201636/http://www-128.ibm.com/developerworks/grid/library/gr-gt4auth/
+
+Rachana suggested viewing the VOMS PIP (security handler) developed for the &lt;nop&gt;GridShib project at http://dev.globus.org/wiki/VOMS.  This does not write to any database and  there is a known limitation. From the developer: &#39;People recently had trouble with it handling multiple sources of VOMS attributes in one cert which is probably going to be an issue.&#39;
+
+
+---+++ Changes for GRAM2 (pre-web services)
+For GRAM2, Stuart is going to investigate further. Joe Bester is the GRAM2 guru.
+
+
+---+++ Open Issues / Questions
+There are several items still open after the initial discussion.
+&lt;ol&gt;
+&lt;li&gt;During the discussions, it was proposed that maybe the collecting of the FQAN data would best be done within Globus rather than in a callout.  This would provide for consistency in the data collected.
+
+&lt;li&gt;If the parsing of the proxy is done in the callout, how do we handle those sites using a _grid-mapfile_ ?&lt;br&gt;
+      A user may submit a job using a VOMS proxy.  If the callout isn&#39;t made, we can&#39;t collect the data.  
+
+      From a Gratia perspective, is it a requirement to support _grid-mapfile_ authorization modes? If so, having the callout collect the data will not be acceptable.
+
+&lt;li&gt;Schema definition for the 2nd table containing the attribute information (FQAN).&lt;br&gt;
+
+     The only definite column is the _job_grid_id_ :
+      &lt;ul&gt;
+        &lt;li&gt;For GRAM4, this would be the resource manager for Managed Executable Job Service.&lt;br&gt;
+              This open question here is whether or not it is available to the callout.
+        &lt;li&gt;For GRAM2, it is not certain what the value would be. It is less certain as to what is available in the callout. Currently, the only data element that may be available is the job id of the gatekeeper process as seen in the _globus_gatekeeper_ log files.
+      &lt;/ul&gt;
+      
+      It has to be investigated as to whether or not this will be fixed column in nature or an open format with maybe a tag/value column pairing.
+
+
+&lt;/ol&gt;
+
+
+   
+
+
+
+---++ Implementation Time Frame
+The use of GRAM audit records in the Gratia probes is needed for OSG 1.0 and, therefore needs to be made available for integration testing in OSG 0.9 which may be in the March 2008 timeframe.
+
+The current VDT distribution for OSG 0.8.0 is Globus v4.0.5.
+
+Globus v4.0.6 was released on 1/14/2008.%BR%
+Globus v4.0.7 is scheduled for March 2008.
+
+
+---++ GRAM Trash/Auditing Log Bugzilla Items
+These are the current items entered in the Globus bugzilla system for GRAM auditing that are relevant to the Gratia requirements:
+   * %BUG5712%
+   * %BUG5713%
+   * %BUG5714%
+   * %BUG5725%
+   * %BUG5776%
+   * %BUG5777%
+   * %BUG5778%
+
+All of the above are deemed critical for GRAM auditing to be used by Gratia.  
+
+The only one that Globus does not feel they can address is %BUG5725%.  It is felt this is similar in nature to housekeeping on file system type log files which are handled in a variety of different ways at sites and therefore impossible to address with a general solution.  The housekeeping would also be dependent on how non-Globus processes use the data.  Some may need to clean once they process the audit record.  Others may need to retain the data for a period.  The use of the data will dictate the housekeeping rules.
+
+All others they agreed to address.
+
+
+%INCLUDE{ConfigureGramAuditing}%
+
+
+
+%STOPINCLUDE%
+
+
+
+
+&lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+---++!! Major updates
+&lt;!--Future editors should add their signatures beneath yours!--&gt;
+-- Main.JohnWeigand - 17 Jan 2008%BR%
+-- Main.JohnWeigand - 24 Jan 2008 - additional notes on GRAM4 changes from Rachana%BR%
+-- Main.JohnWeigand - 21 Feb 2008 - added section on interim solution using &lt;nop&gt;JobManager.pm and also section on other use cases/interest in GRAM Auditing.%BR%
+

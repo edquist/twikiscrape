@@ -1,0 +1,63 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+
+%RED%
+WARNING! This page is for an older version of Hadoop.
+For newer versions, please visit [[Documentation/Release3.InstallHadoopSE][Hadoop Release 3 Installation]]
+%ENDCOLOR%
+
+%TOC%
+
+---++ Validating the namenode
+
+Navigate to the namenode web interface at http://namenode.host.name:50070
+
+You should see a web page that shows the date/time when the
+namenode was started, the version, when it was compiled, and some
+information about any datanodes that may have already contacted
+the namenode.
+
+If the web interface does not show up, check the namenode logs in
+/var/log/hadoop for any errors.
+
+---++ Validating the datanode
+
+Navigate to the namenode web interface at http://namenode.host.name:50070
+
+You should see an entry for the datanode listed in the list of
+live datanodes.  The &quot;Admin State&quot; field should read &quot;In
+Service&quot;.  The &quot;Last Contact&quot; field should be a reasonably low
+number of seconds (under 10).  Verify that the capacity listed in
+the other columns matches what you see when you run &#39;df&#39; on the
+datanode data partition(s).
+
+If the datanode does not appear in the list, check the datanode
+logs in /var/log/hadoop on the datanode for any errors.
+
+---++ Validating fuse
+
+Check that the fuse mount is active with the &#39;mount&#39; command:
+
+&lt;verbatim&gt;
+# mount | grep dfs
+fuse_dfs on /mnt/hadoop type fuse.fuse_dfs (rw,nosuid,nodev,allow_other,allow_other,default_permissions)
+&lt;/verbatim&gt;
+
+Create a file in hdfs with the native hadoop cli and then check
+if the file exists in the fuse mount path:
+
+&lt;verbatim&gt;
+# hadoop fs -copyFromLocal /etc/hosts /junk.txt
+# hadoop fs -ls /junk.txt
+Found 1 items
+-rw-rw-r--   2 root supergroup        234 2009-08-18 22:31
+/junk.txt
+# ls -l /mnt/hadoop/junk.txt
+-rw-rw-r-- 1 root nobody 234 Aug 18 22:31 /mnt/hadoop/junk.txt
+&lt;/verbatim&gt;
+
+You can also run &#39;df&#39; to see the space usage:
+&lt;verbatim&gt;
+# df -h /mnt/hadoop
+Filesystem            Size  Used Avail Use% Mounted on
+fuse_dfs              320T  293T   27T  92% /mnt/hadoop
+&lt;/verbatim&gt;

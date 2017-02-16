@@ -1,0 +1,416 @@
+%DOC_STATUS_TABLE%
+
+---+!! Compute Element Troubleshooting Guide
+
+%TOC%
+
+---+ About this document
+This document will help you troubleshoot problems with the Compute Element. See also other documents recommended in the Reference section below.
+
+This document assumes that you have already [[InstallComputeElement][installed and configured your CE]]. 
+
+This document follows the general OSG documentation conventions: %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Click to expand document conventions...&quot;}%
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;Header&quot;}%
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;CommandLine&quot;}%
+%ENDTWISTY%
+
+---++ How to get Help?
+You can find some suggestions in the [[InstallComputeElement][CE install document]] or in the [[Trash.ReleaseDocumentationValidatingComputeElement][validating document]].
+
+To get assistance please use [[HelpProcedure][Help Procedure]]. 
+
+
+---+ Troubleshooting Common Job Submission (Globus GRAM) Errors
+
+You can increase the verbosity or the GRAM jobmanager by editing =/etc/globus/globus-gram-job-manager.conf= and adding a line setting the log level to DEBUG o TRACE (e.g. =-log-levels TRACE=). The available log levels are FATAL, ERROR, WARN, INFO, DEBUG, and TRACE. Multiple values can be combined with the | character. The default value of logging when enabled is FATAL|ERROR. See the [[http://toolkit.globus.org/toolkit/docs/5.0/5.0.0/execution/gram5/user/][Globus GRAM documentation]] for more.
+
+
+---++ Error Code 7 (Authorization errors)
+
+The grid users is not authorized to submit a job:
+
+&lt;pre class=&quot;screen&quot;&gt;
+% globus-job-run localhost /usr/bin/whoami
+GRAM Job submission failed because authentication with the remote server failed (error code 7)
+&lt;/pre&gt;
+
+There are a few reasons this error could occur. 
+
+---+++ Grid-mapfile authorization failed
+
+If you use a grid-mapfile (probably with =edg-mkgridmap=) is the user in the gridmapfile? If not, you&#39;ll see an error message similar to this one in =/var/log/globus-gatekeeper.log=:
+&lt;pre class=&quot;screen&quot;&gt;
+TIME: Fri Dec  2 09:44:47 2011
+ PID: 875 -- Failure: globus_gss_assist_gridmap() failed authorization. globus_gss_assist: 
+             Gridmap lookup failure: Could not map /DC=org/DC=doegrids/OU=People/CN=Alain Roy 424511
+&lt;/pre&gt;
+
+---+++ GUMS authorization failed
+If you use GUMS for authorization, is GUMS running and reachable? Here is an example error message in =/var/log/globus-gatekeeper.log= that shows the gatekeeper unable to reach the GUMS server.
+
+&lt;pre class=&quot;file&quot;&gt;
+TIME: Fri Dec  2 10:17:20 2011
+ PID: 2160 -- Failure: globus_gss_assist_gridmap() failed authorization. globus_gss_assist: Error invoking callout
+globus_callout_module: The callout returned an error
+an unknown error occurred
+&lt;/pre&gt;
+
+This isn&#39;t very illustrative because the software that communicates with GUMS (lcmaps) writes to =/var/log/messages=. There we can see a better error message:
+
+&lt;pre class=&quot;file&quot;&gt;
+Dec  2 10:12:42 fermicloud081 l_l_gt4[2051]: 	xacmlqueryscas(): XACML: Interaction failed: %RED%TCP/IP, SSL or SOAP Error with endpoint:%ENDCOLOR%
+               &quot;https://fermicloud081.fnal.gov:8443/gums/services/GUMSXACMLAuthorizationServicePort&quot; 
+Dec  2 10:12:43 fermicloud081 l_l_gt4[2051]: 2011-12-02.10:06:26.0000002051.0000000000 : 	
+               lcmaps_plugin_scas_client-plugin_run(): scas client plugin failed 
+&lt;/pre&gt;
+
+If GUMS is running and allowing connections from the CE, you need to dig deeper. Temporarily edit =/etc/sysconfig/globus-gatekeeper= by adding these lines:
+&lt;pre class=&quot;file&quot;&gt;
+# level 0: no messages, 1: errors, 2: also warnings, 3: also notices,
+#  4: also info, 5: maximum debug
+LCMAPS_DEBUG_LEVEL=5
+&lt;/pre&gt;
+This will increase the output in =/var/log/messages=. *Warning*: This will make the log much bigger! You&#39;ll want to remove these lines when you&#39;re done debugging.
+
+A few things to check for:
+
+   1. Check that the URL for GUMS is correct. It should be of the form: =https://%RED%HOSTNAME%ENDCOLOR%:8443/gums/services/GUMSXACMLAuthorizationServicePort=. For example, you might see:&lt;pre class=&quot;file&quot;&gt;
+Jan  9 12:55:35 alachua l_l_gt4[20879]:         xacmlqueryscas(): XACML: Using SCAS service endpoint: https://gums.ihepa.ufl.edu:8443/gums/services/GUMSAuthorizationServicePort
+&lt;/pre&gt;
+   1. Here&#39;s an example error that shows that the user wasn&#39;t made or had some other problem (such as an LDAP problem if you use LDAP for user account management.) :&lt;pre class=&quot;file&quot;&gt;
+Jan  9 13:31:50 alachua l_l_gt4[5634]: Username_handler: Error: Couldn&#39;t find the username &#39;cms30054&#39; in the password file.
+&lt;/pre&gt;
+
+---++  GRAM Error code 12
+
+Sample problem:
+&lt;pre class=&quot;screen&quot;&gt;
+% globus-job-run fermicloud081.fnal.gov /usr/bin/whoami
+GRAM Job submission failed because the connection to the server failed (check host and port) (error code 12)
+&lt;/pre&gt;
+
+#GatekeeperRunning
+---+++ Is the gatekeepeer running?
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% ps auwx | grep globus-gatekeeper | grep -v grep
+&lt;/pre&gt;
+
+Nope, run it:
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /sbin/service globus-gatekeeper start
+Started globus-gatekeeper                                  [  %GREEN%OK%ENDCOLOR%  ]
+&lt;/pre&gt;
+
+%NOTE% If your gatekeeper doesn&#39;t have credentials in =/etc/grid-security/hostcert.pem=, and =/etc/grid-security/hostkey.pem= it will appear to start up correctly, but will not actually be running. 
+
+
+---+++ CA Certificate problems?
+Are your CA certificates properly installed in =/etc/grid-security/certificates=? Are they up to date? A sample error message from =/var/log/globus-gatekeeper.log= that shows that =/etc/grid-security/certificates= doesn&#39;t exist:
+
+&lt;pre class=&quot;screen&quot;&gt;
+ PID: 1079 -- Notice: 6: Got connection 198.51.254.71 at Fri Dec  2 09:49:58 2011
+
+GSS authentication failure 
+GSS Major Status: General failure
+GSS Minor Status Error Chain:
+globus_gsi_gssapi: Error with gss context
+globus_gsi_gssapi: Error with GSI credential
+globus_sysconfig: Could not find a valid trusted CA certificates directory: The trusted certificates directory could not be found in any of the following locations: 
+1) env. var. X509_CERT_DIR
+2) $HOME/.globus/certificates
+3) /etc/grid-security/certificates
+4) $GLOBUS_LOCATION/share/certificates
+
+Failure: GSS failed Major:000d0000 Minor:0000000c Token:00000000
+&lt;/pre&gt;
+
+
+---++ GRAM Error code 22
+
+The grid user is authorized to submit a job, but cannot write to their directory:
+
+&lt;pre class=&quot;screen&quot;&gt;
+% globus-job-run localhost /usr/bin/whoami
+GRAM Job submission failed because mkdir failed: /home/alainroy/.globus: Permission denied (error code 22)
+&lt;/pre&gt;
+
+The error in =/var/log/globus/%RED%&amp;lt;user%ENDCOLOR%.log=:
+&lt;pre class=&quot;screen&quot;&gt;
+ts=2011-12-02T15:44:02.093484Z id=644 event=gram.make_job_dir.end level=ERROR gramid=/16218020932513377141/290484376369931657/ status=-22 path=/home/alainroy/.globus/alainroy msg=%RED%&quot;Error creating directory&quot;%ENDCOLOR% errno=13 reason=%RED%&quot;Permission denied&quot;%ENDCOLOR%
+&lt;/pre&gt;
+
+---++ GRAM Error Code 47
+
+The grid user is authorized to submit a job to %LINK_GLOSSARY_GRAM%, but the assigned Unix account does not exist on the %LINK_GLOSSARY_CE%:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% globus-job-run fermiclou081.fnal.gov /usr/bin/whoami
+GRAM Job submission failed because the gatekeeper failed to run the job manager  (%RED%error code 47%ENDCOLOR%)
+&lt;/pre&gt;
+
+The GRAM log file on the Compute Element =/var/log/globus-gatekeeper.log= will contain an entry indicating the missing Unix account:
+
+&lt;pre class=&quot;file&quot;&gt;
+ PID: 32172 -- Notice: 5: Authorized as local user: alainroo
+Failure: getpwname() failed to find alainroo
+&lt;/pre&gt;
+
+---++ Job environment not set up correctly
+
+When you run a job, it should environment variables specific to the OSG install. For instance:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% globus-job-run fermicloud084 /bin/env | sort | grep ^OSG
+OSG_APP=/tmp
+OSG_DATA=/tmp
+OSG_DEFAULT_SE=None
+OSG_GLEXEC_LOCATION=None
+OSG_GRID=/etc/osg/wn-client/
+OSG_HOSTNAME=fermicloud084.fnal.gov
+OSG_JOB_CONTACT=fermicloud084.fnal.gov/jobmanager-condor
+OSG_SITE_NAME=ROYTEST
+OSG_SITE_READ=None
+OSG_SITE_WRITE=None
+OSG_SQUID_LOCATION=UNAVAILABLE
+OSG_STORAGE_ELEMENT=False
+OSG_WN_TMP=/tmp
+&lt;/pre&gt;
+
+If you don&#39;t see those, there are a couple of possible problems. 
+
+   1. Did =osg-configure= make the environment file? Those variables are set in =/var/lib/osg/osg-job-environment.conf=. If it doesn&#39;t exist, either =osg-configure= had a failure or it believes that you do not have a CE. It decides if you have a CE based on the =osg-ce= package being installed.
+   1. Did you install the OSG version of the Globus RPMs? The EPEL repository also contains Globus, but you must use some of the RPMs from other repository. In this case, you must use the =globus-gram-job-manager-scripts= package from the OSG repository to set up the job environment. You can tell if you have the right RPM because of the =osg= &quot;dist tag&quot; in the RPM name: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% rpm -q globus-gram-job-manager-scripts
+globus-gram-job-manager-scripts-4.1-3.1.%RED%osg%ENDCOLOR%.noarch&lt;/pre&gt; If you have the EPEL version, it&#39;s possible that you didn&#39;t install the yum priorities plugin, or that you don&#39;t have plugins enabled in your yum.conf. 
+
+#TroubleshootingEdgMkgridmap
+---+ Troubleshooting =edg-mkgridmap=
+
+
+---++ Is edg-mkgridmap installed?
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_ROOT%  rpm -q edg-mkgridmap
+edg-mkgridmap-4.0.0-3.osg.noarch
+&lt;/pre&gt;
+
+---++ Is edg-mkgridmap enabled?
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_ROOT%  /sbin/service edg-mkgridmap status
+Periodic edg-mkgridmap is %RED%disabled%ENDCOLOR%.
+&lt;/pre&gt;
+
+If it is disabled, enable it:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_ROOT% /sbin/service edg-mkgridmap start
+Enabling periodic edg-mkgridmap:                           [  %GREEN%OK%ENDCOLOR%  ]
+&lt;/pre&gt;
+
+---++ Are there errors in the log file?
+
+Look in the log file in =/var/log/edg-mkgridmap.log= for any error messages. Here is a sample error message:
+
+&lt;pre class=&quot;file&quot;&gt;
+voms search(https://voms.grid.iu.edu:8443/voms/mis/special/services/VOMSCompatibility?method=getGridmapUsers): Not Found
+&lt;/pre&gt;
+
+This says that it cannot fetch information from voms.grid.iu.edu for the &quot;mis/special&quot; group. This is due to a misconfiguration. My =/etc/edg-mkgridmap.conf= file incorrectly has:
+
+&lt;pre class=&quot;file&quot;&gt;
+group vomss://voms.grid.iu.edu:8443/voms/mis%RED%/special%ENDCOLOR% mis
+&lt;/pre&gt;
+
+instead of:
+&lt;pre class=&quot;file&quot;&gt;
+group vomss://voms.grid.iu.edu:8443/voms/mis mis
+&lt;/pre&gt;
+
+---++ Did you map a user or VO to an account that doesn&#39;t exist?
+
+Look in =/var/lib/osg/undefined-accounts= to see if you mapped a user or VO to an account that doesn&#39;t exist.
+
+---++ Do you want to force the grid-mapfile to update now?
+
+If you want to force edg-mkgridmap to run right now, you can:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /usr/sbin/edg-mkgridmap
+&lt;/pre&gt;
+
+---++ Are local users missing from the grid-mapfile? 
+
+Check the configuration file =/etc/edg-mkgridmap.conf=. It should contain (in part):
+
+&lt;pre class=&quot;file&quot;&gt;
+#### GMF_LOCAL: gmf_local grid-mapfile-local
+gmf_local /etc/grid-security/grid-mapfile-local
+&lt;/pre&gt;
+
+Then make sure the file =/etc/grid-security/grid-mapfile-local= contains the desired %LINK_GLOSSARY_DN% to account mappings.
+
+---+ Some configuration errors
+
+---++ Globus is not finding PBS (the queue manager)
+Check that the directory =/etc/globus/scheduler-event-generator= contains a link =pbs-&gt; available/pbs=.
+The link should be there. If it is not there, then create the link:&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% cd /etc/globus/scheduler-event-generator
+%UCL_PROMPT_ROOT% ln -s available/pbs pbs
+&lt;/pre&gt;
+
+
+---+ Sample Troubleshooting Session (Based on an actual session)
+
+The site upgraded CE&#39;s from version 3.x to version 3.y.  The upgrade seems to have &quot;broken&quot; the CE.
+
+---++ Symptoms
+   * globus-job-run with jobmanager-fork against CE hangs indefinitely
+   * running the RSV probes by hand hangs indefinitely
+   * the globus-gatekeeper.log appears to show proper authentication
+   * globusrun -a -r &lt;ce fqdn&gt; intermitently works
+      * A failure looks like:
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_ROOT% /usr/bin/globusrun -a -r &lt;ce fqdn&gt;
+
+GRAM Authentication test failure: the connection to the server failed (check host and port)
+&lt;/pre&gt;    
+        
+   * globus-url-copy -dbg gsiftp://&lt;ce fqdn&gt;/dev/zero /dev/null displays an unknown user
+      * Note the &quot;[unknown]&quot; string in the output:
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_ROOT% /usr/bin/globus-url-copy -dbg gsiftp://&lt;ce fqdn&gt;/dev/zero /dev/null
+
+debug: starting to get gsiftp://&lt;ce fqdn&gt;/dev/zero
+debug: connecting to gsiftp://&lt;ce fqdn&gt;/dev/zero
+debug: response from gsiftp://&lt;ce fqdn&gt;/dev/zero:
+220 &lt;ce fqdn&gt; GridFTP Server 6.5 (gcc64, 1323378368-83) [unknown] ready.
+
+debug: authenticating with gsiftp://&lt;ce fqdn&gt;/dev/zero
+&lt;/pre&gt;    
+
+---++ Potential Problems
+   * 1) Is gatekeeper running?
+   * 2) Potential gatekeeper config issues?
+   * 3) Potential GUMS issues?
+   * 4) Potential syslog config error?
+
+---++ Solutions
+   * (1) See [[#GatekeeperRunning][Is the gatekeeper running?]] 
+      * Note: During the troubleshooting session it was noticed that there were 1400+ gatekeeper processes running.  Even after stopping the gatekeeper service, the processes persisted.  The had to be killed with the -9 flag.
+   * (2) check for /etc/sysconfig/globus-gatekeeper.rpmnew, might have to merge configs
+      * On this particular CE, the config file for globus-gatekeeper had not been modified by an admin, so the rpm upgrade was able to replace the config file.  The  /etc/sysconfig/globus-gatekeeper.rpmnew file did not exist.
+   * (3) check /etc/lcmaps.db and /etc/grid-security/gsi-authz.conf for proper config
+      * These files were ok on this CE.
+   * (4) check /etc/syslog.conf to see if there&#39;s a &quot;-&quot; before /var/log/messages?
+      * The line should look like:
+         &lt;pre class=&quot;file&quot;&gt;
+*.info;mail.none;authpriv.none;cron.none  -/var/log/messages
+         &lt;/pre&gt;
+      * Without the dash, syslogd will call fsync after every log message.  The CE takes so long for the log message to go through that the remote clients give up and retry, which just adds to the CE load.
+      * It turns out that this was the culprit.  The load on the CE was high enough that the clients were timing out.
+
+---+ HOWTO: Create a core file for globus-job-manager
+When you run against a Globus error which causes the =globus-job-manager= to segfault (you will see segfault messages in /var/log/messages), you can do the following to enable coredumps:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_ROOT% echo export DAEMON_COREFILE_LIMIT=&#39;unlimited&#39; &gt;&gt; /etc/sysconfig/globus-gatekeeper
+%UCL_PROMPT_ROOT% echo /tmp/core-%e-%s-%u-%g-%p-%t &gt; /proc/sys/kernel/core_pattern
+%UCL_PROMPT_ROOT% killall globus-job-manager
+%UCL_PROMPT_ROOT% service globus-gatekeeper stop
+%UCL_PROMPT_ROOT% service globus-gatekeeper start
+&lt;/pre&gt;
+
+Wait awhile until one of the =globus-job-manager= processes segfaults (again, you can watch /var/log/messages).  Once that happens, you should be able to attach to the corefile and find out where it crashed:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_ROOT% gdb /usr/sbin/globus-job-manager /tmp/core-globus-job-mana-11-723-5001-11391-1332353663 
+...
+gdb&gt; where
+AAAA
+BBBB
+&lt;/pre&gt;    
+
+Likely, crashes are software bugs.  Please report the issue to the osg-software mailing list; we will ask you for the precise RPM version of globus-gram-job-manager (so we can lookup the debug symbols) and to send us the corefile.
+
+---+ Appendix: Log files
+
+This document cannot cover all the errors you might experience. If you need to look for more data, you can look at log files for the various services on your CE. 
+
+| *Service or Process* | *Log and Error Files* |
+| CEMon  | =/var/log/glite-ce-monitor/glite-ce-monitor.log=  |
+| edg-mkgridmap  | =/var/log/edg-mkgridmap.log= &lt;br&gt; =/var/lib/osg/osg-user-vo-map= &lt;br&gt; =/var/lib/osg/supported-vo-list= &lt;br&gt; =/var/lib/osg/undefined-accounts=  |
+| GIP  | =%/var/log/gip/gip.log= &lt;br&gt; =/var/log/gip/modules.log=  |
+| Globus %LINK_GLOSSARY_GRAM% Gatekeeper| =/var/log/globus-gatekeeper.log=  &lt;br&gt; =/var/log/messages= |
+| Globus %LINK_GLOSSARY_GRAM% Job Manager | =/var/log/globus/gram_%RED%&amp;lt;username&gt;%ENDCOLOR%.log= (one per local user account) |
+| Globus %LINK_GLOSSARY_GRIDFTP%  | =/var/log/gridftp.log= &lt;br&gt; =/var/log/gridftp-auth.log= |
+| Gratia  | =/var/log/gratia/%OPT_DATE%.log= |
+| gums-host-cron  | =/var/log/gums/gums-host-cron.log=  |
+| lcmaps | =/var/log/messages= |
+| %LINK_GLOSSARY_CONDOR%  | =/var/log/condor/*= |
+| Tomcat (for CEMon) | =/var/log/tomcat5/catalina.out= on EL5 &lt;br&gt; =/var/log/tomcat6/catalina.out= on EL6 |
+| yum | =/var/log/yum.log= | 
+
+
+---+ References
+   * TroubleshootingGuide (contains a list of Globus and HTCondor errors)
+   * Documentation.GridUsersGuideTroubleshootingOSG
+
+---+ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = AlainRoy
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = User
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Installation
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = MarcoMambelli 	
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = MarcoMambelli 	
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %YES%
+############################################################################################################
+--&gt;

@@ -1,0 +1,34 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+---+ Thursday  Exercise 2: Data transfer for condor job
+There are few ways one could transfer the input/output files  for condor jobs.  Here we talk about the condor inbuilt transfer mechanism and the HTTP. 
+
+---++ Condor Transfer
+
+First we get the example files
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;wget http://stash.osgconnect.net/+dbala/Storage/namd-condor.tar.gz &lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;tar -xzf  namd-condor.tar.gz &lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cd namd-condor/namd-ct &lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;ls -F &lt;/strong&gt;
+&lt;/pre&gt;
+
+&lt;pre class=&quot;file&quot;&gt;
+namd_run.sh    # Job wrapper script to execute namd job
+namd_run.submit    # Condor job description file
+par_all27_prot_lipid.inp  #  Parameter file: required by NAMD
+ubq_gbis_eq.conf    # NAMD input configuration file
+ubq.pdb    # Protein structure file: required by NAMD
+ubq.psf     # Protein topology file: required by NAMD
+&lt;/pre&gt;
+
+We want to transfer the four files required by NAMD (the last four files in the above list) from the login machine to the remote host.  We tell condor to use the inbuilt transfer mechanism. 
+
+
+
+
+
+-- Main.BalamuruganDesinghu - 22 Jul 2015

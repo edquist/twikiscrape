@@ -1,0 +1,220 @@
+-- Main.DanFraser - 19 Jan 2010
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+---++ Action/Significant Items:
+   * Had to discontinue LIGO support at MIT_CMS.  Their workflow is too much I/O for the NFS configuration there. (Burt)  
+   * Good news: roughly 3k concurrent LIGO jobs over the weekend at the FNAL T1 (Burt, Rob)
+   * Rob E. is planning to switch from NFS to local storage at Caltech who had also noted an issue with NFS overloading.
+   * While the BDII problem at BNL occurs rarely ~.05%, the plan is to extract and analyze the error messages and also to see if there is any correlation between BNL and GOC probes. (Rob, Xin)
+   * Brian to send an email describing the proposed naming change to Xin and Burt.
+
+---++ Attendees:
+   * Mats, Xin, Armen, Britta, Rob E., Brian, Suchandra, Burt, Marco, Rob Q., Mine, Chander, Dan
+ 
+---++ CMS (Burt)
+   * Computing: 175 khour/day, 88% success.  CPU/wallclock at 47% (excluding T1: 68%).
+   * Storage: 2.9 PB xfer (T1), 65 TB (others)
+   * Continue to run intense skim runs at the Tier 1 to test dCache/network congestion issues.
+   * Had to discontinue LIGO support at MIT_CMS.  Their workflow is too much I/O for the NFS configuration there.  (Good news: I did see roughly 3k concurrent LIGO jobs over the weekend at the FNAL T1).
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * During the last week USATLAS production was quite stable at the level of 8~10K running jobs, mainly MC jobs. Starting this weekend, we run out of real jobs, so number of running jobs/pilots drops a lot. 
+   * Job statistics for last week. 
+      * Gratia report: USATLAS ran 1.8M jobs, with CPU/Walltime ratio of 81%. 
+      * Panda world-wide production report (real jobs): 
+         * completed successfully 600K managed MC production, validation and reprocessing jobs 
+         * average 84K jobs per day
+         * failed 64K jobs
+         * average efficiency:  jobs  - 90%,  walltime - 96%       
+   * Data Transfer statistics for last week
+      * Transfer rate stays the same as previous weeks. BNL T1 transferred ~75 TB/day data last week, with peak at 150 TB/day.  
+   * USATLAS sites are asked to finish the upgrade to SL5 and OSG 1.2 by the end of January. 
+   * Issues and GOC Tickets
+      * GOC ticket 7772: Issues with WLCG BDII periodically loses information about some USATLAS Tier2 sites
+      * Opening more USATLAS T2 sites to D0 VO as opportunistic storage:  no update this week. 
+
+---++ LIGO (Britta, Rob E.)
+
+ * Gratia reports:
+   * Current week&#39;s total usage: 5 users utilized 38 sites;
+     * 74974 jobs total (51987 / 22987 = 69.3% success);
+     * 640336.3 wall clock hours total (593458.9 / 46877.4 = 92.7% success);
+   * Previous week&#39;s total usage: 5 users utilized 38 sites;
+     * 39880 jobs total (34908 / 4972 = 87.5% success);
+     * 395944.2 wall clock hours total (383453.3 / 12490.9 = 96.8% success);
+
+   * E@H reports
+      * 90k cpu hours / day on 28 resources
+      * Recent Average Credit (RAC):  1.8M,  Last week: 992k
+      * E@H rank based on RAC: 3 (+-0)
+      * E@H rank based on accumulated Credits: 10 (+1)
+ 
+   * Robert is working on code changes required to expand to Fermilab sites and Sprace
+
+ 
+---+++ Binary Inspiral
+    
+      * Gap in data error ticket remains open
+
+      * Test run on one week of data succeeded  on Firefly
+      
+      * Two month of LIGO data transferred into Firefly SE
+
+
+---++ Engage (Mats, John, Chris)
+
+
+9 users utilized 39 sites;
+
+38278 jobs total (33574 / 4704 = 87.7% success);
+
+175688.0 wall clock hours total (165122.9 / 10565.1 = 94.0% success);
+
+Normal week. We have more jobs in the queue, but they require either long wall time or a lot of memory which makes it more difficult to match. 
+
+What is the status of the RSV ReSS probe?
+
+
+---++ Integration (Suchandra)
+   * ITB 1.1.17 / OSG 1.2.6 testing still ongoing
+      * ATLAS VO testing completed successfully
+      * Discovered an issue with gip 1.1.8 , investigating currently
+      * Otherwise all ready for a release   
+   * ITB / Panda framework
+      * BNL and UC_ITB up
+      * Still resolving issues on LBNL and VDT site
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.2.5
+      *       68 OSG 1.2.X resources (      10 are 1.2.5)
+      *       11 OSG 1.0.X resources (       2 are 1.0.5)
+      *       18 OSG 1.0.0 resources
+      *        2 OSG 0.8.0 resources
+         * OU_OCHEP_SWT2, tier2-01.ochep.ou.edu , Contact: Horst Severini
+         * UIC_PHYSICS mstr1.cluster.phy.uic.edu , Contact: John Wolosuk
+
+OSG and VDT versions:   
+   * http://www.mwt2.org/~marco/page-rsv100126.xml
+   * Some observation:
+      * only CE have versions (no SE, servers)
+      * expired values have different name/tag (in the XML)
+
+---++ Metrics (Brian)
+   * We&#39;ve been working with Dan on the deployment of new Gratia.  We would like to contact sites for two things, below.  Instructions and tickets verbage are being prepared for both.
+      * (Medium priority) Point to the correct Gratia collector hostname.
+      * (Low priority) Upgrade the Gratia client library.
+   * Consistency work is ongoing; John Weigand currently holds the token on this as he is investigating the best way to upload Gratia data to WLCG.  Basically, we want to make sure we can automate consistency checks from end-to-end.  Right now, there&#39;s no &quot;right&quot; or &quot;wrong&quot; configuration, just a configuration.
+      * Need feedback from Burt and Xin because the changes as proposed would affect rows in the T1 WLCG reports.  Need/want explicit check-off.
+   * We (maybe just I?) need to understand the mechanism for getting OSG Operations to stay on top of both consistency and non-reporting sites.
+   * Considering some options for further Gratia work.
+
+---++ Grid Operations Center (Rob Q.)
+---+++ Operations Last Week 
+   * Last week&#39;s availability metrics
+      * [[http://tinyurl.com/yek7kob][GOC Services: BDII, MyOSG, RSV Collector, OSG Display]] - NOTE: High Level OSG Display added to monitoring per Brian Bockelman&#39;s request, SLA expected soon.
+      * [[http://tinyurl.com/ybp3w7z][GOC hosted Security services managed by OSG security team]]
+   * Relevant to only WLCG Interop sites: SAM team indicated a couple more instances of a broker problem.
+
+---+++ Operations This Week
+   * *[[http://osggoc.blogspot.com/2010/01/goc-service-update-tuesday-january-26th.html][Production release Tuesday - Jan 26th 14:00 UTC]]*
+      * MyOSG 1.14, Ticket 1.13, OIM 2.13 
+   * *GOC-FNAL ticket exchange*: A meeting was held this morning between the GOC and Fermilab/Fermigrid/CMS about progressing with testing on web service ticket exchange. A few technical hurdles need to be overcome before testing web services can continue. 
+      * GOC will also attempt to setup prototype exchange with RT ticketing system, possibly development ATLAS ticket system
+   * Next [[http://indico.fnal.gov/conferenceDisplay.py?confId=2871][Registration for OSG All-Hands meeting (March 8th - 11th @ FNAL) is now open]] - hope to see you all there!
+   * vo package release for change in ordering requested by cdf and addition of grid unesp
+
+---+++ Future Events
+   * RSV Collector upgrade coming up in the next couple of weeks -- waiting for VDT to release change to their production cache; ITB collector already successfully upgraded to 1.06.14 last week.
+   * Migration from error-prone email-based ticket exchange to new TicketExchanger (TX) based GOC-GGUS setup to likely be released to production on Feb 3rd assuming all tests are successful - GOC is working with GGUS to ensure smooth transition
+
+---+++ Tickets and WLCG
+   * [[https://ticket.grid.iu.edu/goc/viewer?id=7772][7772]] 
+      * Number of tests VS the OSG BDII: 124168
+      * Number of failures VS OSG BDII: 53 (Excluding the WT2 Scheduled Maintenance)
+      * Percentage of Failures: 0.04%
+      * Number of tests VS the EGEE BDII: 124168
+      * Number of failures VS EGEE BDII: 113 (Excluding the WT2 Scheduled Maintenance)
+      * Percentage of Failures: 0.09%
+
+   * [[https://ticket.grid.iu.edu/goc/viewer?id=8001][8001]] - ATLAS VO member unable to dq2-get dataset from BNL-OSG2_USERDISK
+   * [[https://ticket.grid.iu.edu/goc/viewer?id=7980][7980]] - Remote and local file sizes do not match for an ESD file on BNL
+   * Recalculation of Availability Numbers for CMS Tier 1
+
+
+---++ Virtual Organizations Group (Abhishek)
+
+   * D0 MC production remains low. Last week&#39;s average 3 M Evts/week.
+
+   * CDF production running smoothly; opportunistic expansion plan awaited.
+   
+   * SBGrid was provided with detailed Gratia logs of sites that were giving high failures. Investigation goal is to improve overall job success rate at sustained moderate scale (1000-1500 jobs); results awaited. BNL site-specific ticket - https://ticket.grid.iu.edu/goc/viewer?id=7748
+
+   * ALICE to make NERSC site production-ready (on small scale). Work in progress. 
+
+   * !GlueX&#39;s site to follow similar !ReSS advertisement procedure as !FermiGrid. Richard/GlueX expects to resolve system-level !CentOS 5 issues, to make CE more stable before fixing CEMon/ReSS.
+ 
+   * !CompBioGrid&#39;s site issue with firewall on site upgrade from OSG 1.2.3 to 1.2.4; investigation ongoing with VDT team. Ticket -- https://ticket.grid.iu.edu/goc/viewer?id=7870
+
+---++ Security (Mine)
+   * The same report from EuGridPMA meeting. I copied and pasted the email below. 
+   * Urgent issues : sites must not do openssl update . Doing so will break the authentication. 
+   * pakiti is ready for testig by dan and T3 coordinators. 
+   * below is my report from EuGridPMA last week: same issues still stands 
+---------
+Hello Facility Members
+
+We have concluded EUGridPMA and I like to share my summary and action items with you. Overall, it was well worth the trip -- please see the items below. I am waiting for comments on some proposals. 
+
+1. Terena CA that issues personal e-Science certs has been approved (with some minor conditional changes). Terena ca plans to use the commercial comodo CA as a backend CA, and as a front end use a  shib-like authentication portal The front end
+has multiple federations and each country manages their own federations, each with different identity vetting rules.  In the end, terena CA serves the whole Europan NRENs. I see that having national
+federations produce certs for the end users would eliminate the need for
+having separate national CAs. if that happens, what would IGTF relevance
+be? Another question is if national CAs are replaced by Terena CA and Terena CA has major  stakeholders other than grid communities, it may well veer off of IGTF policies, the grids. What would this mean for us. This is not an immediate issue. But I wonder if NRENs and Terena&#39;s prior business model is grid stakeholders or not. it seems not. 
+Anyhow it opens up the path for CILogon CA to be accredited by IGTF.
+
+2. Feth-crl problems from recent UCSD failures. The extra checks suggested by Frank W is agreed by David Groep, and David promised to put them into his next release. They are really very straightforward and main reason we ask David to do it is for future maintenance (I already implemented them)
+
+2.1 The configuration flag for overwriting corrupted CRL files. Again as part of fetch-crl problem, we wanted to set a variable value differently by default. We will be able to do this as new fetch-crl version allows it. 
+
+Action Item for Alain&#39;s attention: Upgrade to fetch-crl 2.7.0 which will allow us to set  this variable in the configuration file. we currently have 2.6.6. We must follow the next couple updates closely as they will solve new openssl version issue. 
+
+3. CRL outages and RSV failures 
+CRL lifetimes are set to a month and most CAs do not keep up with the updates on a timely basis. CAs are asked to update 7 days before the expiration date ; however, they usually do it on the last day or a bit late. RSV probes goes off a week before expiry. Result is a lot of warnings and failure messages to site admins. 
+
+Based on the feedback at our identity workshop, I started keeping operational logs of outages per CA and showed at the meeting. I asked for increasing the lifetimes because CRL lifetime has zero affect on operational security. This was vehemently refused by David because he was afraid a longer period would even make updates more sporadic and less timely. 
+
+Proposal: Let&#39;s get rid of the local RSV probe on CEs that gives warning and failure messages when a CRL near expiring. This probe is EXTRA , NOT required by WLCG. The required RSV probe checks whether site downloads CRL files or not; it does not check if downloaded files are expired or not. A site admin has absolutely no control over if a CA does not publish a new CRL and he has no reason to monitor this. It only makes them nervous. The security team already has a central probe that checks this directly against each CA and we send emails to IGTF when outages happen. When a user cannot authenticate due to a expired CRL, this shows up in gatekeeper log files so admin does not need a probe the situation.    
+
+In addition, I will keep sending my logs of CA operational behavior to David and we are prepared to take out unbahaving CAs. 
+Action Item for Alain&#39;s attention: remove RSV probe that checks the actual CRL expiry date from RSV bundle. 
+ 
+3.2 Required WLCG RSV probe. This is different than the probe that I want to remove from the sites. Required WLCG probe checks the download time stamp of a CRL file and based on that time stamp grades a site. This probe is unfair in which if a CA is unavailable and download fails, the site gets a bad grade for lack of a timestamp. This probe is NOT critical in calculating a site&#39;s availability by WLCG. But nevertheless, it causes confusion and panic.
+
+Proposal: Sites are required to try to download CRLs. So we should check whether they run fetch-crl periodically or not. We should not check if the downloads are successful or not. This means changing the probe logic from that of WLCG. 
+WLCG may resist it.
+
+Alternative proposal: Let&#39;s distribute CRLs from GOC just as we distribute the ca certs. GOC will run fetch crl to generate its CRL bundle, which they already do. Sites will only contact goc service to get the CRL files. This would cure all of the trouble without changing the code. Of course time outs and outages will happen , but at least sites will always succeed in downloading a CRL file and isolate from network problems. 
+Downside: I have to edit IGTF distribution to encode GOC as an alternative crl location. Currently each CA has a file that tells where to get crl files. we have to edit these files or edit fetch-crl code.  
+
+
+4. Robot certificates: Storing the private keys in secure Hardware tokens was a big discussion. I see this unnecessary and operationally hard for the certificate owners. We decided NOT to put this as the sole requirement and added &quot;secure file system&quot; in a secure room. This is sufficient imo. I do not think many people will achieve secure room requirement but I think it is OK. 
+
+5. New openSSL version. Change in certificate file names, moves on from MD-5 to SHA-1. This breaks the interoperability with IGTF distribution which still uses MD-5 for naming. 
+
+Proposals: IGTF keeps two distributions, one for old and one for the new openSSL. OR ask Debian and RedHat or Scientific Linux to include the IGTF bundle. 
+Pros and cons in a separate email.  
+
+6. Risk assessment Team. This was chaired by Jim Basney in the past and this is built after OSG pressure during a PKI crises. 
+Jens jensen chairs it, myself and Doug are members. I am disappointed that even basic ping tests with some CAs (20 out of 74) failed. They simply did not respond. 
+
+Action Item: We cannot rely on CAs for any tolerable incident response. Sites must be well-enabled for fending for themselves in a crisis. We tested Tier 1 and Tier2 for basic capabilities in the drills. we must do a drill for Tier 3 and ensure they have latest tools. 
+
+7. Certificate Lifecycle management tool. Dutch and UK CAs have separately developed two applications for managing certificate lifetimes over the desktop. This is a neat client side tool. Certificate management tools for end users is an action  item from our identity workshop meeting with our stakeholders. I proposed to form group across these projects and at the least develop common libraries for the management tools. The trend is each CA will develop their own management tool because their processes are slightly different from one another. But at the least they agreed to think through their differences and provide a common library for common behaviors, 
+
+Action Item for security team: examine the tools, consider adoption in OSG or by DOEgrids CA. There are almost 4 tools. I tested only one of them so far. 

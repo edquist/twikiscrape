@@ -1,0 +1,84 @@
+-- Main.KarthikArun - 12 Jan 2011
+%TOC%
+
+---+++ Installation of mailed gratia accounting summary reports
+
+The gratia central reports are being run at Fermilab and then emailed to the subscribers of the report. You could get more details about these reports and how to receive them at &lt;a href=https://twiki.grid.iu.edu/bin/view/Accounting/ReportsDescription&gt;mailed reports&lt;/a&gt;. But if you want to run these reports locally on your own terms, then you could download and install the scripts that generate and email these reports. Instructions for the download and the configuration of the gratia summary reports as described below.
+
+&lt;ul&gt;
+&lt;li&gt;Create a directory in which you want to install/store the reporting related files.
+&lt;pre&gt;
+mkdir gratiaReports
+cd gratiaReports
+&lt;/pre&gt;
+Note: You could replace &quot;gratiaReports&quot; by any other name of your choice!
+&lt;li&gt;Download to the gratiaReports directory, the &lt;a href=http://gratia.svn.sf.net/viewvc/gratia/trunk/reporting/summary/?view=tar&gt;tar file&lt;/a&gt; containing the scripts/software for the mailed summary reports. 
+&lt;li&gt;Untar the file: &lt;pre&gt;tar -zxvf gratiaReports.tar.gz&lt;/pre&gt;
+&lt;li&gt;Copy the configuration template file to the one that will be used by the gratia reports (gratiareports.conf is the default conig file. ) &lt;pre&gt;cp gratiareports.conf.template gratiareports.conf&lt;/pre&gt;
+&lt;li&gt;Please make sure to edit &lt;b&gt;gratiareports.conf&lt;/b&gt; and fill in appropriate values. This determines the configuration of the python based reports. Please follow the instructions provided in gratiareports.conf.&lt;/li&gt;
+&lt;li&gt;Please make sure to edit &lt;b&gt;user-reports.dat&lt;/b&gt; and fill/replace the appropriate values for the VO, Sites and Users who should receive the perl based site and VO metrics report. 
+&lt;li&gt;Run the report configure script. This will verify the contens of the python config file (gratiareports.conf) and setup the cronjob for the mailed reports if setup so in the config file. It is assumed that the user running this script has the appropriate permissions to setup the cronjob. Please note that the configure script won&#39;t verify/validate the contents of the perl data file namely user-reports.dat. But this file still needs to be edited. 
+&lt;pre&gt;
+python configReport.py
+# If you expect cronjob to be set, verify if that was the case by doing &quot;crontab -l&quot;. 
+# It should list the cron jobs in addition to whatever you already had in the crontab. 
+&lt;/pre&gt;
+
+---+++ Examples of running summary reports
+&lt;li&gt;Some examples of how to run the mailed gratia summary reports are given below. There are more number of ways in which you could run these scripts by using different combinations of options. Please consult the help message of each script to find out what best suits for your requirements. Please note that the default options for running the reports are fetched from the configuration file (gratiareports.conf by default). These options could be overridden by or merged with the command line options given directly when the script is invoked from command line. 
+&lt;pre&gt;
+cd &amp;lt Directory where gratia reports have been installed&amp;gt
+
+sh daily_mutt.sh 
+# (options in config file (gratiareports.conf by default) will be used)
+
+sh daily_mutt.sh --mail myEmail@myDomain.edu 
+# (this email will override the default choice from the config file)
+
+sh daily_mutt.sh --production 
+# (this report will be emailed to production email
+# set in the config file and if not assigned in the script). 
+
+sh daily_mutt.sh 2010/10/10
+# This report will fetch the data for the date of Oct 10th 2010
+
+&lt;/pre&gt;
+You could substitute daily_mutt.sh by range_mutt.sh in the above examples. 
+
+&lt;b&gt;Examples of running perl reports:&lt;/b&gt;
+
+&lt;li&gt;OSG site metrics
+&lt;pre&gt;
+perl all-sites-oim --exclusive-mail site-admin@mysite.edu --site-name OU_OCHEP_SWT2
+&lt;/pre&gt;
+        - would send reports about OU_OCHEP_SWT2 to site-admin@mysite.edu 
+        
+&lt;pre&gt;
+perl all-sites-oim -m site-admin@mysite.edu  --site-name OU_OCHEP_SWT2&lt;/pre&gt;
+        - same as above
+
+&lt;pre&gt;
+perl all-sites-oim -m site-admin@mysite.edu  -m rajkwrites@yahoo.com -s OU_OCHEP_SWT2 -s OUHEP_OSG&lt;/pre&gt;
+        - would send reports about OU_OCHEP_SWT2 and OUHEP_OSG to site-admin@mysite.edu  and rajkwrites@yahoo.com
+        
+&lt;pre&gt;
+perl all-sites-oim -m site-admin@mysite.edu &lt;/pre&gt;
+        - would send reports about all sites to site-admin@mysite.edu 
+        
+&lt;pre&gt;perl all-sites-oim --production&lt;/pre&gt;
+        - would send reports about all sites to the appropriate site admins
+
+&lt;pre&gt;perl all-sites-oim --production -D user-reports.dat&lt;/pre&gt;
+        - Extract site reports for sites contained in user-reports.dat and email them to the recipients contained in user-reports.dat. 
+
+&lt;li&gt; OSG VO metrics
+&lt;pre&gt;perl all-vos-oim --production -D user-reports.dat&lt;/pre&gt;
+          - Run VO reports on VOs contained in user-reports.dat and mail them to the recipients contained in user-reports.dat
+
+&lt;b&gt;For detailed help on how to run the reports do the following&lt;/b&gt;
+&lt;pre&gt;perl all-sites-oim --help
+perl all-vos-oim --help&lt;/pre&gt;
+
+&lt;/ul&gt;
+
+

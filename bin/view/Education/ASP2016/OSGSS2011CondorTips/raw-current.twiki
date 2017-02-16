@@ -1,0 +1,237 @@
+---+ A few tips and tricks
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; border: 1px solid black; padding: 0.5em;&quot;&gt;
+---+++ Objective of this exercise
+This exercise will teach you a few nifty commands to help you use Condor more easily.
+&lt;/div&gt;
+
+---++ Tips for condor_q
+
+You&#39;re been using =condor_q=, but it shows the jobs of everyone who submitted from the computer you are running the command on. If you want to see just your jobs, try this: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_q -sub %RED%YOUR-LOGIN-NAME%ENDCOLOR%
+&lt;/pre&gt;
+
+Curious where your jobs are running? Use the =-run= option to see where jobs are running. (Idle jobs are not shown.) 
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_q -run
+-- Submitter: vdt-itb.cs.wisc.edu : &lt;198.51.254.90:52713&gt; : vdt-itb.cs.wisc.edu
+ ID      OWNER            SUBMITTED     RUN_TIME HOST(S)         
+125665.0   roy             6/20 10:05   0+00:00:07 slot1@miniosg-c04.cs.wisc.edu
+125665.1   roy             6/20 10:05   0+00:00:07 slot2@miniosg-c04.cs.wisc.edu
+125665.2   roy             6/20 10:05   0+00:00:07 slot3@miniosg-c04.cs.wisc.edu
+&lt;/pre&gt;
+
+=condor_q= can also show you your job !ClassAd. Recall back to the lecture and the discussion of !ClassAds. For instance, you can look at the !ClassAd for a single job:
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_q -l 125665.0
+
+-- Submitter: vdt-itb.cs.wisc.edu : &lt;198.51.254.90:53928&gt; : vdt-itb.cs.wisc.edu
+-- Submitter: vdt-itb.cs.wisc.edu : &lt;198.51.254.90:52713&gt; : vdt-itb.cs.wisc.edu
+Out = &quot;simple.0.out&quot;
+LastJobStatus = 1
+JobCurrentStartDate = 1308582301
+PublicClaimId = &quot;&lt;192.168.0.15:50888&gt;#1308343655#34#...&quot;
+RemoteHost = &quot;slot1@miniosg-c04.cs.wisc.edu&quot;
+BufferBlockSize = 32768
+JobNotification = 2
+JobLeaseDuration = 1200
+TransferFiles = &quot;ONEXIT&quot;
+ImageSize_RAW = 535
+StreamOut = false
+NumRestarts = 0
+ImageSize = 750
+Cmd = &quot;/home/roy/condor-test/simple&quot;
+... output trimmed ... 
+&lt;/pre&gt;
+
+There are some interesting parts you can check out. For instance, where is the job running? 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_q -l 125665.0 | grep RemoteHost
+RemoteHost = &quot;slot1@miniosg-c04.cs.wisc.edu&quot;
+&lt;/pre&gt;
+
+How many times has this job run? (It might be more than one if there were recoverable errors.)
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_q -l 125665.0 | grep JobRunCount
+JobRunCount = 1
+&lt;/pre&gt;
+
+Where is the user log for this job? This is helpful when you assist someone else in debugging and they&#39;re not sure.
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_q -l 125665.0 | grep UserLog
+UserLog = &quot;/home/roy/condor-test/simple.0.log&quot;
+&lt;/pre&gt;
+
+What the job&#39;s requirements? Condor automatically fills some in for you, to make sure your job runs on a reasonable computer in our cluster, but you can override any of these. I&#39;ve broken the output into multiple lines to explain it to you.
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_q -l 125665.0 | grep Requirements
+Requirements = ((Arch =!= &quot;&quot;))  # %RED% Make sure you run on a reasonable architecture. We hacked this for technical reasons, ask Alain if you&#39;re curious. %ENDCOLOR%
+    &amp;&amp; (OpSys == &quot;LINUX&quot;) # %RED% Make sure you run on Linux %ENDCOLOR%
+    &amp;&amp; (Disk &gt;= DiskUsage) # %RED% Make sure the default disk Condor is on has enough disk space for your executable. Question: What is DiskUsage? %ENDCOLOR%
+    &amp;&amp; (((Memory * 1024) &gt;= ImageSize)  # %RED% Make sure there is enough memory for your executable. Question: What is ImageSize? %ENDCOLOR%
+    &amp;&amp; ((RequestMemory * 1024) &gt;= ImageSize))  # %RED% An extra complication, similar to the previous one. Question: What is RequestMemory? %ENDCOLOR%
+    &amp;&amp; (HasFileTransfer) # %RED% Only run on a computer that can accept your files. %ENDCOLOR%
+&lt;/pre&gt;
+
+---++ Tips for condor_status
+
+Curious about what jobs are being run right now? 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_status -claimed
+
+Name          OpSys       Arch   LoadAv RemoteUser           ClientMachine  
+
+slot1@miniosg LINUX       INTEL  0.000  roy@vdt-itb.cs.wisc. vdt-itb-interna
+slot2@miniosg LINUX       INTEL  0.000  roy@vdt-itb.cs.wisc. vdt-itb-interna
+                     Machines         MIPS       KFLOPS   AvgLoadAvg
+
+         INTEL/LINUX        2         9486      2885154   0.000
+
+               Total        2         9486      2885154   0.000
+&lt;/pre&gt;
+
+Curious about who has submitted jobs? Note that you see =osg-edu.cs.wisc.edu= in the output. That&#39;s another computer in our Condor pool. You&#39;ll be using it later. It has a separate queue from the one on =vdt-itb=.
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_status -submitters
+
+Name                 Machine      Running IdleJobs HeldJobs
+
+osgedu@cs.wisc.edu   osg-edu.cs         0        0        0
+bbockelm@vdt-itb.cs. vdt-itb.cs         0        1        0
+roy@vdt-itb.cs.wisc. vdt-itb.cs         3        0        0
+                           RunningJobs           IdleJobs           HeldJobs
+
+bbockelm@vdt-itb.cs.                 0                  1                  0
+  osgedu@cs.wisc.edu                 0                  0                  0
+roy@vdt-itb.cs.wisc.                 3                  0                  0
+
+               Total                 3                  1                  0
+&lt;/pre&gt;
+
+Or perhaps you want to know all the machines from which you can submit jobs: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_status -schedd
+
+Name                 Machine    TotalRunningJobs TotalIdleJobs TotalHeldJobs 
+
+osg-edu.cs.wisc.edu  osg-edu.cs                0             0              0
+vdt-itb.cs.wisc.edu  vdt-itb.cs                3             1              0
+                      TotalRunningJobs      TotalIdleJobs      TotalHeldJobs
+
+                    
+               Total                 3                  1                  0
+&lt;/pre&gt;
+
+Just like we could look at the !ClassAd for a job, we can also look at them for computers. 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_status -l slot1@miniosg-c01.cs.wisc.edu
+Machine = &quot;miniosg-c01.cs.wisc.edu&quot;
+LastHeardFrom = 1308582252
+UpdateSequenceNumber = 819
+JavaVersion = &quot;1.6.0_23&quot;
+HasMPI = true
+CpuIsBusy = false
+HasVM = false
+FileSystemDomain = &quot;cs.wisc.edu&quot;
+JavaVendor = &quot;Sun Microsystems Inc.&quot;
+Name = &quot;slot1@miniosg-c01.cs.wisc.edu&quot;
+... output trimmed ...
+&lt;/pre&gt;
+
+Some features of interest:
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+%RED%# The computer&#39;s name %ENDCOLOR%
+% condor_status -l slot1@miniosg-c01.cs.wisc.edu | grep -i Name
+Name = &quot;slot1@miniosg-c01.cs.wisc.edu&quot;
+
+%RED%# The computer&#39;s other name. %ENDCOLOR%
+% condor_status -l slot1@miniosg-c01.cs.wisc.edu | grep -i ^Machine
+Machine = &quot;miniosg-c01.cs.wisc.edu&quot;
+
+%RED%# The state of the computer? %ENDCOLOR%
+% condor_status -l slot1@miniosg-c01.cs.wisc.edu | grep -i ^State
+State = &quot;Unclaimed&quot;
+
+%RED%# The version of Condor this computer is running. %ENDCOLOR%
+% condor_status -l slot1@miniosg-c01.cs.wisc.edu | grep CondorVersion
+CondorVersion = &quot;$CondorVersion: 7.6.1 May 31 2011 BuildID: 339001 $&quot;
+
+%RED%# When this computer will start jobs. %ENDCOLOR%
+% condor_status -l slot1@miniosg-c01.cs.wisc.edu | grep -E &quot;(^Start |Requirements)&quot;
+Start = ((KeyboardIdle &gt; 15 * 60) &amp;&amp; (((LoadAvg - CondorLoadAvg) &lt;= 0.300000) || (State != &quot;Unclaimed&quot; &amp;&amp; State != &quot;Owner&quot;)))
+Requirements = (START) &amp;&amp; (IsValidCheckpointPlatform)
+
+%RED%# How many CPUs this computer has %ENDCOLOR%
+% condor_status -l slot1@miniosg-c01.cs.wisc.edu | grep  TotalCpus
+TotalCpus = 8
+&lt;/pre&gt;
+
+What else can you find that&#39;s interesting in the !ClassAd?
+
+---++ Removing jobs
+
+If you submit a job that you realize has a problem, you can remove it with =condor_rm=. For example: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_q
+-- Submitter: vdt-itb.cs.wisc.edu : &lt;198.51.254.90:39927&gt; : vdt-itb.cs.wisc.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+125668.0   roy             6/20 10:10   0+00:00:03 R  0   0.7  simple 60 10      
+
+1 jobs; 0 idle, 1 running, 0 held
+
+% condor_rm 125668
+Cluster 125668 has been marked for removal.
+
+% condor_q
+-- Submitter: vdt-itb.cs.wisc.edu : &lt;198.51.254.90:52713&gt; : vdt-itb.cs.wisc.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+
+0 jobs; 0 idle, 0 running, 0 held
+&lt;/pre&gt;
+
+A few tips:
+
+   * You can remove all of your jobs with the -all option.
+   * You can&#39;t remove other users jobs.
+   * There are [[http://www.cs.wisc.edu/condor/manual/v7.6/condor_rm.html][fancy options to condor_rm]].  
+
+---++ Historical information
+You can see information about jobs that completed and are no longer in the queue with the =condor_history_ command. It&#39;s rare that you want to see *all* the jobs, so try looking at jobs for just you:
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+condor_history %RED%USERNAME%ENDCOLOR%
+&lt;/pre&gt;
+
+For example:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_history -backwards roy
+ ID      OWNER            SUBMITTED     RUN_TIME ST   COMPLETED CMD            
+125668.0   roy             6/20 10:10   0+00:00:11 X   ???        /home/roy/condo
+125665.2   roy             6/20 10:05   0+00:01:01 C   6/20 10:06 /home/roy/condo
+125665.1   roy             6/20 10:05   0+00:01:01 C   6/20 10:06 /home/roy/condo
+125665.0   roy             6/20 10:05   0+00:01:01 C   6/20 10:06 /home/roy/condo
+125664.2   roy             6/20 10:04   0+00:00:11 C   6/20 10:04 /home/roy/condo
+125664.0   roy             6/20 10:04   0+00:00:11 C   6/20 10:04 /home/roy/condo
+125664.1   roy             6/20 10:04   0+00:00:11 C   6/20 10:04 /home/roy/condo
+125663.2   roy             6/20 10:03   0+00:00:05 C   6/20 10:03 /home/roy/condo
+125663.1   roy             6/20 10:03   0+00:00:05 C   6/20 10:03 /home/roy/condo
+125663.0   roy             6/20 10:03   0+00:00:05 C   6/20 10:03 /home/roy/condo
+125649.1   roy             6/20 09:58   0+00:00:05 C   6/20 09:58 /home/roy/condo
+125649.2   roy             6/20 09:58   0+00:00:05 C   6/20 09:58 /home/roy/condo
+125649.0   roy             6/20 09:58   0+00:00:05 C   6/20 09:58 /home/roy/condo
+125640.0   roy             6/20 09:55   0+00:00:06 C   6/20 09:55 /home/roy/condo
+...
+&lt;/pre&gt;

@@ -1,0 +1,116 @@
+%DOC_STATUS_TABLE%
+https://twiki.grid.iu.edu/twiki/pub/Storage/WebHome/images.jpg
+
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+
+The Discovery Tool uses XQuery scripts to search the LDAP directory. All scripts supplied with the tool include wrapper scripts that allow easy execution from the command line. See the page [[Trash.ReleaseDocumentationOpportunisticStorageSearchScripts][Opportunistic Storage Search Scripts]] for documentation on all the scripts.
+
+This page shows how to run XQuery scripts directly. It is intended to support development and custom use of the Discovery Tool. 
+
+The XQuery scripts are by default run against the OSG BDII service. The endpoint can be changed by altering =/etc/osg-discovery/xpathsearch.rc=, see the [[OsgStorageDiscoveryTool][OSG Discovery Tool main page]] for details.
+
+
+---+++ xquerybase
+
+This command runs an xquery script on an LDAP directory.
+
+*Script Name*
+
+xquerybase
+
+
+*Usage*
+
+&lt;pre&gt;
+xquerybase xqueryfile [--name1 &amp;lt;value1&amp;gt; --name2 &amp;lt;value2&amp;gt; ...]
+&lt;/pre&gt;
+
+*Parameters*
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+| *name* | *definition* | *required* |
+| &quot;name1&quot; | XQuery parameter | no |
+| &quot;name2&quot; | XQuery parameter | no |
+| ...| XQuery parameter | no |
+
+*Example Output*
+&lt;verbatim&gt;
+[storage]$ xquerybase $VDT_LOCATION/discovery/bin/surl.xq --vo engage --storage_element_id &quot;&quot; --free_online_size 0 --show_storage_element_id false --show_site_name false
+&quot;srm://bsrm-1.t2.ucsd.edu:8443/srm/v2/server?SFN=/hadoop/engage/TESTFILE&quot;
+&quot;srm://charm.ucr.edu:10443/srm/v2/server?SFN=/data/bottom/cms/TESTFILE&quot;
+&quot;srm://cit-se.ultralight.org:8443/srm/v2/server?SFN=/mnt/hadoop/osg/engage/TESTFILE&quot;
+&quot;srm://cmsdcache03.hep.wisc.edu:8443/srm/managerv2?SFN=/pnfs/hep.wisc.edu/data5/engage/TESTFILE&quot;
+&quot;srm://dcsrm.usatlas.bnl.gov:8443/srm/managerv2?SFN=/pnfs/usatlas.bnl.gov/osg/engage/TESTFILE&quot;
+&quot;srm://ff-se.unl.edu:8443/srm/v2/server?SFN=/panfs/panasas/CMS/data/engage/TESTFILE&quot;
+&quot;srm://fndca1.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/usr/fermigrid/volatile/engage/TESTFILE&quot;
+&quot;srm://osg-east.hms.harvard.edu:10443/srm/v2/server?SFN=/osg/storage/data/engage/TESTFILE&quot;
+&quot;srm://osg-se.sprace.org.br:8443/srm/managerv2?SFN=/pnfs/sprace.org.br/data/TESTFILE&quot;
+&quot;srm://red-srm1.unl.edu:8443/srm/v2/server?SFN=/mnt/hadoop/user/engage/TESTFILE&quot;
+&quot;srm://se.grid.unesp.br:8443/srm/v2/server?SFN=/store/engage/TESTFILE&quot;
+&quot;srm://se01.cmsaf.mit.edu:8443/srm/managerv2?SFN=/pnfs/cmsaf.mit.edu/t2bat//TESTFILE&quot;
+&quot;srm://se1.accre.vanderbilt.edu:6288/srm/v2/server?SFN=/store/user/engage/TESTFILE&quot;
+&quot;srm://sigmorgh.hpcc.ttu.edu:49443/srm/v2/server?SFN=/lustre/hep/osg/engage/TESTFILE&quot;
+&quot;srm://srm-dcache.rcac.purdue.edu:8443/srm/managerv2?SFN=/VO/engage/TESTFILE&quot;
+&lt;/verbatim&gt;
+
+
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = DouglasStrain
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = Scientist
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = HowTo
+
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = NehaSharma
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = NehaSharma
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %YES%
+############################################################################################################
+--&gt;
+
+
+
+-- Main.DouglasStrain - 11 Oct 2011
+

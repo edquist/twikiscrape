@@ -1,0 +1,358 @@
+---+!! Notes for testing VOMS 2.0.8
+
+%TOC%
+
+Main ticket: [[https://jira.opensciencegrid.org/browse/SOFTWARE-800][SOFTWARE-800]]
+
+---++ 10/05
+
+---+++ Setup
+
+Going through Documentation.Release3.InstallVoms
+
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+yum install -y osg-voms
+service mysqld start
+mysql_secure_installation
+
+pushd /etc/grid-security
+mkdir -p http
+mkdir -p voms
+for x in {key,cert}.pem; do cp --remove-destination host$x voms/voms$x; cp --remove-destination host$x http/http$x; done
+chown -R voms:voms voms
+chown -R tomcat:tomcat http
+popd
+
+/var/lib/trustmanager-tomcat/configure.sh
+&lt;/verbatim&gt;
+
+Ran =voms-admin-configure=:
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+: fermicloud099 \# ;\
+voms-admin-configure install \
+--dbtype mysql \
+--vo matyasvo \
+--createdb \
+--deploy-database \
+--dbauser root \
+--dbapwd zlfrperg \
+--dbusername admin-matyasvo \
+--dbpassword mysecret \
+--dbport 3306 \
+--port 15001 \
+--mail-from matyas@fnal.gov \
+--smtp-host smtp.fnal.gov \
+--sqlloc /usr/lib64/voms/libvomsmysql.so \
+--cert /etc/grid-security/voms/vomscert.pem \
+--key /etc/grid-security/voms/vomskey.pem \
+--read-access-for-authenticated-clients
+&lt;/verbatim&gt;
+Made the VO for me. Printed a bunch of sql statements and then the following:
+(*EDIT* mail-from and smtp-host used to be cs.wisc.edu)
+&lt;verbatim class=&quot;screen&quot;&gt;
+Deploying voms database...
+Database deployed correctly!
+Adding read access for authenticated clients...
+Checking that the database is writable...
+Database is writable.
+Granting read-only access to any authenticated user on group &#39;/matyasvo&#39;
+Granting read-only access to any authenticated user on role &#39;/matyasvo/Role=VO-Admin&#39;
+
+
+
+VO matyasvo installation finished.
+
+You can start the voms services using the following commands:
+    //etc/init.d/voms start matyasvo
+    //etc/init.d/voms-admin start matyasvo
+&lt;/verbatim&gt;
+At one point I accidentally omitted =&quot;--key&quot;= and it gave me =KeyError: key= and I had to source dive to figure out what that meant.
+*NOTE* There has _got_ to be a better way of doing initial configuration than that.
+Perhaps even a shell script with variables you can fill in that calls =voms-admin-configure= -- even that would be better than this.
+
+Here&#39;s one. =voms-admin-initial-install.sh=
+&lt;verbatim class=&quot;file&quot;&gt;
+#!/bin/bash
+# Change these variables to suit your system.
+# TODO Add descriptions
+DATABASE_TYPE=&quot;mysql&quot;
+VO_NAME=&quot;matyasvo&quot;
+DATABASE_ADMIN_USER=&quot;root&quot;
+DATABASE_USERNAME=&quot;admin-$VO_NAME&quot;
+DATABASE_PORT=3306
+VOMS_PORT=15001
+MAIL_FROM=&quot;matyas@fnal.gov&quot;
+SMTP_HOST=&quot;smtp.fnal.gov&quot;
+SQL_LOCATION=&quot;/usr/lib64/voms/libvomsmysql.so&quot;
+VOMS_CERTIFICATE=&quot;/etc/grid-security/voms/vomscert.pem&quot;
+VOMS_PRIVATE_KEY=&quot;/etc/grid-security/voms/vomskey.pem&quot;
+
+# Do not change anything below this line unless you know what you are doing.
+
+read -s -p &quot;Enter $DATABASE_TYPE password for user $DATABASE_ADMIN_USER: &quot; DATABASE_ADMIN_PASSWORD
+echo &quot;&quot;
+read -s -p &quot;Enter $DATABASE_TYPE password for user $DATABASE_USERNAME (user will be created if it does not exist): &quot; DATABASE_PASSWORD
+
+voms-admin-configure install \
+    --dbtype            $DATABASE_TYPE \
+    --vo                $VO_NAME \
+    --createdb --deploy-database \
+    --dbauser           $DATABASE_ADMIN_USER \
+    --dbapwd            $DATABASE_ADMIN_PASSWORD \
+    --dbusername        $DATABASE_USERNAME \
+    --dbpassword        $DATABASE_PASSWORD \
+    --dbport            $DATABASE_PORT \
+    --port              $VOMS_PORT \
+    --mail-from         $MAIL_FROM \
+    --smtp-host         $SMTP_HOST \
+    --sqlloc            $SQL_LOCATION \
+    --cert              $VOMS_CERTIFICATE \
+    --key               $VOMS_PRIVATE_KEY \
+    --read-access-for-authenticated-clients
+&lt;/verbatim&gt;
+
+
+
+---++ 10/08
+
+---+++ Setup 2
+
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+: \# ; service voms start matyasvo
+: \# ; service voms-admin start matyasvo
+&lt;/verbatim&gt;
+For step 3 (&quot;Add an admin user&quot;) I used this command:
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+voms-db-deploy.py add-admin --vo matyasvo \
+    --dn &quot;/DC=org/DC=doegrids/OU=Services/CN=`hostname`&quot; \
+    --ca &quot;/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1&quot;
+&lt;/verbatim&gt;
+Output (formatted):
+&lt;verbatim class=&quot;screen&quot;&gt;
+WARNING: No email was specified for this administrator! The new administrator
+will not receive VOMS Admin notifications
+
+Admin
+&#39;/DC=org/DC=doegrids/OU=Services/CN=fermicloud099.fnal.gov,/DC=org/DC=DOEGrids/OU=Certificate
+Authorities/CN=DOEGrids CA 1&#39; not found. It will be created...
+
+Adding ALL permissions on &#39;/matyasvo&#39; for admin
+&#39;/DC=org/DC=doegrids/OU=Services/CN=fermicloud099.fnal.gov,/DC=org/DC=DOEGrids/OU=Certificate
+Authorities/CN=DOEGrids CA 1&#39;
+
+Adding ALL permissions on role &#39;/matyasvo/Role=VO-Admin&#39; for admin
+&#39;/DC=org/DC=doegrids/OU=Services/CN=fermicloud099.fnal.gov,/DC=org/DC=DOEGrids/OU=Certificate
+Authorities/CN=DOEGrids CA 1&#39;
+&lt;/verbatim&gt;
+
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+: \# ; fetch-crl
+: \# ; service tomcat5 start
+: \# ; voms-admin --nousercert --vo matyasvo add-ACL-entry /matyasvo ANYONE VOMS_CA &quot;CONTAINER_READ,MEMBERSHIP_READ&quot; true
+&lt;/verbatim&gt;
+Edit =/etc/voms-admin/matyasvo/voms.service.properties=, add &lt;code&gt;voms.csrf.log_only = true&lt;/code&gt; (should that be in there by default?).
+
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+: \# ; service fetch-crl-boot start
+: \# ; service fetch-crl-cron start
+: \# ; /etc/init.d/mysqld start
+: \# ; /etc/init.d/voms start
+: \# ; chkconfig fetch-crl-boot on
+: \# ; chkconfig fetch-crl-cron on
+: \# ; chkconfig mysqld on
+: \# ; chkconfig voms on
+: \# ; chkconfig tomcat5 on
+&lt;/verbatim&gt;
+
+Made vomses entry and lsc file:
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+: \# ; echo &#39;&quot;matyasvo&quot; &quot;&#39;`hostname`&#39;&quot; &quot;15001&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=&#39;`hostname`&#39;&quot; &quot;matyasvo&quot;&#39; &gt;&gt; /etc/vomses
+: \# ; mkdir -p /etc/grid-security/vomsdir/matyasvo
+: \# ; echo &#39;/DC=org/DC=doegrids/OU=Services/CN=&#39;`hostname`&#39;
+/DC=org/DC=DOEGrids/OU=Certificate Authorities/CN=DOEGrids CA 1&#39; &gt; /etc/grid-security/vomsdir/matyasvo/`hostname`.lsc
+&lt;/verbatim&gt;
+
+Adding myself to the vo using my kerb cert and making myself an admin so I can use the web interface for admin stuff.
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+: \# ; voms-admin --vo matyasvo --host `hostname` \
+       --nousercert create-user \
+       &quot;/DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Matyas Selmeci/CN=UID:matyas&quot; \
+       &quot;/DC=gov/DC=fnal/O=Fermilab/OU=Certificate Authorities/CN=Kerberized CA HSM&quot; \
+       &quot;Matyas Selmeci&quot; matyas@fnal.gov
+: \# ; voms-admin --vo matyasvo --host `hostname` \
+       --nousercert assign-role /matyasvo VO-Admin \
+       &quot;/DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Matyas Selmeci/CN=UID:matyas&quot; \
+       &quot;/DC=gov/DC=fnal/O=Fermilab/OU=Certificate Authorities/CN=Kerberized CA HSM&quot;
+&lt;/verbatim&gt;
+(No output from either of these)
+
+---+++ Testing Voms
+
+Tried =voms-proxy-init= for which I had to install &lt;code&gt;voms-client&lt;b&gt;s&lt;/b&gt;&lt;/code&gt;.
+
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+: \$ ; voms-proxy-init -voms matyasvo
+&lt;/verbatim&gt;
+
+Worked no problems.
+
+
+---+++ Testing Voms-Admin Web Interface
+
+Using this (as myself) to make a .p12 file from my krb cert so I can use the web interface:
+&lt;verbatim class=&quot;screen&quot;&gt;
+: \$ ; cd ~/.globus
+: \$ ; openssl pkcs12 -export \
+       -inkey userkey-kca.pem \
+       -in usercert-kca.pem \
+       -out fermikrbcert.p12
+&lt;/verbatim&gt;
+
+At this point the docs suggested I go to [[https://fermicloud099.fnal.gov:8443/vomses]] but that gave me a 404.
+Tomcat logs did not show problems.
+
+Voms log (=/var/log/voms/voms.matyasvo=) shows lots of the following:
+
+&lt;verbatim class=&quot;file&quot;&gt;
+Mon Oct  8 12:27:17 2012:fermicloud099.fnal.gov:vomsd[22211]: msg=&quot;LOG_INFO:REQUEST:Run (vomsd.cc:709):Started Executor with pid = 2974&quot;
+Mon Oct  8 12:27:17 2012:fermicloud099.fnal.gov:vomsd[22211]: msg=&quot;LOG_INFO:REQUEST:logconnection (ipv6sock.cc:115):Received connection from: fsf-ikon.fnal.gov (131.225.12.198):51812.&quot;
+Mon Oct  8 12:27:17 2012:fermicloud099.fnal.gov:vomsd[2975]: msg=&quot;LOG_INFO:REQUEST:Run (vomsd.cc:773):Failed to authenticate peer.&quot;
+Mon Oct  8 12:27:17 2012:fermicloud099.fnal.gov:vomsd[2975]: msg=&quot;LOG_INFO:REQUEST:Run (vomsd.cc:774):OpenSSL error: &quot;
+&lt;/verbatim&gt;
+
+Port numbers varied.
+(Ohno the openssl error is blank again. What was the solution last time?)
+
+Oddly, &quot;netstat -an --proto=inet&quot; showed nothing listening on port 8443.
+But if that were true, I wouldn&#39;t be getting a 404, but no connection whatsoever.
+(EDIT:
+That&#39;s because netstat sucks.
+&quot;netstat -an --tcp&quot; shows everything working just fine.
+Google shows one bug report, but it has been ignored.)
+
+Did a =yum downgrade= of =voms-admin-server=; did not help, so upgraded back.
+
+Tim told me I should have gone to [[https://fermicloud099.fnal.gov:8433/voms/matyasvo]].
+That worked just fine; pinged Marco about fixing the docs.
+
+
+---+++ Testing edg-mkgridmap
+
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+: \# ; cd /tmp
+: \# ; mkdir edgmkgridmaptest
+: \# ; cd edgmkgridmaptest
+: \# ; yum install edg-mkgridmap
+: \# ; echo &#39;group vomss://&#39;`hostname`&#39;:8443/voms/matyasvo matyasvo&#39; &gt; edg-mkgridmap.conf
+: \# ; edg-mkgridmap --out=edg-mkgridmap.out --conf=edg-mkgridmap.conf
+: \# ; cat edg-mkgridmap.out
+&lt;/verbatim&gt;
+Displayed a few errors about =/var/lib/osg/user-vo-map.new= and =/var/lib/osg/user-vo-map.last_checked= but they turned out not to be problems.
+
+=edg-mkgridmap.out= looks like this:
+&lt;verbatim class=&quot;file&quot;&gt;
+&quot;/DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Matyas Selmeci/CN=UID:matyas&quot; matyasvo
+&lt;/verbatim&gt;
+
+---++ 10/09
+
+---+++ Testing on a separate client
+
+Tried using the voms client on a separate machine (2.0.8 install of just =voms-clients= and the latest =osg-ca-certs=), with the appropriate entry in my vomses file.
+=voms-proxy-init -voms matyasvo= made me a proxy just fine, but also gave me the following error:
+
+&lt;verbatim class=&quot;screen&quot;&gt;Error: verify failed.
+Cannot verify AC signature!
+&lt;/verbatim&gt;
+
+Do not know what that means, seems harmless, or at least =voms-proxy-info -all= looks the same between machines.
+(Edit: found some old docs that say it _is_ harmless).
+
+Followed the procedure above to test =edg-mkgridmap=.
+I had to make an =edg-mkgridmap.conf= on the client, too.
+
+
+---++ 10/15
+
+---+++ 2.0.6 server / 2.0.8 client interop
+
+Set up =matyasvo2= on =fermicloud084= using pretty much the same procedure as I set up =matyasvo=.
+All packages from production repo.
+=voms-proxy-init -voms matyasvo2= worked using the voms 2.0.8 client (using =fermicloud001=).
+
+---+++ Other
+
+Using voms-admin on the 2.0.8 server:
+   * Added a Group, !TestGroup
+   * Added a Role, !TestRole
+   * Added myself to !TestGroup
+   * Added myself to !TestRole in !TestGroup
+
+Then I ran =voms-proxy-init -voms matyasvo:/Role=TestRole= followed by =voms-proxy-info -all=.
+&lt;verbatim class=&quot;screen&quot;&gt;
+Your identity: /DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Matyas Selmeci/CN=UID:matyas
+Creating temporary proxy ................................................................ Done
+Contacting  fermicloud099.fnal.gov:15001 [/DC=org/DC=doegrids/OU=Services/CN=fermicloud099.fnal.gov] &quot;matyasvo&quot; Done
+
+Warning: FQAN: /matyasvo is not the first selected!
+
+
+Creating proxy ................................ Done
+
+Your proxy is valid until Mon Oct 15 22:51:23 2012
+Error: verify failed.
+Cannot verify AC signature!
+: 1 fermicloud001 ~ \$ ;voms-proxy-info -all
+subject   : /DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Matyas Selmeci/CN=UID:matyas/CN=proxy
+issuer    : /DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Matyas Selmeci/CN=UID:matyas
+identity  : /DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Matyas Selmeci/CN=UID:matyas
+type      : proxy
+strength  : 1024 bits
+path      : /tmp/x509up_u46142
+timeleft  : 11:59:51
+key usage : Digital Signature, Key Encipherment
+=== VO matyasvo extension information ===
+VO        : matyasvo
+subject   : /DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Matyas Selmeci/CN=UID:matyas
+issuer    : /DC=org/DC=doegrids/OU=Services/CN=fermicloud099.fnal.gov
+attribute : /matyasvo/Role=NULL/Capability=NULL
+attribute : /matyasvo/TestGroup/Role=NULL/Capability=NULL
+attribute : /matyasvo/TestGroup/Role=TestRole/Capability=NULL
+timeleft  : 11:59:51
+uri       : fermicloud099.fnal.gov:15001
+&lt;/verbatim&gt;
+
+Also worked when I did this from =fermicloud084= (2.0.6 client).
+
+Asked Tim to add himself to the =matyasvo= vo but he didn&#39;t get the confirmation because my vm can&#39;t send email to CS.
+Can&#39;t even ping =smtp.cs.wisc.edu= (even though I know it&#39;s up).
+
+So I noticed that I screwed up some of the settings.
+Edited =/etc/voms-admin/matyasvo/voms.service.properties= and changed the following:
+=voms.notification.smtp-server= to =smtp.fnal.gov=
+=voms.notification.email-address= to =matyas@fnal.gov=
+
+I don&#39;t know how to re-send an email though.
+
+Dropped Tim&#39;s request.
+Went into the database.
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+begin;
+# Note: I left off the WHERE clause because =aup_acc_record= had only one row.
+update aup_acc_record set last_acceptance_date=&#39;2012-10-15 12:25:00&#39;;
+update aup_acc_record set valid=1;                                   
+commit;
+begin;
+update task set completionDate=&#39;2012-10-15 12:25:00&#39; where task_id=1;
+update task set status=&#39;COMPLETED&#39; where task_id=1;
+# task_id 1 is the task to sign the aup
+# also I totally guessed &#39;COMPLETED&#39;
+commit;
+&lt;/verbatim&gt;
+
+Then I invalidated my AUP acceptance again; this time with my config fixed, I got the email.
+Also I can accept via the web interface by going to &#39;Home&#39; &amp;rarr; &#39;Your vo user home&#39;
+
+-- Main.MatyasSelmeci - 05 Oct 2012
+&lt;!-- vim: ft=twiki
+--&gt;

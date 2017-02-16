@@ -1,0 +1,69 @@
+---+!! %TOPIC%
+Search facility for the NatSkin.
+
+%TOC%
+
+---++ Description
+&lt;nop&gt;NatSearch unifies the Seach and the Jump box known from the standard TWiki. It 
+uses one input field to either jump to a topic or perform a query. You can even
+use it as a quick way to create and edit new topic by entering =e:NewTopic= into the input field.
+
+&lt;nop&gt;NatSearch is heavily inspired by the &lt;nop&gt;PhotonSearch of the TWiki:Plugins/PhotonSkin.
+
+---++ Usage
+&lt;nop&gt;NatSearch basically works in three modes that are distinguished depending of the input to
+the search formfield:
+   1 if your input starts with an uppercase letter, &lt;nop&gt;NatSearch tries to find the named topic and jumps to it;
+     you may enter the target topic using the =web.topic= notation
+   2 if your input starts with an uppercase letter but does not exist as a topic, a topic search tries
+     to find it; if there is exactly one search hit, &lt;nop&gt;NatSearch jumps to it directly
+   3 in any other case a combined topic+content search is conducted and its result is displayed in a table,
+     sorted by modification time, decending
+
+---++ Options
+The search string may be prepended with a set of options that are separated from the
+rest of the search string with a colon(:). Known options are:
+| *Option* | *Description* |
+| e(dit) | edit the named topic; note, that this does not perform any search operation |
+| n(new) | same as =e= but create a new topic, the named topic must not exist |
+| g | global search (default is local) |
+| l | local search |
+| k | do a keyword match |
+
+A search string may consist of a list of terms that are retrieved. If a term shall contain
+spaces it can be surrounded by double quotes. Each term may be preceded with a minus (-) to
+exclude this term from the hit set.
+
+---++ Examples
+| *Search* | *Description* |
+| &lt;nop&gt;TWikiUsers | if the current web is the %MAINWEB% go to the &lt;nop&gt;TWikiUsers  |
+|                 | if the current web is the %TWIKIWEB% go to the &lt;nop&gt;TWikiUsersGuide |
+| g:twikiusers | list all topics in all webs whose name match &quot;twikiusers&quot; |
+| g:copyright -webpref | list all topics that contain the word &quot;copyright&quot; but not &quot;webpref&quot; |
+| g:&quot;Good morning&quot; -natskin | list all topics that contain the term &quot;Good morning&quot; but not &quot;natskin&quot; |
+| e:Sandbox.TestTopic411 | edit &lt;nop&gt;Sandbox.TestTopic411 |
+| TWiki.graphics | search for &quot;graphics&quot; in the TWiki web |
+
+
+---++ Configuration
+&lt;nop&gt;NatSearch can be restricted to certain webs and topics by setting WebPreferences.
+Besides the NOSEARCHALL feature of every web that excludes a web from search the following variables
+ restrict the hit set:
+
+| *Name* | *Description* |
+| =NATSEARCHINCLUDEWEB= | a regular expression that must match webs to be considered |
+| =NATSEARCHEXCLUDEWEB= | a regular expression that must not match a web |
+| =NATSEARCHINCLUDETOPIC= | a regular expression that must match a topic in the hit set |
+| =NATSEARCHEXCLUDETOPIC= | a regular expression that excludes a topic from the hit set |
+| =NATSEARCHGLOBAL= | &#39;on&#39; searches in all public webs, \
+  &#39;off&#39; restricts search to the current web (default), \
+  same as the =g= option |
+| =NATSEARCHKEYWORDS= | &#39;on&#39; searches for full words only, \
+  &#39; off&#39; tries to match substrings also (default) |
+| =NATSEARCHLIMIT= | limits the number of topics to show, defaults to all |
+| =NATSEARCHIGNORECASE= | &#39;on&#39; or &#39;off&#39;, the default is case insensitive |
+| =NATSEARCHTEMPLATE= | configure application-specific search templates topic |
+
+The WebPreferences variable =NATSEARCHTEMPLATE= can be set to a template topic that
+is used instead of the skin&#39;s =search= template. This can be used in &lt;nop&gt;TWikiApplications to
+define a customized look of search results.

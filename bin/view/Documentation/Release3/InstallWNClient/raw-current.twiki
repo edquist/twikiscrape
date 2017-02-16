@@ -1,0 +1,105 @@
+---+ Installing and Using the Worker Node Client From RPMs
+%TOC{depth=&quot;3&quot;}%
+
+---++ About This Guide
+
+The *OSG Worker Node Client* is a collection of software components that is expected to be added to every worker node that can run OSG jobs. It provides a common environment and a minimal set of common tools that all OSG jobs can expect to use. See the [[#ReferenceSection][reference section]] below for contents of the Worker Node Client.
+
+It is possible to install the Worker Node Client software in a variety of ways, depending on what works best for distributing and managing software at your site:
+
+   * Install using RPMs and Yum (this guide) - useful when managing your worker nodes with a tool (e.g., Puppet, Chef) that can automate RPM installs
+   * [[InstallWNClientTarball][Install using a tarball]] - useful when installing onto a shared filesystem for distribution to worker nodes
+   * [[UsingOSGWnClientFromOASIS][Use from OASIS]] - useful when worker nodes already mount [[NavTechOASIS][OASIS]] on your worker nodes
+
+This document is intended to guide system administrators through the process of configuring a site to make the Worker Node Client software available from an RPM.
+
+---++ Before Starting
+
+As with all OSG software installations, there are some one-time (per host) steps to prepare in advance:
+
+   * Ensure the host has [[SupportedOperatingSystems][a supported operating system]]
+   * Obtain root access to the host
+   * Prepare [[YumRepositories][the required Yum repositories]]
+   * Install [[InstallCertAuth][CA certificates]]
+
+---++ Install the Worker Node Client
+
+Install the Worker Node Client RPM:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% yum install osg-wn-client&lt;/pre&gt;
+
+---++ Services
+
+Fetch-CRL is the only service required to support the WN Client.
+
+%TABLE{sort=&quot;off&quot;}%
+| *Software* | *Service name* | *Notes* |
+| Fetch CRL | On EL6 and EL7: =fetch-crl-boot= and =fetch-crl-cron= %BR% On EL5: =fetch-crl3-boot= and =fetch-crl3-cron= | See [[InstallCertAuth#Start_Stop_fetch_crl_A_quick_gui][CA documentation]] for more info |
+
+%NOTE% =fetch-crl-boot= will begin fetching CRLS, which can take a few minutes and fail on transient errors. You can add configuration to ignore these transient errors in =/etc/fetch-crl.conf= for EL6 or EL7 machines or =/etc/fetch-crl3.conf= for EL5 machines: \
+&lt;pre class=&quot;file&quot;&gt;noerrors&lt;/pre&gt;
+
+As a reminder, here are common service commands (all run as =root=):
+
+%TABLE{sort=&quot;off&quot;}%
+| *To &amp;hellip;* | *Run the command &amp;hellip;* |
+| Start a service | =service &lt;em&gt;SERVICE-NAME&lt;/em&gt; start= |
+| Stop a service | =service &lt;em&gt;SERVICE-NAME&lt;/em&gt; stop= |
+| Enable a service to start during boot | =chkconfig &lt;em&gt;SERVICE-NAME&lt;/em&gt; on= |
+| Disable a service from starting during boot | =chkconfig &lt;em&gt;SERVICE-NAME&lt;/em&gt; off= |
+
+---++ Validing the Worker Node Client
+
+To verify functionality of the worker node client, you will need to submit a test job against your CE and verify the job&#39;s output.
+
+   1. Submit a job that executes the =env= command (e.g. Run [[TroubleshootingHTCondorCE#condor_ce_trace][condor_ce_trace]] with the =-d= flag from your HTCondor CE)
+   1. Verify that the value of =OSG_GRID= is set to =/etc/osg/wn-client=
+
+---++ How to get Help?
+
+To get assistance please use this [[HelpProcedure][Help Procedure]].
+
+#ReferenceSection
+---++ Reference
+
+Please see the documentation on using [[Documentation/Release3.YumRpmBasics][yum and RPM]], [[Documentation/Release3.InstallBestPractices][the best practices]] for using yum to install software, and using [[Documentation/Release3.YumRepositories][yum repositories]].
+
+#WnContents
+---+++ Worker node contents
+
+%STARTSECTION{&quot;WnContents&quot;}%
+The worker node may be updated from time to time. As of OSG 3.2.24 in July 2015, the OSG worker node client contains:
+
+   * Bestman2 Client
+   * OSG Certificates
+   * curl
+   * !dCache SRM client
+   * dcap-tunnel-gsi
+   * dccp
+   * edg-gridftp-client
+   * Fetch CRL
+   * FTS client
+   * gfal2
+   * globus-url-copy (!GridFTP client)
+   * globus-xio-udt-driver (EL6+)
+   * lfc-client
+   * lfc-python
+   * lcg-utils
+   * ldapsearch
+   * LFC (client and Python bindings)
+   * !MyProxy
+   * osg-system-profiler
+   * osg-version
+   * !UberFTP
+   * vo-client (includes /etc/vomses file)
+   * wget
+
+To see the currently installed version of the worker node package, run the following command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% rpm -q --requires osg-wn-client
+&lt;/pre&gt;
+
+Click [[YumRpmBasics#ListDeps][here]] for more details on using RPM to see what was installed
+%ENDSECTION{&quot;WnContents&quot;}%
+

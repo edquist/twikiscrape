@@ -1,0 +1,198 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+
+---+ WARNING THIS PAGE IS DEPRECATED
+
+---+ Pacman installation
+
+*Beware: The pacman installation method is deprecated!  Do not use for new installs.*
+
+---++  Prerequisites and Assumptions
+
+The !GridFTP server for HDFS is based upon the stock Globus server
+with a new loadable module to interact with Hadoop.
+
+Make sure that the =xinetd= RPM is installed on your system.
+
+The installation process is based on
+[[Trash.ReleaseDocumentationPacmanBestPractices][Pacman]]; 
+see the [[ReleaseDocumentation.WebHome][release documentation]] for
+help on [[Trash.ReleaseDocumentationPacmanInstall][installing Pacman]] if
+you do not have it already.
+
+Now, create your install directory; we will refer to this as
+=$VDT_LOCATION= in this documentation.
+
+&lt;verbatim&gt;
+cd $VDT_LOCATION
+echo &quot;http://t2.unl.edu/store/cache&quot; &gt; trusted.caches
+echo &quot;http://vdt.cs.wisc.edu/vdt_1101_cache&quot; &gt;&gt; trusted.caches
+export VDTSETUP_AGREE_TO_LICENSES=y
+export VDTSETUP_INSTALL_CERTS=l
+export VDTSETUP_CA_CERT_UPDATER=n
+export VDTSETUP_ENABLE_BESTMAN=n
+export VDTSETUP_ENABLE_ROTATE=n
+export VDTSETUP_ENABLE_GRIDFTP=n
+export VDTSETUP_EDG_CRL_UPDATE=n
+export VDT_GUMS_HOST=&lt;host for your GUMS install&gt;
+pacman -get http://t2.unl.edu/store/cache:GridFTP_HDFS
+ln -s /etc/grid-security/certificates $VDT_LOCATION/globus/TRUSTED_CA
+&lt;/verbatim&gt;
+
+If your site does not use GUMS, replace the =VDT_GUMS_HOST= line with
+
+&lt;verbatim&gt;
+export VDT_NO_PRIMA=1
+&lt;/verbatim&gt;
+
+Currently supported platforms include RHEL-4 and RHEL-5, both in
+32-bit and 64-bit.
+
+The installation automatically enables the !GridFTP server in
+=/etc/xinetd.d=. This means that =GridFTP_HDFS= must be installed
+using the root account. The !GridFTP server uses port 5000 (as
+opposed to 2811, the default port).
+
+---+    Configuration
+---++    CA Certificates
+
+Please refer to the [[ReleaseDocumentation.WebHome][release documentation]]
+for instructions on how to
+[[Trash.ReleaseDocumentationComputeElementPostInstall#Choosing_and_Installing_a_CA_Dis][install the proper CA certificates]].
+
+---++    Authentication
+
+There are two ways to configure authentication:
+
+
+---+++    PRIMA/GUMS
+
+This approach integrates well with larger sites. First, install the
+PRIMA configurations:
+
+&lt;verbatim&gt;
+cp $VDT_LOCATION/post-install/*-authz.conf /etc/grid-security
+&lt;/verbatim&gt;
+
+Then edit the line starting with =imsContact= in =/etc/grid-security/prima-authz.conf= 
+to point to your GUMS installation.
+
+
+---+++    grid-mapfile
+
+This approach is not recommended.
+
+Create =/etc/grid-security/grid-mapfile=. For each user at your
+site, add a line to the file mapping the user&#39;s DN to their user
+name:
+
+&lt;verbatim&gt;
+&quot;&lt;DN&gt;&quot; &lt;user&gt;
+&lt;/verbatim&gt;
+
+For example:
+
+&lt;verbatim&gt;
+&quot;/DC=org/DC=doegrids/OU=People/CN=Will Maier 286302&quot; osg_uscms01
+&lt;/verbatim&gt;
+
+---++    HDFS
+
+Unfortunately, !GridFTP-HDFS does not yet integrate naturally into
+the Hadoop configuration system.  You must specify the following
+environment variables for the !GridFTP server:
+
+   $ =VDT_GRIDFTP_HDFS_REPLICAS=: integer number of replicas for each saved file (default: =3=).
+   $ =VDT_GRIDFTP_HDFS_NAMENODE=: hostname of the Hadoop namenode (default: =hadoop-name=).
+   $ =VDT_GRIDFTP_HDFS_PORT=: port number of the Hadoop namenode (default: =9000=).
+   $ =VDT_GRIDFTP_HDFS_MOUNT_POINT=: FUSE mount point on the SRM node (default: =/mnt/hadoop=). This
+     allows the !GridFTP server to convert from SRM filenames (which include the
+     FUSE mount path) and the native Hadoop filenames (which do not include the
+     FUSE mount path).
+   $ =VDT_GRIDFTP_LOAD_LIMIT=: maximum number of active transfers (default:
+     =20=). If the system load is above this integer value, then the gridftp
+     server will accept new transfers, but not allow them to actually start
+     movement.
+   $ =VDT_GRIDFTP_BUFFER_COUNT=: integer number of buffers that the gridftp server will be allowed to use (default: =200=).
+
+In order to set these variables, you can export the variables appropriately in
+the files =$VDT_LOCATION/vdt/etc/vdt-local-setup.sh= and
+=$VDT_LOCATION/vdt/etc/vdt-local-setup.csh=.
+
+---++    Add to SRM
+
+Any [[HadoopSRM][BestMan SRM]] server must be told of the location of the new
+!GridFTP server before it can use it. Add this new server to the =bestman.rc= of
+the SRM server and restart the server.
+
+---++    Enable Gratia Probe
+
+See the [[HadoopGratia][Gratia probe installation instructions]] for more information.
+
+---+    Running the server
+
+Now, simply turn on the server:
+
+&lt;verbatim&gt;
+vdt-control --enable gridftp-hdfs
+vdt-control --enable vdt-rotate-logs # DO NOT FORGET THIS ONE!
+vdt-control --on
+&lt;/verbatim&gt;
+
+Make sure you turn on log rotation.
+
+-- Main.WillMaier - 19 Mar 2009
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = BrianBockelman
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Installation
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %NO%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %NO%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = FirstName
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %NO%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = FirstLast
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %NO%
+############################################################################################################
+--&gt;

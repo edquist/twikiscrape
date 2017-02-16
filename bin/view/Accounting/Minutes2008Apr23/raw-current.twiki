@@ -1,0 +1,159 @@
+---+!!&lt;nop&gt;%TOPIC%
+%TOC%
+
+---++Introduction
+
+Minutes of Gratia meeting
+   * Last meeting: [[Minutes2008Apr16][April 16]]
+   * Previous meetings: MeetingMinutes
+   * Coordinates: Wednesday at 1:30pm CST/CDT, 1-510-665-5437 and use the meeting ID: 2966. 
+
+---++Attending
+
+TBA.
+
+&lt;!--
+
+   * [[Main.PenelopeConstanta][Penelope Constanta]].
+   * [[Main.ChrisGreen][Chris Green]].
+   * [[Main.JeffreyMack][Jeff Mack]].
+   * [[Main.StevenTimm][Steve Timm]].
+   * [[Main.JohnWeigand][John Weigand]].
+
+---++Apologies
+   * [[Main.PhilippeCanal][Philippe Canal]].
+   * [[mailto:karunach@nhn.ou.edu][Karthik Arunachalam]].
+
+   * Diana Bonham.
+   * [[Main.PhilippeCanal][Philippe Canal]].
+   * [[Main.PenelopeConstanta][Penelope Constanta]].
+   * [[Main.ChrisGreen][Chris Green]].
+   * [[Main.JeffreyMack][Jeff Mack]].
+   * [[Main.StevenTimm][Steve Timm]].
+   * John Urish.
+   * Margherita Vittone.
+   * [[Main.JohnWeigand][John Weigand]].
+   * [[mailto:karunach@nhn.ou.edu][Karthik Arunachalam]].
+
+--&gt;
+
+---++Action items from previous meeting.
+
+---++DB and Schema issues.
+
+Diana: I would like to learn how to use zrm.  
+
+Philippe: Let&#39;s meet on Friday morning.
+
+Diana: There is an audit on DB access going on.  What is the procedure for cutting of access.  
+
+Chris: Write access to the DB is only allowed on the FNAL sites/vpn.
+
+---++OSG Issues.
+
+John W: In a meeting with Ruth, Brian, Burt on April 17th, it was implied that Brian&#39;s software be incorporated in some way with Gratia
+   * main issue is getting it into fnal cvs either as a module within gratia or a separate one on it&#39;s own
+   * should it be included as a menu item on the reports screen (would require the login capabiltiy)
+   * where should the data repository, if any, be... as a separate database or included in gratia schema.
+   * from this meeting, I have documented what needs to be done to the APEL interface so WLCG reporting is more accurate.  This is a 
+
+
+Passing the operation of Brian&#39;s metrics and misc to &#39;Gratia Operation&#39;
+
+Keith: I doubt that Brian&#39;s code is ready to be passed over to operation.
+
+John W.: Yes there is you report part but we also have the capacity/normalization factor gathering code that Gratia is relying on to report to WLCG.
+
+Brian: yes we can separate the script needed for normalization.
+
+Brian:  Better summary of exit code.
+
+Philippe: Planned for OSG 0.34
+
+---++Collector.
+
+Philippe: Since we remove the use of the Date function in the where clause, the MySQL views seems to perform
+as well as direct queries, hence we can think about reducing the number of summary tables and increase the 
+number of &#39;views&#39;.  Pending performance test.
+
+Chris: I think we can avoid dealing with the stored procedure until after the 0.34 release.
+
+---++Report development.
+
+Penelope: Added interface to have csv file along the static reports.  We need feedback on which report to actually put there.
+This is somewhat a replacement for Ruth&#39;s static reports request.
+
+Infrastructure for creating (cron job using python script), displaying  
+and downloading (gratia reporting UI) csv reports.
+Test URL:
+
+http://gratiax21.fnal.gov:8884/gratia-reporting/
+
+http://gratiax21.fnal.gov:8884/gratia-reporting/staticReports.jsp?ReportTitle=Static%20Reports%20(PDF,%20csv) 
+
+
+What was created/modified:
+
+   1. created stored procedure to get the data
+   2. created jsp file (createCsvReport.jsp) that can be called with appropriate parameters to create the csv files
+   3. modified the python script that creates the static reports to take into account the csv ones
+   4. modified StaticReports.xml to contains lines for the csv reports
+   5. modified the staticReports.jsp to display/download the csv files
+
+
+---++APEL
+
+https://twiki.grid.iu.edu/twiki/bin/view/Accounting/GratiaInterfacesApelLcgNotes
+
+---++Probe.
+
+---++Test Bed.
+
+---++Any Other Business.
+
+1. mysql instances on all nodes.
+
+   * found a difference in mysql client v4 functionality vs v5 (specific difference in the schema generated when using the --xml option)
+   * recommend all boxes use the same version/instance of mysql client
+   * will likely have to check all crons/scripts to verify they are setting up ups if possible
+
+
+1. GRAM Auditing
+
+Globus is starting an audit v2 campaign to handle all the new requests 
+in this area.  The campaign description is defined in bugzilla here:
+ 
+      http://bugzilla.globus.org/bugzilla/show_bug.cgi?id=6024
+
+Discussions on this campaign are being moved to the gram-dev mail list.  
+So if  you want to stay abreast  of this, you will need to subscribe to 
+the mail list here: http://dev.globus.org/wiki/GRAM#Mailing_Lists
+
+There will be a conference call this Thursday 4/24 11:00 Dial-in Number: 
+1-218-936-1600 (Midwest)
+Participant Access Code: 708967
+
+
+2.  New MySQL build testing
+
+The new MySQL build that will hopefully be resolve the slow throughput 
+rate we were experiencing with v5_0_51 on gratia07 during the InnoDB 
+conversion has been available since 4/10.  I have not had the time to 
+test it as yet.
+
+3. APEL interface
+
+Lots... documented here temporarily.  This will move.  
+https://twiki.grid.iu.edu/twiki/bin/view/Accounting/GratiaInterfacesApelLcgNotes
+
+
+
+4. v0.34 testing
+
+Very little done. Just started on it the last 2 days but not to any 
+significant degree
+
+
+---++To be discussed later.
+
+-- Main.PhilippeCanal - 23 Apr 2008

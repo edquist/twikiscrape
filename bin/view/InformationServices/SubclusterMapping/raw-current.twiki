@@ -1,0 +1,40 @@
+
+This page covers the mapping from subcluster section options to GLUE Subcluster schema.
+
+&lt;verbatim&gt;
+[Subcluster name]
+name
+node_count
+ram_mb
+cpu_model
+cpu_vendor
+cpu_speed_mhz
+cpus_per_node
+cores_per_node
+inbound_network
+outbound_network
+SF00 (default = 2000)
+SI00 (default = 2000)
+swap_mb (default = 0)
+&lt;/verbatim&gt;
+
+This maps to the Glue Schema as follows:
+&lt;verbatim&gt;
+GlueHostArchitectureSMPSize = cpus_per_node
+GlueHostBenchmarkSF00 = SF00
+GlueHostBenchmarkSI00 = SI00
+GlueSubClusterUniqueID = name
+GlueSubClusterName = name
+GlueHostMainMemoryRAMSize = ram_mb
+GlueHostMainMemoryVirtualSize = ram_mb + swap_mb
+GlueHostNetworkAdapterInboundIP = inbound_network
+GlueHostNetworkAdapterOutboundIP = outbound_network
+GlueHostProcessorClockSpeed = cpu_speed_mhz
+GlueHostProcssorModel = cpu_model
+GlueHostProcessorVendor = cpu_vendor
+GlueSubClusterPhysicalCPUs = node_count * cpus_per_node
+GlueSubClusterLogicalCPUs = node_count * cores_per_node
+&lt;/verbatim&gt;
+
+-- Main.BrianBockelman - 27 Feb 2009
+

@@ -1,0 +1,54 @@
+&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;%PUBURL%/%WEB%/WorkshopTutorialModules/exercises.css&quot;&gt;
+
+---+!! Running Under a Remote Shell
+
+
+%STARTINCLUDE%
+%EDITTHIS%
+
+Fully qualified pathnames are necessary when running commands under globus-job-run, because by default it does not start a UNIX &quot;shell&quot; on the remote system and its the shell that implements mechanisms like searching for commands in your =$PATH= variable, and many other features, like input/output redirection ( e.g., =&gt;foo=), pipes (e.g., =cmd1|cmd2=) and =$VAR= substitution. But we can tell globusrun-ws to run a shell for you on the remote Grid site, and pass the command string to that remote shell:
+
+Try for example:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%LOGINHOSTSHORT%$ &lt;userinput&gt;globusrun-ws -submit -s -job-command /bin/sh -c &quot;grep train /etc/passwd | wc -l&quot;&lt;/userinput&gt;
+&lt;/pre&gt;
+
+Experiment for a few minutes with this to try a few shell commands and pipelines on %LOGINHOST% and %OTHERHOST%. How similar are these machines?
+
+Common Linux system commands are typically, but not always, found in the same directory on all Linux systems, and this week we&#39;ll be using Grid systems with exclusively Linux-based hosts. In real work, organizations establish conventions for such things, which will be touched on when we discuss production Grids.
+
+
+&lt;!-- ***  Comments plugin to create comments table for section   ***    --&gt;
+
+&lt;span style=&quot;text-align:center; font-weight:bold; font-size:1.2em;&quot;&gt;ADD A COMMENT&lt;/span&gt;
+%STARTMore%
+
+%TABLE{ }%
+|  *COMMENT*  |  *NAME*  |  *DATE*  |
+|  | Main.MichaelWilde | 05 Jun 2007 - 18:43 |
+%COMMENT{ type=&quot;tableappend&quot; }%
+
+%ENDMore%
+&lt;!-- ***  End Comment                                            ***    --&gt;
+
+
+
+%STOPINCLUDE%
+
+&lt;!--                                                                            
+      * Set LOGINHOST = workshop2.lac.uic.edu
+      * Set LOGINHOSTSHORT = workshop1
+      * Set LOGINIP = 131.193.181.56
+      * Set GRIDHOST = tg-login.sdsc.teragrid.org
+      * Set OTHERHOST = workshop2.lac.uic.edu
+      * Set OTHERHOSTSHORT = workshop2
+      * Set CERTSUBJECT = /O=Grid/OU=OSG/CN=Training User 99
+      * Set LOGINNAME = train99
+      * Set HOMEDIR = /home/%LOGINNAME%
+--&gt; 
+%BOTTOMMATTER%
+-- Main.ForrestChristian - 29 Jan 2007: edited from original  %BR%
+-- Main.ForrestChristian - 04 Apr 2007 : added VARs  %BR%
+-- copied from the non-WS version by benc
+

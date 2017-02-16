@@ -1,0 +1,128 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+
+%RED%
+WARNING! This page is for an older version of Hadoop.
+For newer versions, please visit [[Documentation/Release3.InstallHadoopSE][Hadoop Release 3 Installation]]
+%ENDCOLOR%
+
+
+%TOC%
+
+The grid-enabled Hadoop DFS utilizes normal Globus !GridFTP servers with a specialized plugin in order to do transfers.  Because it uses this server software, we are able to take advantage of the OSG&#39;s accounting system.  The system, Gratia, has a plugin which monitors the Globus !GridFTP logs and reports any transfer data to a central collector.  The version of Gratia probe covered in this guide is compatible with Hadoop 0.20.2. 
+
+The instructions on this page must be followed for every !GridFTP server on Hadoop.
+
+---+ Prerequisites
+
+This page assumes:
+
+   1 You have a working Hadoop install as documented in [[Hadoop20Installation][this guide]].
+   1 You have a working !GridFTP install on top of Hadoop, [[Hadoop20GridFTP][as documented here]].
+
+%STARTSECTION{&quot;Prereqs&quot;}%
+
+The Gratia probe requires the file =osg-user-vo-map.txt= to exist and be up to date. We provide an rpm package that takes care of creating and updating this file as needed.  To get it run:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install osg-user-vo-map-cron
+&lt;/pre&gt;
+
+It will pull in the =gums-client= rpm as a dependency.  Details on setting up =osg-user-vo-map-cron= are below.
+
+%ENDSECTION{&quot;Prereqs&quot;}%
+
+---+ YUM Installation
+
+To configure your local installation for the yum repository, [[Hadoop20Installation#Installing_with_yum][follow the advice here]] to install the =osg-hadoop-20= package for your site.
+
+After installing the osg-hadoop-20 yum configuration package, you can install the Gratia probe with:
+
+%STARTSECTION{&quot;Install&quot;}%
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install gratia-probe-gridftp-transfer
+&lt;/pre&gt;
+
+Updates can be installed with:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum upgrade gratia-probe-gridftp-transfer
+&lt;/pre&gt;
+
+%ENDSECTION{&quot;Install&quot;}%
+
+---+ Configuration
+
+%STARTSECTION{&quot;Config&quot;}%
+
+This RPM *does not* use Linux-standard file locations.  Here are the most relevant file and directory locations:
+
+| Purpose | Needs Editing? | Location |
+| Probe Configuration | Yes | /opt/vdt/gratia/probe/gridftp-transfer/ProbeConfig |
+| Probe Executables | No | /opt/vdt/gratia/probe/gridftp-transfer |
+| Log files | No | /opt/vdt/gratia/var/logs |
+| Temporary files | No | /opt/vdt/gratia/var/tmp |
+| Gums configuration | Yes | /etc/gums/gums-client.properties |
+
+The RPM installs the Gratia probe into the system crontab, but does not configure it.  The configuration of the probe is controlled by the file
+
+&lt;verbatim&gt;
+/opt/vdt/gratia/probe/gridftp-transfer/ProbeConfig
+&lt;/verbatim&gt;
+
+This is usually one XML node spread over multiple lines.  Note that comments (#) have no effect on this file.  You will need to edit the following:
+
+| Attribute | Needs Editing | Value |
+| !ProbeName | Maybe | This should be set to &quot;gridftp-transfer:&amp;lt;hostname&amp;gt;&quot;, where &amp;lt;hostname&amp;gt; is the fully-qualified domain name of your gridftp host. |
+| !CollectorHost | Maybe | Set to the hostname and port of the central collector.  By default it sends to the OSG collector.  See below. |
+| !SiteName | Yes | Set to the resource group name of your site as registered in OIM. |
+| !GridftpLogDir | Yes | Set to /var/log, or wherever your current gridftp logs are located |
+| !Grid | Maybe | Set to &quot;ITB&quot; if this is a test resource; otherwise, leave as OSG. |
+| !UserVOMapFile | Yes | Set to the location of your osg-user-vo-map.txt; see below for information about this file. |
+| !SuppressUnknownVORecords| Maybe | Set to 1 to suppress any records that can&#39;t be matched to a VO; 0 is strongly recommended. |
+| !SuppressNoDNRecords | Maybe | Set to 1 to suppress records that can&#39;t be matched to a DN; 0 is strongly recommended. |
+| !EnableProbe | Yes | Set to 1 to enable the probe. |
+
+---%SHIFT%++ Selecting a collector host
+
+The collector is the central server which logs the !GridFTP transfers into a database.  There are usually three options:
+
+   1 *OSG Transfer Collector*: This is the primary collector for transfers in the OSG.  Use !CollectorHost=&quot;gratia-osg-transfer.opensciencegrid.org:80&quot;.
+   1 *OSG-ITB Transfer Collector*: This is the test collector for transfers in the OSG.  Use !CollectorHost=&quot;gratia-osg-transfer.opensciencegrid.org:8881&quot;.
+   1 *Site local collector*: If your site has set up its own collector, then your admin will be able to give you an endpoint to use.  Typically, this is along the lines of !CollectorHost=&quot;collector.example.com:8880&quot;.
+
+---%SHIFT%++ Generating osg-user-vo-map.txt
+
+The =osg-user-vo-map.txt= is a simple, space-separated format that contains 2 columns; the first is a unix username and the second is the VO which that username correspond to.  In order to create it you must install the =osg-user-vo-map-cron= rpm as mentioned above.  Once =osg-user-vo-map-cron= is installed you need to configure the gums client.
+
+The primary configuration file for the gums-client utilities is located in =/etc/gums/gums-client.properties=.  The two properties that you must change are:
+
+| Attribute | Needs Editing | Value |
+| gums.location | Yes | This should be set to the admin URL for your gums server, usually of the form gums.location=https://GUMS_HOSTNAME:8443/gums/services/GUMSAdmin |
+| gums.authz | Yes | This should be set to the authorization interface URL for your gums server, usually of the form gums.authz=https://GUMS_HOSTNAME:8443/gums/services/GUMSXACMLAuthorizationServicePort |
+
+After =osg-user-vo-map-cron= is installed and the gums client is configured =osg-user-vo-map.txt= should be created in the following location:
+
+&lt;verbatim&gt;/etc/grid-security/osg-user-vo-map.txt&lt;/verbatim&gt;
+
+Make sure the *UserVOMapFile* field is set to this location in
+
+&lt;verbatim&gt;/opt/vdt/gratia/probe/gridftp-transfer/ProbeConfig&lt;/verbatim&gt;
+
+Without =osg-user-vo-map.txt= , all gridftp transfers will show up as belonging to the VO &quot;Unknown&quot;.
+
+%ENDSECTION{&quot;Config&quot;}%
+
+---+ Validation
+
+%STARTSECTION{&quot;Validation&quot;}%
+
+Run the Gratia probe once by hand to check for functionality:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /opt/vdt/gratia/probe/gridftp-transfer/gridftp-transfer_meter.cron.sh
+&lt;/pre&gt;
+
+Look for any abnormal termination and report it if it is a non-trivial site issue.  Look in the log files in =/opt/vdt/gratia/var/logs/&amp;lt;date&amp;gt;.log= and make sure there are no error messages printed.
+
+%ENDSECTION{&quot;Validation&quot;}%

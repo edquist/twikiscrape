@@ -1,0 +1,76 @@
+https://twiki.grid.iu.edu/twiki/pub/Storage/WebHome/images.jpg
+
+---+!!&lt;nop&gt;%TOPIC%
+%TOC%
+%STARTINCLUDE%
+
+
+---++Introduction
+
+SRM-TESTER is a validation tool for SRM based Storage Sites. It validates SRM v2.2 interface for compatibility and interoperability. It also verifies the operation of file transfer protocols such as gsiftp, http or ftp. The testing results may be resulted in a file so that web publishing is possible.
+
+---++Availability
+
+The SRM-TESTER package is available for deployment through VDT or downloading from [[http://datagrid.lbl.gov/bestman][http://datagrid.lbl.gov/bestman]].  OSG SRM based storage is being tested daily, and the results are published on [[http://datagrid.lbl.gov/osg][http://datagrid.lbl.gov/osg]].  Any new OSG storage sites are recommended to register at [[http://datagrid.lbl.gov/sitereg][http://datagrid.lbl.gov/sitereg]].
+
+---++Documentation
+
+Documentation is available from the web from [[http://datagrid.lbl.gov/bestman/srmclient/srm-tester.html][here]].
+
+---++Sample usage
+
+   * A series of testing be done with srm-tester. Sample command for srm-tester is below.
+
+&lt;verbatim&gt;
+srm-tester \ 
+-serviceurl srm://osp4.lbl.gov:62443/srm/v2/server \ 
+-op ping,put,get,bringonline,ls,mv,srmrm,gsiftp,mkdir,rmdir,reserve,getspacemeta,getspacetokens,release,gettransferprotocols \ 
+-deleteafterput false \ 
+-putsource file:////tmp/sourcetest.data \ 
+-gettarget file:////tmp/targettest.data \ 
+-gsiftpcopysource gsiftp://datagrid.lbl.gov//testdata/S/test.data \ 
+-browseafterput \ 
+-remotetarget &quot;srm://osp4.lbl.gov:62443/srm/v2/server?SFN=/srmcache/star/srmtest.data&quot; \ 
+-browseurl &quot;srm://osp4.lbl.gov:62443/srm/v2/server?SFN=/srmcache/star/srmtest.data&quot; \ 
+-getsource &quot;srm://osp4.lbl.gov:62443/srm/v2/server?SFN=/srmcache/star/srmtest.data&quot; \ 
+-s &quot;srm://osp4.lbl.gov:62443/srm/v2/server?SFN=/srmcache/star/srmtest.data&quot; \ 
+-copytarget &quot;srm://osp4.lbl.gov:62443/srm/v2/server?SFN=/srmcache/star/srmtest2.data&quot; \ 
+-mvtarget &quot;srm://osp4.lbl.gov:62443/srm/v2/server?SFN=/srmcache/star/srmtest3.data&quot; \ 
+-removeurl &quot;srm://osp4.lbl.gov:62443/srm/v2/server?SFN=/srmcache/star/srmtest3.data&quot; \ 
+-dirurl &quot;srm://osp4.lbl.gov:62443/srm/v2/server?SFN=/srmcache/star/srmtest4&quot; \ 
+| &amp; tee bestman.test.log
+&lt;/verbatim&gt;
+
+   * Sample command for srm-tester with a parameter input file is below. 
+
+&lt;verbatim&gt;
+srm-tester -drive -conf osp4.properties 
+
+% more osp4.properties 
+testsites=NERSC_ITB 
+proxyfile=/tmp/x509up_u9999 
+target=file:////tmp/targettest.data 
+putsource=file:////tmp/sourcetest.data 
+op=put,get,bringonline,ls,mv,srmrm,gsiftp,mkdir,rmdir,reserve,getspacemeta,getspacetokens,release,gettransferprotocols,getspacetokens 
+retrytimeallowed=5 
+gsiftpcopysource=gsiftp://datagrid.lbl.gov//testdata/S/test.data 
+pullcopysrm=NERSC_ITB@srm://osp4.lbl.gov:62443/srm/v2/server?SFN=/srmcache/star/test.data 
+browseafterput=true 
+advisorydelete=false 
+putoverwrite=NERSC_ITB@true 
+&lt;/verbatim&gt;
+
+---++Supports
+
+Supports are available through osg-storage@opensciencegrid.org or srm@lbl.gov.
+
+
+%BR%
+%BR%
+*Major updates*:%BR%
+&lt;!--Future editors should add their signatures beneath yours!--&gt;
+-- Main.AlexSim - 17 March 2009
+
+%STOPINCLUDE%
+
+

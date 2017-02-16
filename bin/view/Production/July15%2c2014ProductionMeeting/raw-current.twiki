@@ -1,0 +1,119 @@
+---++ Coordinates
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-866-740-1260, code 8266135 
+
+---++ Announcements:   
+
+---++ Action/Significant Items: 
+   * gratia probe error, CMS not affected, ATLAS Tier 1 not affected, no reports from Tier 2 sites. Follows a report on the bug from Gratia support: 
+      * *Who is affected* The bug affects the Gratia HTConfor probe form version 1.13.24 to 1.13.29 (current production version) and flags all your jobs as Local (non grid jobs). Sites with a job manager different from HTCondor can ignore this
+      *  *Severity: mild to severe*
+         * If you kept the default probe configuration (i.e. you never edited manually =/etc/gratia/condor/ProbeConfig=, changes made by osg-configure do not count), then MILD, your jobs are misclassified but few people look at that level of detail and you are reporting correct numbers to WLCG (if enabled). If you check your =/etc/gratia/condor/ProbeConfig= you&#39;ll see a line ==SuppressGridLocalRecords=&quot;0&quot;==. This means your level is MILD
+         * If you changed the probe not to report local jobs (i.e. you edited =/etc/gratia/condor/ProbeConfig= and changed a line to ==SuppressGridLocalRecords=&quot;1&quot;==), then SEVERE, please take action URGENTLY to apply the workaround below. Without it you are not reporting correctly to OSG and WLCG.
+      * *What you should do* If you have a HTCondor job manager (very likely if you received this notification), evaluate your severity level (point above).
+         * If the severity for you is mild you can apply the workaround if you like (the effort will not get wasted, read below) or wait for the new production release next Tuesday and apply it at the first available maintenance window.
+         * If the your severity is severe then apply the workaround described as soon as possible and contact Gratia support (open a GOC ticket or email gratia-operation@opensciencegrid.org) for instructions to recover the jobs that have not been reported.
+      * *Workaround* Edit the probe configuration (=/etc/gratia/condor/ProbeConfig=) and add the line ==NoCertinfoBatchRecordsAreLocal=&quot;0&quot;== It can be anywhere in the =ProbeConfiguration= element, e.g. right below the line ==EnableProbe=&quot;1&quot;==. This workaround will make your reports correct: Grid jobs are correctly classified as Grid jobs and reported correctly to WLCG. Local jobs are not reported as you desired
+      * *Solution* ==gratia-probe-common.noarch 1.13.30-3== and ==gratia-probe-condor.noarch 1.13.30-3== are currently in osg-testing and will be part of an urgent release next Tuesday 7/22. Everyone (using the HTCondor Gratia probe) is recommended to upgrade to that release. The upgrade will involve a regular update of the package (yum update) and a merging of the new configuration file (=/etc/gratia/condor/ProbeConfig.rpmnew=) with your current one (=/etc/gratia/condor/ProbeConfig=):
+         * this will add the line ==NoCertinfoBatchRecordsAreLocal=&quot;0&quot;== to your configuration file
+         * if you applied the workaround above you can simply delete the =/etc/gratia/condor/ProbeConfig.rpmnew= after the yum update
+      * *More details for the curious ones (skip as you will)* The bug in =xml_utils.py=, =CheckAndExtendUserIdentity()= (part of =gratia-probe-common=). If the job history has already the VO information (FQAN), like HTCondor jobs do, then the certinfo file (files created by the gatekeeper to associate VO information with a job) is not used to extract the information, the attribute &#39;has_certinfo&#39; is not set and the job is considered local. You can see this in the Gratia database. Anyway all jobs with VO information are used for WLCG reporting, so if they are in the Gratia database, they are counted even if labelled as Local. The new version of the probe correctly identifies the presence of the certinfo files anyway it is good to set ==NoCertinfoBatchRecordsAreLocal=&quot;0&quot;== because HTCondor does not really need certinfo files and they may go away in the future. The bug is discussed and tracked in the Jira ticket [[https://jira.opensciencegrid.org/browse/GRATIA-149][GRATIA-149]]
+
+---++ Attendees: Tony, Tom, Tim T, Tim C, Brian Lin, Xin, Ananad, Armen
+
+---++ CMS (Tony)
+   * Job statistics for last week
+      * 18,718 jobs/day
+
+   * gratia tickets
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status.
+      * USATLAS total production over the past weeks was not always stable, at the average level of 22-28K running jobs. Tasks from DC14 (data challenge campaign) are starting to run, still not everything smooth in that respect.
+   * Job statistics for last week.      
+      * Gratia report: 1.0M jobs, 4M walltime hours, with CPU/Walltime ratio of 88%. 
+      * 1.6 M real Jobs reported from the Atlas dashboard.  
+   * Data Transfer was ~350TB/day, at BNL Tier1, for last week 
+
+---++ Grid Operations Center (Scott T.)
+
+---+++ Operations Last Week 
+   * &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/hours.png&quot; alt=&quot;hours.png&quot; width=&#39;795&#39; height=&#39;517&#39; /&gt;    
+   * [[http://tinyurl.com/ct2mfy6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * [[http://steige.grid.iu.edu/steige/myosgldr.php][OSG Version information]]
+      * 10 (0) resources are running 1.2.x
+      * 68 (+1) are 3.1.x
+      * 10 (N/A) are 3.1.356
+      * 40 (+1) are 3.2.x
+      * 5 (N/A) are 3.2.12
+   * Grid Operations Center
+      * Production release, [[http://osggoc.blogspot.com/2014/07/goc-service-update-tuesday-july-8th.html][Release note]]
+      * New osg-xsede hardware ordered, Minor glitch will delay.
+      * 10 Gig ports available
+   * WMS Glide In Factory
+      * Began ramping up Brendan, our new UCSD Factory Ops member
+---+++ Operations This Week
+   * Grid Operations Center
+      * ITB release, release note in preparation
+      * RSV collector will run out of disk by the end of the year
+      * LVS (internal load level system) to CENTOS-6
+         * considering change all systems. impact, effort under evaluation
+      * ITB services to add ipv6 ip addresses 1st ITB cycle in August
+         * Will *not* go into production the following week, need more evaluation time
+      * Investigating usability evaluation for PKI infrastructure.
+   * !FermiGrid Ops
+      * We&#39;re planning to stop replicating the CMS, ILC, and Auger VOMS databases. We are making sure they are unused before we do that.
+      * https://ticket.grid.iu.edu/goc/20375
+      * https://ticket.grid.iu.edu/goc/20422
+      * https://ticket.grid.iu.edu/goc/20425
+
+
+---++ Software (Tim C.)
+
+   * Helping with high-priority release of Gratia probes (grid jobs counted as local)
+   * Working on HTCondor CE; especially bug fixes, LSF and SGE support, US-LHC support
+   * Starting on !PanDA packaging
+   * IPv6 evaluation of OSG software &amp;ndash; setting up infrastructure and accounts
+   * Working on HTCondor 8.2 for Upcoming repositories
+   * Preparing build and test infrastructure for EL7 builds
+
+   * Working on adding a UW ITB site, to be maintained by Software/Release teams
+   * DRP: Offsite backups set to start, but need to find missing local database backups
+   * Small improvements to internal systems
+
+
+---++ Release (Tim T.)
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Version*         | *Testing*  | *Freeze*   | *Release*  | *Notes* |
+| 3.2.13 / 3.1.37 | | 2014-07-14 | 2014-07-22 | High Priority: Gratia HTCondor probe |
+| 3.2.14 / 3.1.38 | 2014-07-28 | 2014-08-04 | 2014-08-12 | |
+| 3.2.15 / 3.1.39 | 2014-08-25 | 2014-09-02 | 2014-09-09 | Freeze bumped due to Labor Day |
+| 3.2.16 / 3.1.40 | 2014-09-29 | 2014-10-06 | 2014-10-14 | |
+
+   * High Priority Release next week
+      * Gratia HTCondor probe
+         * Fix for Grid Universe jobs being processed as Local Universe Jobs
+      * [[https://ticket.grid.iu.edu/21696][GOC Ticket 21696]]
+
+---++ User Support (Chander, Mats)
+
+
+---++ Security (Anand)
+   * Vulnerabilities/Emergencies
+      * None
+   * Operations
+      * New CA release was made with CIlogon Basic CA. No problems reported.
+      * OS X Keychain does not correctly load Digicert user certs. https://ticket.grid.iu.edu/21709.
+      * Reviewing HCC VO setup to check suitability to allow certificate free access to Fermilab.
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+
+
+
+-- Main.RobQ - 01 Jul 2014
+

@@ -1,0 +1,178 @@
+%DOC_STATUS_TABLE%
+
+---+!! An Introduction for Grid Users
+%TOC%
+
+%LINKCSS%
+
+*OSG Connect users: please use the [[https://confluence.grid.iu.edu/display/CON/Home][ConnectBook]] documentation, which is available from the OSG Connect homepage, http://osgconnect.net/.*
+
+---+ About this Document
+
+This page is aimed at beginning users who want to use the resources on the OSG.  Every user must be associated with a registered organization (called a VO).  Many large VOs (such as ATLAS and CMS) already have extensive user documentation; these pages are primarily oriented at users of smaller VOs who might be porting their own or community applications to the OSG.
+
+These pages first introduce the primary OSG concepts, then dives into the nuts and bolts of building (or porting) an application to the grid by showing demonstration applications of increasing complexity.  Both job management and data management are covered. 
+
+---+ About the Open Science Grid
+
+   * [[WhatIsOSG][What is OSG?]]  This page introduces the &quot;big-picture&quot; concepts of *what the OSG is, what it is not,* and what it tries to achieve.
+   * [[WhatIsVO][What are VOs?]]  Virtual Organizations - &quot;VOs&quot; - are an important organizational concept for the OSG; this page *introduces VOs for the end-user*.
+
+---+ About Security Credentials
+
+   * [[CertificateWhatIs][What is a certificate?]]  A digital certificate is like a passport for the grid.  This page introduces them to new users, and includes links for getting your own certificate.
+   * [[CertificateGetWeb][Get a Certificate]]  Instructions on how to get a certificate.
+   * [[GetAccessToGrid][How do you get access to a site?]]  The certificate provides you with an identity - but doesn&#39;t give you access rights to a site!  This page describes *how one gets authorized at an OSG site*.
+
+---+ Joining a VO
+   * You must belong to a [[WhatIsOSG#Virtual_Organizations][VO]] to run jobs on OSG. 
+   * [[https://myosg.grid.iu.edu/vosummary?all_vos=on&amp;active=on&amp;active_value=1&amp;datasource=summary][VO List]] includes a Membership URL for each VO for application to become a member.  For example, the [[https://osg-engage.renci.org:8443/voms/Engage][Trash/Engagement VO URL]] allows you to apply for Engage VO membership.  To access these URLs and become a member, you must already have a valid certificate loaded in your browser as explained in [[CertificateGetWeb][Get a Certificate]].
+
+---+ Using the OSG
+
+---++ OSG Client Software
+
+All of the following sections will focus on job and data management on the OSG in order to build a successful grid application.
+
+These will all assume that you have access to (an account on) an OSG Submit host provided by your VO or have the [[Documentation/Release3.InstallOSGClient][OSG client software installed]].
+
+---++ Running Jobs
+
+   * [[FindAvailableResource][Finding OSG sites to run your jobs]]
+   * [[UserTestingResource][Testing your first resource]].
+   * Running jobs with Condor-G.  Condor-G is the most common client tool for submitting jobs directly to the grid.  The following pages cover the most common usage patterns; each link builds upon the knowledge learned in the previous one.
+      * [[CondorSubmittingSingleJob][Submitting a single, simple job with Condor-G]].
+      * [[CondorSubmittingMultipleJobs][Submitting multiple, simple jobs with Condor-G]].
+      * [[CondorSubmittingMultipleComplexJobs][More complex Condor-G jobs]].
+      * [[http://www.cs.wisc.edu/condor/manual/v7.5/2_10DAGMan_Applications.html][Building workflows in Condor]] (external link).  This link covers in-depth how to allow Condor to handle dependencies between jobs using DAGMan.  The link discusses vanilla universe jobs, but DAGMan works with grid universe jobs as well.
+   * Running jobs with !glideinWMS
+      * How to convert a Condor-G submit file to use !glideinWMS: [[CondorGToGlidein][Condor-G to Glidein Workflow Management System porting guide]]
+      * Using the Corral Frontend: [[http://www.uscms.org/SoftwareComputing/Grid/WMS/glideinWMS/doc.prd/corral.html][glideinWMS Corral installation and tutorial]]
+   * [[Documentation/Release3.UsingWorkerNodeClient][The OSG job environment (Where can I install software? What&#39;s in the environment?)]]
+   * [[http://osgmm.sourceforge.net/][Using the OSG Matchmaker to run jobs]].  The OSG Match Maker does that work of site discovery, verification, and selection for you.  It is easy-to-install and works for a wide variety of users.
+   * [[Documentation.Release3.TestOSGClient][Debugging tools (globus-job-run, globus-url-copy)]]
+   * [[GoldenRulesForOSGUsage][Best practices for running lots of jobs]].
+
+---++ Data management
+
+Data management is difficult on the grid.  Unlike running jobs, where a consensus approach is beginning to appear, there are many techniques for data management.  Some of them scale up well to hundreds of TBs a day, but scale poorly to opportunistic jobs.
+
+The most common approach is to use a get/put method - they download input from a remote endpoint to the scratch area.  The jobs run, and write output to the scratch area.  After computation part of the job is finished, the result upload is uploaded to a remote endpoint.
+
+Two common approaches to staging in data are via HTTP (many sites have local caches) or a protocol called SRM.
+
+The de-facto way to save output is through SRM.
+
+   * [[StorageEndUser][Overview of data movement approaches]].  An overview for the different approaches, written by the OSG Storage group.
+   * [[OsgHttpBasics][HTTP Basics]].  How to download files over HTTP in a scalable and secure fashion on the OSG.
+   * [[Documentation.InformationServicesStorage#DiscoveryTool][Finding storage resources]].  Finding SRM and gridftp-based storage resources for you to use.
+   * [[SrmBasics][SRM basics]]: Moving files using SRM.
+
+---++ Advanced Topics
+
+Beyond &quot;traditional&quot;, basic job handling, there is a wide variety of specialized topics for using the OSG.  Here are a few which may appeal to advanced users:
+   * [[HighThroughputParallelComputing][High-Throughput Parallel Computing]]: This page covers how to submit multi-core (which may be MPI or just traditional multi-threaded) jobs on the OSG using Condor.
+   * [[GlobusRslAttributes][Globus RSL language usage on the OSG]]: Globus RSL is a mini-language that controls advanced, specific aspects of your jobs.  For some users, this might be necessary for their jobs; we recommend it against using RSL heavily because it is not portable between sites.
+   * [[JobSubmissionComparison][Job Submission tool comparison]]: A document that compares the three most common submission methods in the OSG: !GlideInWMS, PanDA, and OSG-MM.  The current OSG recommendation is to use !GlideInWMS for grid applications.
+   * [[Documentation/GlideinWMSVOFrontendInstall][GlideinWMS VO Frontend Install Guide]]: Installation guide for the !GlideinWMS VO Frontend.
+   * [[Documentation/CondorGToGlidein][Condor-G to !GlideinWMS porting guide]]: !GlideinWMS is a grid scheduler that can be used by VO&#39;s.  This guide will document the best practices on moving jobs from Condor-G to !GlideinWMS.
+   * [[Documentation/GlideinWMSGroups][GlideinWMS VO Frontend Groups]]: Description of groups in the VO Frontend.  These are used to submit different &#39;types&#39; of glidein jobs.
+
+---+ How to get Help?
+
+   * [[Documentation.Release3.TroubleshootingFaq][Troubleshooting FAQ for OSG users]]
+   * [[UserHelp][User Help]]
+   * [[Documentation.Release3.CondorErrors][Troubleshooting Condor errors]]
+   * [[GridUsersGuideTroubleshootingOSG][Another OSG Users troubleshooting guide]]
+
+
+&lt;!--
+
+---++ Policies and guidelines
+   * [[AboutResourceAllocation][About resource allocation]]
+   * [[Trash.DocumentationUseResourcesProperly][Using resources properly]]
+
+---++ Advanced Usage
+   * [[GoldenRulesForOSGUsage][Useful tips for users]]
+   * Does your VO run pilot jobs? [[Documentation/ValidateGlexecAtSite][Check if a site is running gLexec]].
+   * [[SubmittingMPIJobs][Submitting MPI Jobs]] (What is [[http://www-unix.mcs.anl.gov/mpi/][MPI?]])
+
+---++ Run a job
+   * [[Documentation/Release3.UsingWorkerNodeClient][Configure your job to use the worker node client]]
+   * [[Trash.DocumentationUseResourcesProperly#Simple_Example_Script_for_submis][Using resources properly (Submitting jobs)]]
+
+---++ Store or Retrieve data
+   * [[Documentation.UseResourcesProperly#Consuming_storage][Using resources properly (Consuming storage)]]
+   * [[StorageDcacheCopying][Copying data using dCache]]
+   * Copying data using Bestman - see the http://datagrid.lbl.gov/bestman/bestman-manual.html
+   * [[Documentation.StorageGridFTP][Overview of GridFTP in OSG]] 
+
+---++ Manipulating jobs
+   * How to monitor a job
+      * [[VO/WebHome][Your VO]] may have specialized monitoring tools
+      * %RED%For globus-run jobs use ??%ENDCOLOR%
+   * How to cancel a job %RED%(need info)%ENDCOLOR%
+      * For Condor-G jobs, go to the [[http://www.cs.wisc.edu/condor/manual/v6.6/5_3Condor_G.html][Condor manual]]; see &quot;Removing Condor-G jobs&quot;.
+   * How to retrieve results from a job %RED%(need info)%ENDCOLOR%
+--&gt;
+
+---+ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+
+   DEAR DOCUMENT OWNER
+   ===================
+
+   Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER          = DerekWeitzel
+
+   Please define the document area, choose one of the defined areas from the next line
+   DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = User
+
+   define the primary role the document serves, choose one of the defined roles from the next line
+   DOC_ROLE = (Scientist|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = Scientist
+
+   Please define the document type, choose one of the defined types from the next line
+   DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Training
+   
+   Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+   Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+   change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+   change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+   change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+   DEAR DOCUMENT REVIEWER
+   ======================
+
+   Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = JamesWeichel
+  
+   Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+   DEAR DOCUMENT TESTER
+   ====================
+
+   Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         =
+  
+   Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+ 
+--&gt;
+

@@ -1,0 +1,482 @@
+&lt;style type=&quot;text/css&quot;&gt;
+.tg  {border-collapse:collapse;border-spacing:0;width:100%}
+.tg td{font-family:Arial, sans-serif;font-size:12px;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:12px;font-weight:normal;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg .tg-raw31s1{font-weight:bold;color:#0055ff;text-align:left;width:20%}
+.tg .tg-raw32s1{text-align:left}
+.tg .tg-raw33s1{text-align:left;width:30%}
+.tg .tg-header{font-weight:bold;background-color:#c0c0c0;text-align:center}
+.tg .tg-splitheader{font-weight:bold;background-color:#e0e0e0;text-align:center}
+&lt;/style&gt;
+
+
+&lt;!-- some useful definitions  (need 3 white spaces before * to enable it)
+   * Set UCL_PROMPT_ROOT = [root@replica ~]$
+--&gt;
+
+---+!! cvmfsreplica: Reference Manual
+&lt;!--
+%DOC_STATUS_TABLE%
+--&gt;
+%TOC{depth=&quot;3&quot;}%
+
+---# About this Document
+
+This document describes all configuration variables in [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/CvmfsReplica][cvmfsreplica]]
+
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;Header&quot;}%
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;CommandLine&quot;}%
+
+%INCLUDE{&quot;Documentation/Release3/CvmfsReplica&quot; section=&quot;Version&quot;}%
+
+---# Nomenclature
+
+---## Format of the configuration files
+
+The format of the configuration files is similar to the Microsoft INI files. The configuration file consists of sections, led by a =[section]= header and followed by =name: value= entries, with continuations in the style of [[http://tools.ietf.org/html/rfc822.html][RFC 822]] (see section 3.1.1, “LONG HEADER FIELDS”); =name=value= is also accepted. Note that leading whitespace is removed from values. Additional defaults can be provided on initialization and retrieval. Lines beginning with &#39;#&#39; or &#39;;&#39; are ignored and may be used to provide comments.
+
+It accepts interpolation. This means values can contain format strings which refer to other values in the same section, or values in a special =[DEFAULT]= section.
+
+Configuration files may include comments, prefixed by specific characters (# and ;). Comments may appear on their own in an otherwise empty line, or may be entered in lines holding values or section names. In the latter case, they need to be preceded by a whitespace character to be recognized as a comment. (For backwards compatibility, only ; starts an inline comment, while # does not.)
+
+As the python package !ConfigParser is being used to digest the configuration files, a wider explanation and examples can be found in the [[https://docs.python.org/2/library/configparser.html][python documentation page]]. 
+
+---## Format of the configuration variables
+
+As a convention, the key name of the configuration variables is always lowercase. Occasionally they may have underscores to separate words, for readibility porpuses. 
+
+The nomenclature used for the configuration variables related to plugins is as follows:
+
+   * the key name is always like &amp;lt;type_of_plugin&amp;gt;plugins
+   * the value name, in other words the name of the plugin or plugins, start always with capital letter
+   * for specific plugin variables, the key value is always like &amp;lt;type_of_plugin&amp;gt;.&amp;lt;lower_case_version_of_plugin_name&amp;gt;.key
+
+For example:
+
+&lt;pre class=&quot;file&quot;&gt;
+reportplugins = Email
+report.email.admin_email = neo@matrix.net
+report.email.smtp_server = my.email.server 
+&lt;/pre&gt;
+
+
+---# sysconfig/cvmfsreplica
+
+The first set of configuration for the factory is done via the =/etc/sysconfig/cvmfsreplica= config file. 
+This file does not follow the .INI format. It just contains two pairs key = value, pointing to other relevant files.
+It is highly recommended not to modify the default content:
+
+&lt;pre class=&quot;file&quot;&gt;
+CONF=/etc/cvmfsreplica/cvmfsreplica.conf
+CONSOLELOG=/var/log/cvmfsreplica/console.log
+&lt;/pre&gt;
+
+Explanation:
+
+&lt;table class=&quot;tg&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;variable&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;description&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;comment&lt;/th&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;CONF&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; The path to the main configuration file for the cvmfsreplica service.&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt; Mandatory&lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;CONSOLELOG&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt;  Path to the filename where to print out error messages during the service initialization.&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt; Mandatory.  &lt;br&gt;Default value is /var/log/cvmfsreplica/console.log &lt;br&gt;In case of using a different path, set it properly in the file &lt;br&gt; =/etc/logrotate.d/cvmfsreplica= &lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;/table&gt;
+
+---# logrotate/cvmfsreplica
+
+The logs rotation is handle via the standard file =/etc/logrotate.d/cvmfsreplica=.
+Its value only need to be fixed if some of the log files is in a different location. 
+
+---# cvmfsreplica.conf
+
+This is the configuration file that set the basic behavior of the service. Its location is set by variable =CONF= in the =/etc/sysconfig/cvmfsreplica= file. By default, it is =/etc/cvmfsreplica/cvmfsreplica.conf=
+
+It follows the previously described .INI format. It contains a single section, with HEADER =[REPLICA]=.
+
+Description of the variables:
+
+
+&lt;table class=&quot;tg&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;variable&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;description&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;comment&lt;/th&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;repositoryconf&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; path to the configuration file with the repository-by-repository settings&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt; Mandatory. &lt;br&gt; For consistency, it is recommended to leave its default value &lt;br&gt; =file:///etc/cvmfsreplica/repositories.conf= &lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;log&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; Destination where to send logging output. &lt;br&gt; Valid values: &lt;br&gt; &lt;ul&gt;&lt;li&gt;A filesystem path, starting with file://&lt;/li&gt; &lt;li&gt;stdout&lt;/li&gt;&lt;li&gt;syslog&lt;/li&gt;&lt;ul&gt;&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt; DEFAULT value is =file:///var/log/cvmfsreplica/cvmfsreplica.log= &lt;br&gt;
+In case of using a file that is not the default, set properly the file &lt;br&gt; =/etc/logrotate.d/cvmfsreplica= &lt;br&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;loglevel&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; Logging LEVEL. &lt;br&gt; Valid values: &lt;ul&gt; &lt;li&gt;TRACE&lt;/li&gt;&lt;li&gt;DEBUG&lt;/li&gt; &lt;li&gt;INFO&lt;/li&gt; &lt;li&gt;WARNING&lt;/li&gt;&lt;li&gt;ERROR&lt;/li&gt; &lt;li&gt;CRITICAL&lt;/li&gt; &lt;/ul&gt;&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;  Default value is WARNING&lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;maximum_concurrent_snapshots&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt;the maximum number of replication process that will be allow to run simultaneously  &lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;Mandatory &lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;/table&gt;
+
+---# repositories.conf
+
+Each section in this file sets the behavior of a separate process thread to manage a CVMFS repository. 
+
+---## generic variables 
+
+&lt;table class=&quot;tg&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;variable&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;description&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;comment&lt;/th&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;enabled&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt;used to enable/disable each thread. Valid values as =True= or =False= &lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt; Mandatory&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;repositoryname&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; name of the repository to be replicated.
+Matches /cvmfs/&amp;lt;repository&amp;gt;/
+&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;  Mandatory&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;interval&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; time, in seconds, between replication cycles&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt; Mandatory &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;ntrials&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; number of times to try replicating the repository in case of failures&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;  Mandatory&lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;timeout&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; number of seconds until timing out the replication process.&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;  Optional &lt;br&gt; Use with caution, as the replication can naturally take a long time.&lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;priority&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; Priority number for the repository. The higher the number, the higher the priority. &lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;  Integer. &lt;br&gt; Optional, default=0 &lt;br&gt;New in version 0.9.5&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;acceptanceplugins&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; list of plugins, split by comma, to decide if the replications should actually be attempted or not&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;  Optional &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;reportplugins&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; list of plugins, split by comma,  to notify/report/alert/... when something goes wrong&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;  Optional &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;postplugins&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; list of plugins, split by comma,  to run after the replication was done (or attempted)&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt;  Optional&lt;/td&gt;
+  &lt;/tr&gt;
+
+
+&lt;/table&gt;
+
+---## Report plugins
+
+---### Email
+
+Sends an email to notify failures.
+
+&lt;table class=&quot;tg&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;variable&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;description&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;comment&lt;/th&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;report.email.admin_email&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; email address to send messages when replication fails. &lt;br&gt;
+Multiple addresses can be set split by comma&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; Mandatory&lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;report.email.smtp_server&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; SMTP server&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; Mandatory&lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;/table&gt;
+
+---## Acceptance plugins
+
+---### Diskspace
+
+Checks if the server was updated after last replication attempt.
+
+&lt;table class=&quot;tg&quot;&gt;
+  &lt;tr&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;variable&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;description&lt;/th&gt;
+    &lt;th class=&quot;tg-header&quot;&gt;comment&lt;/th&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;diskspace.spool_size&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; minimum size needed for the SPOOL directory, in bytes&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt; Mandatory&lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;diskspace.storage_size&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; minimum size needed for the STORAGE directory, in bytes&lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt; Mandatory&lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td class=&quot;tg-raw31s1&quot;&gt;diskspace.should _abort&lt;/td&gt;
+    &lt;td class=&quot;tg-raw32s1&quot;&gt; specifies is the thread for that repository should be stopped in case the diskspace test fails. &lt;br&gt; 
+Valid values are =True= and =False= &lt;/td&gt;
+    &lt;td class=&quot;tg-raw33s1&quot;&gt; Optional. &lt;br&gt; Default value is =True= &lt;/td&gt;
+  &lt;/tr&gt;
+
+&lt;/table&gt;
+
+---### Updateserver
+
+Checks if the server was updated after the last replication attempt.
+It does not requires specific configuration. The URL for the server is read from the CVMFS configuration files. 
+
+
+---## Post plugins
+
+---### Cleanup
+
+Cleans some files that may have been left orphan after an unsuccessfull replication attempt.
+It does not requires specific configuration. The path for the files to be removed is read from the CVMFS configuration files. 
+
+---## Report plugins invoked from Acceptance plugins
+
+The acceptance plugins can also, when they fail, invoke report plugins.
+The nomenclature to set the report plugins for this case is similar to the general case, but adding string
+&quot;acceptance.&amp;lt;name_of_the_acceptance_plugin&amp;gt;.&quot;
+at the beginning of the option name.
+The corresponding Report plugin variables are the same. 
+
+For example:
+
+&lt;pre class=&quot;file&quot;&gt;
+acceptance.diskspace.reportplugins = Email
+acceptance.diskspace.report.email.admin_email = neo@matrix.net
+acceptance.diskspace.report.email.smtp_server = my.email.server 
+&lt;/pre&gt;
+
+
+---# Examples of repositories.conf
+
+Here are some small examples on how to setup file =/etc/cvmfsreplica/repositories.conf=
+
+---## Example 1
+
+   * 1 repository: atlas
+   * no extra features
+   * loop every 15 minutes
+
+&lt;pre class=&quot;file&quot;&gt;
+[ATLAS]
+enabled = True
+repositoryname = atlas.cern.ch
+interval = 900
+&lt;/pre&gt;
+
+---## Example 2
+
+   * 2 repositories: atlas and !OASIS
+   * no extra features
+   * loop every 15  and 10 minutes respectively
+
+&lt;pre class=&quot;file&quot;&gt;
+[ATLAS]
+enabled = True
+repositoryname = atlas.cern.ch
+interval = 900
+
+[OASIS]
+enabled = True
+repositoryname = oasis.opensciencegrid.org
+interval = 600
+&lt;/pre&gt;
+
+---## Example 3
+
+   * 1 repository: !OASIS
+   * loop every 10 seconds
+   * retries 3 times in case of failure
+
+&lt;pre class=&quot;file&quot;&gt;
+[OASIS]
+enabled = True
+repositoryname = oasis.opensciencegrid.org
+interval = 10
+ntrials = 3
+&lt;/pre&gt;
+
+---## Example 4
+
+   * 1 repository: !OASIS
+   * loop every 10 seconds
+   * retries 3 times in case of failure
+   * timeouts after 30 minutes
+
+&lt;pre class=&quot;file&quot;&gt;
+[OASIS]
+enabled = True
+repositoryname = oasis.opensciencegrid.org
+interval = 10
+ntrials = 3
+timeout 1800
+&lt;/pre&gt;
+
+---## Example 5
+
+   * 1 repository: !OASIS
+   * loop every 10 seconds
+   * retries 3 times in case of failure
+   * timeouts after 30 minutes
+   * reports by email if replication failed
+
+&lt;pre class=&quot;file&quot;&gt;
+[OASIS]
+enabled = True
+repositoryname = oasis.opensciencegrid.org
+interval = 10
+ntrials = 3
+timeout 1800
+
+reportplugin = Email
+report.email.stmp_server = my.email.server
+report.email.admin_email = neo@matrix.next
+&lt;/pre&gt;
+
+---## Example 5
+
+   * 1 repository: !OASIS
+   * loop every 10 seconds
+   * retries 3 times in case of failure
+   * timeouts after 30 minutes
+   * reports by email if replication failed
+   * checks if there is enough disk space, and aborts if there is not
+
+&lt;pre class=&quot;file&quot;&gt;
+[OASIS]
+enabled = True
+repositoryname = oasis.opensciencegrid.org
+interval = 10
+ntrials = 3
+timeout 1800
+
+reportplugin = Email
+report.email.stmp_server = my.email.server
+report.email.admin_email = neo@matrix.next
+
+acceptanceplugin = Diskspace
+acceptance.diskspace.spool_size = 100000000000
+acceptance.diskspace.storage_size = 100000000000
+acceptance.diskspace.shoud_abort = True
+&lt;/pre&gt;
+
+
+---## Example 6
+
+   * 1 repository: !OASIS
+   * loop every 10 seconds
+   * retries 3 times in case of failure
+   * timeouts after 30 minutes
+   * reports by email if replication failed
+   * checks if there is enough disk space, and aborts if there is not
+   * checks if there is new content of the repo at the server
+
+&lt;pre class=&quot;file&quot;&gt;
+[OASIS]
+enabled = True
+repositoryname = oasis.opensciencegrid.org
+interval = 10
+ntrials = 3
+timeout 1800
+
+reportplugin = Email
+report.email.stmp_server = my.email.server
+report.email.admin_email = neo@matrix.next
+
+acceptanceplugin = Diskspace, Updatedserser
+acceptance.diskspace.spool_size = 100000000000
+acceptance.diskspace.storage_size = 100000000000
+acceptance.diskspace.shoud_abort = True
+&lt;/pre&gt;
+
+
+---## Example 7
+
+   * 1 repository: !OASIS
+   * loop every 10 seconds
+   * retries 3 times in case of failure
+   * timeouts after 30 minutes
+   * reports by email if replication failed
+   * checks if there is enough disk space, and aborts if there is not
+   * notifies by email if there is no enough disk space
+
+&lt;pre class=&quot;file&quot;&gt;
+[OASIS]
+enabled = True
+repositoryname = oasis.opensciencegrid.org
+interval = 10
+ntrials = 3
+timeout 1800
+
+reportplugin = Email
+report.email.stmp_server = my.email.server
+report.email.admin_email = neo@matrix.next
+
+acceptanceplugin = Diskspace
+acceptance.diskspace.spool_size = 100000000000
+acceptance.diskspace.storage_size = 100000000000
+acceptance.diskspace.shoud_abort = True
+
+acceptance.diskspace.reportplugins = Email
+acceptance.diskspace.report.email.admin_email = morpheus@matrix.net
+acceptance.diskspace.report.email.smtp_server = my.email.server
+&lt;/pre&gt;
+
+
+
+
+-- Main.JoseCaballero - 24 Jun 2016
+

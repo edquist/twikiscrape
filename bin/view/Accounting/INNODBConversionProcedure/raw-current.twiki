@@ -1,0 +1,19 @@
+---+ INNODB Conversion Procedure, revision %REVINFO{&quot;$rev&quot;}%
+
+&lt;ol&gt;
+#StepNum01pre1  &lt;li&gt;Configure the !MySQL instance on =gratia07= with the desired INNODB and default engine parameters.  Determine how much disk space is needed for the conversion and contact S. Timm to arrange it.
+#StepNum01  &lt;li&gt;Take a standard tree copy of the mysqldb tree to =gratia07= and convert all tables to INNODB, timing the exercise.  Test to see if said INNODB database can successfully be backed up via TiBS&lt;/li&gt;
+#StepNum02  &lt;li&gt;Connect a new (not production) collector to the converted DB in order to upgrade the schema without affecting the uptime of the production collector.&lt;/li&gt;
+#StepNum03  &lt;li&gt;Announce a downtime for the production collector long enough to allow the completion of steps [[#StepNum05][5]] through [[#StepNum09][9]].&lt;/li&gt;
+#StepNum04  &lt;li&gt;Set up a replication process from the production collector to the temporary collector, with DBID carefully set to only replicate records
+received since DB copy (manual DB interaction).&lt;/li&gt;
+#StepNum05  &lt;li&gt;Stop updates to the production DB and shut down the production collector after allowing replication to the temporary collector to complete.&lt;/li&gt;
+#StepNum06  &lt;li&gt;Remove the replication (manual DB interaction).&lt;/li&gt;
+#StepNum07  &lt;li&gt;Shut down the temporary collector after it has received the last replicated records from the production collector and take a note of the latest DBID (manual DB interaction) in the usage records on the temporary DB.&lt;/li&gt;
+#StepNum08  &lt;li&gt;Upgrade the production collector.&lt;/li&gt;
+#StepNum09  &lt;li&gt;Connect the production collector to the converted DB and bring it back up to receive data.&lt;/li&gt;
+&lt;/ol&gt;
+
+If I have covered all the bases correctly, this would allow us to upgrade the production collector to the latest version and to use INNODB with the minimum possible downtime as perceived by probes and report browsers.
+
+-- Main.ChrisGreen - 19 Sep 2007

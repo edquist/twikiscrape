@@ -1,0 +1,100 @@
+&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;%PUBURL%/%WEB%/WorkshopTutorialModules/exercises.css&quot;&gt;
+
+---+!! %SPACEOUT{ &quot;%TOPIC%&quot; }%
+
+%TOC%
+
+%STARTINCLUDE%
+%EDITTHIS%
+
+Now, if everything is set correctly, you should be able to run &quot;Grid jobs&quot; on the hosts in the lab Grid. And of course, one&#39;s first Grid job must always be this:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%LOGINHOSTSHORT%$ &lt;userinput&gt;globusrun-ws -submit -s -job-command /bin/echo Hello World&lt;/userinput&gt;
+Delegating user credentials...Done.
+Submitting job...Done.
+Job ID: uuid:c9eae254-1111-11dc-b480-001558a1e39c
+Termination time: 06/03/2007 14:01 GMT
+Current job state: Active
+Current job state: CleanUp-Hold
+Hello World
+Current job state: CleanUp
+Current job state: Done
+Destroying job...Done.
+Cleaning up any delegated credentials...Done.
+&lt;/pre&gt;
+
+You&#39;ve just submitted a &quot;job&quot; (the Linux command &quot;echo&quot;) to run on %LOGINHOST%! Trivial, perhaps, but a building block to more powerful capabilities. 
+
+The globusrun-ws utility runs commands on remote sites, but it expects them to be &quot;fully qualified&quot; path names (i.e., they must start with a &quot;/&quot;). Lets say we want to run the Linux command =hostname= on the remote site to verify that we&#39;re talking to the resource we think we are.
+
+   1. Run it locally to make sure you are invoking it correctly. 
+
+   1. Use the command =which= to discover the location of the version of =hostname= that you are using. It will return a fully-qualified path name.
+
+&lt;pre class=&quot;screen&quot;&gt;
+%LOGINHOSTSHORT%$ &lt;userinput&gt;hostname&lt;/userinput&gt;
+%LOGINHOST%
+%LOGINHOSTSHORT%$ &lt;userinput&gt;which hostname&lt;/userinput&gt;
+/bin/hostname
+&lt;/pre&gt;
+
+This tells you that to run =hostname=  via globus-job-run, use =/bin/hostname=.  
+
+Use =which= to discover the location of the following commands on the system:
+   * =id=
+   * =env=
+   * =ps=
+   * =uptime=  
+
+Now run =hostname= remotely, on %OTHERHOST%, to verify that you really are reaching a remote system:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%LOGINHOSTSHORT%$ globusrun-ws -submit -F %OTHERHOST% -s -job-command /bin/hostname
+&lt;/pre&gt;
+
+Next, see what else can you learn about the remote system with this approach.  
+   1. Discover what user ID your job ran under using =id=.  
+   1. Discover what environment variables are set using =env=.
+   1. Discover the load on the remote Grid server using =uptime=
+   1. Discover the default working directory in which your remote job will run using =pwd=. 
+      1. Do an =ls= of this working directory.  
+      1. Use =df= to discover how much storage space exists in this working directory.
+   1. Use =df= to discover how much storage space exists in the remote =/tmp= directory.  
+      * Can you create a file on the remote system?  
+      * Can you remove it?
+
+
+&lt;!-- ***  Comments plugin to create comments table for section   ***    --&gt;
+
+&lt;span style=&quot;text-align:center; font-weight:bold; font-size:1.2em;&quot;&gt;ADD A COMMENT&lt;/span&gt;
+%STARTMore%
+
+%TABLE{ }%
+|  *COMMENT*  |  *NAME*  |  *DATE*  |
+%COMMENT{ type=&quot;tableappend&quot; }%
+
+%ENDMore%
+&lt;!-- ***  End Comment                                            ***    --&gt;
+
+
+
+
+%STOPINCLUDE%
+
+&lt;!--                                                                            
+      * Set LOGINHOST = workshop2.lac.uic.edu
+      * Set LOGINHOSTSHORT = workshop1
+      * Set LOGINIP = 131.193.181.56
+      * Set GRIDHOST = tg-login.sdsc.teragrid.org
+      * Set OTHERHOST = workshop2.lac.uic.edu
+      * Set OTHERHOSTSHORT = workshop2
+      * Set CERTSUBJECT = /O=Grid/OU=OSG/CN=Training User 99
+      * Set LOGINNAME = train99
+      * Set HOMEDIR = /home/%LOGINNAME%
+--&gt; 
+
+%BOTTOMMATTER%
+-- Main.ForrestChristian - 29 Jan 2007: edited from original
+-- benc - copied from non-WS version
+

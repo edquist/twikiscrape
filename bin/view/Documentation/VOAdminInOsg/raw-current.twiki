@@ -1,0 +1,119 @@
+---+!! Where does a VO fit into the OSG Infrastructure?
+%DOC_STATUS_TABLE%
+%TOC%
+
+---++ About This Document
+This page describes the typical makeup of a VO.  It explores VO&#39;s role as a [[#VoGateway][gateway]] to resources and support.  Further, it describes how [[#RbacInfrastructure][Role-Based Access Control]] is setup in the !OSG, and how !VO can use it to [[#RolesAndPrivileges][separate privilege]].  
+
+#VoGateway
+---++ VO as Gateway for Individuals to use OSG Resources
+On this page, we are using the term &quot;VO&quot; as the organization that manages members and member-related services (i.e., we are ignoring computing and storage resources).
+A VO must register with OSG in order for its members to access the resources at OSG sites. By the same token, individual grid users must be authenticated and authorized under the auspices of an OSG-registered VO. I.e., individuals not affiliated with a member VO are excluded. VOs are typically organized around research efforts, e.g., there is one VO for the ATLAS HEP experiment, another for the LIGO project, and so on.  However, in some cases, an &quot;umbrella&quot; VO encompasses a number of research efforts, e.g., the Fermilab VO encompasses several HEP experiments at Fermilab, and the (confusingly named) OSG VO encompasses people from numerous small research groups.
+
+Illustration of sample VOs in OSG infrastructure:  &lt;br /&gt;
+&lt;img src=&quot;%ATTACHURLPATH%/VO_in_OSG.gif&quot; alt=&quot;VO_in_OSG.gif&quot; width=&#39;960&#39; height=&#39;720&#39; /&gt;
+
+#RbacInfrastructure
+---++ Role-Based Access Control (RBAC) Infrastructure
+The OSG has implemented a role-based access control infrastructure which provides a framework for role-based access to resources and services. Within OSG, the RBAC infrastructure supports:
+
+   * VO administrators defining privileges based on role and group definitions
+   * Site administrators defining local accounts with privileges based on groups and roles of the supported VOs
+   * Service-based (rather than host-based) granularity for authorization 
+   * Users specifying their role when requesting resource access
+   * Multiple roles per user, thus multiple privileges possible at the same time
+   * Multi-user environment in which traditional UID-based auditing is possible if desired
+
+---+++ VO as Component of RBAC
+VOs can organize their users into groups and assign them roles.  Different levels of authorization can be associated with roles, so the VO can control who has access to what, based on what the users are doing rather than who they are. OSG sites, where CE and/or SE resources are maintained, enforce local authorization on incoming jobs.  To set the local authorization appropriately, they rely on information coming from member VOs. The VO therefore must implement VOMS software that provides role information to the OSG middleware, from which the sites can pull it.  (Users must provide their job-specific role and group, via a certificate extension from VOMS, to a site upon submission of a job, so that the site can set the authorization properly.)
+
+#RolesAndPrivileges
+---+++ Implementation of Roles and Privileges
+The OSG software stack, using VDT 1.3.6 and above, includes [[Trash/Trash/Trash/Trash/Integration/PrivilegeOSG][privilege components]] which administer and apply role-based access control (RBAC) to compute and storage resources (CEs and SEs).  The current implementation provides for the following:
+
+   * Extended X509 certificates (VOMS extended certificates) to include [[ReleaseDocumentation.VORolesAndGroups][group membership and multiple roles]].
+   * Site-based mapping of certificates to UNIX accounts based on extended proxy certificates.
+   * Application of Policy through an implementation of the standard Globus Gatekeeper, !GridFTP and SRM/dCache callouts.
+
+---+++ The Integrated Solution
+The OSG components provide an integrated solution to role-based access control based on:
+   $ [[http://www.globus.org][Globus gatekeeper and !GridFTP server callouts]]: The Globus Toolkit !GridFTP Server on the CE gatekeeper reads two files (=gsi-authz.conf= and =gsi-gaa.conf=) to determine how to perform certain authorization and mapping functions. If these files are not present, the !GridFTP server will determine the user&#39;s permissions based solely on the user&#39;s identity (this is not what we want). There is a callout command to create these files, and the !GridFTP server will honor CAS policy assertions.     (Globus&#39; [[http://www.globus.org/toolkit/docs/3.2/cas/key/index.html][CAS]] allows sites to specify course-grained access control policies in terms of communities, i.e., VOs, as a whole, delegating fine-grained access control policy management to the community itself.)
+
+   $ [[http://grid.racf.bnl.gov/GUMS][GUMS Grid User Management System]]: !GUMS maps a Grid entity to a local username (UID) at the requested resource based on the entity&amp;#8217;s X.509 name and provided attributes.
+
+   $ [[http://infnforge.cnaf.infn.it/voms/][INFN VOMS VO Membership Service]]: VOMS allows a VO to manage information about its members, to provide appropriate tokens to users, and to communicate with grid middleware.
+
+   $ the SRM/dCache storage service: SRM/dCache provides storage for huge amounts of data, a common interface to physical storage systems, and storage management tools. It handles load balancing and system failure and recovery.
+
+   $ the grid-aware [[http://www.dcache.org/manuals/Book/cf-gplazma.shtml][PLuggable !AuthoriZation MAnagement (!gPLAZMA) module]]: !gPLAZMA invokes plugins for authorization methods.
+
+   $ [[http://computing.fnal.gov/docs/products/voprivilege/index.html][the PRIMA modules]]: PRIMA extracts the VOMS attributes containing the VO and role information from the user&#39;s proxy certificate, and queries the identity mapping service for an appropriate local user account assignment.
+
+---++ What does this involve for you as a VO?
+
+   * First of all, you must run a VOMS (or equivalent) installation, as we&#39;ve said. 
+   * If you wish to use fine-grained authorization, you need to define groups, roles and privileges.  We suggest that you facilitate the management of users, groups, roles, and site requirements by interfacing your VOMS server to a VOM Registration Service (VOMRS) installation.
+   * Your VO needs to approve new VO members, and manage the status of members (i.e., do they have a valid X509 certificate). 
+   * You  must communicate your minimal group/role-to-privilege requirements to the Grid Operations Center (GOC) in order for the appropriate privileges to be honored. 
+   * For &quot;special&quot; sites, i.e. ones that belong to your VO or ones with which you have made arrangements for fine-grained authorization, you must communicate your authorization requirements individually. 
+
+---++ Authorization Processes for Compute and Storage Elements
+---+++ !!CE Authorization Process
+     &lt;img src=&quot;%ATTACHURLPATH%/ce_auth_process.gif&quot; alt=&quot;ce_auth_process.gif&quot; width=&#39;787&#39; height=&#39;383&#39; /&gt;
+
+---+++ !!SE Authorization Process
+     &lt;img src=&quot;%ATTACHURLPATH%/se_auth_process.gif&quot; alt=&quot;se_auth_process.gif&quot; width=&#39;836&#39; height=&#39;480&#39; /&gt;
+
+&lt;!--
+---++ Information Resources
+[[http://osg-docdb.opensciencegrid.org/0001/000134/001/OSG-RoleBasedAccessControl.pdf#search=%22VOMS%20interface%20for%20extended%20attribute%20certificates%22][Open Science Grid Authorization Architecture - Role Based Access Control]] %BR%
+[[http://www.globus.org/toolkit/docs/3.2/cas/key/index.html][Globus Toolkit site]]
+--&gt;
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = ChanderSehgal
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = VO
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = VOManager
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Knowledge
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = DerekWeitzel
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %IN_PROGRESS%
+
+
+############################################################################################################
+--&gt;
+
+-- Main.AnneHeavey - 19 Oct, 22 Sep 2006
+

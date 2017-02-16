@@ -1,0 +1,76 @@
+---+!! Gratia-APEL Migration To OSG
+
+&lt;!--
+   * Set GOC_NODE = reports.grid.iu.edu:80
+--&gt;
+
+%TOC%
+
+%STARTINCLUDE%
+
+---+ Test vs Production APEL ssm.cfg
+Note; The *ssm.cfg* changes for production and test environments have changed.%BR%
+See: https://twiki.grid.iu.edu/bin/view/Accounting/ApelWlcgDevelopersCorner#SSM_Configuration_files
+
+The table below indicates the changes necessary for test and production in the *ssm.cfg* file.
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}% 
+| *Test* | [producer]     |topic: /topic/global.accounting.%BLUE%test.cpu%ENDCOLOR%.central %BR%consumer-dn: /C=UK/O=eScience/OU=CLRC/L=RAL/CN=%BLUE%raptest.esc.rl.ac.uk%ENDCOLOR% %BR%ack: /topic/global.accounting.%BLUE%test.cpu%ENDCOLOR%.client.$host.$pid |
+| *Production* | [producer]     |topic: /topic/global.accounting.%BLUE%cpu%ENDCOLOR%.central %BR%consumer-dn: /C=UK/O=eScience/OU=CLRC/L=RAL/CN=%BLUE%rap.esc.rl.ac.uk%ENDCOLOR% %BR%ack: /topic/global.accounting.%BLUE%cpu%ENDCOLOR%.client.$host.$pid |
+
+---+ Final test of installation
+
+1. Make sure you have the latest files from svn.  Especially, the deletes and update files.
+
+2. Verify setup/configurations are correct for test.
+   * On your node, make a run against the test APEL.
+   * Advise when you are doing this and I will make a run against the  test APEL on my node
+   * Then we can compare results verifying  
+      * http://fermicloud108.fnal.gov:8319/gratia-apel/
+      * http://%GOC_NODE%/gratia-apel
+
+
+---+ Changeover for Production
+
+1. On my node, 
+   * I need to send the latest delete file up.%BR%  This will zero out all the Gratia data for July.%BR%
+      This insures we don&#39;t miss one due to a timing issue of the runs.
+
+2. Then on your node,
+   * modify the /etc/gratia-apel/ssm/ssm.cfg to point to production
+   * modify the cron entry adding a *--no-email* argument.  %BR%
+     This insures we don&#39;t send false alarms out if there is a problem.
+   * run the interface
+   * reset the cron entry removing the *--no-email* argument
+
+3. On your side,
+   a. Change the url alias for *gratia-apel-wlcg.opensciencegrid.org* %BR%
+      from gr13x6.fnal.gov%BR%
+      to %GOC_NODE%
+
+   b. Verify  these are identical:
+   * http://gratia-apel-wlcg.opensciencegrid.org:8319/gratia-apel/%BR%
+   * http://%GOC_NODE%/gratia-apel
+
+
+4. Verify these show the same data:
+   * http://gratia-apel-wlcg.opensciencegrid.org:8319/gratia-apel
+   * http://gratiaweb.grid.iu.edu/gratia/wlcg_reporting?year=2014&amp;month=7
+
+
+5. In a day or 2, verify we are close on the EGI portal by comparing%BR%
+   * gratiaweb%BR% (http://gratiaweb.grid.iu.edu/gratia/jot_reporting) %BR%
+   * EGI %BR% (http://accounting.egi.eu/tier2.php?SubTier2=1.35&amp;query=njobs&amp;startYear=2014&amp;startMonth=6&amp;endYear=2014&amp;endMonth=6&amp;yRange=TIER2&amp;xRange=DATE&amp;voGroup=lhc&amp;chart=GRBAR&amp;scale=LIN&amp;localJobs=onlygridjobs)%BR%
+      - at the bottom of the EGI page there is a date of last update which tells us what data may be there.
+
+
+
+
+
+
+%STOPINCLUDE%
+
+&lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+---+ Major updates
+&lt;!--Future editors should add their signatures beneath yours!--&gt;
+-- Main.JohnWeigand - 20 Jun 2014%BR%

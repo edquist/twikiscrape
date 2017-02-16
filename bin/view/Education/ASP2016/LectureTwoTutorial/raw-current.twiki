@@ -1,0 +1,326 @@
+%LINKCSS%
+
+---+!! Tutorial: Security and Certificates on the Grid
+
+%TOC{depth=&quot;3&quot;}%
+
+---++ Introduction
+
+This exercise will provide hands-on experience in using various tools to setup and use GSI for working on the grid. The first few sections delve into certificates and proxies and demonstarate how pre-configured credentials can be used to run some grid enable programs. The later sections discuss steps involved in obtaining a new certificate and using them on the grid. We also explore delegation of rights and using of a credentials repository &lt;nop&gt;MyProxy.
+
+The exercise uses tools like _globusrun-ws_ and _globus-url-copy_ to execute jobs on the grid and move files across machines respectively. This exercise does not deal in detail with those tools, but focuses more on the security aspects. These tools and realted technology will be discussed in lectures and exercises later this week.
+
+---++ Notes information
+
+These notes have been written to lead you through the exercises on your own and provide commands to type, expected output and notes highlighting the key aspects of a particular step. Feel free to ask the TAs for help if you have any problems or have any questions.
+
+These notes have transcripts from runs on machine *gridlab1*. Replace that with your machine name wherever appropriate.
+
+The exercise notes was prepared by running as user *train31*. Replace that with your username in all command line parameters.
+
+You will see two styles of machine text here:
+
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;userinput&gt;Text like this is input that you should type.&lt;/userinput&gt;
+Text like this is the output you should get.
+&lt;/pre&gt;
+
+For example:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;date&lt;/userinput&gt;
+Wed May 31 11:54:58 BST 2006
+&lt;/pre&gt;
+
+
+
+---++ Basic steps
+
+---+++ Logging on to remote machine
+
+From local laptop ssh into remote Linux server as described in the previous exercise.
+
+&lt;pre class=&quot;screen&quot;&gt;
+@:~&gt; &lt;userinput&gt;ssh train31@gridlab1.phys.utb.edu&lt;/userinput&gt;
+Enter passphrase for key &#39;/homes/train31/.ssh/id_rsa&#39;:
+Last login: Tue Jun 20 12:04:39 2006 from 140.221.9.72
+[train31@gridlab1 ~]$ 
+&lt;/pre&gt;
+
+
+---+++ Checking GLOBUS_LOCATION setup
+The machine is set up with Globus Toolkit install and an environment variable =GLOBUS_LOCATION= pointing to the install should be set up.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;echo $GLOBUS_LOCATION&lt;/userinput&gt;
+/opt/globus
+[train31@gridlab1 ~]$ 
+&lt;/pre&gt;
+
+The command line clients that are installed as part of Globus Toolkit have already been added to your PATH.
+
+
+
+---++ Using Certificates
+
+%INCLUDE{ &quot;UsingCertificates&quot; }%
+
+
+
+---++ Using Grid Proxy certificates
+
+%INCLUDE{ &quot;GridProxyCertificates&quot; }%
+
+
+
+---++ Obtaining a new certificate with GCS
+
+%INCLUDE{ &quot;ObtainingANewCertificate&quot; }%
+
+---++ Obtaining a new certificate with cacl
+
+ObtainingANewCertificateWithCacl
+
+%INCLUDE{ &quot;ObtainingANewCertificateWithCacl&quot; }%
+
+
+---++ Using GCS credentials
+
+---+++ Setting up clients to use GCS proxy
+To use the proxy genrated from your new credentials from GCS, set the environment variable =X509_USER_PROXY= to point to your proxy file.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;export X509_USER_PROXY=gcsProxy&lt;/userinput&gt;
+[train31@gridlab1 ~]$ 
+&lt;/pre&gt;
+
+
+---+++ Using GCS credentials to transfer file to remote server
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;globus-url-copy gsiftp://localhost:2811/home/train31/tempFile gsiftp://tg-login.ncsa.teragrid.org:2811/tmp/train31TestFile&lt;/userinput&gt;
+error: globus_ftp_client: the server responded with an error
+535 535-FTPD GSSAPI error: GSS Major Status: Authentication Failed
+535-FTPD GSSAPI error: GSS Minor Status Error Chain:
+535-FTPD GSSAPI error: 
+535-FTPD GSSAPI error: accept_sec_context.c:170: gss_accept_sec_context: SSLv3 handshake problems
+535-FTPD GSSAPI error: globus_i_gsi_gss_utils.c:881: globus_i_gsi_gss_handshake: Unable to verify remote side&#39;s credentials
+535-FTPD GSSAPI error: globus_i_gsi_gss_utils.c:854: globus_i_gsi_gss_handshake: SSLv3 handshake problems: Couldn&#39;t do ssl handshake
+535-FTPD GSSAPI error: OpenSSL Error: s3_srvr.c:1816: in library: SSL routines, function SSL3_GET_CLIENT_CERTIFICATE: no certificate returned
+535-FTPD GSSAPI error: globus_gsi_callback.c:351: globus_i_gsi_callback_handshake_callback: Could not verify credential
+535-FTPD GSSAPI error: globus_gsi_callback.c:443: globus_i_gsi_callback_cred_verify: Could not verify credential: self signed certificate in certificate chain
+535 FTPD GSSAPI error: accepting context
+[train31@gridlab1 ~]$ 
+&lt;/pre&gt;
+
+The above error indicates that the authentication failed because the CA who signed the certificate from which the proxy was created is not trusted on that machine. 
+
+Note that the lifetime of proxy and certificates is valid. But since the chain of trust starts from the CA and the CA is not trusted, authentication fails.
+
+Just to make sure your command is accurate, unset the =X509_USER_PROXY= variable: 
+
+
+&lt;pre class=&quot;screen&quot;&gt;[train31@gridlab1 ~]$ &lt;userinput&gt;unset X509_USER_PROXY&lt;/userinput&gt;&lt;/pre&gt;
+
+Submit using your SDSC issued certificate. 
+
+&lt;pre class=&quot;screen&quot;&gt;[train31@gridlab1 ~]$ &lt;userinput&gt;globus-url-copy gsiftp://localhost:2811/home/train31/tempFile gsiftp://tg-login.ncsa.teragrid.org:2811/tmp/train31TestFile&lt;/userinput&gt;&lt;/pre&gt;
+
+You&#39;ll see that you are able to transfer, because that CA is trusted on that server.
+
+---+++ Using GCS credentials to transfer file  with in local cluster
+Now lets try running the same command using the GCS Proxy to transfer file with in local cluster. This cluster has been set up to trust GCS CA. In this example gridlab1 is local machine and gridlab2 is remote machine. Please use appropriate machines in your run.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;export X509_USER_PROXY=gcsProxy&lt;/userinput&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;globus-url-copy gsiftp://localhost:2811/home/train31/tempFile gsiftp://gridlab2.phys.utb.edu:2811/tmp/train31Test&lt;/userinput&gt;
+error: globus_ftp_client: the server responded with an error
+530 530-Login incorrect. :
+ globus_gss_assist: Gridmap lookup failure: 
+Could not map /C=US/O=Globus Alliance/OU=User/CN=10c00791bfb.54294d53
+530-
+530 End.
+[train31@gridlab1 ~]$ 
+&lt;/pre&gt;
+
+The transfer fails here with authorization exceptions. 
+
+The client authenticated with the server and the server established your identity as the DN specified in the error message. In this case:
+
+&lt;verbatim&gt;/C=US/O=Globus Alliance/OU=User/CN=10c00791bfb.54294d53&lt;/verbatim&gt;
+
+But the identity established in authentication is not authorized to use the service. The service uses GridMap authorization, where a mapping of of authorized identities (DNs) is mapped to local user names.
+
+---++ Contents of GridMap file
+The local GridFTP service and the one on remote machine is configured to use a gridmap file located in =etc/grid-security/gridmap-file=. This file is write protected so only administrators can change it to give access. But the file can be read by anyone.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;more /etc/grid-security/grid-mapfile &lt;/userinput&gt;
+# $Id: LectureTwoTutorial.txt,v 1.7 2016/12/06 18:12:47 KyleGross Exp $
+# $Source: /usr/local/twiki/data/Education/ASP2016/LectureTwoTutorial.txt,v $
+#
+# Automatically generated by gx-gen-mapfile (gx-map 0.5.1)
+# at Fri 2006-06-23 15:26:02 UTC on gridlab1.phys.utb.edu.
+# DO NOT EDIT THIS FILE.  ANY CHANGES YOU MAKE WILL BE LOST ON THE NEXT UPDATE.
+#
+&quot;/C=US/O=Globus Alliance/OU=User/CN=101497d3dcd.3dcd5aef&quot; ranantha
+&quot;/C=US/O=Globus Alliance/OU=User/CN=10bd8f410f6.5f0086b4&quot; benc
+&quot;/C=US/O=Globus Alliance/OU=User/CN=10bf234e01a.ac286cfa&quot; ranantha
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train10/UID=train10&quot; train10
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train11/UID=train11&quot; train11
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train12/UID=train12&quot; train12
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train13/UID=train13&quot; train13
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train14/UID=train14&quot; train14
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train15/UID=train15&quot; train15
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train16/UID=train16&quot; train16
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train17/UID=train17&quot; train17
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train18/UID=train18&quot; train18
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train19/UID=train19&quot; train19
+...
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train58/UID=train58&quot; train58
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train59/UID=train59&quot; train59
+&quot;/C=US/O=SDSC/OU=SDSC/CN=Account Train60/UID=train60&quot; train60
+&quot;/DC=org/DC=doegrids/OU=People/CN=Gaurang Mehta 998137&quot; gmehta
+[train31@gridlab1 ~]$ 
+&lt;/pre&gt;
+
+This gridmap file has been created using a tool (it can also be hand written).
+
+Only the listed DNs are allowed to access the GRAM server.
+
+Each entry is a mapping from DN to username. For example, DN &lt;tt&gt;/C=US/O=SDSC/OU=SDSC/CN=Account Train31/UID=train31&lt;/tt&gt; is mapped to usename =train31=.
+
+%NOTE% The identity presented by credenitals you used in previous step is not in the gridmap file. 
+
+
+---++ Using gx-gridmap to add GCS certificate DN to gridmap
+Typically an administrator is required to add users to the gridmap file and is an out of band activity. The tool =gx-gridmap=, if set up by the admnistator, can be used by anyone who has access to a machine to add an identity to the gridmap file. The actual addition is not instant and it might take a few minutes to reflect on the gridmap file.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;gx-request -quick-add&lt;/userinput&gt;
+About to map distinguished name
+    &quot;/C=US/O=Globus Alliance/OU=User/CN=10c00791bfb.54294d53&quot;
+to user
+    train31
+Proceed? [yn] &lt;userinput&gt;y&lt;/userinput&gt;
+Mapping request submitted.
+The grid-mapfile should be updated in a few minutes
+[train31@gridlab1 ~]$ 
+&lt;/pre&gt;
+
+This update may take a few minutes. You can look for the update by searching the gridmap file for your DN.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;grep &quot;/C=US/O=Globus Alliance/OU=User/CN=10c00791bfb.54294d53&quot; /etc/grid-security/grid-mapfile &lt;/userinput&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;grep &quot;/C=US/O=Globus Alliance/OU=User/CN=10c00791bfb.54294d53&quot; /etc/grid-security/grid-mapfile &lt;/userinput&gt;
+&quot;/C=US/O=Globus Alliance/OU=User/CN=10c00791bfb.54294d53&quot; train31
+[train31@gridlab1 ~]$ 
+&lt;/pre&gt;
+
+You have to do a similar step in the remote machine (i.e gridlab2 in this example).
+
+First, let us get the DN we want mapped on the remote machine.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;grid-proxy-info -subject&lt;/userinput&gt;
+/C=US/O=Globus Alliance/OU=User/CN=10c00791bfb.54294d53/CN=1488313937
+[trian31@gridlab2 ~]$ 
+&lt;/pre&gt;
+
+The output needs to be pasted in the command you run on remote machine. In a second terminal, ssh to the remote machine.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;ssh gridlab2&lt;/userinput&gt;
+[trian31@gridlab2 ~]$ &lt;userinput&gt;gx-request -interactive&lt;/userinput&gt;
+The gx-request command lets you submit a request to modify the
+Globus grid-mapfile(s) on one or more machines.  Once the request
+is submitted, the updates should occur within a few minutes.
+
+A grid-mapfile entry maps a DN (Distinguished Name) to a Unix
+user name.  For example, an entry like
+    &quot;/O=Big University/OU=Small Department/CN=John Doe&quot; jdoe
+allows a user holding a Globus certificate with the specified
+DN to run Globus jobs under the Unix account &quot;jdoe&quot;.
+
+gx-request can be run interactively or with command-line arguments.
+
+In this interactive mode, you will be asked a series of questions.
+Enter your responses followed by &amp;gt;return&gt;.
+
+Single-letter menu responses are case-insensitive; other responses
+must be entered exactly.
+
+If there is a default response indicated by the prompt, you can
+enter it by just typing &amp;gt;return&gt;.
+
+(a) Add a grid-mapfile entry
+(r) Remove a grid-mapfile entry
+(u) Request an update of the grid-mapfiles
+(x) Exit
+(The &quot;set&quot; operation is not currently available in interactive mode.)
+What do you want to do? [arux] &lt;userinput&gt;a&lt;/userinput&gt;
+You can specify the DN in one of the following ways:
+(c) Certificate, extract from /home/train31/.globus/usercert.pem
+(f) File, extract from a specified certificate file
+(i) Input the DN directly
+(x) Exit
+How do you want to specify the DN? [cfix]&lt;userinput&gt;i&lt;/userinput&gt;
+Enter distinguished name: &lt;userinput&gt;/C=US/O=Globus Alliance/OU=User/CN=10c00791bfb.54294d53/CN=1488313937&lt;/userinput&gt;
+You may provide your e-mail address if you wish.
+It will be recorded in the request log, and may be used
+to contact you if there is a problem with your certificate.
+E-mail address (&amp;gt;return&gt; for none): 
+
+You may provide an optional comment.
+If you do, it will be recorded in the request log.
+Press return if you don&#39;t wish to provide a comment.
+Comment: 
+
+About to map distinguished name
+    &quot;/C=US/O=Globus Alliance/OU=User/CN=10c00791bfb.54294d53&quot;
+to user
+    train31
+Proceed? [yn]&lt;userinput&gt;y&lt;/userinput&gt;
+Mapping request submitted.
+The grid-mapfile should be updated in a few minutes
+[train31@gridlab2 ~]$ 
+&lt;/pre&gt;
+
+The update takes a few minutes.
+
+
+---+++ Using GCS trusted credentials to transfer file with in local server&lt;/h4&gt;
+Now that the gridmap file has been updated such that your identity is authorized to submit jobs, lets try the command again.
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;globus-url-copy gsiftp://localhost:2811/home/train30/tempFile gsiftp://gridlab2.phys.utb.edu:2811/tmp/train31Test 
+&lt;/userinput&gt;
+[train31@gridlab1 ~]$ 
+&lt;/pre&gt;
+
+The client authenticated succesfully with the server. So the server knows the identity of the client. A handshake occured between the client and server to establish a &amp;quot;context&amp;quot;, which is a secret key used to secure the message.
+
+The request and response was then signed using that context, so that it cannot be tampered with.
+
+We can explicitly request for this message to be encrypted, so that no one else can read it. Then the same context is used to encrypt the message.
+
+To ensure the transfer occured, lets ssh to remote machine and look for file:
+
+&lt;pre class=&quot;screen&quot;&gt;
+[train31@gridlab1 ~]$ &lt;userinput&gt;ssh gridlab2&lt;/userinput&gt;
+[train31@gridlab2 ~]$ &lt;userinput&gt;ls -lt /tmp/train31Test&lt;/userinput&gt;
+-rw-r--r--  1 train31 train31 43 Jun 23 12:07 /tmp/train31Test
+[train31@gridlab2 ~]$ 
+&lt;/pre&gt;
+
+
+
+---++ Delegating credentials
+
+%INCLUDE{ &quot;DelegatingCredentials&quot; }%
+
+
+
+
+---++ Using &lt;nop&gt;MyProxy
+%INCLUDE{ &quot;UsingMyProxy&quot; }%

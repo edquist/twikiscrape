@@ -1,0 +1,269 @@
+&lt;noautolink&gt;
+&lt;!--
+   * Local IPV6_YES = &lt;span style=&quot;background-color: #008000; color: #FFFFFF; font-weight: bold;&quot;&gt;&amp;nbsp;Yes&amp;nbsp;&lt;/span&gt;
+   * Local IPV6_YESBUT = &lt;span style=&quot;background-color: #80C000; color: #FFFFFF; font-weight: bold;&quot;&gt;&amp;nbsp;Yes with Caveats&amp;nbsp;&lt;/span&gt;
+   * Local IPV6_CLAIMED = &lt;span style=&quot;background-color: #D0D000; color: #FFFFFF; font-weight: bold;&quot;&gt;&amp;nbsp;Claimed&amp;nbsp;&lt;/span&gt;
+   * Local IPV6_CLAIMED_NO = &lt;span style=&quot;background-color: #FF5000; color: #FFFFFF; font-weight: bold;&quot;&gt;&amp;nbsp;Claimed No&amp;nbsp;&lt;/span&gt;
+   * Local IPV6_NO = &lt;span style=&quot;background-color: #FF0000; color: #FFFFFF; font-weight: bold;&quot;&gt;&amp;nbsp;No&amp;nbsp;&lt;/span&gt;
+   * Local IPV6_UNKNOWN = &lt;span style=&quot;background-color: #808080; color: #FFFFFF; font-weight: bold;&quot;&gt;&amp;nbsp;Unknown&amp;nbsp;&lt;/span&gt;
+--&gt;
+%DOC_STATUS_TABLE%
+---+ OSG IPv6 Compatibility of Operations and Software Components 
+
+The following is a table listing the services provided by the OSG Operations Center and denoting whether they are known to be compatible with IPv6.
+
+%TOC{depth=&quot;2&quot;}%
+
+---++ About This Document
+
+This document is intended to track the progress of the OSG Operations Center&#39;s transition from IPv4-only to IPv6-compatible services.  It should show at a glance which services need to be tested or made compatible (or replaced with equivalent compatible software).
+
+---++ Definition of IPv6 Compatibility
+
+One cannot properly state whether a service is &quot;IPv6-compatible&quot; without defining exactly what that means.  Here is the definition that this document will use.
+
+Here at the OSG Operations Center, we will soon be configuring every machine, physical and virtual, so as to be &quot;dual-stacked,&quot; with an IPv6 network stack added in addition to its existing IPv4 stack.  Each machine&#39;s network interface will thus have at least one IPv6 address on which it listens, in addition to whatever IPv4 addresses it is already listening on.  In this way we can continue to maintain each service at its current IPv4 address while adding the ability to also provide service via IPv6.  The system&#39;s routing table should be able to direct packets appropriately, and the DNS resolver routines should be able to properly look up both IPv4 and IPv6 addresses.  However, if the service&#39;s software is, in one way or another, written with the assumption that the only IP addresses will be IPv4 ones, it is likely to be incompatible with IPv6.
+
+At the time of writing this, the OSG Operations servers are not yet all fully dual-stacked, but that is not what this table signifies.  For the purposes of this document, if a service could respond properly to requests from an IPv6 client if it were installed on a dual-stacked host of the sort that all OSG Operations machines will soon be, it is IPv6-compatible.  That is, the contents of this table refer to the IPv6 compatibility of the service and its software, not of the host or operating system.
+
+---++ Legend of Compatibility Keywords
+
+Under the &quot;IPv6 Compatibility&quot; column in the table below you&#39;ll see certain keywords.  These are their meanings.
+
+   * %IPV6_YES%: We at OSG Operations have tested this service and found it to be IPv6-compatible to our satisfaction.
+   * %IPV6_YESBUT%: We have tested this service and found it possible to use under IPv6, but there are shortcomings — special requirements on the client side, nonstandard OS configuration, an inability to be simultaneously IPv4- and IPv6-compatible, not all features IPv6-compatible, etc.
+   * %IPV6_CLAIMED%: We have not yet tested this service, but someone else that we feel has some knowledge of the matter (perhaps at another site on the OSG, perhaps the software&#39;s developers) claims that it is IPv6-compatible.
+   * %IPV6_CLAIMED_NO%: We have not yet tested this service, but someone else that we feel has some knowledge of the matter (perhaps at another site on the OSG, perhaps the software&#39;s developers) claims that it is not IPv6-compatible, at least not as it is currently installed.
+   * %IPV6_NO%: We have tested this service and found it not to be IPv6-compatible, at least not as it is currently installed.
+   * %IPV6_UNKNOWN%: To our knowledge, no one has tested this service for IPv6 compatibility yet.
+
+---++ The Table
+
+| *Service* | *Version* | *IPv6 Compatibility* |
+| BDII | 4.0.2 | %IPV6_CLAIMED_NO% |
+| Blogs | | %IPV6_UNKNOWN% |
+| CE | | %IPV6_UNKNOWN% |
+| Collector | | %IPV6_NO% |
+| Confluence | | %IPV6_UNKNOWN% |
+| Data | | %IPV6_UNKNOWN% |
+| Display | | %IPV6_UNKNOWN% |
+| Event | | %IPV6_UNKNOWN% |
+| GLOW GFactory | | %IPV6_UNKNOWN% |
+| GratiaWeb | | %IPV6_UNKNOWN% |
+| GUMS | | %IPV6_UNKNOWN% |
+| JIRA | | %IPV6_UNKNOWN% |
+| MIS-Submit | | %IPV6_UNKNOWN% |
+| MyOSG | | %IPV6_UNKNOWN% |
+| OASIS | | %IPV6_UNKNOWN% |
+| OASIS Login | | %IPV6_UNKNOWN% |
+| OASIS Replica | | %IPV6_UNKNOWN% |
+| OIM | | %IPV6_UNKNOWN% |
+| OSG TWiki | | %IPV6_UNKNOWN% |
+| Perfsonar | | %IPV6_UNKNOWN% |
+| Repo | | %IPV6_UNKNOWN% |
+| RSV | | %IPV6_UNKNOWN% |
+| RSV Client | | %IPV6_UNKNOWN% |
+| RSV Process | | %IPV6_UNKNOWN% |
+| Software | | %IPV6_UNKNOWN% |
+| Ticket | | %IPV6_UNKNOWN% |
+| TX | | %IPV6_UNKNOWN% |
+| VOMS | | %IPV6_UNKNOWN% |
+| Web | | %IPV6_UNKNOWN% |
+| WN | | %IPV6_UNKNOWN% |
+
+---++ IPv4-to-IPv6 Transition Process
+
+The strategy used to transition a network from IPv4 to IPv6 depends on several factors, listed in decreasing order of the amount of control one usually has over the system:
+
+   * IPv6 compatibility of the servers on the network (dependent on their OS)
+   * IPv6 compatibility of the routers/switches/hubs to which the servers connect
+   * IPv6 compatibility of the border routers between the network and the Internet
+   * IPv6 compatibility of the routers/switches/hubs/servers at whatever site you want to communicate with
+
+In this case, the IU network&#39;s equipment is compatible with both IPv4 and IPv6 all the way from the rack switches to the Internet.  It is thus a matter of the endpoints: the servers at the Operations Center and those of clients, plus whatever routers/switches they have, which are of course outside our realm of control.  Clients may be fully transitioned to IPv6, or they may be stalwartly supporting only IPv4, or anywhere in between, and ideally we should try to support whatever situation the clients find themselves in.
+
+Thus we are choosing a dual-stacking strategy: servers will have both IPv4 and IPv6 network stacks and will thus have both IPv4 and IPv6 network addresses.  The only devices at the Operations Center that are not IPv6 compatible are devices that are for internal use only, and they can be gradually replaced with time, but in the meantime, supporting both IPv4 and IPv6 means that even those older devices will still be usable for now.
+
+The steps we have been using in our transition to full dual-stacking capability are:
+
+---+++ Firewall (Completed)
+
+First of all, before one starts any form of networking, one should set up a firewall, to allow only desired packets in from the outside world but to allow unfettered flow of data from the network to the outside.  If one starts IPv6 networking and begins accepting packets from anywhere, one is open to attack by malicious users and cracking software.  The servers at the OSG Operations Center each run their own individual Netfilter firewalls, part of the Linux kernel, so it was a matter of setting up IPv6 firewalls similar to the existing IPv4 ones.
+
+---+++ IPv6 Block Allocation (Completed)
+
+Parallel to the firewall step, one must obtain a block of IPv6 addresses from whatever DNS authority exists at one&#39;s domain.  In the Operations Center&#39;s case, we requested and received a block of addresses from Indiana University&#39;s DNS administrators.
+
+---+++ Infrastructure Test (Completed)
+
+The networking infrastructure must be tested to make sure it can support IPv6.  Now, the following technique worked for the Operations Center because it had a preexisting unrouted private VLAN, but in most cases it would not be useful.  Assigning a Unique Local Address prefix for the Operations Center&#39;s private VLAN by generating five random octets and appending them to the &quot;fd&quot; prefix already defined for this purpose, we obtained an fdxx:xxxx:xxxx::/48 prefix and assigned two addresses within that range to two test virtual machines that were on hosts on separate racks (but still on the same VLAN).  Configuring those machines with their new IPv6 addresses, we were able to communicate from one to the other using ping6 and ssh.  The switching infrastructure is therefore proven to be IPv6-ready.
+
+---+++ Underlying Code Updates (Ongoing)
+
+The Operations Center uses a collection of scripts to automatically install services, allowing us to bring a service up on a new virtual machine in case of emergency.  The script that sets up the proper networking configuration on such a new VM is isolated in one script, which was updated to include the possibility of an IPv4/IPv6 dual-stacked machine: if an IPv6 DNS record were to exist for the hostname being installed, the script configures the machine&#39;s networking to use that IPv6 address, just as it already did with an IPv4 address when one existed.  It is also capable of setting the machine up to be IPv6-only, if only an IPv6 address is found, thinking toward the eventual future when this will be the case.
+
+Likewise, any other underlying code that explicitly relies on IPv4 will need to be updated to include IPv6 support.
+
+---+++ IPv6 Address Allocation (Completed)
+
+One must then request that hostnames be assigned to IPv6 addresses within the assigned block.  This has been done for all hosts at OSG Operations, and all future hostnames will be assigned both IPv4 and IPv6 addresses.
+
+This first step exists to ensure that the existence of an IPv6 address for a hostname will not interfere with IPv4-only users&#39; ability to contact the server.  It might be good to assign only a few IPv6 hostname records in DNS at first, for test VMs, to assess the impact of the appearance of these records on visitors to the test VM&#39;s services (a basic Apache server, perhaps).  This is what we did, and after that caused no issues we moved on to assigning IPv6 addresses for all ITB hosts.
+
+---+++ Limited Testing (In Progress)
+
+At this point, one can designate certain servers for dual-stack testing (or create virtual machines for this purpose).  We will enable IPv6 over the public network for certain test virtual machines whose failure, if it were to happen, would not affect any crucial services, or ideally, any services at all.  We will then test connectivity between those virtual machines and each other, and with known IPv6 sites on the Internet.
+
+---+++ ITB Testing (In Progress)
+
+We will then commence enabling IPv6 on the public network for ITB instances of services.  Such testing will likely not all be taking place at once, and progress will occur on a service-by-service basis.
+
+---+++ Production Deployment
+
+Once an ITB instance of a service has been determined to be IPv6 compatible to our satisfaction, we will then enable the production instance(s), during a production maintenance window.
+
+---+++ Eventual Completion of Dual-Stack Transition
+
+In time, all production services will have been transitioned to dual-stack operation.
+
+---+++ IPv4 Attrition
+
+There will come a time when we will be creating new services and instances thereof only on IPv6, not supporting IPv4 on these new instances at all.  Clients who wish to use these services would then be required to use IPv6.  The exact start date of this policy has, obviously, not yet been determined.  It is quite likely that this will affect ITB instances well before production instances.
+
+---+++ IPv4 Turndown
+
+At some point in the (probably distant) future, when the vast majority of clients are using IPv6 and IPv4 has largely become obsolete, the only services that support IPv4 will be aging older services.  We may decide to continue the attrition policy, or we may opt to disable IPv4 on a case-by-case basis.  This phase of the plan is obviously hugely dependent on many factors and may be subject to change.  It is possible that portions of the Indiana University network may cease to support IPv4 networking at some future date.  We frankly do not know.
+
+
+---++ OSG Software Stack
+
+The OSG Technology area is evaluating some components of the OSG software stack – which sites deploy as part of participating in the OSG – for IPv6 readiness. This evaluation is a separate project from the evaluation of OSG-hosted services (above), but the results will be reported here and in a common format.
+
+---+++ OSG Software Compatibility Tests
+
+Mostly, OSG software components will be tested according to OSG Operations definitions of IPv6 compatibility (above). Specifically, we will test under two environments:
+
+   A. Server is dual-stack, and client is dual-stack
+   A. Server is dual-stack, and client is IPv4 only
+
+We have made some simplifying assumptions to reduce the amount of testing. We assume that the software works when both are IPv4-only and when the client is mixed-mode but the server is IPv4 only. We will not be testing IPv6-only scenarios in this round.
+
+More information about the testing environments will be added later.
+
+The three questions we want to answer for each software component are:
+
+   1. If server and client are both dual-stack (environment “A” above), does the software still function?
+   1. If server and client are both dual-stack (environment “A” above), does the communication happen over IPv6?
+   1. If the server is dual-stack and the client is IPv4 only (environment “B” above), does the software still function?
+
+
+---+++ OSG Software Compatibility Table
+
+Also, see [[http://hepix-ipv6.web.cern.ch/wlcg-applications][the HEPiX IPv6 table for WLCG applications]], for a similar effort.
+
+|  *Component*  |  *Version*  |  *1. Dual-Dual OK*  | *2. Dual-Dual IPv6*  |  *3. Dual-IPv4 OK*  |  *Notes*  |
+| BeStMan client |2.3.0-21 | %IPV6_YES% | %IPV6_NO% | %IPV6_YES% |[[https://twiki.grid.iu.edu/bin/view/Sandbox/Bestman2IPV6Testing][Bestman2IPV6Testing]]|
+| BeStMan server | 2.3.0-21| %IPV6_YES% | %IPV6_YES%| %IPV6_YES% |[[https://twiki.grid.iu.edu/bin/view/Sandbox/Bestman2IPV6Testing][Bestman2IPV6Testing]]|
+| BWCTL | 1.5 | %IPV6_CLAIMED% | %IPV6_CLAIMED% | %IPV6_CLAIMED% |Jason Zurawski claimed Yes|
+| CVMFS | 2.1.19-1.8 | %IPV6_YES% | %IPV6_YESBUT% | %IPV6_YES% |[[https://twiki.grid.iu.edu/bin/view/Sandbox/CVMFSIPV6Testing][CVMFSIPV6Testing]]|
+| dCache SRM client | 2.2.27-1| %IPV6_YES% | %IPV6_NO% | %IPV6_YES% |[[https://twiki.grid.iu.edu/bin/view/Sandbox/Bestman2IPV6Testing][Bestman2IPV6Testing]]|
+| EDG mkgridmap |4.0.1-1 | %IPV6_YES% | %IPV6_NO% | %IPV6_YES% | Tried against dual stacked ipv6vm006.fnal.gov|
+| Fetch CRL | 3.0.14 | %IPV6_YES% | %IPV6_YES% | %IPV6_YES% | Tried against dual stacked www.ca.acad.bg. The option --inet6glue is needed to prefer IPv6 and for it to work the package perl-Net-INET6Glue needs to be installed|
+| Frontier Squid |f3.5.2 | %IPV6_CLAIMED% | %IPV6_CLAIMED%| %IPV6_CLAIMED% | Dave D claims version that is in testing (not production) will be IPv6 compliant|
+| Generic Information Provider (GIP) |1.3.11-6| %IPV6_YES% | %IPV6_NO% | %IPV6_YES% | tested at same time as osg-info-services|
+| GFAL 2 client |2.8.4 | %IPV6_YES% | %IPV6_YESBUT% | %IPV6_YES% |[[https://twiki.grid.iu.edu/bin/view/Sandbox/Bestman2IPV6Testing][Bestman2IPV6Testing]]|
+| gLExec (lcmaps-plugins-scas-client plugin)  | 0.9.11| %IPV6_YES% | %IPV6_NO% | %IPV6_YES% |[[https://twiki.grid.iu.edu/bin/view/Sandbox/GUMSIPV6Testing][gumsipv6testing]]||
+| GlideinWMS Factory | HTCondor 8.3.8 / GlideinWMS 3.2.10 | %IPV6_YES% | %IPV6_YES% | %IPV6_YES% |  |
+| GlideinWMS VO Frontend | HTCondor 8.3.8 /Glideinwms 3.2.10| %IPV6_YES% | %IPV6_YES% |%IPV6_YES% | |
+| gLite FTS client | 3.7.4-9.| %IPV6_YES% | %IPV6_YES% | %IPV6_YES% |[[https://twiki.grid.iu.edu/bin/view/Sandbox/GLiteFTSIPV6Testing][GLiteFTSIPV6Testing]]|
+| Globus GRAM (direct and HTCondor-G) | | %IPV6_YES% | %IPV6_NO% |%IPV6_YES% | [[https://twiki.grid.iu.edu/bin/view/Sandbox/GRAMIPV6Testing][GRAMIPV6Testing]]|
+| Gratia collector | 1.16.1-1 | %IPV6_YES% | %IPV6_YES% | %IPV6_YES% | Marco M claims the Gratia Collector is IPv6 compliant|
+| Gratia uploader |1.13.31-1.1 | %IPV6_YES% | %IPV6_YES% | %IPV6_YES% |[[https://twiki.grid.iu.edu/bin/view/Sandbox/GratiaIPV6Testing][GratiaIPV6Testing]]|
+| GridFTP | 6.14-5 | %IPV6_YES% | %IPV6_YES% | %IPV6_YES% | Tested at the same time as the gfal2 client |
+| GSI OpenSSH |5.7-1.1 | %IPV6_YES% | %IPV6_YES% | %IPV6_YES% ||
+| GUMS | 1.4.2-1| %IPV6_YES% | %IPV6_NO% | %IPV6_YES% |[[https://twiki.grid.iu.edu/bin/view/Sandbox/GUMSIPV6Testing][gumsipv6testing]]|
+| HDFS | 2.x | %IPV6_CLAIMED_NO% | %IPV6_CLAIMED_NO% | %IPV6_CLAIMED_NO% | !BrianB (2014-07-02) claimed HDFS has no IPv6 intentions |
+| HTCondor CE and BLAHP | 8.3.5 | %IPV6_CLAIMED%| %IPV6_CLAIMED% |%IPV6_CLAIMED_NO% | Brian B and Jaime asserted the ipv4 use case will be fixed in 8.3.5  |
+| HTCondor | 8.3.8 | %IPV6_YES% | %IPV6_YES% |%IPV6_YES% | As long as the client is startd and the schedd and central manager are considered the servers. Tested by Edgar as part of the glideinwms tests|
+| HTTPD (Apache) | 2.2.15-39| %IPV6_YES% | %IPV6_YESBUT% |%IPV6_YES% | [[https://twiki.grid.iu.edu/bin/view/Sandbox/HTTPDIPV6Testing][httpdIPv6Testing]]|
+| Installed Capacity Report |1.1-2 | %IPV6_CLAIMED% | %IPV6_CLAIMED% |%IPV6_CLAIMED% | Edgar claims yes after reviewing the code |
+| LCG util client |1.16.0-2| %IPV6_YES% | %IPV6_YES% | %IPV6_YES% |lcg-ls against cmssrm2.hep.wisc.edu|
+| MyProxy |6.1.12 | %IPV6_CLAIMED% | %IPV6_CLAIMED% | %IPV6_CLAIMED% | Jim Basney claims it is compliant since 2012 |
+| NDT | 3.6.5 | %IPV6_CLAIMED%| %IPV6_CLAIMED% | %IPV6_CLAIMED% |Jason Zurawski @OSGAHM2015 claimed some yes/no|
+| OSG CA Certs Updater | 1.0-1 | %IPV6_YES% | %IPV6_YES% | %IPV6_YES% | Tested it with repo-itb.grid.iu.edu|
+| OSG Configure |1.0.72| %IPV6_NO% | %IPV6_NO% | %IPV6_YES% |IPv6 address in hosts for 30-rsv.ini fail|
+| OSG Display |1.0.9-1 | %IPV6_YES% | %IPV6_YES% | %IPV6_YES% | tested against display-itb.grid.iu.edu|
+| OSG Info Services |1.0.2-1| %IPV6_YES% | %IPV6_NO% | %IPV6_YES% | Tested with is-itb1.grid.iu.edu|
+| OSG PKI Tools | 1.2.12| %IPV6_YES% | %IPV6_YES% | %IPV6_YES% |Tested requesting a cert from oim-itb.grid.iu.edu|
+| OSG System Profiler |1.2.0-1 | %IPV6_YESBUT% | %IPV6_YESBUT% | %IPV6_YES% | It does not check for ip6 tables only iptables|
+| OSG Test | 1.4.24-1 | %IPV6_NO% | %IPV6_NO% | %IPV6_NO% |HTCondorCE tests fail|
+| OWAMP | 2.x | %IPV6_CLAIMED% | %IPV6_CLAIMED% | %IPV6_CLAIMED% |Jason Zurawski claimed Yes|
+| RSV |3.8.0-2 | %IPV6_CLAIMED% | %IPV6_CLAIMED% | %IPV6_CLAIMED% | Tapas S has rsv running dualstacked for a while|
+| Tomcat5 | 5.5.23 | %IPV6_YES% | %IPV6_YES% | %IPV6_YES% | simple wgets|
+| Tomcat6 |6.0.24-80| %IPV6_YES%|%IPV6_YES%|%IPV6_YES%|[[https://twiki.grid.iu.edu/bin/view/Sandbox/VOMSIPV6Testing][VOMSIPv6Testing]]|
+| UberFTP |2.8 | %IPV6_YES% | %IPV6_NO% | %IPV6_YES% ||
+| VOMS Admin | 2.0.17|%IPV6_YES%|%IPV6_YES% |%IPV6_YES% |[[https://twiki.grid.iu.edu/bin/view/Sandbox/VOMSIPV6Testing][VOMSIPv6Testing]]|
+| VOMS |2.0.12-2 | %IPV6_YES% | %IPV6_NO% | %IPV6_YES% |[[https://twiki.grid.iu.edu/bin/view/Sandbox/VOMSIPV6Testing][VOMSIPv6Testing]]|
+| XRootD |4.0.4 | %IPV6_YES% | %IPV6_YES% | %IPV6_YES% | [[https://twiki.grid.iu.edu/bin/view/Sandbox/XrootDIPV6Testing][XrootDIPV6Testig]]|
+
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = TomLee
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|General|Integration|Monitoring|Operations|Security|Storage|Tier3|User|VO)
+   * Local DOC_AREA       = Operations
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (Developer|Documenter|Scientist|Student|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (HowTo|Installation|Knowledge|Navigation|Planning|Training|Troubleshooting)
+   * Local DOC_TYPE       = Planning
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %NO%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = 
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %NO%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = 
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %NO%
+############################################################################################################
+--&gt;
+-- Main.TomLee - 10 Jun 2014
+&lt;/noautolink&gt;
+
+
+
+-- Main.RobQ - 05 Oct 2014

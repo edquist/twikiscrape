@@ -1,0 +1,120 @@
+---+ OSG Technology Area Meeting, 20 October 2014
+
+*Coordinates:* Conference: 857-216-4999, PIN: 32390; https://www.uberconference.com/osgcat
+
+*Attending:* !BrianB, Carl, Edgar, Jeff, Jose, Mat, !TimC, !TimT, Xin
+&lt;!-- !BrianB, !BrianL, Carl, Edgar, Jeff, !JohnH, Jose, Marian, Mat, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+
+---+++ Triage Duty
+   * This week: !TimT
+   * Next week: !TimC (new cycle)
+   * 10 (+4) open tickets
+
+---+++ JIRA
+   * Open: 156 (0)
+   * In Progress: 18 (+3)
+   * Ready for Testing: 5 (+3)
+   * Ready for Release: 1 (–29)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Code Freeze* | *Package Freeze* | *Release* | *Notes* |
+| November | 3.2.17 / 3.1.41 | 2014-10-27 | 2014-11-03 | 2014-11-11 | |
+| December | 3.2.18 / 3.1.42 | 2014-11-24 | 2014-12-01 | 2014-12-09 | |
+| January | 3.2.19 / 3.1.43 | 2014-12-29 | 2015-01-05 | 2015-01-13 | |
+
+*Notes:* Additional “urgent” releases may be scheduled for the 4th Tuesday of each month. The *Testing* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+
+---++ OSG Software Team
+
+---+++ Work Completed
+
+   * External
+      * HTCondor CE
+         * Completed the initial version of the HTCondor CE troubleshooting guide
+         * Reviewed HTCondor CE Collector plans
+         * Created training materials on HTCondor CE support for GOC staff
+      * Summarized main considerations for OSG sites when upgrading from HTCondor 8.0 to 8.2
+      * Substantially revised the draft OSG software release series policy and sent around for approval
+      * Collected and sent to the Security team information about the Poodle exploit and OSG software
+      * Promoted GFAL packages ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1603][SW-1603]])
+      * Promoted osg-release with renamed debuginfo yum repositories ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1622][SW-1622]])
+      * Met with Marco to discuss his ideas for general-purpose additions to gratia-probe-common
+      * Got background info from Hyun Woo on gratia-reporting-email update; created ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1635][SW-1635]])
+      * Had the final !PanDA transition meeting and wrote status summaries for the new developers
+
+   * Internal
+      * Made a patched for our Koji build to use TLS instead of SSLv3; tested ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1637][SW-1637]])
+      * Reviewed OSG Software WBS and annotated with proposed changes for Q2
+      * Added GFAL tests to osg-test ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1603][SW-1603]])
+
+---+++ Work In Progress
+
+   * External
+      * HTCondor CE
+         * HTCondor CE Collector – Phase IIa in progress (Mat, !BrianB)
+         * Training GOC staff on HTCondor CE support Monday and Tuesday of this week (!BrianL &amp; Marian)
+         * Scalability tests, esp. max. number (6,800 so far) and ramp-up rate (~70/min) of concurrently running pilot jobs (Edgar)
+         * Finish a draft of an HTCondor CE overview document (!BrianL, !TimC)
+         * Bug fixes to HTCondor CE and BLAHP (!BrianL, !BrianB, FW)
+         * Monitor and support sites, especially LSF and SGE (!BrianL)
+      * EL 7: finish building/adding extra (service) components, especially HTCondor, to test clients more thoroughly (Mat, Carl)
+      * Random RSV improvements and bug fixes – [[https://jira.opensciencegrid.org/browse/SOFTWARE-585][SW-585]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-793][SW-793]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-806][SW-806]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1080][SW-1080]] (Carl)
+      * Random Configure bug fixes (Mat)
+      * RSV !perfSONAR probe: testing recent changes with Soichi (Edgar)
+      * !XRootD backup of HDFS accesses: define milestones (Jeff, !TimC); what counts as OSG effort? (!BrianB, Jeff, !TimC)
+      * OASIS 2: complete draft packaging, setting up a site at BNL for ATLAS (Jose)
+      * IPv6: Edgar has VMs ready to try out, !BrianL will test instructions and set-up (Edgar)
+      * !PanDA: can we get the server running here and submit one job?; waiting for them on other packages (Carl)
+      * Start documenting the state of our documentation (!TimC)
+
+   * Internal
+      * Koji upgrade: upgrade to EL6 has been tested and should need minimal downtime; upgrading Koji is harder because of database migration (Mat)
+      * UW ITB site: build machines with Puppet! (all)
+      * Offsite backups: add some monitoring? (Mat)
+      * !HTCondor CE and PBS: setting up about 700 cores with PBS and an !HTCondor CE front-end (Edgar)
+      * Checking local backups with Nagios: waiting for help from Aaron (Mat)
+      * Move OSG software source code (not packaging) to git(hub): discuss plan and timing (Mat, !TimC)
+
+---+++ Work Upcoming
+
+   * Start design for new test scheduling subsystem (!TimC, !BrianL)
+
+---+++ Notes
+
+*HTCondor on EL7:* This build depends on the EL7 build of the BLAHP, which currently fails. The configure script fails to build a simple !ClassAds program, even though the relevant development packages are installed and so forth. No one has looked at the failures in detail yet, but that will happen this week.
+
+*HTCondor CE vs. GRAM:* The Belle VO is having issues with direct submissions to HTCondor CE sites, notably Virginia Tech who are thinking of reverting to a GRAM-only CE (which was having issues earlier). Jeff will send around the ticket and other background information, but in short, we encourage sites to move to or stay at HTCondor CE if at all possible. Eventually, we will drop support for GRAM and so sites and VOs that rely on it may lose connectivity to OSG. We will look at this particular case and see what help we can offer. https://ticket.grid.iu.edu/22303
+
+
+---++ OSG Release Team
+
+---+++ Work Completed
+
+   * 3.2.16 / 3.1.40 Released!  Thanks, Brian Lin 
+
+---+++ Projects
+
+   * Tim Theisen will handle November Release
+   * Code Freeze next week
+
+%TABLE{sort=&quot;off&quot;}%
+| *3.1.40* | *Both* | *3.2.16* | *Total* | *Status* |
+| 0 (+0) | 0 (+0) | 0 (+0) | 0 (+0) | Open |
+| 0 (+0) | 2 (+2) | 3 (+3) | 5 (+5) | In Progress |
+| 0 (+0) | 1 (+1) | 4 (+4) | 5 (+5) | Ready for Testing |
+| 0 (+0) | 0 (+0) | 0 (+0) | 0 (+0) | Ready for Release |
+| 0 (+0) | 3 (+3) | 7 (+7) | 10 (+10) | Totals |
+
+   * OSG 3.2
+   * OSG 3.2 and 3.1
+
+---+++ Notes
+
+
+---++ OSG Investigations Team
+
+No report this week due to !HEPiX.

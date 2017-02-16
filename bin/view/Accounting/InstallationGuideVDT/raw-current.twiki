@@ -1,0 +1,221 @@
+---+!! OSG Accounting Services - Gratia
+
+&lt;!-- Set release version in one place for use in the rest of the page.
+   * Set ReleaseVersion = 1.08.00
+   * Set VdtCache = http://vdt.cs.wisc.edu/vdt_200_cache
+--&gt;
+
+%TOC%
+
+---++ Introduction
+
+The Gratia accounting services consists of three services: 
+   * The [[Accounting.ProbeInstallation][probes]]; please read the general preliminary notes in addition to those specific to each probe as some things have changed. In particular, note item 3 of the preliminary notes. The RPMs now use =/etc/cron.d= instead of root&#39;s crontab: The VDT packages may benefit from the same change; 
+   * Gratia reporting (installed via [[http://gratia.fnal.gov/Files/gratia_reporting_v%ReleaseVersion%.tar][gratia_reporting_v%ReleaseVersion%.tar]]), which contains the server side report application;
+   * Gratia services (installed via [[http://gratia.fnal.gov/Files/gratia_services_v%ReleaseVersion%.tar][gratia_services_v%ReleaseVersion%.tar]]), which contains the gratia services that collect information from the probes and write to the database;
+   * See also the [[http://gratia.fnal.gov/Files/][Full listing of files]]. You might want to right-click these links and use a utility like wget to download the files on your Linux node where you&#39;ll be performing this installation.
+
+---++ Requirements
+   * !MySQL &gt;= 5.0 (not tested with !MySQL &gt;= 5.1.0; does *not* work with !MySQL 4.x);
+   * JRE &gt;= 5 (1.5) (compiled with JDK 1.6);
+   * Tomcat &gt;= 5.5 (not tested with Tomcat &gt;=6.0; does *not* work with Tomcat 5.0); to get it, (eg) &lt;tt&gt;pacman -get %VdtCache%:Tomcat-5.5&lt;/tt&gt;
+   * Port 8080 under Tomcat 5.5 must be defined as a non-ssl port. To implement this, modify =$VDT_LOCATION/tomcat/v55/conf/server.xml=:
+&lt;verbatim&gt;
+  &lt;!--  Define a non-SSL HTTP/1.1 Connector on port 8880 --&gt;
+   &lt;Connector port=&quot;8880&quot; maxHttpHeaderSize=&quot;8892&quot;
+              maxThreads=&quot;150&quot; minSpareThreads=&quot;25&quot; maxSpareThreads=&quot;75&quot;
+              enableLookups=&quot;false&quot; redirectPort=&quot;8443&quot; acceptCount=&quot;100&quot;
+              connectionTimeout=&quot;20000&quot; disableUploadTimeout=&quot;true&quot; /&gt;
+&lt;/verbatim&gt;
+
+The Apache configuration under the same VDT installation must include the following !JkMounts:
+
+%RED% Paste the following in to VDT_LOCATION/apache/conf/httpd.conf %ENDCOLOR%
+
+&lt;verbatim&gt;
+     JkMount /gratia-servlets/* tomcat55
+     &lt;Location /gratia-servlets&gt;
+        SSLVerifyClient optional
+     &lt;/Location&gt;
+
+     JkMount /gratia-soap/* tomcat55
+     &lt;Location /gratia-soap&gt;
+         SSLVerifyClient optional
+     &lt;/Location&gt;
+
+     JkMount /gratia-services/* tomcat55
+     &lt;Location /gratia-services&gt;
+         SSLVerifyClient optional
+     &lt;/Location&gt;
+
+     JkMount /gratia-administration/* tomcat55
+     &lt;Location /gratia-administration&gt;
+         SSLVerifyClient optional
+     &lt;/Location&gt;
+
+     JkMount /gratia-registration/* tomcat55
+     &lt;Location /gratia-registration&gt;
+         SSLVerifyClient optional
+     &lt;/Location&gt;
+
+     JkMount /gratia-reporting/* tomcat55
+     &lt;Location /gratia-reporting&gt;
+         SSLVerifyClient optional
+     &lt;/Location&gt;
+
+     JkMount /gratia-reports/* tomcat55
+     &lt;Location /gratia-reports&gt;
+         SSLVerifyClient optional
+     &lt;/Location&gt;
+&lt;/verbatim&gt;
+
+%BLUE%Deprecated services:
+   * gratia-security with release v0.34
+%ENDCOLOR%
+
+---++ Installing the Services
+To begin installation of the services, untar the two tarballs containing the gratia services and gratia reporting packages and copy all *.war files from =./gratia/gratia_reporting= and =./gratia/gratia_services= to =./tomcat/v55/webapps=:
+   * gratia-administration.war
+   * gratia-registration.war
+   * gratia-reporting.war
+   * gratia-reports.war
+   * gratia-services.war
+   * gratia-servlets.war
+   * gratia-soap.war
+
+%BLUE%Deprecated services:
+   * gratia-security with release v0.34
+%ENDCOLOR%
+
+_If you are going to manually deploy the services under Tomcat,_ you must deploy =gratia_services.war= first; then you may deploy the other war files in any order. 
+
+   $ %H% *%RED% NOTE %ENDCOLOR%*: If you have configured Tomcat to auto-deploy the war files (not the default under VDT), it will deploy the services in the correct order.
+
+Follow the instructions below for the customization of each package:
+
+---+++ gratia_services_v%ReleaseVersion%.tar
+
+This requires !MySQL 5.0, Tomcat v55 and JDK 1.5.
+
+   $ %H% *%RED% NOTE %ENDCOLOR%*: Since release v0.38, we rely on files being placed in tomcat/v55/common/lib, tomcat/v55/server/lib and tomcat/v55/common/classes. In addition, =log4j.properties= should be copied from tomcat/v55/gratia to tomcat/v55/common/classes (or merged if one already exists). Our recommendation has always been that Gratia services be the only thing installed in a given VDT area so contention for libraries between different services in the same tomcat container should not be an issue.
+
+   $ %H% *%RED% NOTE %ENDCOLOR%*: Since release v0.38, heavy traffic of dCache records might require the tomcat memory startup parameters to read, &quot; -Xmx1024m -XX:MaxPermSize=256m&quot; or better to avoid out-of-memory errors in the service.
+
+
+---++++ !MySql Notes
+Effective with v0.32.1, Gratia is using the &lt;op&gt;MySql &lt;nop&gt;InnoDB transactional engine.  This requires some additional attributes in the &lt;i&gt;my.cnf&lt;/i&gt;.  The list below shows the recommended _my.cnf_ attributes in  addition to the &lt;nop&gt;InnoDB attributes.  Of all the  &lt;nop&gt;InnoDB attributes, the most critical is the *innodb_file_per_table* attribute which allocates 1 tablespace per table and they are stored in the _database_ directory.  Without that attribute &lt;nop&gt;MySql stores ALL the &lt;nop&gt;InnoDB tables for ALL the databases in a single tablespace at the _var_ directory level.  This makes disk/space management impossible.  Once set up with a single tablespace, it is a very time consuming task to convert, especially for a large database.
+&lt;pre&gt;
+[mysqld]
+datadir=VDT_LOCATION/vdt-app-data/mysql5/var
+user=mysql
+port=NNNNN
+socket=VDT_LOCATION/vdt-app-data/mysql5/var/mysql.sock
+
+key_buffer = 16M
+max_allowed_packet = 1M
+table_cache = 64
+sort_buffer_size=512
+net_buffer_length=8
+read_buffer_size=256
+read_rnd_buffer_size=512
+myisam_sort_buffer_size = 8M
+
+# Required for InnoDB
+log-bin=mysql-bin
+log_bin_trust_function_creators=1
+innodb_buffer_pool_size = 16M
+innodb_additional_mem_pool_size = 2M
+# Set .._log_file_size to 25 % of buffer pool size
+innodb_log_file_size = 5M
+innodb_log_files_in_group = 2
+innodb_log_buffer_size = 8M
+&lt;b&gt;&lt;font color=&quot;blue&quot;&gt;innodb_file_per_table&lt;/font&gt;&lt;/b&gt;
+innodb_flush_log_at_trx_commit = 1
+innodb_lock_wait_timeout = 50
+expire_logs_days = 7
+
+[client]
+port=49152
+socket=VDT_LCOATION/vdt-app-data/mysql5/var/mysql.sock
+&lt;/pre&gt;
+
+*Location of my.cnf file* %BR%
+Another consideration that should be taken into account is the location of the _my.cnf_ file.  It has been stored in the 
+_VDT_LOCATION/mysql5/var directory_ .  The _VDT_LOCATION/vdt-app-data/mysql5/var_ directory may be a more suitable location as any changes to the _my.cnf_ for a local environment, may want to be carried forward when upgrades are performed.
+
+---++++ Installation Notes
+&lt;ol&gt;
+  &lt;li&gt; Untar the file under =$VDT_LOCATION= to populate =./tomcat/v55/gratia=: %BR% =tar xf gratia_services_v%ReleaseVersion%.tar= &lt;/li&gt;
+  &lt;li&gt; %RED% *If and only if* %ENDCOLOR% it does not already exist, create and configure the DB schema:
+  &lt;ol&gt;
+    &lt;li&gt;Create the empty database schema ( =CREATE DATABASE `gratia`;= )&lt;/li&gt;
+    &lt;li&gt;Create two users: one that has full control over the gratia schema from =localhost= and one that has only SELECT and EXECUTE privilege. We suggest using &quot;gratia&quot; and &quot;reader&quot; for the full-control and restricted users, respectively. We suggest using the =mysql-administrator= utility from the !MySQL-GUI-tools package available from the =mysql.com= website. You&#39;ll probably need to run it from the !MySQL server and connect to =localhost= as the DB user =root= to have the necessary privileges. First create the user, then add hosts. We recommend specifying IPs only (not DNS names). Use the tabs to find the schema privileges and use the selection mechanism to initiate the desired privileges for each user *for each host*. We recommend against having wild cards, especially for the root user. For the coomand-line =mysql= client, this would be something like:
+&lt;verbatim&gt;
+grant all on gratia.* to admin@localhost identified by &#39;pwd&#39;;
+grant select,execute on gratia.* to reader@localhost identified by &#39;pwd&#39;;
+&lt;/verbatim&gt;
+&lt;/li&gt;
+  &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt; Modify =./tomcat/v55/gratia/service-configuration.properties= to contain the correct database and user information you defined in the previous step, as well as the correct name for the Birt services:
+ &lt;verbatim&gt;  service.rmi.rmibind=//HOSTNAME:17000
+  service.rmi.rmilookup=rmi://HOSTNAME:17000
+  service.mysql.driver=com.mysql.jdbc.Driver
+  service.open.connection=http://HOSTNAME:8880
+  service.secure.connection=https://HOSTNAME:8443
+  service.mysql.url=jdbc:mysql://DBHOSTNAME:DBPORT/gratia
+  service.mysql.user=DBUSER
+  service.mysql.password=DBPASSWORD
+
+  service.reporting.user=reader
+  service.reporting.password=reader
+
+  service.reporting.engine.home=BIRT-HOME&lt;/verbatim&gt;
+
+  For the current release, =BIRT-HOME= should be =birt-v20=.
+  &lt;/li&gt;
+  &lt;li&gt; Modify the =$VDT_LOCATION/tomcat/v55/gratia/post-install.sh= making sure that it is mode =0700= and owned by the tomcat-executing user: the line requiring configuration reads:
+&lt;verbatim&gt;
+cat MAGIC_VDT_LOCATION/tomcat/v55/gratia/${proc} | mysql -B --force --unbuffered --user=root --password=ROOTPASS --host=localhost --port=PORT gratia
+&lt;/verbatim&gt;
+=ROOTPASS=, =PORT= and =MAGIC_VDT_LOCATION= must all be substituted correctly for the command to work.
+&lt;/li&gt;
+&lt;/ol&gt;
+
+---++++ Starting and Stopping Gratia Services
+   
+For this version of gratia-services, you must start and stop the service by starting tomcat
+   * Start the service using Tomcat: %BR% =service tomcat-55 start= 
+   * In contrast to previous versions, all schema updates are handled from within tomcat in the right order. However, =post-install.sh= *must* be configured properly to enable execution of those SQL fragments that require SUPER privilege (see above). 
+
+*NOTE* Database updates may take place during the initial deployment of the collector which may take some time, especially if the schema contains a large amount of data.
+
+---+++ gratia_reporting_v%ReleaseVersion%.tar
+   1. Deploy all =.war= files under Tomcat.
+
+---++ Download shortcuts
+
+---+++ Current release
+   * [[http://gratia.fnal.gov/Files/gratia_services_v%ReleaseVersion%.tar][v%ReleaseVersion% services]].
+   * [[http://gratia.fnal.gov/Files/gratia_reporting_v%ReleaseVersion%.tar][v%ReleaseVersion% reporting]].
+
+---+++ Older Releases
+
+   * v0.36: [[http://gratia.fnal.gov/Files/gratia_services_v0.36.1.tar][services]], [[http://gratia.fnal.gov/Files/gratia_reporting_v0.36.1.tar][reporting]].
+   * v0.34: [[http://gratia.fnal.gov/Files/gratia_services_v0.34.9b.tar][services]], [[http://gratia.fnal.gov/Files/gratia_reporting_v0.34.9b.tar][reporting]].
+
+%INCLUDE{ &quot;Documentation.ToolsBottomMatter&quot; }%
+-- Main.JohnWeigand - 10 May 2008 - For v0.34 removed references to gratia-security web service.  Added InnoDB attributes for &lt;nop&gt;MySql
+
+-- Main.ChrisGreen - 12 Sep 2007 - Update to 0.27.5 for VDT to fix calendar image problems and one report.
+
+-- Main.ChrisGreen - 11 Sep 2007 - Update for major release 0.27.3 to VDT.
+
+-- Main.ChrisGreen - 14 Jun 2007 - Update for major release 0.24
+
+-- Main.ForrestChristian - 03 Jan 2007 (edits only for linking from ITB)
+
+-- Main.ChrisGreen - 11 Oct 2006
+
+-- Main.PenelopeConstanta - 30 Aug 2006
+

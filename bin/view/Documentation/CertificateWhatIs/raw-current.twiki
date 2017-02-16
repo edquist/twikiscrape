@@ -1,0 +1,112 @@
+---+!! What is a certificate?
+%DOC_STATUS_TABLE%
+%TOC%
+---+ Introduction
+
+By &quot;certificate&quot;, we mean an X509 digital identity certificate.  There is a [[http://en.wikipedia.org/wiki/X.509][X.509 Wikipedia entry]], which gets into much more detail, but we just need to look at it as an electronic document, which you own, that is used for authentication.  This certificate can be used for accessing a computer system, service, or even web page.
+
+Now, somebody has to issue you a certificate, and the issuer of a certificate is an organization called a Certificate Authority (CA).  Once you have a certificate, and attempt to use it, somebody else must decide whether to accept your certificate or not.  This implies that there must be a &quot;chain of trust&quot;, such that the acceptor of your certificate trusts the CA who issued it.  A CA will only issue you a certificate upon verification of your identity (usually by somebody it already knows and trusts).  The certificate acceptors (e.g., grid services), in turn, maintain lists of CAs that they trust.
+
+---+ A little about the technology
+Digital certificates are based on [[http://en.wikipedia.org/wiki/Public_key_infrastructure][Public Key Infrastructure (PKI)]] technology, an arrangement which provides for third-party vetting of, and vouching for, user identities. PKI uses a pair of cryptographic keys (public and private) to encrypt and decrypt information securely.  To be precise, an X509 _credential_ consists of two parts, the _public certificate_ (which includes a public key) and a _private key_. 
+
+A central principle to this technology is that the person requesting the certificate generates the public/private key pair and the private key stays with that person and is never shared or made available for others to copy it (not even the CA).  Private keys are usually encrypted so that only the owner, who knows the passphrase for the encryption, can use the private key. By keeping the private key *private*, communications to third parties can be trusted as having originated with the holder of the private key.
+
+Any piece of information cryptographically signed with the certificates private key can be verified with the certificates public key. In turn, the public certificate is cryptographically signed by the CA.  So that when a CA is *trusted*, the recipient is assured of the identity of the person holding the private key.  An example for this is say you receive an email that is cryptographically signed with that users private key.  You can verify that it came from that user with the users public certificate (which contains the public key).  And further you know the public key is valid because it should be signed by a trusted CA.
+
+---+ Who and what needs a certificate?
+
+Certificates can pertain to different types of End Entities: persons, hosts and services, and CAs. Host and service certificates are used to authenticate hosts and services to other grid- and web-related programs, hosts and services. Personal certificates are sometimes called grid certificates because standard grid software requires authentication via certificates, but use of certificates is not restricted to grid computing.  Other common uses include signing email messages and administering/accessing restricted web sites.
+
+---+ Uses of a PERSONAL certificate in OSG
+
+There are three primary uses of certificates around the OSG:
+   1. for initiating grid computing transactions (the main purpose)
+   2. for authenticating at web sites using your browser
+   3. for digitally signing email messages
+For the first use, the credential is typically stored in your ~/.globus directory.  The public certificate in a file called usercert.pem
+and the private key in a file called userkey.pem.  To get one of these credentials it is most convenient to use the command line tools in the cert-scripts package mentioned below.
+
+For the other uses (web browser &amp; email) it can be more convenient to get another certificate using the web interface to the OIM interface (covered below).
+
+---+ Obtaining a personal certificate 
+
+You can obtain your certificate for other uses (web browser &amp; email), or get a second certificate, using the web interface to the OSG PKI.  The public/private key pair is generated in your web browser and the signed certificate, when issued, is downloaded into your (same) web browser, matched with the private key and then can be used to authenticate with SSL web sites.  
+
+Directions on how to obtain an OSG PKI user certificate can be found [[https://twiki.grid.iu.edu/bin/view/Documentation/CertificateGetWeb#Requesting_a_New_User_Certificat][here.]]
+
+For encrypting email messages, depending upon your email client tool, you may or may not have to export your credential into a PKCS12 file from your web browser and import it into your email client.  There are tools to convert PKCS12 format credentials to/from PEM format files for Globus if you want to use exactly the same credential for all uses, if you prefer to _not_ have two certificates.
+
+---+ More information
+For more information, see:
+   * [[http://www.youdzone.com/signature.html][David Youd&#39;s What is a Digital Signature?]], a short, very informative cartoon introduction to digital signatures and trust chains
+   * [[https://twiki.grid.iu.edu/bin/view/Documentation/CertificateGetWeb#Requesting_a_New_User_Certificat][How do I get an OSG PKI user certificate?]]
+   * [[http://www.nordugrid.org/documents/certificate_howto.html][Nordugrid&#39;s Grid Certificate Mini How-to]]
+
+Some guides on x509 certificates:
+   * Useful commands: http://security.ncsa.illinois.edu/research/grid-howtos/usefulopenssl.html
+   * Install GSI authentication on a server: http://security.ncsa.illinois.edu/research/wssec/gsihttps/
+
+Some examples about verifying server certificates and troubleshooting a connection:
+   * http://gagravarr.org/writing/openssl-certs/others.shtml
+   * http://www.cyberciti.biz/faq/test-ssl-certificates-diagnosis-ssl-certificate/
+   * http://www.cyberciti.biz/tips/debugging-ssl-communications-from-unix-shell-prompt.html
+
+---+ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = AlainDeximo
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = User
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = Scientist
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Knowledge
+
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = AshuGuru
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = 
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+############################################################################################################
+--&gt;
+

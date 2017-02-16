@@ -1,0 +1,19 @@
+-- Main.ScottTeige - 13 Dec 2011
+
+---+++ The Event Timeline
+
+*December 13th Maintenance Window*
+   * 9:00 AM EST two new instances of BDII were added to DNS round robin. 
+   * 9:51 AM EST is3 failed. It was found that it was erroneously running two copies of the CEMon collector. These were removed and the service restarted. 
+   * At 10:55 AM EST is5 failed. is3 failed at 10:59. A request was sent to Indiana University DNS administrators to remove the new instances from round robin. To minimize impact the services were restarted while the round robin change was made and propagated. Both instances ran without problem until the round robin change was completed. 
+   * 13:00 EST service had been restored to its previous state.
+
+---+++ Impact
+There were two partial outages effecting some (but not all) users. These lasted 35 and 13 minutes and occurred entirely within the maintenance window. Service was intermittently available during the first outage period.
+
+---+++ Cause (hypothesis at the moment)
+A detailed root cause analysis is underway and will include testing to verify (or refute) the current hypothesis. Examination of the logs immediately before the first failure of is3 showed that there was a large &quot;spike&quot; in connection requests. At 6 and 10 seconds before the failure the largest rate observed in the time range examined occurred. Immediately after these the request rate fell to zero indicating saturation of some sort had occurred. The other failures also occurred near peaks in the connection request rate. This situation would not have been detected by previous testing because of the design of those tests. The tests showed that a very large data rate could be achieved but used sequential connections from a relatively small number of hosts. 
+
+---+++ First results
+A test using up to 200 hosts was conducted. It was hoped that this would reproduce the situation that caused the failure. The test was not able to cause a failure. Next step is to attempt to run on &quot;Bare metal&quot; to determine if the problem is associated with running on a VM.
+

@@ -1,0 +1,190 @@
+%LINKCSS%
+
+---+ *Finding An Available Resource*
+
+This page is a part of the OSG&#39;s larger [[Documentation.UsingTheGrid][user documentation]] tutorial.
+
+%DOC_STATUS_TABLE%
+%TOC%
+
+---++ About This Document
+
+To run a job on the Open Science Grid, you must find at least one resource (also referred to as a _cluster_ or _site_) that can run your job.  Each resource on the OSG is accessible via an _endpoint_, which is a string that provides enough information for client tools to uniquely identify the resource.
+
+This page explains how a user can find a Globus CE endpoint via command line tools.  We will cover querying for the information in two different formats.
+
+After reading this page, you should
+   * Be able to perform basic queries on the information systems to find a usable compute resource.
+   * Understand there are two systems, BDII and !ReSS, which hold machine-readable information about the OSG.
+
+Later, we will utilize the resources you find on this page for small-scale test jobs.  We will be using the results for the beginning Condor tutorials.  Users do not usually perform their own service discovery; in the later tutorials, we will cover more advanced systems which will discover and test resources automatically.
+
+---++ Requirements
+In order to finish this document, you will need the following:
+   * Your own [[CertificateUserGet][grid certificate]].
+   * Membership in a [[WhatIsVO][Virtual Organization]].
+   * Access to a machine with the [[ReleaseDocumentation.ClientInstallationGuide][OSG-Client]] installed.
+
+%STARTINCLUDE%
+---++ Finding a Compute Element Resource
+
+There are two OSG central services - called !ReSS and BDII - which provide very detailed data for using OSG resources.  They contain the same data, but in different formats.  The BDII provides data in the LDIF format while !ReSS provides data in a Condor !ClassAd format. Both formats express the information in a schema called GLUE.
+
+We will be using the results you receive in this page for the beginner&#39;s job management examples.  Advanced and heavy OSG users use higher-level, automated tools (so, if you find yourself programming BDII queries in shell scripts, ask for help - there might be a better tool for the job).
+
+To get a list of contact strings for sites that support your VO, you can query the BDII server.  The traditional command line tool is called =ldapsearch=. Try the following query directly:
+
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;userinput&gt;ldapsearch -LLL -h is.grid.iu.edu -p 2170 -x -b &#39;o=grid&#39; &#39;(&amp;(objectClass=GlueCE)(GlueCEAccessControlBaseRule=VO:%RED%cms%ENDCOLOR%))&#39; GlueCEInfoHostName GlueCEInfoGatekeeperPort GlueCEInfoJobManager&lt;/userinput&gt;
+&lt;/pre&gt;
+
+This queries the OSG BDII server for all CEs which support the CMS VO (replace &quot;%RED%cms%ENDCOLOR%&quot; with your VO name).  It asks for three attributes back - the hostname, port, and the name of the batch system.  One example result for CMS is:
+
+&lt;pre class=&quot;screen&quot;&gt;
+dn: GlueCEUniqueID=cit-gatekeeper.ultralight.org:2119/jobmanager-condor-cms_us
+ er,Mds-Vo-name=CIT_CMS_T2,Mds-Vo-name=local,o=grid
+GlueCEInfoHostName: cit-gatekeeper.ultralight.org
+GlueCEInfoGatekeeperPort: 2119
+GlueCEInfoJobManager: condor
+&lt;/pre&gt;
+
+This information can be used for client-tools like Condor-G or globus-job-run.  A Globus resource is specified in the following format: =host:port/jobmanager-&lt;batch system&gt;=.  From the example output above, the corresponding Globus endpoint is =cit-gatekeeper.ultralight.org:2119/jobmanager-condor=.
+
+To query ReSS, we use a tool called =condor_status=.  The =condor_status= tool allows more control over the output formatting and may be more familiar to users who have previously used the Condor software.  For example, the equivalent query to the =ldapsearch= above is the following:
+
+&lt;pre class=&quot;screen&quot;&gt;
+&lt;userinput&gt;condor_status -pool osg-ress-1.fnal.gov -const &#39;stringListIMember(&quot;VO:%RED%cms%ENDCOLOR%&quot;, GlueCEAccessControlBaseRule)&#39; -format &#39;%s:&#39; GlueCEInfoHostName -format &#39;%i&#39; GlueCEInfoGatekeeperPort -format &#39;/jobmanager-%s\n&#39; GlueCEInfoJobManager | sort | uniq&lt;/userinput&gt;
+&lt;/pre&gt;
+Like before, replace &quot;%RED%cms%ENDCOLOR%&quot; with the appropriate name for your VO.  Note the output is already converted the right format for Globus:
+&lt;br/&gt;
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show results from sample query...&quot;
+hidelink=&quot;Hide results&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+antaeus.hpcc.ttu.edu:2119/jobmanager-sge
+belhaven-1.renci.org:2119/jobmanager-condor
+ce01.cmsaf.mit.edu:2119/jobmanager-condor
+cit-gatekeeper2.ultralight.org:2119/jobmanager-condor
+cit-gatekeeper.ultralight.org:2119/jobmanager-condor
+cms-0.mps.ohio-state.edu:2119/jobmanager-condor
+cmsgrid01.hep.wisc.edu:2119/jobmanager-condor
+cmsgrid02.hep.wisc.edu:2119/jobmanager-condor
+cmsosgce2.fnal.gov:2119/jobmanager-condor
+cmsosgce4.fnal.gov:2119/jobmanager-condor
+cmsosgce.fnal.gov:2119/jobmanager-condor
+cms.tier3.ucdavis.edu:2119/jobmanager-condor
+cms-xen19.fnal.gov:2119/jobmanager-condor
+cms-xen2.fnal.gov:2119/jobmanager-condor
+condor.crc.nd.edu:2119/jobmanager-condor
+d0cabosg1.fnal.gov:2119/jobmanager-pbs
+d0cabosg2.fnal.gov:2119/jobmanager-pbs
+fermigridosg1.fnal.gov:2119/jobmanager-condor
+ff-grid2.unl.edu:2119/jobmanager-pbs
+ff-grid3.unl.edu:2119/jobmanager-pbs
+ff-grid.unl.edu:2119/jobmanager-pbs
+fnpcosg1.fnal.gov:2119/jobmanager-condor
+gluskap.phys.uconn.edu:2119/jobmanager-condor
+gpn-husker.unl.edu:2119/jobmanager-condor
+gridgk01.racf.bnl.gov:2119/jobmanager-condor
+gridgk02.racf.bnl.gov:2119/jobmanager-condor
+hepcms-0.umd.edu:2119/jobmanager-condor
+heposg01.colorado.edu:2119/jobmanager-condor
+iogw1.hpc.ufl.edu:2119/jobmanager-pbs
+lepton.rcac.purdue.edu:2119/jobmanager-pbs
+nwicg.crc.nd.edu:2119/jobmanager-condor
+nys1.cac.cornell.edu:2119/jobmanager-pbs
+osgce64.hepgrid.uerj.br:2119/jobmanager-condor
+osg-ce.sprace.org.br:2119/jobmanager-condor
+osg.crc.nd.edu:2119/jobmanager-sge
+osg-east.hms.harvard.edu:2119/jobmanager-condor
+osg-nemo-ce.phys.uwm.edu:2119/jobmanager-condor
+osg.rcac.purdue.edu:2119/jobmanager-condor
+osgserv01.slac.stanford.edu:2119/jobmanager-lsf
+ouhep00.nhn.ou.edu:2119/jobmanager-condor
+ouhep0.nhn.ou.edu:2119/jobmanager-condor
+ouhep1.nhn.ou.edu:2119/jobmanager-condor
+pf-grid.unl.edu:2119/jobmanager-condor
+pg.ihepa.ufl.edu:2119/jobmanager-condor
+proton.fis.cinvestav.mx:2119/jobmanager-pbs
+red.unl.edu:2119/jobmanager-condor
+smufarm.physics.smu.edu:2119/jobmanager-condor
+tier2-01.ochep.ou.edu:2119/jobmanager-condor
+tier2-02.ochep.ou.edu:2119/jobmanager-condor
+tier2-03.ochep.ou.edu:2119/jobmanager-condor
+top.ucr.edu:2119/jobmanager-condor
+tuscany.med.harvard.edu:2119/jobmanager-condor
+u2-grid.ccr.buffalo.edu:2119/jobmanager-pbs
+uscms1.fltech-grid3.fit.edu:2119/jobmanager-condor
+vampire.accre.vanderbilt.edu:2119/jobmanager-pbs
+&lt;/pre&gt;
+%ENDTWISTY%
+&lt;br/&gt;
+
+One of the outputs from the command above is =red.unl.edu:2119/jobmanager-condor=.
+
+Both =ldapsearch= and =condor_status= have long command line invocations - it might be handy to write them down.  We don&#39;t expect you to understand all the command-line options - the important knowledge here is you can repeat these queries at any time to get the list of sites you can run at for the purposes of test jobs.
+
+%STOPINCLUDE%
+
+---++ *Comments*
+
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = BrianBockelman
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = User
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = Scientist
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Training
+
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = DerekWeitzel
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = DerekWeitzel
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %YES%
+############################################################################################################
+--&gt;

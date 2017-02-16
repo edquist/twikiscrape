@@ -1,0 +1,19 @@
+#VarTOPICLIST
+
+---+++ TOPICLIST{&quot;format&quot;} -- topic index of a web
+   * List of all topics in a web. The &quot;format&quot; defines the format of one topic item. It may include variables: The =$name= variable gets expanded to the topic name, =$qname= to double quoted name, =$marker= to =marker= parameter where topic matches =selection=, and =$web= to the name of the web.
+   * Syntax: =%&lt;nop&gt;TOPICLIST{&quot;format&quot; ...}%=
+   * Supported parameters:
+     | *Parameter:* | *Description:* | *Default:* |
+     | =&quot;format&quot;= | Format of one line, may include =$web= (name of web), =$name= (name of the topic), =$qname= (name of topic in double quotes), =$marker= (which expands to =marker= for the item matching =selection= only) | =&quot;$name&quot;= |
+     | =format=&quot;format&quot;= | (Alternative to above) | =&quot;$name&quot;= |
+     | =separator=&quot;, &quot;= | line separator | =&quot;$n&quot;= (new line) |
+     | =marker=&quot;selected&quot;= | Text for =$marker= if the item matches =selection= | =&quot;selected&quot;= |
+     | =selection=&quot;TopicA, !TopicB&quot;= | Current value to be selected in list | =(none)= |
+     | =web=&quot;Name&quot;= | Name of web | Current web |
+   * Example: =%&lt;nop&gt;TOPICLIST{&quot;   * $web.$name&quot;}%= creates a bullet list of all topics
+   * Example: =%&lt;nop&gt;TOPICLIST{separator=&quot;, &quot;}%= creates a comma separated list of all topics
+   * Example: =%&lt;nop&gt;TOPICLIST{&quot; &amp;lt;option&amp;gt;$name&amp;lt;/option&amp;gt;&quot;}%= creates an option list (for drop down menus)
+   * Example: =&amp;lt;select&amp;gt;%&lt;nop&gt;TOPICLIST{&quot; &amp;lt;option $marker value=&#39;$name&#39;&amp;gt;$name&amp;lt;/option&amp;gt;&quot; separator=&quot; &quot; selection=&quot;%&lt;nop&gt;TOPIC%&quot;}%&amp;lt;/select&amp;gt;= creates an option list of web topics with the current topic selected
+   * Related: [[#VarSEARCH][SEARCH]], [[#VarWEBLIST][WEBLIST]]
+

@@ -1,0 +1,181 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Brian Bockelman
+   * Ted Hesselroth
+   * Neha Sharma
+   * Doug Strain
+   * Tanya Levshina
+   * Alex Sim (apologies)
+
+
+---+++ Guests
+   * Robert Engel
+   * Derek Weitzel
+
+---++ Status report
+&lt;!-- DESCRIPTION --&gt;
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* Release
+  - bestman2 distribution package
+&lt;/pre&gt;
+
+Doug:
+&lt;pre class=&quot;screen&quot;&gt;
+Not too much this week due to python training.
+Investigated GIP probes and gathered documentation for RSV probes.
+&lt;/pre&gt;
+
+Neha:
+&lt;pre class=&quot;screen&quot;&gt;
+o On gridworks - several pnfs and chimera based fresh installations/testing and pnfs to chimera migration testing 
+o On couple of SL5 machines - several attempts at fresh chimera installation, investigating the hang (need to hit Ctrl-C)
+o Updated all the documentation (INSTALL, MIGRATION)
+o Postgres/SRM configuration changes (for scalability testing)
+o Built gratia transfer and storage probes for gratia-probe-1.06.15k-1.src.rpm and gratia-probe-1.06.15l-1.src.rpm
+o Helped tanya with her dCache/Chimera installation/cleanup attempts
+o tickets
+&lt;/pre&gt;
+
+Tanya
+&lt;pre class=&quot;screen&quot;&gt;
+ Meetings: 
+               with Ruth and Keith to discuss WUSTL 
+               with NEES to discuss incremental backup
+               docteam telecon
+
+   Technical work:
+              Testing dCache and gratia probes for new vdt-dcache release, installation on SL5_64,32 etc
+              Continued working with igor Sfiligoi on dcache scalability test, after modifying various parameters 
+               the performance is still bad (see http://hepuser.ucsd.edu/twiki2/bin/view/UCSDTier2/DCTest)
+              We are planning to test with new postgres setting and using kwpd auth instead of GUMS
+              Made modification in documentation (BeStMan-fullmode/gateway) according Alex&#39;s suggestions.
+              Continued work on WUSTL requirements page 
+                                      https://twiki.grid.iu.edu/bin/view/Storage/OpportunisticStorageForWUSTL
+              Worked on Storage Forum indico page 
+                                    http://indico.fnal.gov/confRegistrantsDisplay.py/list?confId=3377, sent announcement 
+              Sent feedback on OSG 2010 school curriculum to Tim Cartwright 
+&lt;/pre&gt;
+
+Abhishek:
+&lt;pre class=&quot;screen&quot;&gt;
+no report
+&lt;/pre&gt;
+
+Ted::
+&lt;pre class=&quot;screen&quot;&gt;
+no report
+&lt;/pre&gt;
+
+
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+Documentation
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Robert has presented the ongoing work of documentation team, encouraged storage group active participation. Doug has asked the question about the status of RSV probe documentation and where to put the documentation for new !SrmTester probes. Robert has agreed that the RSV probe documentation pages are not in order and has promised to discuss it with STG and !DocTeam and let us know the outcome. 
+
+---++ Second Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+vdt-dcache release
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+We have rebuilt vdt-dcache package with dcache 1.9.5-19 and gratia 1.06.15n-2. It was installed fine on SL4,SL5. We will need to test probes but there is no documentation describing transfer probe behavior.  Brian has promised to write it down.  
+
+We have continued to work with Igor on dcache performance test, after modifying multiple dcache setting according advice from dcache developers the performance is still pretty bad (see see http://hepuser.ucsd.edu/twiki2/bin/view/UCSDTier2/DCTest). We were asked to modify postgres setting on srm node and rerun tests using kwpd auth. mechanism instead of GUMS. We will repeat tests when Igor comes back from vacations.
+
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+IRODS evaluation
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Ted was continuing to work on IRODS evaluation (see his progress at: https://twiki.grid.iu.edu/bin/view/Storage/FederatingStorageElementsForOpportunisticUse).
+
+The following has been discussed:
+
+__Q__. Proposed IRODS architecture (can we deal with one IRODS per VO, or we have to have IRODS server on each site etc, can one IRODS serves multiple
+VOs)?
+
+__A__. One IRODS per OSG. No concept of VOs in IRODS. No RBAC, DNs only.
+
+__Q__. Is the only way to do third party transfer or file upload/download byuser is to use IRODS as caching service? 
+ 
+__A__. One possible way, by taking over the file transfer functions with our own
+scripts, the &quot;shadow service&quot; option.
+
+ __Q__. IRODS and  grid job submission:
+   * How IRODS and OSG_MM could be integrated?
+   * How one can request data from the worker node
+   * How one can store output data
+__A__.IRODS not made with workflow in mind at all, so we are on our own in this. Low-level db calls, I think, but further study is needed.
+
+__Q__. IRODS as a tool for VO to manage resources :
+   * Addition/deletion of SE
+   * Partition of space within allocated area
+   * Clean up of the user area
+   * Automatic Replication of data sets
+   * Ownership of the data in IRODS, SE
+__A__. Possible in theory, according what I know from the documentation. These sorts of things require reading the source code to be fairly sure, and
+demonstration to really know.
+
+__Q__.  IRODS ability of users&#39; management:
+   * Creation of users/groups                 
+   * Creation of data set               
+   * ACL setting for group and users  
+__A__.  Those are standard IRODS functions.
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Storage information verification tools
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+There are constant questions about availability of  public storage on a particular site. We have been trying to identify problems of public storage misconfiguration and alarm the sites. It is a tedious job and it should be automated. It looks like OSG_MM is doing the similar tests but just discard misconfigured sites. So, site doesn&#39;t know what needs to be fixed in order to provide public storage for a particular VO. The following has been proposed:
+
+Create a set of tools, based on discovery tools and OSG_MM condor classads. These tools will be able to do the following:
+   1. List all the sites with SE that support a particular VO. For each site find:&lt;br/&gt;
+             Storage url &lt;br/&gt;
+             End path &lt;br/&gt;
+             Available /used size &lt;br/&gt;
+             Worker node outbound connection&lt;br/&gt;
+             Storage end point – local mapping&lt;br/&gt;
+             Size of WN_TMP &lt;br/&gt;
+   1. OSG Sites with Classic Storage. For each site find:&lt;br/&gt;
+              gridftp url&lt;br/&gt;
+              end path (OSG_DATA)&lt;br/&gt;
+              available/used size&lt;br/&gt;
+   1. Perform tests, publish outcome:&lt;br/&gt;
+                 srm-ping &lt;br/&gt;
+                 srm-mkdir&lt;br/&gt;
+                 srm-copy&lt;br/&gt;
+                 globus-url-copy
+
+---++ Fifth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Tickets
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+++++++++++++++++++++++++
+New tickets
+++++++++++++++++++++++++
+
+Follow up in progress:
+
+8602 - OSG Storage: dCache: Replication Failure
+
+8603 - OSG Storage: dCache: Increasing Log level on Gridftp doors/Specify Pinboard Dump directory
+
+++++++++++++++++++++++++
+Old tickets
+++++++++++++++++++++++++
+
+No update:
+
+8567 - OSG Storage: dCache: No space left on pool (metadata on pool node as well)
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 28 May 2010

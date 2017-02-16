@@ -1,0 +1,117 @@
+---++ Coordinates
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-866-740-1260, code 8266135 
+
+---++ Announcements:  
+
+---++ Action/Significant Items: 
+
+   * Tanya represented the double counted Wall Hours in Gratia accounting system. Fermigrid sight gate steering mechanism in place at FNAL. Total wall hours over reporting ~4% overall hours. Modify site name and point it at NULL this will exclude these hours. It needs to be tested before implementation. Does not affect the CMS Tier1. Does not affect CPU hours. 
+   * Slowest production week since January, both CMS and ATLAS were down but are picking back up. 
+
+---++ Attendees: Tim, Tim, Tony, Tom, Chander, Xin, Armen, Rob, Tanya, Mine
+
+---++ CMS (Tony)
+
+   * Job statistics for last week
+      * 18,741 jobs/day
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status.
+      * USATLAS total production over the past weeks was not always stable, as the production level was low and fluctuating last week at the level of 20-25K running jobs, then starting Friday stabilized at the average level around 35K running jobs.
+   * Job statistics for last week.      
+      * Gratia report: 1.4M jobs, 5M walltime hours, with CPU/Walltime ratio of 83%. 
+      * 2 M real Jobs reported from the Atlas dashboard.  
+   * Data Transfer was ~300TB/day, at BNL Tier1, for last week 
+
+---++ Grid Operations Center (Scott T. is out; Tom L. is representing this week)
+
+---+++ Operations Last Week
+
+---++++ Status/Statistics
+   * Computation Hours per Week - Week 25 2014: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/osg_wall_hours.png&quot; alt=&quot;osg_wall_hours.png&quot; width=&#39;800&#39; height=&#39;500&#39; /&gt;    
+   * [[http://tinyurl.com/ct2mfy6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * [[http://steige.grid.iu.edu/steige/myosgldr.php][OSG Version information]]
+      * 11 (no change since last week) resources are running 1.2.x
+      * 68 (-2 since last week) are 3.1.x
+         * 7 (+1) of those are 3.1.35
+      * 37 (+4) are 3.2.x
+         * 8 (+3) of those are 3.2.11
+
+---++++ Events
+   * LDAP server failure ~17:30 16/Jun
+      * Caused by disk failure on primary, failed over to slower backup, which itself was not working as intended at first.
+      * Recovered by ~02:00 17/Jun
+      * osg-flock, glidein had been shutdown, returned to service later (~10:00)
+   * ITB release, OS updates only, no issues encountered
+   * WMS Glide In Factory
+      * Upgraded HTCondor to 8.2 prerelease at SDSC. We have tested 8.2 thoroughly on GOC-ITB.
+
+---+++ Operations This Week
+   * Production Services Update - OS Updates - Restart required. [[http://osggoc.blogspot.com/2014/06/goc-service-update-tuesday-june-24th-at.html][Notification]]
+      * These have been completed - no issues encountered
+   * Upcoming !DocDB Update - July 1st. - [[Notification][http://osggoc.blogspot.com/2014/06/docdb-database-outage-for-software.html]]
+   * Webpage update https://www-itb.opensciencegrid.org/join/ will replace the current http://www.opensciencegrid.org/join/. 
+
+
+---++ Software (Tim C.)
+
+   * Working on LSF and SGE support for HTCondor CE
+   * Working on HTCondor 8.2 for Upcoming repositories
+   * Just starting (slowly): IPv6 evaluation of OSG software
+
+   * Small improvements to internal systems
+   * Working on adding a UW ITB site, to be maintained by Software/Release teams
+   * DRP: Refining our ability to recover Koji; working on offsite backups
+
+
+---++ Release (Tim T.)
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Version*         | *Testing*  | *Freeze*   | *Release*  | *Notes* |
+| 3.2.12 / 3.1.36 | 2014-06-23 | 2014-06-30 | 2014-07-08 | Work around Independence Day |
+| 3.2.13 / 3.1.37 | 2014-07-28 | 2014-08-04 | 2014-08-12 | |
+| 3.2.14 / 3.1.38 | 2014-08-25 | 2014-09-02 | 2014-09-09 | Freeze bumped due to Labor Day |
+
+   * !XRootD 4 (3.2 only)
+   * GUMS 1.4
+   * HTCondor 8.0.7
+   * HTCondor detects UID change after lcmaps call
+   * HTCondor-CE 1.1
+   * osg-configure 1.0.56
+   * osi-pki-tools
+   * drop nmap from OSG client package
+   * VO Package update
+   * various other fixes
+
+---++ User Support (Chander, Tanya)
+We have recently learned that there is double counting of wall hours for some percentage of jobs sent to FNAL.   (This issue only affect “Batch” hours reported by CEs – there is no known issue for “Batch-Pilot” hours reported from submit nodes)
+
+Quick summary:  Fermigrid CE is really a “steering” CE with no worker nodes; it sends incoming jobs to other CEs at FNAL.  Jobs sent to FNAL via the Fermigrid CE have double counting of wall hours because the Fermigrid CE reports wall hours to the Gratia and the CE where the job executed also reports wall hours. There is no double counting of CPU hours.  This configuration has existed for a long time.
+
+For the last year this resulted in ~32M wall hours or about 4% of the total.  Since most opportunistic work at FNAL enters via the Fermigrid CE the affect there is magnified when you look at the percentage – about 11%.     
+
+Brian has proposed to map the Fermigrid CE to “null” in some Gratia CE mapping table and that should remove this excess from all past and future report.  
+
+Please be alerted that after we make this change, you will see a drop in the wall hours compared to what you have become used to seeing.
+
+
+---++ Security (Mine)
+   * Emergencies/Vulnerabilities
+      * None. Discussing effects of bitcoin mining incidents in other infrastructures
+   * Operations
+      * Digicert Change Management process is almost finalized. Waiting for GOC&#39;s review.  
+      * CILogon Basic CA is accredited in IGTF. It will be in the next IGTF release coming up shortly. All our sites will install the CA by default as we include all IGTF accredited CAs. 
+ 
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+
+
+
+
+-- Main.ScottTeige - 19 Jun 2014
+

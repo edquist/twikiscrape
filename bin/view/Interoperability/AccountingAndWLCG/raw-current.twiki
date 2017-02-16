@@ -1,0 +1,145 @@
+&lt;!--
+   * Set MYOSG_HOME= [[http://myosg.grid.iu.edu/about][MyOSG]]
+   * Set OIM_HOME = [[https://oim.grid.iu.edu/oim/home][OSG Information Management System (OIM)]]
+   * Set OIM_SOP    = [[https://twiki.grid.iu.edu/bin/view/Operations/OIMRegistrationInstructions][OIM Registration Instructions]]
+   * Set APEL_INTERFACE_DOC = [[Accounting.GratiaInterfacesApelLcg][OSG Accounting APEL/WLCG interface document]]
+
+   * Set WLCG_HOME  = [[http://wlcg.web.cern.ch/][WLCG]]
+   * Set WLCG_REGISTRATION = [[http://wlcg.web.cern.ch/register-new-site-federation-or-register-new-federation][WLCG Site Registration]] 
+   * Set WLCG_GETTING_STARTED = [[http://wlcg.web.cern.ch/getting-started][WLCG Getting Started page]]
+   * Set WLCG_TOPOLOGY = [[http://wlcg-rebus.cern.ch/apps/topology//][WLCG REBUS Topology]]
+
+   * Set EGEE_ACCOUNTING_OSG_VIEW = [[http://accounting.egi.eu/osg.php][EGI Accounting Portal OSG view]]
+   * Set EGEE_ACCOUNTING_TIER1_VIEW = [[http://accounting.egi.eu/tier1.php][EGI Accounting Portal Tier 1 view]]
+   * Set EGEE_ACCOUNTING_TIER2_VIEW = [[http://accounting.egi.eu/tier2.php][EGI Accounting Portal Tier 2 view]]
+   * Set EGEE_MONTHLY_MOU_REPORTS = [[https://espace.cern.ch/WLCG-document-repository/Accounting/Forms/AllItems.aspx][EGEE Monthly !MoU Reports]]
+
+   * Set GRATIA_HOME = [[https://twiki.grid.iu.edu/twiki/bin/view/Accounting/WebHome][Gratia]]
+   * Set GRATIA_REPORTING = [[http://gratia-osg-prod-reports.opensciencegrid.org/gratia-reporting][Gratia Accounting Reporting page]]
+   * Set GRATIA_VALIDATION_DOCUMENT = [[https://twiki.grid.iu.edu/bin/view/ReleaseDocumentation/ValidateGratia][OSG Validate Gratia documentation]]
+
+   * Set GIP_BDII_VALIDATION_DOCUMENT = [[https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationValidateBDII][OSG Validate GIP/BDII documentation]]
+
+   * Set WLCG_REGISTRATION_SECTION = [[#WLCG_Registration][WLCG Registration section]]
+   * Set OSG_REGISTRATION_SECTION = [[#OSG_Registration][OSG Registration section]]
+
+   * Set ISSUES_PAGE = [[https://twiki.grid.iu.edu/bin/view/Interoperability/AccountingInteropQuestionsAndIssues][Accounting Systems Interoperability Questions, Issues, and Proposals twiki]]
+--&gt;
+
+
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+
+
+
+%TOC%
+---++ Overview
+Collaboration with WLCG is typically formalized through negotiating and signing a Memorandum of Understanding (!MoU).
+An !MoU puts in place a formal partnership, describing the legal framework and agreements for involvement in WLCG, plus the annexes which are regularly updated according to pledges delivered by the collaborating institutions. 
+The US-WLCG Tier1 and Tier2 facilities have to demonstrate to the WLCG project delivered computing resources on behalf of OSG VO collaborations, in accordance with these signed !MoU agreements. 
+
+The OSG %GRATIA_HOME% accounting service is the basis for the accounting data provided.  Accounting data for specific OSG  __resource groups__ are summarized on a monthly basis. Wall  and CPU consumption are adjusted using !HepSpec2006 (HS06) factors  for the processor types of the clusters, and then forwarded to an APEL server at the EGI GOC.
+
+The %GRATIA_HOME% accounting data being sent to EGI, summarized by month, is:
+   * Resource group
+   * VO
+   * Distinguished Name (subject of the user&#39;s proxy)
+   * Total number of jobs
+   * CPU time (hours)
+   * Wall time (hours)
+   * Normalized (HS06) CPU time 
+   * Normalized (HS06) Wall time
+
+This accounting data is used to publish monthly Tier 1/2 reports for those OSG registered __resource groups__ that have been registered with WLCG and have enabled the !MyOsg !WLCGInformation !InteropAccounting flag and !AccountingName data.
+
+The OSG VOs which are currently requesting their accounting data be published to EGI are:
+   * ATLAS
+   * ALICE
+   * CMS 
+
+Additionally, a VO must specify the OSG __resource_groups__ for which their accounting data should be forwarded.  This is necessary because  the CPU and Wall times sent  are both raw and normalized based on the cluster configuration of each __resource_group__ .
+
+For an OSG __resource group__ (aka LCG site) to be included in WLCG Interoperability reporting the following must occur/exist:
+   1 It must be registered with WLCG (see the  %WLCG_REGISTRATION_SECTION%)
+   1 It must be registered in OSG (see the %OSG_REGISTRATION_SECTION%) with the WLCG Interop Accounting data populated for each __resource__ within the __resource_group__  that is to be reported to WLCG.
+   1 Verify your accounting data is being reported correctly to the Gratia accounting system.
+   1 Verify your data is being reported correctly by GIP.
+
+For a detailed description of the interface, refer to the %APEL_INTERFACE_DOC%.
+
+
+---++ WLCG Registration
+An OSG __resource group__ must be registered with the %WLCG_HOME% as a &#39;site&#39;. 
+When registering in WLCG you need to be defined as part of a Tier2 Federation according to the WLCG !MoU.  If you do not know which is the relevant federation, contact the US management for the appropriate experiment. You can see the existing site-federation associations in the %WLCG_TOPOLOGY%.  
+These should be good sections to get started with:
+   * %WLCG_GETTING_STARTED%
+   * %WLCG_REGISTRATION% 
+
+__It is very important to understand that the WLCG Site is equivalent to the OSG &lt;u&gt;resource group&lt;/u&gt; and not the &lt;u&gt;resource&lt;/u&gt;  within the &lt;u&gt;resource group&lt;/u&gt;__.
+
+Once this registration process is complete, your OSG __resource group__ will be viewable in either the %EGEE_ACCOUNTING_TIER1_VIEW% or %EGEE_ACCOUNTING_TIER2_VIEW%.
+
+Additionally, you will be included in the %EGEE_MONTHLY_MOU_REPORTS% issued by  the WLCG office.  These are generally available on the 8th of the month for the previous month.
+
+
+__IMPORTANT:__  If you are deprecating (disabling) an OSG __resource group__ (and maybe replacing it with another), you do __NOT__ want to ask the WLCG office to remove the deprecated one.  The %WLCG_TOPOLOGY% shown for your Federation Accounting Name is not time sensitive.  You will lose the historical information for the deprecated OSG __resource group__ (LCG site) if you do.
+
+
+---++ OSG Registration
+A __resource group__ (aka LCG site) must be registered in %OIM_HOME% with at least one active __resource__.  See the %OIM_SOP% for details on what is required.
+
+You can have 1 or more __resources__ within that __resource group__ providing any number of services.  For each __resource__  you want reported to WLCG, for the __resource group__, you need to populate the WLCG Information InteropAccounting data.
+
+The process for enabling Accounting Interoperability when registering (or at later point in time):
+   1 Check the box indicating &quot;This is a WLCG resource&quot; (the display will expand to add more information)
+   1 Check the box &quot;Enable InteropAccounting&quot;  The purpose of this flag is activate the forwarding of Gratia accounting data for that __resource__ to WLCG accounting for the purpose of !MoU accountability and also includes this __resource__ in the &quot;Capacity and Benchmarking Report&quot; sent to &lt;nop&gt;osg-wlcg-reports@opensciencegrid.org.
+   1 Populate the &quot;WLCG Accounting Name&quot; with the Federation Accounting Name to which your __resource group__ (aka WLCG site) belongs in the %WLCG_TOPOLOGY%   when you did your [[#WLCG_Registration][WLCG Registration]].
+   1 In addition, You should also check the box &quot;Enable InteropBDII&quot; for your resource.  This allows GIP/BDII data for this __resource__ to WLCG InteropBDII (for lcg-bdii.cern.ch) for the purpose of determining  a normalization factor for the accounting data sent to APEL/WLCG. 
+
+Data will only be forwarded to WLCG for OSG  __resources__ that have this !InteropAccounting data populated.  The accounting data will be summarized by __resource group__ (LCG site) for all __resources__ with the InteropAccounting flag set to True.
+
+This data will be viewable in the %EGEE_ACCOUNTING_OSG_VIEW%. However, it will not be used in any WLCG reporting until the __resource group__ is registered with WLCG (%WLCG_REGISTRATION_SECTION%).
+
+
+---++ Verify Gratia reporting.
+You will need to verify that the accounting data is being reported correctly to Gratia with regard to:
+   * The VO the data is being reported as.   The interface only sends data to WLCG for the CMS, ATLAS and ALICE VOs.
+   * The Gratia site (!MyOsg resource name) your data is being reported as.
+
+To do this, go the the %GRATIA_REPORTING%:
+   * In the left hand menu, select &quot;Daily Usage by VO for Site&quot;
+   * In the &quot;Site Name&quot; box, select your site (this is the OSG resource you populated with WLCG Interop Accounting data)
+   * Then click on the &quot;Display Report below&quot; button.
+   * Verify that the results seem reasonable for the VOs being reported.
+
+To trouble-shoot any reporting problems, first review the %GRATIA_VALIDATION_DOCUMENT%.
+
+If you still feel there is a problem with the data being reported, open a GOC ticket:
+   * Go to %MYOSG_HOME%    
+   * Select &quot;GOC Ticket&quot;  under &quot;Other Services&quot; on the right hand side.  
+   * When you are on the GOC Ticket/Submitter page, under &quot;Central Service Issues&quot;, select &quot;Gratia&quot;.
+
+---++ Verify GIP/BDII reporting
+You will need to verify that GIP (Generic Information Provider) is reporting correctly to the OSG BDII service for the OSG Resource in your __resource group__.
+
+This GIP/BDII data being reported is used to determine a normalization factor for the accounting data sent to APEL/WLCG.
+
+To trouble-shoot any reporting problems, first review the %GIP_BDII_VALIDATION_DOCUMENT%.
+
+If you still feel there is a problem with the data being reported, open a GOC ticket:
+   * Go to %MYOSG_HOME%
+   * Select &quot;GOC Ticket&quot;  under &quot;Other Services&quot; on the right hand side.
+   * When you are on the GOC Ticket/Submitter page, under &quot;Central Service Issues&quot;, select &quot;GOC BDII&quot;.
+
+---++ Open Issues
+Refer to the %ISSUES_PAGE%
+
+
+
+
+
+
+
+
+---++ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+

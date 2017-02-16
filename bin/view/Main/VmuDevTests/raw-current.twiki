@@ -1,0 +1,96 @@
+---+ Supporting Developer Tests in VMU
+
+---++ About This Document
+
+This is the design document for supporting the OSG [[SoftwareTeam/SoftwareDevelopmentProcess#TestingProcedures][developer tests]] in our [[SoftwareTeam/TestRunsAsVMs][VM universe test suite]] as outlined in ticket [[https://jira.opensciencegrid.org/browse/SOFTWARE-1733?filter=12359][SOFTWARE-1733]]. The requirements are as follows:
+
+   * Add the ability to specify a package or list of packages and the repositories that they should come from for installation and upgrade tests.
+   * *ONLY* install the specified packages out of the corresponding repositories. All other packages that need to be installed and/or upgraded will be pulled from the repositories that are enabled by default: osg-release, EPEL and the OS.
+   * Add ability to specify a source RPM for which all of its binary RPMs will be installed and/or upgraded
+
+The proposed solution is to allow the user to specify hashes of repositories and their corresponding packages in the =packages= lists of =test-parameters,yaml=. Additionally, they will be allowed to prefix package names with an =@= to mark them as source RPMs. This solution will only mean changes to the VMU test infrastructure in =vmu-reporter= to handle the new =test-parameters.yaml= formatting and =generate.dag= to create the osg-test configuration and new yum repo files .
+
+---++ User Interface
+
+Currently, the user can specify repositories and packages in the following way:
+
+&lt;pre class=&quot;file&quot;&gt;
+sources:
+  - 3.1; osg			# Perform installation with osg-release enabled
+  - 3.1; osg-testing            # Perform installation with osg-testing enabled in addition to osg-release
+  - 3.1; osg &gt; osg-testing	# Perform installation with osg-release enabled then upgrade with osg-testing and osg-release enabled
+
+packages:
+  - [osg-tested-internal]
+  - [condor.x86_64, osg-ce-condor, rsv]
+&lt;/pre&gt;
+
+The VMU infrastructure then runs osg-test against all the different combinations of sources, packages and platforms (not shown here). So for the HTCondor upgrade case, =osg-test= will perform the following yum commands to prepare the tests:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install -y condor.x86_64
+%UCL_PROMPT_ROOT% yum install -y osg-ce-condor
+%UCL_PROMPT_ROOT% yum install -y rsv
+%UCL_PROMPT_ROOT% yum update -y --enablerepo=osg-testing
+&lt;/pre&gt;
+
+---+++ Limiting repos to specific packages
+
+To allow the user to specify pacakges to be installed out of specific repositories, we propose a new syntax in the =packages= section of the parameters file that would look like ={&amp;lt;repository&amp;gt;: &amp;lt;list of packages&amp;gt;}=. To run clean install and upgrade tests against a newly built htcondor-ce package out of development while grabbing the other packages out of release, users would write something like:
+
+&lt;pre class=&quot;file&quot;&gt;
+sources:
+  - 3.2; osg-development
+  - 3.2; osg &gt; osg-development
+
+packages:
+  - [osg-tested-internal, {osg-development: htcondor-ce}]
+&lt;/pre&gt;
+
+This would create a new repo file (henceforth referred to as =osg-development-abridged=) that has the same contents as =osg-development= except with =includepkgs=htcondor-ce=. The clean install tests would then perform the following yum commands:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install -y osg-tested-internal --enablerepo=osg-development-abridged
+%UCL_PROMPT_ROOT% yum install -y htcondor-ce --enablerepo=osg-development-abridged
+&lt;/pre&gt;
+
+The second yum command actually won&#39;t do anything since =osg-tested-internal= contains htcondor-ce already. And the upgrade tests would perform these yum commands:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install -y osg-tested-internal
+%UCL_PROMPT_ROOT% yum update -y --enablerepo=osg-development-abridged
+&lt;/pre&gt;
+
+---+++ Installing source RPM&#39;s
+
+Another interesting feature to add would be a special syntax that would tell the VMU tests that the specified package is a source RPM, whose list of binary RPM&#39;s can be found using koji with the following shell:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% pkgs=$(koji -c /etc/osg-koji.cfg list-tagged --rpms --latest osg-3.2-el6-development vo-client \
+| grep -v &#39;\.src$&#39; | perl -lpe &#39;s/(-[^-]+){2}$//&#39; | sort -u | xargs | tr &#39; &#39; , )
+&lt;/pre&gt;
+
+This would require installing the koji client on =osghost.chtc.wisc.edu= as well as including a koji configuration to point towards OSG&#39;s koji server. A proposed syntax to designate source RPMs is to prepend the package name with an =@=. 
+
+&lt;pre class=&quot;file&quot;&gt;
+sources:
+  - 3.2; osg-development
+
+packages:
+  - [@gums, {osg-development: @vo-client}]
+&lt;/pre&gt;
+
+Would result in the following yum commands:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install -y gums --enablerepo=osg-development-abridged
+%UCL_PROMPT_ROOT% yum install -y gums-client --enablerepo=osg-development-abridged
+%UCL_PROMPT_ROOT% yum install -y gums-service --enablerepo=osg-development-abridged
+%UCL_PROMPT_ROOT% yum install -y osg-gums-config --enablerepo=osg-development-abridged
+%UCL_PROMPT_ROOT% yum install -y vo-client --enablerepo=osg-development-abridged
+%UCL_PROMPT_ROOT% yum install -y vo-client-edgmkgridmap --enablerepo=osg-development-abridged
+&lt;/pre&gt;
+
+If a SRPM generates binary RPMs that conflict with each other, one of the yum commands will fail. Since we don&#39;t currently prevent users from trying to install conflicting packages, we shouldn&#39;t need to add precautions for conflicting packages coming from an SRPM.
+
+-- Main.BrianLin - 23 Jan 2015

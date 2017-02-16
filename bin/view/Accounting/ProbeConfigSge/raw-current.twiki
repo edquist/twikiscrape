@@ -1,0 +1,44 @@
+---+OSG Gratia probe configuration: SGE
+&lt;ol&gt;
+&lt;li&gt;[[ProbeInstallation][Install]] the software using pacman or RPM.&lt;/li&gt;
+
+#ProbeConfig&lt;li&gt;Customize the Gratia =ProbeConfig= file. The following variables (at least)
+should have appropriate values:
+
+| *Gratia Configuration Variable=&amp;quot;Default&amp;quot;* | *Set value information* |
+| !MeterName = &amp;quot;generic&amp;quot; | This value will be entered in the database to indicate where the record came from.&lt;br /&gt;We recommend a =batchsystem:FQDN= such as &quot;sge:fermigrid1.fnal.gov&quot;. |
+| !SiteName = &amp;quot;Generic Site&amp;quot; | This value is used in the report to refer to the site/farm/cluster to which the head node gives access. |
+| !VDTSetupFile = &amp;quot;&lt;tt&gt;MAGIC_VDT_LOCATION&lt;/tt&gt;/setup.sh&amp;quot; |Path to the VDT =setup.sh= file. Please expand =MAGIC_VDT_LOCATION=. |
+| !UserVOMapFile = &amp;quot;&lt;tt&gt;MAGIC_VDT_LOCATION&lt;tt&gt;/osg/etc/osg-user-vo-map.txt&amp;quot; |Path to the VDT =osg-user-vo-map.txt= (or =grid3-user-vo-map.txt=) file. Please expand =MAGIC_VDT_LOCATION=. |
+| !SGEAccountingFile = &amp;quot;&amp;quot; | This is the location of the SGE accounting file. If not set, the probe will look for =$SGE_ROOT/default/common/accounting=. |
+| !EnableProbe = &amp;quot;1&amp;quot; | If present, this attribute must be set to one to enable probe reporting. |
+&lt;/li&gt;
+
+&lt;li&gt;The SGE Probe assumes a single SGE accounting file for processing records.
+
+If the accounting file needs to be moved or rotated, you will need to make sure to do
+the following:
+&lt;ul&gt;
+&lt;li&gt;Disable the SGE Probe, if there is a chance it will run during the steps below.&lt;/li&gt;
+&lt;li&gt;Move or Rotate the accounting file.&lt;/li&gt;
+&lt;li&gt;Run sge.py against the old (moved) accounting file:
+&lt;pre&gt;sge.py -c -a $ACCOUNTING_FILE&lt;/pre&gt;
+(Omit the =-c= if you do not use checkpointing. This will report all records to Gratia, instead of records after the last checkpoint).
+&lt;/li&gt;
+&lt;li&gt;Delete with checkpoint file (which resets the checkpoint)
+&lt;pre&gt;rm MAGIC_VDT_LOCATION/gratia/var/tmp/checkpoint&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;Continue running the SGE probe as before. It will now run against the new SGE accounting file.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+
+&lt;li&gt;The pacman and RPM install procedures make appropriate entries in =/etc/cron.d=
+for uploading accounting information to gratia at the appropriate
+time; this time is randomized.&lt;/li&gt;
+
+&lt;li&gt;The !CollectorHost has been pre-configured to use the official OSG Gratia
+collector (or the official ITB Gratia if you installed the ITB RPMs); please verify this configuration before enabling the probe.&lt;/li&gt;
+
+&lt;/ol&gt;
+
+-- Main.ChrisGreen - 08 Jun 2007

@@ -1,0 +1,62 @@
+-- Main.KarthikArun - 23 Mar 2010
+
+%TOC%
+
+---++Pledged Installed Capacity Reporting script
+This document explains how to install and run the &lt;b&gt;Pledged installed capacity reporting &lt;/b&gt; script.
+
+---+++ Purpose of the script
+The purpose of the script is to generate and email the pledged installed capacity report for sites in federations supported by USATLAS and USCMS VOs. The script is written in python and it uses python xpath libraries to parse the xml data published by MyOSG. Then it makes a dictionary from which the data could be summarized and a report generated and emailed if needed. 
+
+---+++ How to install the script?
+You can directly check out the script from the svn repository as shown below: &lt;br&gt;
+cd to the directory of your choice. This will be the installation directory. From here execute the following command
+&lt;pre&gt;
+cd /directory/of/your/choice
+svn co  https://osgbdiifilter.svn.sourceforge.net/svnroot/osgbdiifilter/pledgedCapacity/tags/beta-release-1 .
+&lt;/pre&gt;
+
+---+++ How to run the script  ?
+Here are the instructions to run the script. These instructions ar ethe same for running the script manually from the command line and as a cronjob. &lt;p&gt;
+&lt;ol&gt;
+&lt;li&gt;The 1st step is to configure the script with proper parameters. For this edit the etc/config.ini file. The file provided is a template file with the following contents. The parameters to be filled in are pretty much self-explanatory. Note the default &quot;config.ini&quot; file could be overridden by another configuration file of your choice. To do this use the &quot;--config &lt;alternative_config_file&gt;&quot; option while running the script. 
+
+&lt;pre&gt;
+[emailCommon]
+from = fromEmail
+smtpServer = smtp server&#39;s FQDN
+
+[emailReport]
+to = comma separated emails of whoever wants to receive the report (mandatory if --email option is used while running the report)
+
+[emailErrors]
+to = comma separated emails of whoever wants to receive error messages from running the script, if any (mandatory)
+
+&lt;/pre&gt;
+&lt;li&gt; The script could be ran in two modes namely either to email the report or to print the report to stdout. To email the report (to the list of emails configured in config.ini under [emailReport], run the report as shown in the following command. INSTALL_DIR is the directory to which you checked out the code. 
+&lt;pre&gt;
+export INSTALL_DIR=&quot;/installation/directory&quot;; $INSTALL_DIR/bin/report.py --email
+&lt;/pre&gt;
+
+Instead of emailing, if you want to print the report to stdout, do the following:
+&lt;pre&gt;
+export INSTALL_DIR=&quot;/installation/directory&quot;; $INSTALL_DIR/bin/report.py
+&lt;/pre&gt;
+
+&lt;li&gt; The script uses &quot;config.ini&quot; as the default configuration file. But if you want to use another configuration file of your choice say &quot;alternative.ini&quot;, you can specify the alternative configuration file as shown below (use an alternative configuration file and email the report to the emails specified in that file):
+&lt;pre&gt;
+export INSTALL_DIR=&quot;/installation/directory&quot;; $INSTALL_DIR/bin/report.py --config alternative.ini --email
+&lt;/pre&gt;
+&lt;/ol&gt;
+
+---+++ Logging and Debugging information
+The script logs important messages (reports and errors) to log files under var/log directory. In addition the script will also email the errors to the receipients specified in the [emailErrors] section of the config.ini file. 
+
+---+++ Wish list
+- Add more choices for the command line options &lt;br&gt;
+- Make [emailError] optional (currently it is mandatory)&lt;br&gt;
+- Other enhancements based on feedback and feature and change requests&lt;br&gt;
+
+---+++ Feedback
+If you have any questions/comments/suggestions, please feel free to drop me an email
+

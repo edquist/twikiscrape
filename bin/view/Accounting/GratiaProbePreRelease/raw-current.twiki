@@ -1,0 +1,240 @@
+---++OSG Accounting Services - Gratia - Probe Installation - %RED% *PRE-RELEASE PAGE* %ENDCOLOR%
+
+%X% %RED% The links on this page point to pre-release versions of the probe software. Please, use this software *only* if you have been sent to this page by a Gratia developer. %ENDCOLOR%
+
+---+++Preliminary notes
+
+&lt;OL&gt;
+&lt;LI /&gt;Select the probe(s) you wish to install from the [[#ProbeDownloadTable][table of available probes]].%BR%
+         &lt;b&gt;Note:&lt;/b&gt; In general, the RPMs are non-architecture-specific. &lt;b&gt;However&lt;/b&gt;, the [[#ProbeDownloadPbsLsf][PBS/LSF probe RPM]] is a binary package built for a 32-bit i386 architecture. This is also true of the VDT distribution. If your platform is different, you will need to install the source RPM and follow the instructions for building it under the &lt;i&gt;Details&lt;/i&gt; column in the table below.
+
+&lt;LI /&gt;People with VDT or OSG installations are advised to install using Pacman for those releases that provide their required probe (see the  below); if a probe you require is not available for your version or you require the latest version, please [[#RpmInstall][install from RPM]].
+
+&lt;LI /&gt;For all probe installations via Pacman or RPM, please read the appropriate detailed configuration notes (&quot;Details&quot; column in the [[#ProbeDownloadTable][probe table]]).
+
+&lt;LI&gt;&lt;b&gt;Important:&lt;/b&gt; If, previously, you had installed the probe(s) by RPM at sites where they were not yet available via OSG/VDT and are now upgrading to an OSG/VDT version that contains the probe(s), you must remove the RPM installed probe(s).  In addition, you should check your &lt;i&gt;root&lt;/i&gt; crontab entry and remove the cron entry before upgrading.  The OSG/VDT installation will create a new cron entry for the probe. 
+
+&lt;LI /&gt;For Pacman installs, use the standard Pacman command to install the probes you require, for instance:
+
+&lt;verbatim&gt;pacman -get Gratia-Condor-Probe&lt;/verbatim&gt;
+
+Notes:
+&lt;UL&gt;
+&lt;LI /&gt;Please see the [[ProbeConfigCondor#GratiaCondorGramPatch][installation notes for the condor probe]] if you install it as it requires versions of VDT prior to 1.5.1 to be patched for operation with versions of Condor prior to v6.9.0. 
+&lt;LI /&gt;The Gratia-Probe-Common package will be pulled in as a dependency for all probes, so explicit installation is not required.
+&lt;/UL&gt;
+
+#ProbeDownloadTable
+---+++Probe availability
+
+&lt;style type=&quot;text/css&quot;&gt;
+TD.cdata { text-align: center }
+&lt;/style&gt;
+
+&lt;table width=&quot;100%&quot; border=&quot;1&quot;&gt;
+&lt;thead /&gt;
+&lt;tr style=&quot;text-align: center; font-weight: bold&quot;&gt;
+&lt;th id=&quot;probe&quot; rowspan=&quot;2&quot; /&gt;Probe
+&lt;th id=&quot;rpm&quot; rowspan=&quot;2&quot; /&gt;RPM
+&lt;th id=&quot;pname&quot; rowspan=&quot;2&quot; /&gt;VDT package name
+&lt;th colspan=&quot;2&quot; scope=&quot;colgroup&quot; /&gt;Available since
+&lt;th id=&quot;notes&quot; rowspan=&quot;2&quot; /&gt;Notes
+&lt;th id=&quot;details&quot; rowspan=&quot;2&quot; /&gt;Details
+&lt;/tr&gt;
+&lt;tr style=&quot;text-align: center; font-weight: bold&quot;&gt;
+&lt;th id=&quot;osgver&quot; /&gt;OSG / ITB
+&lt;th id=&quot;vdtver&quot; /&gt;VDT
+&lt;/tr&gt;
+&lt;col width=&quot;1*&quot; /&gt;&lt;col width=&quot;2*&quot; /&gt;&lt;col width=&quot;2*&quot; /&gt;&lt;col width=&quot;1*&quot; /&gt;&lt;col width=&quot;1*&quot; /&gt;
+&lt;col width=&quot;8*&quot; /&gt;&lt;col width=&quot;4*&quot; /&gt;
+&lt;tbody /&gt;
+&lt;tr&gt;&lt;a name=&quot;ProbeDownloadCommon&quot;&gt;
+&lt;td headers=&quot;probe&quot; style=&quot;font-weight: bold&quot;&gt;ALL
+&lt;td headers=&quot;rpm&quot; /&gt;&lt;a href=&quot;http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-common-%ProbeVersion%.noarch.rpm&quot;&gt;
+gratia-probe-common-%ProbeVersion%&lt;/a&gt;
+&lt;td headers=&quot;pname&quot; /&gt;Gratia-Probe-Common&lt;td class=&quot;cdata&quot;/&gt;0.4.1&lt;td class=&quot;cdata&quot;/&gt;1.3.10
+&lt;td headers=&quot;notes&quot; /&gt;Common infrastructure, needed by all probes.
+&lt;td headers=&quot;details&quot; /&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;a name=&quot;ProbeDownloadCondor&quot;&gt;
+&lt;td headers=&quot;probe&quot; rowspan=&quot;2&quot; /&gt;Condor
+&lt;td headers=&quot;rpm&quot; /&gt;
+&lt;a href=&quot;http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-condor-%ProbeVersion%.noarch.rpm&quot;&gt;
+gratia-probe-condor-%ProbeVersion%&lt;/a&gt;
+&lt;td headers=&quot;pname&quot; rowspan=&quot;2&quot; /&gt;Gratia-Condor-Probe
+&lt;td headers=&quot;osgver&quot; class=&quot;cdata&quot; rowspan=&quot;2&quot; /&gt;0.4.1
+&lt;td headers=&quot;vdtver&quot; class=&quot;cdata&quot; rowspan=&quot;2&quot; /&gt;1.3.10
+&lt;td headers=&quot;notes&quot; /&gt;Condor probe (install on CE)[[#ProdReporting][1]]&lt;/sup&gt;
+&lt;td headers=&quot;details&quot; rowspan=&quot;2&quot; /&gt;[[ProbeConfigCondor][Condor probe configuration notes]]
+&lt;/tr&gt;
+&lt;tr&gt;&lt;a name=&quot;ProbeDownloadCondorItb&quot;&gt;
+&lt;td headers=&quot;rpm&quot; /&gt;
+&lt;a href=&quot;http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-condor-itb-%ProbeVersion%.noarch.rpm&quot;&gt;
+gratia-probe-condor-itb-%ProbeVersion%&lt;/a&gt;
+&lt;td headers=&quot;notes&quot; /&gt;Condor probe (install on ITB CE)[[#ItbReporting][2]]&lt;/sup&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;a name=&quot;ProbeDownloadPbsLsf&quot;&gt;
+&lt;td headers=&quot;probe&quot; rowspan=2 /&gt;PBS
+&lt;td headers=&quot;rpm&quot; &gt;
+
+&lt;a href=&quot;http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-pbs-lsf-%ProbeVersion%.i386.rpm&quot;&gt;
+gratia-probe-pbs-lsf-%ProbeVersion%&lt;/a&gt;
+
+&lt;td headers=&quot;pname&quot; rowspan=2 /&gt;Gratia-PBS-Probe
+&lt;td headers=&quot;osgver&quot; class=&quot;cdata&quot; rowspan=&quot;2&quot; /&gt;-
+&lt;td headers=&quot;vdtver&quot; class=&quot;cdata&quot; rowspan=&quot;2&quot; /&gt;1.6.0
+&lt;td headers=&quot;notes&quot; /&gt;PBS probe (install on CE)&lt;sup&gt;[[#ProdReporting][1]]&lt;/sup&gt;
+&lt;td headers=&quot;details&quot; rowspan=&quot;4&quot; /&gt;[[ProbeConfigPbsLsf][PBS/LSF probe configuration notes]]
+
+&lt;/tr&gt;
+&lt;tr&gt;&lt;a name=&quot;ProbeDownloadPbsLsfItb&quot;&gt;
+&lt;td headers=&quot;rpm&quot; /&gt;
+
+
+&lt;a href=&quot;http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-pbs-lsf-itb-%ProbeVersion%.i386.rpm&quot;&gt;
+gratia-probe-pbs-lsf-itb-%ProbeVersion%&lt;/a&gt;
+
+
+
+&lt;td headers=&quot;notes&quot; /&gt;PBS probe (install on ITB CE)&lt;sup&gt;[[#ItbReporting][2]]&lt;/sup&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td headers=&quot;probe&quot; rowspan=2 /&gt;LSF
+&lt;td headers=&quot;rpm&quot; &gt;
+
+
+&lt;a href=&quot;http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-pbs-lsf-%ProbeVersion%.i386.rpm&quot;&gt;
+gratia-probe-pbs-lsf-%ProbeVersion%&lt;/a&gt;
+
+
+
+&lt;td headers=&quot;pname&quot; rowspan=2 /&gt;Gratia-LSF-Probe
+&lt;td headers=&quot;osgver&quot; class=&quot;cdata&quot; rowspan=&quot;2&quot; /&gt;-
+&lt;td headers=&quot;vdtver&quot; class=&quot;cdata&quot; rowspan=&quot;2&quot; /&gt;1.6.0
+&lt;td headers=&quot;notes&quot; /&gt;LSF probe (install on CE)&lt;sup&gt;[[#ProdReporting][1]]&lt;/sup&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td headers=&quot;rpm&quot; /&gt;
+
+&lt;a href=&quot;http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-pbs-lsf-itb-%ProbeVersion%.i386.rpm&quot;&gt;
+gratia-probe-pbs-lsf-itb-%ProbeVersion%&lt;/a&gt;
+
+
+&lt;td headers=&quot;notes&quot; /&gt;LSF probe (install on ITB CE)&lt;sup&gt;[[#ItbReporting][2]]&lt;/sup&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td headers=&quot;probe&quot; /&gt;SGE
+&lt;td headers=&quot;rpm&quot; /&gt;
+&lt;a href=&quot;http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-sge-%ProbeVersion%.noarch.rpm&quot;&gt;
+gratia-probe-sge-%ProbeVersion%&lt;/a&gt;
+&lt;td headers=&quot;pname&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;osgver&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;vdtver&quot; class=&quot;cdata&quot;/&gt;1.6.1a
+&lt;td headers=&quot;notes&quot; /&gt;SGE probe (install on CE)&lt;sup&gt;[[#ProdReporting][1]]&lt;/sup&gt;
+&lt;td headers=&quot;details&quot; /&gt;[[ProbeConfigSge][SGE probe configuration notes]]
+&lt;/tr&gt;
+&lt;!-- &lt;tr&gt;
+&lt;td headers=&quot;probe&quot; /&gt;DCache
+&lt;td headers=&quot;rpm&quot; /&gt;
+&lt;td headers=&quot;pname&quot; /&gt;
+&lt;td headers=&quot;osgver&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;vdtver&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;notes&quot; /&gt;
+&lt;td headers=&quot;details&quot; /&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td headers=&quot;probe&quot; /&gt;glexec
+&lt;td headers=&quot;rpm&quot; /&gt;
+&lt;td headers=&quot;pname&quot; /&gt;
+&lt;td headers=&quot;osgver&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;vdtver&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;notes&quot; /&gt;
+&lt;td headers=&quot;details&quot; /&gt;
+&lt;/tr&gt;
+--&gt;
+&lt;tr&gt;
+&lt;td headers=&quot;probe&quot; /&gt;ps-accounting
+&lt;td headers=&quot;rpm&quot; /&gt;
+&lt;a href=&quot;http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-psacct-%ProbeVersion%.noarch.rpm&quot;&gt;
+gratia-probe-psacct-%ProbeVersion%&lt;/a&gt;
+&lt;td headers=&quot;pname&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;osgver&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;vdtver&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;notes&quot; /&gt;If installed, install on CE _and_ all worker nodes
+&lt;td headers=&quot;details&quot; /&gt;[[ProbeConfigPsacct][PS-accounting probe configuration notes]]
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td headers=&quot;probe&quot; /&gt;SOURCE
+&lt;td headers=&quot;rpm&quot; /&gt;
+&lt;a href=&quot;http://gratia.fnal.gov/Files/probe/SRPMS/gratia-probe-%ProbeVersion%.src.rpm&quot;&gt;
+gratia-probe-%ProbeVersion%&lt;/a&gt;
+&lt;td headers=&quot;pname&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;osgver&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;vdtver&quot; class=&quot;cdata&quot;/&gt;-
+&lt;td headers=&quot;notes&quot; /&gt;Source RPM&lt;sup&gt;[[#PsacctReporting][3]]&lt;/sup&gt;.
+&lt;td headers=&quot;details&quot; /&gt;[[ProbeSrpmNotes][Detailed notes for SRPM]]
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;b&gt;VDT pacman installations:&lt;/b&gt; %BR%
+This fix was been made available in the VDT 1.6.1c cache on 3/21/2007.  If you currently have 0.12i installed you should perform the following update:
+&lt;pre&gt;
+&amp;gt; pacman -update Gratia-PBS-Probe  
+    or
+&amp;gt; pacman -update Gratia-LSF-Probe
+&lt;/pre&gt;
+
+
+#RpmInstall
+---+++Installation from RPM
+
+&lt;UL&gt;
+&lt;LI /&gt;If you install any probe at all, you will need the =gratia-probe-common= RPM listed below; this contains common infrastructure required by all probes.
+
+&lt;LI /&gt;The Gratia Condor currently requires that $VDT_LOCATION/gratia/var/data points to the same directory as the directory mentioned in the =DataFolder= variable of the Gratia Condor probe&#39;s ProbeConfig file.
+
+&lt;LI /&gt;Depending on your batch system, you should install the appropriate Condor or PBS/LSF probe on your CE. If you are running both batch systems, you should install both probes.
+
+&lt;LI /&gt;Read the configuration notes for each probe you install.
+
+&lt;LI /&gt;If you require the extra granularity of process accounting (unlikely except in rare circumstances), you should install the ps-accounting probe on the CE *and* every worker node. This is a re-incarnation of a legacy FNAL admin utility and as such is only likely to be of use to FNAL admins.
+
+&lt;LI /&gt;Note that the =gratia-probe-common= RPM contains example probes, =samplemeter.{py,pl}=. If you wish to write or customize your own probe, please take a look at the [[ProbeConfigGeneral][general configuration notes]]. For specific probes, see the appropriate notes for that probe as listed in the table below.
+
+&lt;LI /&gt;Install the appropriate RPMS. Note that the main install prefix may be changed with this addition to the =rpm= command line: =--relocate&amp;nbsp;/opt/vdt/gratia=/desired/path=. It is recommended to use, for example:
+
+&lt;UL&gt;
+#CondorProbeQuickStart&lt;LI /&gt;Condor:
+
+&lt;verbatim&gt;rpm -Uvh --relocate /opt/vdt/gratia=$VDT_LOCATION/gratia \
+http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-common-%ProbeVersion%.noarch.rpm \
+http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-condor-%ProbeVersion%.noarch.rpm
+&lt;/verbatim&gt;
+
+#PbsLsfProbeQuickStart&lt;LI /&gt;PBS/LSF:
+&lt;verbatim&gt;rpm -Uvh --relocate /opt/vdt/gratia=$VDT_LOCATION/gratia \
+http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-common-%ProbeVersion%.noarch.rpm \
+http://gratia.fnal.gov/Files/probe/RPMS/gratia-probe-pbs-lsf-%ProbeVersion%.i386.rpm
+&lt;/verbatim&gt;
+&lt;/UL&gt;
+
+&lt;/UL&gt;
+
+------
+---++++++Footnotes
+&lt;small&gt;
+&lt;OL&gt;
+#ProdReporting&lt;LI /&gt;The default configuration files are configured to send data to the official [[http://gratia-osg.fnal.gov:8880/gratia-reporting][OSG Gratia server]]
+#ItbReporting&lt;LI /&gt;The default configuration files are configured to send data to the [[http://gratia-osg.fnal.gov:8881/gratia-reporting][OSG Gratia ITB server]]
+#PsacctReporting&lt;LI /&gt;This probe uses the Linux processing accounting facility and reporting is daily. The default configuration files are configured to send data to the [[http://gratia-fermi.fnal.gov:8882/gratia-reporting][OSG Gratia psacct server]]. Note that unlike the other probes, the psacct probe must be installed on every worker node.
+&lt;/OL&gt;
+&lt;/small&gt;
+
+-- Main.PenelopeConstanta - 30 Aug 2006
+
+-- Main.ChrisGreen - 22 Feb 2007
+
+-- Main.JohnWeigand - 16 Mar 2007 - Added 0.12i_patch rpms for LSF and PBS probes for the changes to pbs-lsf_meter.cron.sh to resolve the lock file problems
+
+-- Main.ChrisGreen - 04 Apr 2007 - Pre-release page; removed 0.12i_patch references.
+

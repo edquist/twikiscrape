@@ -1,0 +1,300 @@
+&lt;table width=&quot;100%&quot;&gt;
+&lt;tr&gt;&lt;td valign=&quot;top&quot;&gt;
+&lt;/td&gt;
+&lt;td valign=&quot;top&quot;&gt;
+---+!!Probe Developement Guide
+%TOC%
+&lt;/td&gt;
+&lt;td valign=&quot;top&quot; align=&quot;right&quot; width=&quot;25%&quot;&gt;
+%TABLE{ sort=&quot;off&quot; dataalign=&quot;left&quot; tableborder=&quot;0&quot; cellpadding=&quot;1&quot; cellspacing=&quot;3&quot; headerbg=&quot;#F3EDE7&quot; databg=&quot;#F3EDE7&quot;}%
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+%STARTINCLUDE%
+
+
+We current provide a simple python library (Gratia.py) for the implementation of the Gratia Probe.
+
+---++ Minimal example
+
+The following script is a minimal example, showing the steps need to upload a record:
+
+&lt;verbatim&gt;#Load the library
+import Gratia.py
+# Initialize the Gratia library (read the Probe configuration file)
+Gratia.Initialize()
+# Create the record
+# The parameter indicates the Resource Type (&quot;Batch&quot;, &quot;RawCPU&quot;, &quot;Storage&quot;,etc)
+# See also the function ResourceType
+r = Gratia.UsageRecord(&quot;Batch&quot;)
+r.LocalUserId(&quot;cmsuser000&quot;)
+# Send it
+r.Send()&lt;/verbatim&gt;
+
+See [[%ATTACHURL%/samplemeter.py.txt][samplemeter.py.txt]] for a complete example.
+
+---++ Gratia.Send
+
+Generate the XML file corresponding to the usage record and upload it to the server.
+The return value is an empty string in case of success.  In case of failure, the error
+message is returned.  Usually the error are non fatal in the sense that the xml file
+will be cached and re-send the next time the probe is ran.
+
+In the rare case where Gratia is *both* unable to store the file locally and unable to upload it to the
+server the message will start with =Fatal Error:=, for example:
+
+=Fatal Error: Record not send and not cached.  Record will be lost.=
+
+=Fatal Error: too many pending files=
+
+is issued and the record will need to be recreated by the probe once either the
+write error or the communication error has been resolved (see log file for
+details on the error).    For example:&lt;verbatim&gt;        # Send to gratia, and see what it says.
+        response = Gratia.Send(usageRecord)
+        baseMsg = &quot;Record: %s, %s, njobs %i&quot; % (str(row[&#39;datestamp&#39;]),
+            row[&#39;transaction&#39;], row[&#39;njobs&#39;])
+        if response == &quot;Fatal Error: too many pending files&quot;:
+            # The server is currently not accepting record and
+            # Gratia.py was not able to store the record, we will
+            # need to resend it.
+            # For now take a long nap and then by &#39;break&#39; we
+            # force a retry for this record.
+            self._log.error(&quot;Error sending : too many pending files&quot;)
+            longsleep = 15*60
+            self._log.warn(&quot;sleeping for = %i seconds.&quot; % longsleep)
+            sleep_check(longsleep, self._stopFileName)
+        elif response.startswith(&#39;Fatal Error&#39;) or \
+            response.startswith(&#39;Internal Error&#39;):
+            self._log.critical(&#39;error sending &#39; + baseMsg + \
+                &#39;\ngot response &#39; + response)
+            sys.exit(2)
+            self._log.debug(&#39;sent &#39; + baseMsg)
+        # If we got a non-fatal error, slow down since the server
+        # might be overloaded.
+        if response[:2] != &#39;OK&#39;:
+            self._log.error(&#39;error sending &#39; + baseMsg + \
+                            &#39;\ngot response &#39; + response)&lt;/verbatim&gt;
+
+---++ Gratia.Handshake
+
+The Probe and Collector exchange a handshake message when Gratia.Initialize is called.   
+This allows to differentiate between a Probe with no data to report and a probe with a 
+broken configuration. 
+
+The Handshake can also be called explicitly:
+
+   GratiaCore.Handshake() 
+
+This is in particular recommended for Probe that are implemented as a daemon.
+Those probes should call Gratia.Handshake() regularly (especially if there is no real data to upload).  The call to Handshake will also re-establish the connection
+if it was previously broken or it has timed-out.  If &#39;True&#39; is passed as a parameter ( Gratia.Handshake(True) ), the number of connection retries will be reset
+(effectively forcing a connection attempt even if many previous attempt failed)
+
+Probe should call: 
+&lt;verbatim&gt;  GratiaCore.RegisterReporterLibrary(name,version)&lt;/verbatim&gt;
+to register the libraries the Probe itself is using.
+&lt;verbatim&gt;  GratiaCore.RegisterReporter(name,version)&lt;/verbatim&gt;
+to register the version of the Probe itself
+&lt;verbatim&gt;  GratiaCore.RegisterService(name,version)&lt;/verbatim&gt;
+to register the version of the service (Condor,
+PBS,LSF,DCache,SunGrid Engine, etc.) being &#39;probed&#39;
+
+&lt;verbatim&gt;  GratiaCore.RegisterEstimatedServiceBacklog(number_service_records_not_yet_sent)&lt;/verbatim&gt;
+to register an estimation of the amount of records the probe will have to go through and send to the Collector.
+
+Those function must be called before the call to Gratia.Initialize.
+
+#DataType
+---++ Data type 
+
+When expecting a time instant (i.e. a date and time), the Gratia interface expects either a number of second since epoch or
+a string formated using the format [[http://www.w3.org/TR/xmlschema-2/#dateTime][xsd:dateTime]].
+
+The function Gratia.TimeToString takes a python struct_time object and convert it
+to a string following the format [[http://www.w3.org/TR/xmlschema-2/#dateTime][xsd:dateTime]].
+
+When expecting a time duration, the Gratia interface expects a number in second and fraction of second or 
+a string formated using the format [[http://www.w3.org/TR/xmlschema-2/#duration][xsd:duration]]
+
+---++ Public Interface:
+In general the function correspond to the equivalent XML tag described in the [[http://www.psc.edu/~lfm/PSC/Grid/UR-WG/UR-Spec-gfd.58-ggf18.pdf][OGF Usage Record XML Schema]].  Only 2 of StartTime, EndTime and WallDuration are required.
+---+++ !StartTime(self, value, description = &quot;&quot;)
+Time instant at which the &#39;usage&#39; started.  See [[#DataType][Data Type]] for details on the syntax for &#39;value&#39;.
+The argument can be either a string (with the correct formating) or a struct_time python object
+---+++ !EndTime(self, value, description = &quot;&quot;)
+Time instant at which the &#39;usage&#39; ended.  See [[#DataType][Data Type]] for details on the syntax for &#39;value&#39;
+The argument can be either a string (with the correct formating) or a struct_time python object
+---+++ !WallDuration(self, value, description = &quot;&quot;)
+Wall clock time that elapsed while the job was running. 
+&lt;verbatim&gt;r.WallDuration(3600*25+63*60+21.2)&lt;/verbatim&gt;
+See [[#DataType][Data Type]] for details on the syntax for &#39;value&#39;
+---+++ !CpuDuration(self, value, cputype, description = &quot;&quot;):
+Total amount of cpu time used by the job.   Cputype must be specified and be one of either &#39;user&#39; or &#39;system&#39;
+&lt;verbatim&gt;        r.CpuDuration(&quot;PT23H12M1.75S&quot;,&quot;user&quot;)
+        r.CpuDuration(&quot;PT12M1.75S&quot;,&quot;sys&quot;)&lt;/verbatim&gt;
+See [[#DataType][Data Type]] for details on the syntax for &#39;value&#39;
+---+++ !UserKeyInfo(self,value)
+Expect the complete DN.  The currently supported format look like:
+
+=/DC=gov/DC=fnal/O=Fermilab/OU=Robots/CN=cdf/CN=Elliot D. Lipeles/USERID=lipeles=
+
+=CN=john ainsworth, L=MC, OU=Manchester, O=eScience, C=UK=
+
+---+++ !Status(self,value, description = &quot;&quot;)
+The value is represented as a string
+
+This property will represent the completion status of the job. For example, this may
+represent the exit status of an interactive running process or the exit status from the batch
+queuing system&amp;#8217;s accounting record. The semantic meaning of status is site dependent.
+
+Numerical value are supported as well as the following &#39;words&#39;
+ * aborted &amp;#8211; A policy or human intervention caused the job to cease execution.
+ * completed &amp;#8211; The execution completed.
+ * failed &amp;#8211; Execution halted without external intervention.
+ * held &amp;#8211; Execution is held at the time this usage record was generated.
+ * queued &amp;#8211; Execution was queued at the time this usage record was generated.
+ * started &amp;#8211; Execution started at the time this usage record was generated.
+ * suspended &amp;#8211; Execution was suspended at the time this usage record was generated.
+---+++ !LocalUserId(self,value)
+The local identity of the user associated with the resource consumption reported in this
+Usage Record. This user is often referred to as the requesting user. For example, the
+value may be the user&amp;#8217;s login name corresponding to the user&amp;#8217;s uid in the /etc/passwd file
+on Unix systems.
+---+++ !LocalJobId (self,value)
+The local job identifier as assigned by the batch queue expressed as a string.
+---+++ !GlobalJobId(self,value)
+The global job identifier as assigned by a metascheduler or federation scheduler.
+---+++ !ProcessId(self,value)
+The (OS level) process id of the jobs (PID).
+---+++ !GlobalUsername(self,value)
+The global identity of the user associated with the resource consumption reported in this
+Usage Record.  For example, the value may be the distinguished name from the user&amp;#8217;s
+certificate.
+---+++ !JobName(self, value, description = &quot;&quot;)
+The job or application name. For example, this could be the name of the executable that
+ran, or the name of the batch queuing system&amp;#8217;s name for the job.
+---+++ !Charge(self,value, unit = &quot;&quot;, formula = &quot;&quot;, description = &quot;&quot;)
+This property represents the total charge of the job in the system&amp;#8217;s allocation unit. For
+example 100, 200, or 3000. The meaning of this charge will be site dependent. The value
+for this property MAY include premiums or discounts assessed on the actual usage
+represented within this record. Therefore, the reported charge might not be directly
+reconstructable from the specific usage reported.
+
+Note that &amp;#8220;Charge&amp;#8221; does not necessarily refer to a currency-based unit unless that is what
+members of the grid virtual organization agree to as the definition. If charge denotes a
+value in currency, standard currency codes should be used to indicate the currency unit
+being reported.
+---+++ !TimeDuration(self, value, timetype, description = &quot;&quot;):
+Additional measure of time duration that is relevant to the reported usage.  timetype can be one of &#39;submit&#39;,&#39;connect&#39;,&#39;dedicated&#39; (or other).
+
+See [[#DataType][Data Type]] for details on the syntax for &#39;value&#39;
+---+++ !TimeInstant(self, value, timetype, description = &quot;&quot;):
+Additional identified discrete time that is relevant to the reported usage.
+timetype can be one of &#39;submit&#39;,&#39;connect&#39; (or other)
+
+See [[#DataType][Data Type]] for details on the syntax for &#39;value&#39;
+---+++ !MachineName(self, value, description = &quot;&quot;) 
+Should be the fully qualified name of the CE/SE.
+---+++ !Host(self, value, primary = False, description = &quot;&quot;) 
+Hostname where the job was actually run.
+In the description you can/should add a description of the node itself.  For example:
+
+    si2k=7363.23 &#39;model=&#39;Intel(R) Xeon(TM) CPU 2.40GHz&#39; ncpu=4
+
+where si2k is optional and would contain the result of running the Spec Int 2000 test
+on that node.
+
+---+++ !SubmitHost(self, value, description = &quot;&quot;) 
+The system hostname from which the job was submitted.
+---+++ !Queue(self, value, description = &quot;&quot;) 
+The name of the queue from which the job was executed or submitted.
+---+++ !ProjectName(self, value, description = &quot;&quot;) 
+The project associated with the resource usage reported with this record. Some
+accounting systems define this is the ACID. On some systems, the project is identified
+with the effective GID under which the job consumed resources.
+[This is currently stored but not used by Gratia.
+---+++ !Network(self, value, storageUnit = &quot;&quot;, phaseUnit = &quot;&quot;, metric = &quot;total&quot;, description = &quot;&quot;) :
+The amount of network resource used by the job.
+
+Metric should be one of &#39;total&#39;,&#39;average&#39;,&#39;max&#39;,&#39;min&#39;
+value should be an integer. 
+PhaseUnit should expressed as a duration; see [[#DataType][Data Type]] for details on the syntax.
+---+++ !Disk(self, value, storageUnit = &quot;&quot;, phaseUnit = &quot;&quot;, type = &quot;&quot;, metric = &quot;total&quot;, description = &quot;&quot;) :
+Disk storage used.
+
+Metric should be one of &#39;total&#39;,&#39;average&#39;,&#39;max&#39;,&#39;min&#39;.  Type can be one of scratch or temp.
+
+phaseUnit should expressed as a duration; see [[#DataType][Data Type]] for details on the syntax.
+---+++ !Memory(self, value, storageUnit = &quot;&quot;, phaseUnit = &quot;&quot;, type = &quot;&quot;, metric = &quot;total&quot;, description = &quot;&quot;) :
+The amount of memory used by all concurrent processes in the job.
+
+Metric should be one of &#39;total&#39;,&#39;average&#39;,&#39;max&#39;,&#39;min&#39;.   Type can be one of shared, physical, dedicated.
+
+phaseUnit should expressed as a duration; see [[#DataType][Data Type]] for details on the syntax.
+---+++ !Swap(self, value, storageUnit = &quot;&quot;, phaseUnit = &quot;&quot;, type = &quot;&quot;, metric = &quot;total&quot;, description = &quot;&quot;) :
+This property specifies the swap usage
+
+Metric should be one of &#39;total&#39;,&#39;average&#39;,&#39;max&#39;,&#39;min&#39;.  Type can be one of shared, physical, dedicated.
+
+phaseUnit should expressed as a duration; see [[#DataType][Data Type]] for details on the syntax.
+---+++ !NodeCount(self, value, metric = &quot;total&quot;, description = &quot;&quot;) :
+Number of nodes used. A node definition may be dependent on the architecture, but
+typically a node is a physical machine. For example a cluster of 16 physical machines
+with each machine having one processor each is a 16 &amp;#8220;node&amp;#8221; machine, each with one
+&amp;#8220;processor&amp;#8221;. A 16 processor SMP machine however, is 1 physical node (machine) with
+16 processors.
+
+Metric should be one of &#39;total&#39;,&#39;average&#39;,&#39;max&#39;,&#39;min&#39; 
+---+++ !Processors(self, value, consumptionRate = 0, metric = &quot;total&quot;, description = &quot;&quot;) :
+The number of processors used or requested. A processor definition may be dependent on
+the machine architecture. Typically processor is equivalent to the number of physical
+CPUs used. For example, if a job uses two cluster &amp;#8220;nodes&amp;#8221;, each node having 16 CPUs
+each, the total number of processors would be 32.
+
+Metric should be one of &#39;total&#39;,&#39;average&#39;,&#39;max&#39;,&#39;min&#39;
+consumptionRate specifies te consumption rate for the report processor usage.  The cinsumption rate is a sclaing factor that indicates the average percentage of utilization. 
+---+++ !ServiceLevel(self, value, type, description = &quot;&quot;)
+This property identifies the quality of service associated with the resource consumption.
+For example, service level may represent a priority associated with the usage.
+
+---+++ !Resource(self,description,value):
+Send arbitrary information along for the job usage record.
+&quot;description&quot; should uniquely identify the semantic.
+---+++ !AdditionalInfo(self,description,value) :
+Send arbitrary information along for the job usage record.
+&quot;description&quot; should uniquely identify the semantic.
+
+---++Gratia Specific interface
+The following are not officially part of the Usage Record format
+---+++ !ResourceType(self,value)
+Indicate the type of resource this record has been generated on.
+The supported values are:
+   * !Batch (aka Condor, pbs, lsf, glexec)
+   * !Storage (aka Dcache)
+   * !RawCPU (aka process level sacct)
+
+---+++ !VOName(self,value)
+
+---+++ !ReportableVOName(self,value)
+&#39;Reportable VO NAme (as defined by VOMS).
+
+---+++ !Njobs(self, value, description = &quot;&quot;) 
+Number of jobs convered by this usage record.
+
+
+---+++ !ProbeName(self, value, description = &quot;&quot;) :
+Unique name of the Probe (usually entered via the ProbeConfig file).
+---+++ !SiteName(self, value, description = &quot;&quot;) :
+Indicates which site the service accounted for belong to (usually entered via the ProbeConfig file).
+
+---++Gratia Meta Data interface
+The following are additional information about the probe or related work delegated to the probe.
+---+++ !AddTransientInputFile(self, filename)
+The given file will be deleted as soon as (but only if) a proper XML record is either send to the Collector or safety stored in the &#39;xml-file-to-be-sent&#39; directory.  
+If the record is suppressed (because it is missing a DN or because the probe is configured to reject local jobs), the input file will be copied in a quarantine
+folder under the DataFolder.   This will be cleanup after a configurable amount time (default 31 days) and can be recovered until then if the Probe was
+inadvertently configured to reject local jobs.
+
+
+
+
+-- Main.PhilippeCanal - 14 Dec 2006
+

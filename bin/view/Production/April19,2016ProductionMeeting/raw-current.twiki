@@ -1,0 +1,114 @@
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-812-856-7060, 231000# 
+   * [[https://bridge.iu.edu/webapp/#/][Video Link]]
+
+---++ Announcements:   
+
+---++ Action/Significant Items: 
+   * Discovered a problem with HTCondor and partitionable slots in OSG 3.3.11. Notified community to delay updating http://osggoc.blogspot.com/2016/04/htcondor-845-causes-problems-with.html. 
+   * AMS passed the 10Mhrs milestone in 2 months of running
+   * Gratia backend for transfers is behind real time, anticipate it will catch up
+
+---++ Attendees: 
+   * Armen, Scott, Kyle, Jeny, Xin, Tim T, Tim C, Rob Q, Tanya, Bo
+
+---++ Apologies: 
+   * Tony
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status.
+      * USATLAS total production over the past week was mostly stable, at the average level of 52-60K running job slots.   
+   * Job statistics for last week.      
+      * Gratia report: 1.8M pilots, 3.4M walltime hours, and CPU/walltime ratio of 76% (for single core jobs)
+      * 1.3M real Jobs reported from the Atlas dashboard.  
+   * Data Transfer rate at BNL tier1 last week: gratiaweb not fully reporting
+
+---++ FIFE - !FabrIc for Frontier Experiments (Tanya)
+   * Decreased in the OSG usage during last couple of months. Still trying to figure out why. OSG resource usage since March 1st:
+   * &lt;img src=&quot;https://twiki.opensciencegrid.org/twiki/pub/Production/April19%2c2016ProductionMeeting/Screen_Shot_2016-04-19_at_12.50.45_PM.png&quot;&gt;&lt;/img&gt;
+   * Worked with sites to allow access to slots with bigger memory: Caltech, UCSD, Wisconsin, Nebraska,Omaha, MWT2/UChicago, Hyak, Bern, Clemson, Manchester. Not all accept all VOs, available memory varies.
+   *  Investigating problems with:
+      * CDF at CNAF:  https://ticket.opensciencegrid.org/28530
+      * CDF at MIT: https://ticket.grid.iu.edu/viewer?id=26925
+      * !NOvA at SMU:  https://ticket.grid.iu.edu/viewer?id=29051
+      * !NOvA at FZU (new CE): https://ticket.opensciencegrid.org/29054
+
+---++ CMS (Tony)
+
+---++ Grid Operations Center (Scott)
+
+   * [[http://tinyurl.com/pzkjq32][GOC Services Availability/Reliability]]
+   * &lt;a href=&quot;http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on&quot;&gt;Current status: &lt;img src=&quot;http://steige.grid.iu.edu/steige/status_current.png&quot;&gt; &lt;/a&gt;
+   * &lt;a href=&quot;http://reports.grid.iu.edu/reports/&quot;&gt;Reports current: &lt;img src=&quot;http://steige.grid.iu.edu/steige/status_reports.png&quot;&gt;&lt;/a&gt;
+   * [[http://maddash.aglt2.org/maddash-webui/index.cgi?dashboard=OSG%20Grid%20Operations%20Center%20Test%20Mesh%20Config][PerfSonar]] service
+&lt;img src=&quot;http://gratiaweb2.grid.iu.edu/gratiastatic/today/osg_wall_hours.png&quot;/&gt;
+&lt;img src=&quot;http://osg-flock.grid.iu.edu/monitoring/condor/condor_7day.png&quot;  style=&quot;width: 75%; height: 75%&quot; &gt;&lt;br&gt;
+   * Grid Operations Center
+      * Problem with issuing certificates with many SAN, please see [[https://ticket.grid.iu.edu/29357][29357]].
+      * event-itb.grid.iu.edu being used by GRACC, a gratia replacement under development
+         * use cases and criticality to be discussed, currntly working acceptably. 
+      * Production release, [[http://osggoc.blogspot.com/2016/04/goc-service-update-tuesday-april-12.html][Release note]]
+      * Timestamp issues on BDII data
+         * traced to drifting clock at a resource, problem was detected automatically, fix was easy
+      * ITB release, in progress
+         * OIM, !GratiaWeb changes
+         * OS updates and other administratia
+         * [[http://osggoc.blogspot.com/2016/04/goc-service-update-tuesday-april-26.html][release note]]
+   * OSG-Connect
+      * Network issues at UC (upstream of us at !SciDMZ)
+
+&lt;!-- ---++ Networking (Shawn) --&gt;
+
+---++ Production Support (Bo)
+&lt;img src=&quot;http://reports.grid.iu.edu/reports/opp-week.png&quot;&gt;
+   * AMS transitioned to &quot;regular citizen&quot;. Still getting ~700k hours/day. Investigating why they seem to be getting more than anyone else despite fair share
+   * CMS multicore config fallout fixed (Caltech)
+   * Added MWT and AGLT2 to CMS opportunistic testing
+
+
+---++ Software (Tim C.)
+   * May release
+      * Drop GRAM from the OSG-CE metapackages
+      * HTCondor-CE-Bosco
+      * HTCondor 8.4.6 (to replace the broken 8.4.5)
+      * Maybe CVMFS 2.2.2 in main production area, if they ship on time
+      * HTCondor-CE and BLAHP tweaks
+      * Many OSG Configure updates
+      * Many OSG PKI Tools updates
+      * RSV tweaks
+      * Update to Pegasus 4.6.1 (or later)
+      * See if voms-api-java v3 allows !BeStMan to work on EL&amp;nbsp;7
+   * Active site support: BNL, FNAL, UCR, UNESP, Utah
+
+ 
+---++ Release (Tim T.)
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| May | 3.3.12 / 3.2.38 | 2016-04-25 | 2016-05-02 | 2016-05-10 | |
+| June | 3.3.13 / 3.2.39 | 2016-05-31 | 2016-06-06 | 2016-06-14 | 5 week cycle |
+| July | 3.3.14 / 3.2.40 | 2016-06-27 | 2016-07-05 | 2016-07-12 | |
+
+[[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.3.12%2C%203.2.38%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][May 10th Release]]
+
+   * OSG 3.2.38 and OSG 3.3.12
+      * Nothing yet
+   * OSG 3.3.12 Only
+      * Testing: osg-build: package CILogon OSG CA cert (internal tool)
+   * OSG 3.2.38 Only
+      * Nothing
+
+
+---++ Security
+   * Vulnerabilities/Incidents
+      * No vulnerabilities/incidents in the previous week.
+   * Operations
+      * OSG CA transition
+         * Transition for VOs scheduled for May 10th: NERSC, SURAGrid, DREAM, LBNL, CompBioGrid??, LQCD, BNL, LZ, CIGI, SCDA.
+         * Fix for Atlas issue still pending for testing [[https://jira.opensciencegrid.org/browse/OSGPKI-399][JIRA ticket]]
+         * Issue with host certificate request including many Alternate names. CILogon was enforcing a maximum length of 255 characters on the list of alt hostnames. Fix has been deployed in CILogon test endpoint, waiting for testing. Details at [[https://ticket.opensciencegrid.org/29375][OIM ticket]]
+   * DCAFI project (federated access for experiments using FIFE) Development has been finished, testing phase is next.
+
+-- Main.ScottTeige - 19 Apr 2016
+

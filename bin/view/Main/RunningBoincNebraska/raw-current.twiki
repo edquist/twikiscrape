@@ -1,0 +1,27 @@
+
+---+ Running BOINC at Nebraska
+
+The OSG BOINC application was put together to allow HCC to launch any project using the BOINC framework throughout the grid.  It was designed with scalability and reliability in mind.  This takes advantage of &quot;permanent jobs&quot; in Condor - jobs which are continuously resubmitted after they finish executing.
+
+---++ Starting the job
+   1. Log into glidein with the username provided.
+   &lt;pre class=&quot;screen&quot;&gt;
+   ssh username@glidein.unl.edu&lt;/pre&gt;
+   1. Download the newest version of the BOINC workflow
+   &lt;pre class=&quot;screen&quot;&gt;
+   svn co svn://t2.unl.edu/brian/osg_boinc&lt;/pre&gt;
+   1. Change the directory to the new =osg_boinc= one
+   &lt;pre class=&quot;screen&quot;&gt;
+   cd osg_boinc/&lt;/pre&gt;
+   1. Edit =boinc.cfg=.  By default, we attach to the Einstein@Home project using the HCC account, but you are free to use any project or account you&#39;d like.
+   1. Submit the BOINC workflow:
+   &lt;pre class=&quot;screen&quot;&gt;
+   ./boinc_mgr --log_dir=logs --single_submit=2000 -c boinc.cfg&lt;/pre&gt;
+   Edit the number of jobs to be the maximum number of simultaneously running jobs you&#39;d like.
+
+---++ Monitoring the jobs
+On glidein.unl.edu, type the command:
+&lt;pre class=&quot;screen&quot;&gt;
+condor_q username
+&lt;/pre&gt;
+Where =username= is your provided username.

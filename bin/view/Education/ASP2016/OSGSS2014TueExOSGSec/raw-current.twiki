@@ -1,0 +1,67 @@
+---+ 2014 OSG User School - Understanding your certificate
+
+Time to spend on this: 10 minutes&lt;br&gt;
+Node to use: Preferentially osg-ss-submit.chtc.wisc.edu, but 10g-5.t2.ucsd.edu will work just as well.
+
+Assumption: You should have [[UserSchool14Certificate][obtained your certificate]] by now.
+
+Please copy your .p12 file into the ~/.globus directory (and create the directory first, if needed), if you have not done it yet.&lt;br&gt;
+Make sure it is not readable by anyone else but you
+&lt;pre class=&quot;screen&quot;&gt;
+sfiligoi@osg ~$ ls -l .globus/
+-rw------- 1 sfiligoi osgeduadm 5098 May  2  2014 cert.p12
+&lt;/pre&gt;
+
+---+++ Looking into your certificate
+
+The standard tool to look into a x.509 certificate is *openssl*.
+It provides a (relatively) easy way to do this. Try all these:
+&lt;pre class=&quot;screen&quot;&gt;
+openssl pkcs12 -in ~/.globus/cert.p12 -nokeys -clcerts |openssl x509 -noout -subject
+openssl pkcs12 -in ~/.globus/cert.p12 -nokeys -clcerts |openssl x509 -noout -enddate
+openssl pkcs12 -in ~/.globus/cert.p12 -nokeys -clcerts |openssl x509 -noout -text
+&lt;/pre&gt;
+
+The complication stems from the fact that the certificate is in .p12, but openssl works best on .pem formated files.&lt;br&gt;
+So, and easy way around it is to first save the certificate information into .pem format, and only then run *openssl* on it.
+&lt;pre class=&quot;screen&quot;&gt;
+openssl pkcs12 -in ~/.globus/cert.p12 -nokeys -clcerts &gt; ~/.globus/cert_pub.pem
+
+openssl x509 -noout -subject -in  ~/.globus/cert_pub.pem
+openssl x509 -noout -enddate -in  ~/.globus/cert_pub.pem
+openssl x509 -noout -text    -in  ~/.globus/cert_pub.pem
+&lt;/pre&gt;
+
+*Note:* The cert_pub.pem file does not contain the full certificate, only the information part of it. Enough for this exercise, but cannot be used for authentication purposes.
+
+---++ Extending the certificate with VOMS attributes
+
+As mentioned in the security lecture, you will often want to extend your certificate with a VOMS attribute.&lt;br&gt;
+The resulting new certificate is often referred to as *a proxy*.
+
+To create the VOMS-extended proxy, use can use &lt;b&gt;voms-proxy-init&lt;/b&gt;
+&lt;pre class=&quot;screen&quot;&gt;
+voms-proxy-init -cert ~/.globus/cert.p12 -key ~/.globus/cert.p12 -out ~/.globus/proxy.pem -voms osgedu -valid 12:0 -hours 12
+&lt;/pre&gt;
+
+Unlike the original certificate, which is in the p12 format, the proxy will already be in the PEM format.
+Using *openssl* to look at it is thus slightly easier
+&lt;pre class=&quot;screen&quot;&gt;
+openssl x509 -in ~/.globus/proxy.pem -noout -subject
+openssl x509 -in ~/.globus/proxy.pem -noout -enddate
+openssl x509 -in ~/.globus/proxy.pem -noout -text
+&lt;/pre&gt;
+
+You probably did not see the VOMS attribute in the output.
+This is due to the fact that openssl does not know how to interpret the VOMS attribute.
+
+The OSG software comes with an tool knows how to parse the VOMS attributes. It is called &lt;b&gt;voms-proxy-info&lt;/b&gt;.&lt;br&gt;
+You can use it both for the original certificate and for the proxy:
+&lt;pre class=&quot;screen&quot;&gt;
+voms-proxy-info -file ~/.globus/proxy.pem -all
+voms-proxy-info -file ~/.globus/proxy.pem -all -chain
+voms-proxy-info -file ~/.globus/cert_pub.pem -all
+voms-proxy-info -file ~/.globus/cert_pub.pem -all -chain
+&lt;/pre&gt;
+
+-- Main.IgorSfiligoi - 27 Jun 2014

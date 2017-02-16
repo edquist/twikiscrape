@@ -1,0 +1,131 @@
+-- Main.DanFraser - 09 May 2011
+---++ Action/Significant Items:
+   * There was a BDII outage that occurred during Operations maintenance. CMS was first to notice the outage (it also impacted Atlas) and service was restored within an hour after it was noticed. Rob&#39;s team is investigating the cause.
+   * HCC: working in progress on 4 T2 sites (BU, HU, WT2, SWT2_CPB).
+   * Discovered a Condor-G issue where jobs that get held on the remote site they don&#39;t report the status change back through GRAM.  This causes the factory to lose track of glideins that are held on the remote side. This primarily affects our monitoring and can make debugging difficult for factory operations. A VDT ticket has been opened. (Rob)
+   * An Incident drill of Atlas is being carried out this week. No problems so far. (Mine)
+
+---++ Attendees:
+   * Xin, Armen, Britta, Robert E., Brian, Suchandra, Burt, Marco, Rob Q., Scott T., Mine, Chander, Dan
+ 
+---++ CMS (Burt)
+   * Machine: hit 1e33 luminosity &gt;900 bunches!  (That&#39;s a lot!)
+   * 430 khour/day, 90% success
+   * Lots of reprocessing in CMS: &gt;500e6 events processed in less than 2 weeks (not counting &quot;gensim&quot;)
+   * We did notice the BDII outage today, things seem back to normal
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * Good operation for LHC during the past week. Operating with 912 bunches now. New record peak luminosity 1.1x1033 achieved yesterday. Total accumulated luminosity for ATLAS about 400pb-1.
+      * US ATLAS production was overall stable at the average level of about 10-12k running jobs, mostly simulation. The rate dropped at the very end of the week and picked up again this week. Waiting for the new simulation campaign. 
+   * Job statistics for last week. 
+      * Gratia report: USATLAS ran 2.4M jobs, with CPU/Walltime ratio of 90%. 
+      * Panda world-wide production report (real jobs): 
+         * not received report this week from shifters&#39; team
+      * Panda jobs processed, as reported by Panda monitor, on USATLAS sites:
+         * 830K panda jobs processed for last week. 
+   * Data Transfer statistics for last week
+      * BNL T1 data transfer rate was around 250~300TB/day in last week. 
+   * Issues
+      * OSG opportunistic access to USATLAS sites: 
+         * HCC: working in progress on 4 T2 sites (BU, HU, WT2, SWT2_CPB).
+      * update of LFC in VDT/OSG client packages : in progress (VDT team) 
+
+---++ LIGO (Britta, Robert E.)
+
+---+++ Gratia Reports
+   * Previous week&#39;s total usage: 8 users utilized 38 sites
+      * 63275 jobs total (47098 / 16177 = 74.4% success)
+      * 334197.7 wall clock hours total (275713.5 / 58484.2 = 82.5% success)
+   * Previous week&#39;s total usage: 4 users utilized 32 sites
+      *  50413 jobs total (35572 / 14841 = 70.6% success)
+      * 227677.3 wall clock hours total (185472.4 / 42204.9 = 81.5% success)
+
+---+++ LIGO / E@OSG
+   * Recent Average Credit (RAC): 410,343.35493 , Last Week: 354,083.55763
+   * E@H rank based on RAC: 3 (+-0)
+   * E@H rank based on accumulated credits: 3 (+-0)
+
+
+---+++ LIGO / INSPIRAL
+   * Monitoring work-flow at FF and LIGO_CIT
+   * Having troubles generating new work-flows, bug in LIGO code is a possibility, trouble shooting in progress
+
+---+++ LIGO/PULSAR
+   * Powerflux issue resolved, configuration error
+   * Resubmitted large Powerflux work-flow
+   * Running smaller work-flows at USCMS-FNAL-WC1_CE3 and GridUNESP_CENTRAL
+   * Trouble shooting fails at USCMS
+
+---++ Grid Operations Center (Rob Q.)
+
+---+++ Operations Last Week 
+   * [[http://tinyurl.com/27fknc6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * ITB Service Release - Tuesday May, 17
+      * Inclueded OS Updates
+   * IS4 Removed from RR after inconsistencies with publishing UCSD found, we believe a fix is in hand, will observe over the next few days before considering it&#39;s return to DNS RR
+   *  WMS Glide In Factory
+      * Discovered a Condor-G issue where jobs that get held on the remote site they don&#39;t report the status change back through GRAM.  This causes the factory to lose track of glideins that are held on the remote side.  We opened a vdt-support ticket:
+         * http://crt.cs.wisc.edu/Ticket/Display.html?user=guest&amp;pass=guest&amp;id=9237
+         * Not a major problem but it affects our monitoring and can make debugging difficult for factory operations
+
+---+++ Operations This Week
+   * No meeting next week, Memorial Day
+   * Production release, [[http://osggoc.blogspot.com/2011/05/goc-service-update-tuesday-may-24th-at.html][Release notes]]
+      * 8 hour maintenance window.
+      * OS updates will require reboot
+      * BDII experienced LDAP problems on return to service
+         * [[http://osggoc.blogspot.com/2011/05/bdii-outage-during-maintenance-window.html][Notification]]
+         * ITB Services did not experience this issue
+            * We will investigate this but not until maintenance is fully completed 
+         * [[https://twiki.grid.iu.edu/bin/view/Operations/BDIIPostMaintenanceDocument][Post BDII Maintenance]] - Documentation exists but was not followed. 
+   * Tuesday May, 24th - Operations will no longer monitor SAM-BDII
+   * Wednesday May, 25th - GGUS Update Ticket
+   * CERN BDII will be updated Thursday
+   * IU Based Glide-In Factory Hardware has been ordered. 
+   * OSG Operational Services at FNAL
+       * Rack Move all Services Should Remain Online
+       * Gatekeeper will be down as recorded in OIM.
+
+---++ Engage (Mats, John)
+
+
+---++ Integration (Suchandra)
+   * Starting ITB testing
+      * [[http://vdt.cs.wisc.edu/releases/2.0.0/release-p27.html][VDT update information]]
+      * Primarily changes to fulfill CMS requests:
+         * Renicing gatekeeper
+         * Random sleep for gatekeeper
+         * Condor jobmanager support for accounting groups
+         * Cleanup script for user accounts
+      * Other changes include:
+         * Bestman/Bestman2 updates
+         * SGE related improvements
+      * Testing worker node rpms
+      * Tentative release date of Tuesday May 31
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.2.19
+      *       94 (-1) OSG 1.2.X resources (      25 are 1.2.19)
+      *        2 (0) OSG 1.0.X resources (       0 are 1.0.6)
+      *        0 (-1) OSG 1.0.0 resources
+      *        0 (0) OSG 0.8.0 resources
+
+
+---++ Virtual Organizations Group (Chander)
+
+
+---++ Security (Mine)
+   * Incident drill of Atlas is being carried out this week. No problems so far. It will require no work from GOC. Will inform you about the result. 
+   * Voms-admin change issues. We will need to upgrade to Voms-admin version 2.6. This is an issue broader than security.  
+   * Security controls and tests are going successfully. Thank you everyone on this call. I will visit Indiana next week for finsihing rest of the controls with GOC staff. 
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings

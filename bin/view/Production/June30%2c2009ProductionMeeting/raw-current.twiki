@@ -1,0 +1,128 @@
+-- Main.DanFraser - 24 Jun 2009
+---++ Action/Significant Items
+   * Follow up on extension of security RSV probe to compare VO accessibility with GIP data and flag errors.
+   * Admin workshop in August (6-7) will be hands-on and enable sites to upgrade/install OSG 1.2 prior to LHC turn-on.
+   * IceCube follow-up on opportunistic storage (Abhishek)
+
+---++ Attendees (to be updated after meeting):
+   * Xin, Armen, Britta, Mats, Burt, Abhishek, Rob Q., Mine, Chander, Dan
+---++ CMS (Burt)
+   * We ran about 180 khour/day.     * We&#39;re ramping up testing &quot;skim jobs&quot; -- these are heavy I/O low CPU jobs that skim a tiny bit of data per input data set -- we&#39;re using glideinWMS for this, so I expect despite the very short nature of the jobs that we&#39;ll consume a good portion of wallclock at the Tier 1.
+
+---++ Atlas (Armen &amp; Xin)
+
+   * In general, production was stable at the level of 6-7k running simulation jobs.  Data distribution is going on from cosmics data taking at CERN. ATLAS Step09 post mortem meeting will be held on July 1. 
+
+   * job statistics for last week. 
+      * Gratia report: USATLAS ran 0.66M jobs, with CPU/Walltime ratio of 90%
+      * PanDA world-wide production report (real jobs):
+         * completed successfully 370K managed MC production, validation and reprocessing jobs
+         * average  ~52K jobs per day
+         * failed 23K jobs
+         * average efficiency: 94% for jobs and 95% for walltime
+
+---++ LIGO (Britta)
+
+   * Gratia Reports:
+      * Current week&#39;s total usage: 4 users utilized 18 sites;
+         * 15749 jobs total (14609 / 1140 = 92.8% success);
+         * 39014.2 wall clock hours total (36927.7 / 2086.5 = 94.7% success);
+      * Previous week&#39;s total usage: 3 users utilized 15 sites;
+         * 10311 jobs total (9555 / 756 = 92.7% success);
+         * 40795.4 wall clock hours total (37417.0 / 3378.4 = 91.7% success);
+   *  E@H statistics: 
+      * Recent Average Credit (RAC):143,541.10125,, last week:148,555.10099
+      * E@H rank based on RAC: 8 (+2),
+      * E@H rank based on accumulated Credits: 25 (+1)
+
+   * GEO600-1.3.x code
+      * Runnning at: SPRACE_CE, BNL_ATLAS_1, NWICG, CIT_CMS_T2, AGLT2, BNL_ATLAS_1, Antaeus
+      * Issues at:  Nebraska, GPN_HUSKER, RCAC, MIT_CMS (GOC tickets open), UTA, Saxon, Julius, ENGAGE
+      * Planning full migration over this week 
+  
+   * Details 
+      * Running at 13 sites
+      * Remaining problems at:
+         * gpn-husker ? jobs pending, no gratia reports
+         * red GOC ticket open
+         * MIT_CMS, GOC ticket open
+         * RCAC GOC ticket closed this morning
+         * TTU_ANTAEUS: failed: &#39;/opt/osg-1.0.1/globus/bin/globus-job-run pg.ihepa.ufl.edu:2119/jobmanager-fork /bin/bash -c &quot;cat /proc/loadavg&quot;&#39;
+         * and:  SBGrid-Harvard-Exp, UTA_DPCC, Purdue_Caesar, UCLA_Saxon_Tier3, UCSDT2, STAR_BNL
+
+         * UmissHEP (umiss001.hep.olemiss.edu) removed LIGO from list of trusted VO (until end of June) to investigate increased failure rates at site 
+          (notification?)
+
+---++ Integration (Suchandra)
+   * Final update to the itb cache occurring today
+   * Cache will be frozen except for emergency needs from now
+   * ITB sites will update to new release and get ready for VO testing
+   * VO testing will start wednesday and will include more sites as sites update and are ready for VO validation
+   * Currently 4 days behind schedule but may be able to pick up time during testing
+
+---++ Engagement (Mats)
+
+9 users utilized 35 sites;
+
+13230 jobs total (10593 / 2637 = 80.1% success);
+
+57190.1 wall clock hours total (56711.6 / 478.5 = 99.2% success);
+
+
+Trash/Engagement production is still hurting from the ReSS server move.
+
+https://oim.grid.iu.edu/gocticket/viewer?id=7070
+
+Many sites, but not all, have restarted Tomcat. We inject static classads to make up for missing sites. The issue was discussed back in January and I think most of us thought the issue had been resolved. A fix is apparently in the new point release of VDT 2.0.0, which we will verify. 
+
+Note that the DNS caching affects all services we have in Tomcat: VOMS / VOMRS / GUMS / CEMon / others, so it is very important to get the problem resolved.
+
+Email from January:
+
+Trash/Engagement recently upgraded our VOMS and as part of the upgrade we
+moved the service to a new machine. In order to make the transition easy
+for the sites, we kept the old hostname and just changed the IP address.
+
+We were surprised when authentication stopped working on some well
+maintained sites. It turns out that this is a new version of an old
+problem - the fact that Tomcat/Java is set to cache resolved DNS entries
+forever by default. The reason I&#39;m saying that this is an old problem is
+that I believe we had the same issue during a BDII / CEMon server move
+last year. For example, see:
+
+https://oim.grid.iu.edu/gocticket/viewer?id=5292
+
+In our case, it is the GUMS servers that are keeping the IP address of
+our old VOMS server.
+
+Requiring OSG wide service restarts when we move machines seems like a
+bad idea. I suggest we change the tomcat init.d scripts to set the
+caching timeout to something sane. See:
+
+http://chrisdoyle.com/?p=7
+
+---++ Virtual Organizations Group (Abhishek)
+
+   * D0 -- MC Production is normal. Last week, 70000 wall hours per day, with an average of 8 million events per week.
+   
+   * !IceCube -- Document with storage requirements received from !IceCube. Discussion between !IceCube team and Tanya / OSG Storage in last week&#39;s VO forum. E.g., frequency of updates to tables, stage-out data if any, total data capacity needed at a site, stage-in throughout (jobs per minute), etc. !IceCube will come back with more specifics; and has conveyed that there is no current time constraint. URL: https://twiki.grid.iu.edu/twiki/pub/Trash/Trash/Trash/Trash/VirtualOrganizations/VOGroupMeeting20090618/IceCubeStorageModel-06-18-09.pdf
+    
+   * GPN -- Greg is participating in weekly VO forums, and has agreed to expedite GPN user response for Mats/Engagement.
+   
+   * GUGrid -- Continuing to be a partner in the Consortium, but retiring the VO, due to lack of resources and users. Work ongoing with GOC. Further plan may be to work with Engagement, e.g., as part of Engage VO.
+   
+   * OSG 1.2 pre-release validation by VOs -- Inviting VOs with an active production status, including the 3 key stakeholders. ALICE, ATLAS, CDF, CMS, DES, Dzero, DOSAR, Engage, Fermilab-VO, LIGO, nanoHUB, NYSGrid, SBGrid, and STAR. Set to start, soon after Persistent ITB is stable and ready. URL: https://twiki.grid.iu.edu/bin/view/Trash/Trash/Trash/Trash/Integration/OSG12Validation#VO_validation
+
+---++ Operations (Rob Q.)
+
+   * Busiest ticket month YTD ~20% up from last month. (192 opened so far in June)
+   * GUGrid will be removed from OSG and do future work under the Trash/Engagement umbrella
+   * Released bug fix to display of downtime.
+   * Thanks to Brian for finishing up some work on the RSV-Gratia probe.
+   * Jim Basney has expressed concerns about how security incidents are documented in tickets instead of the TWiki. We need to have a chat with the security team about how to best meet their needs. [[https://oim.grid.iu.edu/gocticket/viewer?id=7098][Ticket]]
+   * IU has a new machine room in Bloomington.
+      * September 19th will be the physical move, some downtime will be experienced for all services other than BDII.
+      * Short outages have been announced for this week to do some preliminary network preparation for the move.
+   * IU holiday on Friday, operations will be functioning on weekend/afterhours procedures.
+
+---++ Security (Mine)

@@ -1,0 +1,100 @@
+ ---+ Operations Meeting November 20, 2006
+Attendees: Rob, Tim, Alain, Doug, John Weigand, David Caffaro, Parag (DZero), Shaowen, Brad Abbott, Burt, Horst, Karthick, Steven Timm, Keith Chadwick, Murali, Steve Clark, Dina
+
+   * 12:00pm Central
+   * Phone Number 510-665-5437 Meeting ID 786999
+
+---+ Operations Agenda
+
+---++ Followup items from the [[http://osg.ivdgl.org/twiki/bin/view/Operations/MinutesNovember13][previous meeting]]
+
+1) Large resource request for nanoHUB update (ongoing) - http://osg.ivdgl.org/twiki/bin/view/VO/NANOHUB_UtilStatus
+   * Last update:  Vanderbilt run completed. Last few days it ran it was very steady. So he sent another batch there and another batch at PSU. Still having problems at Buffalo, but that is still under investigation. Rob will ask Steve Gallo about the situation at Buffalo if he sees him at SC06. Condor compiled error. Standard universe jobs. Alain Roy said that sometimes the new version comes out and you have to recompile your software. Alain agreed to check the version to see if it is compatible or not.
+
+   * Problems found with Condor Standard universe jobs and version incombatiblity (Ticket 2636)
+      Alain Roy will work with Steve Clark to create a matrix of condor versions which 
+      will work.
+
+   * *This week*: New problem at Vanderbilt. Load averages are over 80. It is unknown why. They&#39;re holding jobs until this is resolved. Nothing has changed in Steve&#39;s code, so he&#39;s not sure why this problem cropped up. On another note, there has been no change at Buffalo. Rob didn&#39;t get to discuss the issue at SC06, but he will followup this week. PSU jobs are running well. Steve asked Brookhaven to clarify the number of jobs they&#39;re running, as reported by GridCat.
+
+   * Ticket 2636 can be closed: You can&#39;t run a shell script in a Standard Universe. The versions are different, but they are compatible.
+
+
+---++ Hot Topics for the week
+
+1) GADU&#39;s large job run  _Dina_
+   * &quot;There are three tools to be run, each tool is divided into approximately 40K jobs each running for about ~ 2 1/2 hours. I am expecting this run to take atleast a month, if not more. My target is to maintain more than 1000 running jobs as consistently as possible. Along with OSG, I will also be using Teragrid sites in this run.&quot; -Dinanath
+   * http://compbio.mcs.anl.gov/gaduvo/gadu_jobs.cgi -- number of jobs running or jobs in queue at each site used
+   * http://compbio.mcs.anl.gov/sulakhe/cgi-bin/site_selection_new.pl -- total number of sites from OSG and Teragrid that GADU has access to and their status for tests
+      * More jobs will be submitted tomorrow. It may take 5-6 days to complete these jobs.
+
+2) Clemson joining OSG _Rob_
+   * Rob has sent mail to them offering assistance.
+
+3) Deprecating the use of vanilla grid-proxy certificates and only use voms-proxy certs in OSG. The Europeans already only use voms-proxies.  Is there a very strong reason for OSG not to follow suit? What are the technical challenges? _Dan Yocum_
+
+   * Fermilab will be requiring voms-proxies, per their site policy. Some individuals have legacy/trust relationships and those are the exception. They have allowed nanoHUB in temporarily. Fermilab wants to understand the relationship better and ensure it meets the Fermilab site security Requirements.
+
+   * Why require everyone in OSG to use voms-proxy? What are the benefits? The certificate is assigned by the VOMS server. But with VOMS servers being down or frequently crashing, wouldn&#39;t this be a large problem with using voms-proxy? Steven Timm said that this problem is the same as it is now. And how do you propose everyone be required to use voms-proxy if they&#39;re not using SAZ? Sites that use edg-mkgridmap cannot easily only accept VOMS proxies, according to Alain Roy with the VDT. So would the change be scalable? And it was suggested that perhaps it could be a supported option rather than a requirement.
+
+   * The Executive Team will bring attention to this issue at the next meeting.
+
+---++ OSG RA Items
+
+There will be a patch to the cert-gridadmin script in the cert package. It is not critical and will be released by the GOC as a non-critical update.
+
+---++ Pending Registrations
+
+None.
+
+---++ [[http://www.opensciencegrid.org/tickets][Tickets]]
+
+Steven Timm had a question about a failed authentication, but they saw a successful authentication shortly after the ticket creation, so it appears to be resolved.
+
+---++ Other issues
+
+Web site running a honeypot to capture passwords for people who typo .edu as .eu  -- http://isc.sans.org/diary.php?storyid=1866&amp;rss
+
+   * Some sites and ssh logins are being mirrored at the .eu domain and they could be capturing passwords. If you&#39;re in the edu domain, check out the article.
+
+---+++WLCG/OSG/EGEE Issues
+
+   * SAM testing and ticketing via GGUS seems to be starting ( ticket 2709) Currently
+     EGEE using interop bdii to run tests. Rob Quick is working with EGEE to test against
+     one ITB node. So this work is ongoing.
+
+---+++ Support Center Attendance
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+
+|*SC*     |*Nov20*|
+|DOSAR    |  %Y%  |
+|nanoHUB  |  %Y%  |
+|STAR     |  %Y%  |
+|OSG-GOC  |  %Y%  |
+|GROW     |       |
+|USCMS    |  %Y%  |
+|LIGO     |  %Y%  |
+|Fermilab |  %Y%  |
+|VDT      |  %Y%  |
+|GRASE    |       |
+|GPN      |       |  
+|fGOC     |       |  
+|GUGrid   |  %Y%  |   
+|UCHC     |       |   
+|USATLAS  |       |    
+|UCCI     |       |   
+|PROD_SLAC|       |   
+|CSC      |       |    
+|GLOW-TECH|       |  
+|GADU     |   %Y%   |    
+|SDSS     |       |      
+|TACC     |       |  
+|Mariachi |       |       
+|NWICG    |       |      
+|DZero    |  %Y%  |
+|Engage   |       |      
+
+%STOPINCLUDE%
+
+
+-- Main.TimSilvers - 17 Nov 2006

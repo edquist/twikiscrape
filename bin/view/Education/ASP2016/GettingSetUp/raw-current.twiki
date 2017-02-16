@@ -1,0 +1,110 @@
+
+---+!! %SPACEOUT{ &quot;%TOPIC%&quot; }%
+
+
+%STARTINCLUDE%
+%EDITTHIS%
+
+&lt;a name=&quot;setup&quot;&gt;&lt;/a&gt;
+The following steps will prepare your account for completing the exercises in this tutorial. We will:
+   1. Log onto %LOGINHOST%
+   1. Check that Condor is working
+   1. Create working directories
+   1. Get a grid proxy
+   1. Test this set up by trying to run on the remote machine
+
+---+++ Log Into =%LOGINHOST%=
+
+First, log into %LOGINHOST%. This will be our client machine for these exercises.
+
+---+++ Check Condor with condor_q
+Condor should already be set up and running on %LOGINHOST%. You can check this by running =[[http://www.cs.wisc.edu/condor/manual/v6.7/condor_q.html][condor_q]]=:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;condor_q&lt;/userinput&gt;
+
+-- Submitter: %LOGINHOST% : &lt;%LOGINIP%:36236&gt; : %LOGINHOST%
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+
+0 jobs; 0 idle, 0 running, 0 held
+&lt;/pre&gt;
+
+Everyone will be using the same Condor installation for these exercises. You will see other students&#39; jobs in the queue alongside your own.
+
+---+++ Create Your Working Directories
+
+Next, we are going to create some directories for you to work in. We&#39;ll make them in your home directory.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cd ~&lt;/userinput&gt;
+
+$ &lt;userinput&gt;mkdir condor-tutorial&lt;/userinput&gt;
+$ &lt;userinput&gt;cd condor-tutorial&lt;/userinput&gt;
+$ &lt;userinput&gt;mkdir submit&lt;/userinput&gt;
+&lt;/pre&gt;
+
+
+---+++ Create a Short-Lived Proxy
+You will need to createa  short-lived proxy for this tutorial. The default proxy length is 12 hours.  For a long lived task, you might create proxies with lifespans of 24 hours, several days, or even several months. 
+
+Run =grid-proxy-info= to make sure that you don&#39;t already have a grid proxy on this machine.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;grid-proxy-info -all&lt;/userinput&gt;
+
+ERROR: Couldn&#39;t find a valid proxy.
+Use -debug for further information.
+&lt;/pre&gt;
+
+Run =grid-proxy-init= to create a proxy with a life of four hours. The =-verify= option is not required, but can is useful for debugging. =-verify= will warn you if an expected &lt;span class=&quot;firstterm&quot;&gt;Certificate Authority&lt;/span&gt; (CA) certificate is missing.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;grid-proxy-init -hours 4 -verify&lt;/userinput&gt;
+Your identity: %CERTSUBJECT%
+Enter GRID pass phrase for this identity: &lt;userinput&gt;&lt;em&gt;[Your pass phrase]&lt;/em&gt;&lt;/userinput&gt;
+Creating proxy ........................................... Done
+Proxy Verify OK
+Your proxy is valid until Thu Jul 10 16:06:13 2003
+$ &lt;userinput&gt;grid-proxy-info -all&lt;/userinput&gt;
+subject  : %CERTSUBJECT%/CN=171244628
+issuer   : %CERTSUBJECT%
+type     : full
+strength : 512 bits
+timeleft : 3:59:57
+&lt;/pre&gt;
+
+---+++ Test with globus-job-run
+Run =&lt;userinput&gt;globus-job-run %LOGINHOST% /bin/date&lt;/userinput&gt;= on %LOGINHOST% to test that everything is working:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;globus-job-run %LOGINHOST% /bin/date&lt;/userinput&gt;
+
+Wed Jun 2 17:57:49 CDT 2004
+&lt;/pre&gt;
+
+Our basic Globus setup appears to be functioning.
+
+&lt;!-- ***  Comments plugin to create comments table for section   ***    --&gt;
+
+&lt;span style=&quot;text-align:center; font-weight:bold; font-size:1.2em;&quot;&gt;ADD A COMMENT&lt;/span&gt;
+%STARTMore%
+
+%TABLE{ }%
+|  *COMMENT*  |  *NAME*  |  *DATE*  |
+| Add to run grid-proxy-destroy if find one when run grid-proxy-info -all. | Main.ForrestChristian | 01 Jun 2007 - 17:35 |
+%COMMENT{ type=&quot;tableappend&quot; }%
+
+%ENDMore%
+&lt;!-- ***  End Comment                                            ***    --&gt;
+
+
+%STOPINCLUDE%
+
+&lt;!--                                                                            
+      * Set LOGINHOST = workshop1
+      * Set GRIDHOST = tg-login.ncsa.teragrid.org
+      * Set OTHERHOST = workshop2
+--&gt;
+
+%BOTTOMMATTER%
+-- Main.ForrestChristian (from old Lecture 5) %BR% 

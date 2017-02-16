@@ -1,0 +1,210 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%DOC_STATUS_TABLE%
+%TOC%
+
+
+The SRM interface to Hadoop is through the Bestman SRM server.  This SRM server has some slight differences in semantics compared with the dCache SRM server.  Most importantly, the Bestman SRM server does not create the parent directories for file copy operations.  The dCache SRM server violates this part of the specification.
+
+The remainder of this document describes some suggested modifications to your phedex agents to work better with Hadoop and Bestman.
+
+---++ Use the FUSE mount on the phedex node
+
+Each invocation of the srm client tools launches a new JVM.  When many file operations occur at the same time (copy, delete, verify) then this can quickly bring a phedex server to its knees. Many sites mount the dCache pnfs filesystem on the phedex node to avoid the need to run =srmrm= to delete files.  Similarly with Hadoop, if you mount the HDFS filesystem with fuse on the phedex server, you can delete files with =rm= command instead of =srmrm=.  Even if you don&#39;t use the fuse mount on the phedex server, you can still use the Hadoop CLI to interact with the Hadoop filesystem.
+
+---++ Create leading directories in FileDownloadDelete
+
+Since Bestman SRM does not create the leading directories for file transfers, the phedex agents must do this.  The =FileDownload= agent can be configured to invoke the =FileDownloadDelete= script before transferring a file.  It is here that you will want to create the leading directories.
+
+---++ Delete load test files after transferring
+
+This isn&#39;t specific to Hadoop, but is listed here because more than one site has reported this problem.  If PhEDEx load test files are not cleaned up after the transfer is finished, then you will quickly fill up HDFS with junk files.  In the PhEDEx config for the load test agents, you can pass a =-d= flag to the verify script.  The default FileDownloadVerify agent should check for the existence of this flag and delete the file after performing the verification.
+
+---++ Example FileDownloadDeleteHadoop
+
+&lt;verbatim&gt;
+#!/bin/sh
+
+# Make sure you use java 1.6 if you are invoking the Hadoop cli.
+JAVA_HOME=/usr/java/default
+PATH=$JAVA_HOME/bin:$PATH
+
+# Pick up arguments
+reason=&quot;$1&quot; fullsrmpath=&quot;$2&quot;
+
+# message
+echo &quot;Removing $fullsrmpath&quot;
+
+# Rewrite PFN to form that&#39;s useful to our commands
+pfn=`echo $fullsrmpath | sed &#39;s|srm://.*/srm/v2/server?SFN=||&#39;`
+echo &quot;***Extracted pfn: $pfn&quot;
+hadoop_path=`echo $pfn | sed -e &quot;s|/mnt/hadoop||&quot;`
+echo &quot;***Extracted hadoop path: $hadoop_path&quot;
+
+# Handle removal.  We remove destination both before transfer and
+# after a failed transfer.
+case $reason in
+  pre )
+        # You have the choice of using the rm command, or the Hadoop cli
+        # to remove the file.
+
+        echo &quot;Executing: hadoop fs -rm $hadoop_path&quot;
+        hadoop fs -rm $hadoop_path
+        #echo &quot;Executing: rm -f $pfn&quot;
+        #rm -f $pfn
+
+
+        # Create the leading directories that are not automatically created
+        # by the Bestman SRM server.
+        dir=`dirname $hadoop_path`
+        echo &quot;Creating parent directories with &#39;hadoop fs -mkdir $dir&#39;&quot;
+        hadoop fs -mkdir $dir
+        #dir=`dirname $pfn`
+        #echo &quot;Creating parent directories with &#39;mkdir -p $dir&#39;&quot;
+        #hadoop fs -mkdir $dir
+        ;;
+  post )  
+        echo &quot;Executing: hadoop fs -rm $hadoop_path&quot;
+        hadoop fs -rm $hadoop_path
+        #echo &quot;Executing: rm -f $pfn&quot;
+        #rm -f $pfn
+        ;;
+  * ) echo &quot;unrecognised reason to remove $pfn: $reason&quot; 1&gt;&amp;2; exit 1
+        ;;
+esac
+
+exit 0
+
+&lt;/verbatim&gt;
+
+---++ Example FileDownloadVerifyHadoop
+
+&lt;verbatim&gt;
+#!/bin/sh
+
+# Make sure you use java 1.6 if you are invoking the Hadoop cli.
+JAVA_HOME=/usr/java/default
+PATH=$JAVA_HOME/bin:$PATH
+
+# Process command line arguments
+do_checksum=false do_delete=false do_force=false
+while [ $# -ge 1 ]; do
+  case $1 in
+    -c ) do_checksum=true; shift ;;
+    -d ) do_delete=true; shift ;;
+    -f ) do_force=true; shift ;;
+    -* ) echo &quot;unrecognised option $1&quot; 1&gt;&amp;2; exit 5 ;;
+    *  ) break ;;
+  esac
+done
+
+# Pick up arguments
+status=&quot;$1&quot; fullsrmpath=&quot;$2&quot; size=&quot;$3&quot; checksum=&quot;$4&quot;
+validity=0
+
+# Rewrite PFN to a form that&#39;s useful to our commands
+pfn=`echo $fullsrmpath | sed &#39;s|srm://.*/srm/v2/server?SFN=||&#39;`
+echo &quot;***Extracted pfn: $pfn&quot;
+hadoop_path=`echo $pfn | sed -e &quot;s|/mnt/hadoop||&quot;`
+echo &quot;***Extracted hadoop path: $hadoop_path&quot;
+
+# Check file size and mark file invalid on mismatch.
+if [ $validity = 0 ]; then
+# Take your pick.  You can either use the Hadoop CLI to get the file size
+# or use the fuse mount.
+  disksize=`hadoop fs -ls &quot;$hadoop_path&quot; | tail -1 | awk &#39;{print $5}&#39;`
+#  disksize=`ls -l &quot;$pfn&quot; | awk &#39;{print $5}&#39;`
+  if [ &quot;$?&quot; != 0 ] ; then
+      echo &quot;Failed to get file size&quot;
+      validity=1
+  else
+      [ X&quot;$disksize&quot; != X&quot;$size&quot; ] &amp;&amp; echo &quot;size mismatch disk=$disksize db=$siz
+e guid=$guid pfn=$pfn&quot; &amp;&amp; validity=2
+      [ X&quot;$disksize&quot; == X&quot;$size&quot; ] &amp;&amp; echo &quot;Success!!!  pfn=$pfn&quot;
+  fi
+fi
+
+echo &quot;***disksize: $disksize ----- ***size: $size   for $pfn&quot;
+
+# If file deletion was requested, delete the file.
+$do_delete &amp;&amp; echo &quot;deleting $pfn&quot;
+#$do_delete &amp;&amp; rm -f &quot;$pfn&quot; 2&gt;/dev/null
+$do_delete &amp;&amp; hadoop fs -rm &quot;$hadoop_path&quot; 2&gt;/dev/null
+
+# If we are forcing true return value, lie about it all
+$do_force &amp;&amp; validity=0
+
+# Return file validity
+exit $validity
+
+&lt;/verbatim&gt;
+
+---++ Example agent config for Load Tests
+
+&lt;verbatim&gt;
+### AGENT LABEL=download-debug-ucsd PROGRAM=Toolkit/Transfer/FileDownload
+ -db              ${PHEDEX_DBPARAM}
+ -nodes           ${PHEDEX_NODE}
+ -delete          ${PHEDEX_CONF}/FileDownloadDeleteHadoop
+ -validate        ${PHEDEX_CONF}/FileDownloadVerifyHadoop,-d
+ -accept          &#39;T2_US_UCSD&#39;
+ -backend         SRM
+ -protocols       srmv2,srm
+ -command         srmcp,-pushmode=true,-debug=true,-retry_num=2,-protocols=gsiftp,-srm_protocol_version=2
+ -batch-files     2
+ -jobs            5
+ -timeout         10800
+&lt;/verbatim&gt;
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = DouglasStrain
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Troubleshooting
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = NehaSharma
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %IN_PROGRESS%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = NehaSharma
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %NO%
+############################################################################################################
+--&gt;

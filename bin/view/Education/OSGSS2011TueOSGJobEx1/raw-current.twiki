@@ -1,0 +1,81 @@
+---+ OSG Exercises - Direct submission
+
+This exercise will give you some experience submitting directly into OSG.
+
+%TOC%
+
+---++ Environment
+
+We will use the usual Condor submit host:&lt;br&gt;
+=vdt-itb.cs.wisc.edu=
+
+There will be no shared file system between the submit and the execute hosts, so you will should plan on transferring all the needed files with you.
+
+---++ Exercise 1 - Basic job submission
+
+Try submitting a simple &quot;who am I&quot; job, as explained the the exercise [[OSGSS2011TueDHTCEx1#Exercise_2_Condor_G][ we did this morning]].
+
+Try jobmanager-fork.
+
+Try using directly the [[GlobusToolsOss2010][Globus tools]].
+
+Check where your job runs and which user are you running under.
+
+---++ Exercise 2 - Find other sites
+
+As said during the lecture, OSG provides an  information system called [[http://is.grid.iu.edu/documentation.html][BDII]]. 
+
+The tool to talk to the BDII is [[http://www.centos.org/docs/5/html/CDS/ag/8.0/Finding_Directory_Entries-Using_ldapsearch.html][ldapsearch]]. The complete command to talk to the OSG BDII is:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+/opt/osg-client/openldap/bin/ldapsearch -h is.grid.iu.edu -p2170
+&lt;/pre&gt;
+
+To find out all the sites that claim to support our OSGEDU VO, you sould use the following search expression:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+-b &#39;mds-vo-name=local,o=grid&#39; &#39;GlueCEAccessControlBaseRule=VO:osgedu&#39;
+&lt;/pre&gt;
+
+What do you see?
+
+%TWISTY{
+showlink=&quot;Show follow up&quot;
+hidelink=&quot;Hide&quot;
+start=&quot;hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+The attributes you are looking for are:
+   * =GlueCEInfoContactString= - This is the logical URL to the CE.
+   * =GlueCEHostingCluster= - This is the IP name of the CE.
+   * =GlueCEInfoJobManager= - This is the jobmanager to use.
+   * =GlueCEInfoGatekeeperPort= - This is the port used by the CE. You usually don&#39;t need to specify it, unless the site has configured the Globus Gatekeeper to use a non-standard port.
+
+%ENDTWISTY% 
+
+Select one (or more) sites that claim to support us and submit 10 or so jobs.&lt;br&gt;
+Did they start? How long did it take?
+
+%TWISTY{
+showlink=&quot;Show more tips&quot;
+hidelink=&quot;Hide&quot;
+start=&quot;hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+You can look at a specific CE, by using
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+-b &#39;mds-vo-name=local,o=grid&#39; &#39;GlueCEHostingCluster=&amp;lt;node name&amp;gt;&#39;
+&lt;/pre&gt;
+
+%ENDTWISTY% 
+
+---++ Exercise 3 - Some errors
+
+I wish I could create exercises that will hit all the possible error conditions, but errors typically jump out when you don&#39;t want them, not the way around!
+
+So, let&#39;s just do a simple authorization error exercise.&lt;br&gt;
+Try to submit to =cmsosgce2.fnal.gov=.
+
+Use all you have learned above. Try both Globus and Condor-G commands.

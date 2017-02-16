@@ -1,0 +1,35 @@
+---+ Package =TWiki::Prefs::Parser=
+
+This Prefs-internal class is used to parse * Set and * Local statements
+from arbitrary text, and extract settings from meta objects.  It is used
+by TopicPrefs to parse preference settings from topics.
+
+This class does no validation or duplicate-checking on the settings; it
+simply returns the recognized settings in the order it sees them in.
+
+
+%TOC%
+
+---++ ClassMethod *new* &lt;tt&gt;() -&gt; topicparserobject&lt;/tt&gt;
+
+Construct a new parser object.
+
+
+
+---++ ObjectMethod *parseText* &lt;tt&gt;($text,$prefs)&lt;/tt&gt;
+
+Parse settings from text and add them to the preferences in $prefs
+
+
+
+---++ ObjectMethod *parseMeta* &lt;tt&gt;($metaObject,$prefs)&lt;/tt&gt;
+
+Traverses through all PREFERENCE attributes of the meta object, creating one 
+setting named with $settingPrefPrefix . &#39;title&#39; for each.  It also 
+creates an entry named with the field &#39;name&#39;, which is a cleaned-up, 
+space-removed version of the title.
+
+Settings are added to the $prefs passed.
+
+
+

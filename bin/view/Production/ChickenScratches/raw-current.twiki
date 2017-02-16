@@ -1,0 +1,64 @@
+-- Main.DanFraser - 26 Oct 2009
+Copy the host certs:
+   * sudo bash
+   * mkdir /etc/grid-security
+   * mv /wherever/hostcert.pem /wherever/hostkey.pem /etc/grid-security
+   * chown root.root /etc/grid-security/host*
+
+   * mkdir NFS4exports/condor-etc
+   * mkdir NFS4exports/certificates
+   * mkdir NFS4exports/atlas
+   * mkdir NFS4exports/osg
+   * mkdir NFS4exports/home
+   * mkdir NFS4exports/srmstorage
+   * mkdir NFS4exports/workareas
+
+   * ln -s /NFS4exports/certificates/ /etc/grid-security/certificates
+   * mkdir share
+   * ln -s /NFS4exports/atlas/ /share/atlas
+   * ln -s /NFS4exports/osg /share/osg
+ 
+   * rmdir /NFS4exports/home
+   * mv /home /NFS4exports
+   * ln -s /NFS4exports/home /home
+  
+   * mkdir /data
+   * ln -s /NFS4exports/srmstorage/ /data/srm
+   * ln -s /NFS4exports/workarea/ /share/data
+   * ln -s /etc/exports ???
+
+   * /etc/init.d/nfs start
+   * mkdir /tmp/test
+   * mount -t nfs4 glow-c221:/NFS4exports/atlas /tmp/test/s
+
+   * chmod 1777 /NFS4exports/atlas .../osg .../workarea (should this be workarea or workareas?)
+
+Setting up the Condor cluster:
+   * Need to add users: condor, xrootd
+      * /usr/sbin/useradd -c &quot;condor user&quot; condor
+      * /sbin/useradd -c &quot;condor user&quot; -s /bin/true xrootd
+   * /sbin/useradd -c &quot;bestman users&quot; -s /bin/true bestman
+
+ssh glow-c222
+mount -t nfs glow-c221:/NFS4export/home /tmp/test
+ls /tmp/test
+mv /home /home.orig
+mkdir /home
+
+
+---+++ Second Meeting
+
+   * scp authorized_keys glow-c222:/root/.ssh/authorized_keys
+   * scp ........c223, c224, c226
+
+   *# mkdir /export/home/shared
+   *# cd /export/home/shared
+   *#wget http://newbio.cs.wisc.edu/zkm/condor-7.4.0-linux-x86_64-rhel5-dynamic-1.i386.rpm
+   *#uname -a
+   *#cat /etc/redhat-releascd /root/
+   *#rpm -i --test /export/home/shared/condor-7...
+   *#rpm -i /export/home/shared/condor-7...
+
+   * cd /opt/condor-7.4.0
+   * less condor.root
+   * 

@@ -1,0 +1,69 @@
+---++ Installation
+
+If you installed the Generic-Information-Provider (GIP) prior to June 17th and are having problems getting the full GIP output for condor, then it would be worthwhile to update your GIP installation using pacman.  Also note that the following needs to be done as root.
+
+&lt;pre&gt;
+&amp;gt; &lt;b&gt;pacman -update Generic-Information-Provider&lt;/b&gt; 
+&lt;/pre&gt;
+
+Source your preferred setup file (setup.sh or setup.csh)
+
+&lt;pre&gt;
+&amp;gt; &lt;b&gt;cd $VDT_LOCATION&lt;/b&gt; 
+&lt;/pre&gt;
+
+&lt;pre&gt;
+&amp;gt; &lt;b&gt;./vdt/setup/configure_gip&lt;/b&gt; 
+&lt;/pre&gt;
+
+&lt;pre&gt;
+We have set up the Generic Information Providers (GIP) as much as we can,
+but there is some stuff that we cannot do. To complete the process edit
+/opt/itb/lcg/var/gip/lcg-info-generic.conf to contain information about
+your site. Then run the following command, and everything should be set.
+Note that it is important to give the full pathname for the argument to
+lcg-info-generic-config
+&lt;/pre&gt;
+
+---+++ Configuration
+
+Edit $VDT_LOCATION/lcg/var/gip/lcg-info-generic.conf
+
+*I am not sure what to put here exactly, there is a lot that a person could change and is spread out all over the file.*
+
+One thing that was mentioned as a good feature would be to set the values for whether there is outbound connectivity.  If you want to find this attribute, search for &lt;nop&gt;GlueHostNetworkAdapterOutboundIP and set to TRUE or FALSE depending on your configuration.
+
+&lt;nop&gt;GlueHostNetworkAdapterOutboundIP: TRUE
+
+---+++ Post Install
+
+&lt;pre&gt;
+&amp;gt; &lt;b&gt;$VDT_LOCATION/lcg/sbin/lcg-info-generic-config $VDT_LOCATION/lcg/var/gip/lcg-info-generic.conf&lt;/b&gt;
+&lt;/pre&gt;
+
+&lt;pre&gt;
+&amp;gt; &lt;b&gt;/etc/init.d/gris stop&lt;/b&gt;
+&lt;/pre&gt;
+
+&lt;pre&gt;
+&amp;gt; &lt;b&gt;/etc/init.d/gris start&lt;/b&gt;
+&lt;/pre&gt;
+
+---++ Testing
+
+---+++ Anonymous Bind Method (default)
+
+&lt;pre&gt;
+&amp;gt; &lt;b&gt;ldapsearch -h your.fully.qualified.hostname -p 2135 -x -b mds-vo-name=local,o=grid&lt;/b&gt;
+&lt;/pre&gt;
+
+---+++ Authenticated Bind Method
+
+&lt;pre&gt;
+&amp;gt; &lt;b&gt;grid-info-search -h your.fully.qualified.hostname
+&lt;/pre&gt;
+
+---++ Troubleshooting
+
+*In Progress*
+

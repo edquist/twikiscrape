@@ -1,0 +1,166 @@
+---+ Tue Morning Exercise - Using the glideinWMS - Part 2
+
+&lt;!-- OSG User School 2012 Defaults
+   * Local UCL_HOST = %URLPARAM{&quot;INPUT_HOST&quot; encode=&quot;quote&quot; default=&quot;osg-ss-glidein&quot;}%
+   * Local UCL_USER = %URLPARAM{&quot;INPUT_USER&quot; encode=&quot;quote&quot; default=&quot;user&quot;}%
+   * Local UCL_DOMAIN = %URLPARAM{&quot;INPUT_DOMAIN&quot; encode=&quot;quote&quot; default=&quot;chtc.wisc.edu&quot;}%
+   * Local UCL_CWD= %URLPARAM{&quot;INPUT_CWD&quot; encode=&quot;quote&quot; default=&quot;~/osg_school/glidein1&quot;}%
+   * Local UCL_JOB= %URLPARAM{&quot;INPUT_JOB&quot; encode=&quot;quote&quot; default=&quot;555.0&quot;}%
+--&gt;
+
+---+ Introduction
+In this session you will try to run some compute jobs with glideinWMS.
+
+---+ Prerequisite 
+
+Learn how to use our [[https://opensciencegrid.org/bin/view/Education/OSGSS2012TueGlideinSetup?INPUT_USER=%UCL_USER%][glideinWMS installation]].
+
+Run the [[OSGSS2012TueExGlideins][Part 1 of this exercise]].
+
+---+ Run a BLAST example -  The right way
+
+You should have experienced some problems running the [[OSGSS2012CondorBLAST][BLAST jobs]] without any changes.
+
+How would you fix the problem?
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show solution 1.&quot;
+hidelink=&quot;Hide solution 1.&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+The glideinWMS policy allows us to only run on sites that have BLAST pre-installed; it was mentioned in the [[OSGSS2012TueGlideinSetup][glideinWMS policy document]].&lt;br&gt;
+Just add &lt;pre&gt;
++REQUIRE_BLAST = True
+&lt;/pre&gt; to the job submission file.
+
+One thing it is not in that document, is that different sites may have BLAST installed in a different location.
+For this reason, the glideins also advertise &lt;pre&gt;
+BLAST_PATH
+&lt;/pre&gt; in the environment. I.e. the BLST executable is now in &lt;pre&gt;
+$BLAST_PATH/bin/blastp
+&lt;/pre&gt;. Change your wrapper script accordingly.
+
+&lt;/pre&gt;
+
+Moreover, we know BLAST is installed locally, but the [[OSGSS2012TueGlideinSetup][default glideinWMS policy]] prevents us to run locally.&lt;br&gt;
+Change this by adding also &lt;pre&gt;
++OFFSITE_ONLY = False
+&lt;/pre&gt; to the job submission file.
+
+Try them out (say, a cluster of 5), see where they run and what results you get back. 
+%ENDTWISTY%
+&lt;br&gt;
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show solution 2.&quot;
+hidelink=&quot;Hide solution 2.&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+Instead of restricting ourselves to a subset of sites, let&#39;s instead transfer the necessary files to the worker node.
+
+We need two pieces:
+   * The binary itself.&lt;br&gt;Since blast is statically linked, just transfer the file itself and execute it.
+   * The database.&lt;br&gt;Here we need more than a single file; the database is composed of many files; in case of the yeast DB, it is yeast.aa*&lt;br&gt;The best way to do it, is to tar them up and untar them once on the worker node.
+
+Can you change the submit file and the wrapper script accordingly?
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show script and submit file&quot;
+hidelink=&quot;Hide script and submit file&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+# create tar file
+m=$PWD
+cd /share/blast/data/; tar -czf $m/yeast.tgz yeast.aa*
+cd $m
+&lt;/pre&gt;
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+Universe   = vanilla
+Executable = myscript.sh
+arguments = query1 myoutput
+Log        = mytest.log
+Output     = mytest.out.$(Cluster).$(Process)
+Error      = mytest.error.$(Cluster).$(Process)
+transfer_input_files=query1,/share/blast/bin/blastp,yeast.tgz
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+Queue 5
+&lt;/pre&gt;
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+#!/bin/sh
+
+if [ $# -ne 2 ]; then
+    echo &quot;Usage: run-blast &lt;query&gt; &lt;output&gt;&quot;
+    exit 1
+fi
+
+chmod a+x blastp
+tar -xzf yeast.tgz
+
+# Run the query
+./blastp -db yeast.aa -query $1  &gt; $2
+&lt;/pre&gt;
+%ENDTWISTY%
+&lt;br&gt;
+Try them out (again, say 5), see where they run and what results you get back. 
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;What next?&quot;
+hidelink=&quot;Hide hint&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+See how big was the yeast tar file.
+
+Now try to create a tar file of the [[OSGSS2012CondorBLAST][nr database]].
+
+Do you think it is reasonable to transfer such a big file each time your job starts? Let&#39;s discuss it.
+%ENDTWISTY%
+&lt;br&gt;
+
+%ENDTWISTY%
+&lt;br&gt;
+
+
+
+---+ Customize this Document
+
+%ICON{&quot;warning&quot;}% %RED% Please change your user name and click on the Customize button!%ENDCOLOR%
+&lt;form action=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%WEB%/%TOPIC%&quot;&gt;
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Login Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_USER&quot; value=&quot;%UCL_USER%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Job number
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_JOB&quot; value=&quot;%UCL_JOB%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+     &amp;nbsp;
+     &lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;Customize&quot; /&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/form&gt;
+
+-- Main.IgorSfiligoi - 25 Jun 2012

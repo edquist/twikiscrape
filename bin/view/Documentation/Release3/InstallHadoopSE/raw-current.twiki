@@ -1,0 +1,1246 @@
+---+!! *Hadoop 20*
+%DOC_STATUS_TABLE%
+%TOC{depth=&quot;2&quot;}%
+
+*Purpose*: The purpose of this document is to provide Hadoop based SE administrators the information on how to prepare, install and validate the SE.
+
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;Header&quot;}%
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;CommandLine&quot;}%
+
+%NOTE%  %X% %RED% This install guide is for Hadoop 0.20 in the OSG 3.1 repositories.  Unless you have a specific need for this version, please use [[Documentation.Release3.InstallHadoop200SE][this guide]] instead to install Hadoop 2.0 from the OSG 3.2 repository. %ENDCOLOR%
+
+---+ Preparation
+---++ Introduction
+
+[[http://hadoop.apache.org/hdfs/][Hadoop Distributed File System]] (HDFS) is a scalable reliable distributed file system developed in the Apache project. It is based on map-reduce framework and design of the Google file system. The VDT distribution of Hadoop includes all components needed to operate a multi-terabyte storage site. Included are:
+
+   * An [[https://sdm.lbl.gov/srm-wg/doc/SRM.v2.2.html][SRM interface]] for grid access; 
+   * !GridFTP-HDFS as transport layer; and  
+   * A [[http://fuse.sourceforge.net/][FUSE interface]] for localized POSIX access.
+   * [[http://hadoop.apache.org/][Apache Hadoop]]
+
+The VDT packaging and distribution of Hadoop is based on YUM. All components are packaged as RPMs and are available from the OSG repositories.
+It is also recommended that you enable [[http://fedoraproject.org/wiki/EPEL][EPEL]] repos.
+
+---+++ Note on upgrading from Hadoop 0.19
+
+**NOTE these instructions are subject to change and the upgrade doc linked is intended to upgrade from the caltech hosted 0.19 rpms in the caltech hosted 0.20 rpms, NOT the new rpms hosted in the new OSG repos.*
+
+If you already have a working Hadoop 0.19 system and would like to upgrade to 0.20, please get familiar with this document first and then proceed to follow the [[Storage.HadoopUpgrade][upgrade instructions here]].
+
+
+---++ Architecture
+
+This diagram shows the suggested topology and distribution of services at a Hadoop site. Major service components and modules which need to be deployed on the various nodes are listed. Please use this as a recommendation to prepare for the Hadoop deployment procedure at your site.
+
+&lt;img src=&quot;%ATTACHURLPATH%/Hadoop-site-architecture.png&quot;&gt;
+
+%NOTE% Throughout this document it will be stated which node the relevant installation instructions apply to.  It can apply to one of the following:
+   * *Namenode*
+   * *Datanode*
+   * *Secondary Namenode*
+   * *GridFTP node* (can be installed on the same machine as a Datanode)
+   *  *SRM node*
+
+---+++ Engineering Considerations
+
+Please read the [[Storage.HadoopUnderstanding][planning document]] to understand different components of the system. 
+
+%NOTE%  Total installation time, on an average, should not exceed 8 to 24 man-hours. If your site needs further assistance to help expedite, please email osg-storage@opensciencegrid.org and osg-hadoop@opensciencegrid.org.
+
+---+ Installation Procedure
+
+Main server components can be divided in 3 categories: 
+   * HDFS core: Namenode, Datanode.
+   * Grid extensions: [[https://sdm.lbl.gov/bestman/][BeStMan2 SRM]], [[http://dev.globus.org/wiki/GridFTP][Globus !GridFTP]], [[https://twiki.grid.iu.edu/bin/view/Accounting/ProbeInstallation][Gratia probe]], and [[http://xrootd.slac.stanford.edu/][Xrootd server plugin]] etc.
+   * HDFS auxiliary: Secondary Namenode, Hadoop Balancer.
+
+Main client components are [[http://fuse.sourceforge.net/][FUSE]] and Hadoop command line client.
+
+---+ Initializer RPM
+
+%NOTE% This must be done on *all nodes*
+
+%NOTE% For ITB installations, please use the &quot;osg-testing&quot; repository in place of the &quot;osg-release&quot; repository.
+
+---++ Initializing the YUM Repository
+
+%INCLUDE{&quot;YumRepositories&quot; section=&quot;OSGRepoBrief&quot; headingoffset=&quot;1&quot;}%
+
+
+---+ Installing Hadoop
+
+%NOTE% Hadoop must be installed on the following nodes:
+   * *Namenode*
+   * *Datanode*
+   * *Secondary Namenode*
+
+%NOTE% On the following nodes Hadoop must also be installed but the Hadoop service itself does not need to be started:
+   * *GridFTP node*
+   * *SRM node*
+
+---++ Prerequisites
+
+Hadoop will run anywhere that Java is supported (including Solaris).  However, these instructions are for !RedHat derivants (including Scientific Linux) because of the RPM based installation.  The current supported Operating Systems supported by the OSG are %SUPPORTED_OS%. 
+
+The HDFS prerequisites are:
+   * Minimum of 1 headnode (the namenode), although 2 recommended (the namenode and the secondary namenode)
+   * At least one node which will hold data, preferably at least 2.  Most sites will have 20 to 200 datanodes.
+   * The namenode and secondary name node are *not* datanodes.
+   * Working Yum and RPM installation on every system.
+   * =fuse= kernel module and =fuse-libs=.
+   * Java RPM.  If java isn&#39;t already installed we supply the Oracle jdk 1.6.0 rpm and it will come in as a dependency.  Oracle jdk is currently the only jdk supported by OSG so we highly recommend you use the version supplied.
+
+*Compatibility Note* Note that versions of !OpenAFS less than 1.4.7 and greater than 1.4.1 create nameless groups on Linux; these groups confuse Hadoop and prevent its components from starting up successfully. If you plan to install Hadoop on a Linux !OpenAFS client, make sure you&#39;re running at least !OpenAFS 1.4.7.
+
+*Note*: The rpm/yum installation will create a &#39;hdfs&#39; system account and group  (uid,gid &lt; 500) on the host system for running the datanode services.  If you would like to control the uid/gid that is used, then you should create the &#39;hdfs&#39; user and group manually before installing the rpms.
+
+---++ Installation
+
+The Hadoop init script assumes that you are not running multiple hadoop services (datanode, namenode, secondary namenode) on the same host.
+
+The only node that requires a FUSE mount is the *SRM node*.  However to install hadoop, the =hadoop-0.20-osg= rpm requires =fuse= and =fuse-libs= packages to be installed.  If you are using RHEL &gt;= 5.4 this requirement is met and they will be brought in as dependencies.  Otherwise you must find these packages for your platform or refer to [[#TroubFuseMod][Notes on Building a FUSE Module]] in the Troubleshooting section below.
+
+To install hadoop, run:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install hadoop-0.20-osg
+&lt;/pre&gt;
+
+---++ Configuration
+
+The Hadoop RPMs install files into the standard system locations.  The following table highlights some of the more interesting locations, and documents whether you might ever want to edit them.
+
+| File Type | Location | Needs editing? |
+| Log files | =/var/log/hadoop/*= | No |
+| PID files | =/var/run/hadoop/*.pid= | No |
+| init scripts | =/etc/init.d/hadoop=, =/etc/init.d/hadoop-firstboot= | No |
+| init script config file | =/etc/sysconfig/hadoop= | Yes |
+| runtime config files | =/etc/hadoop/conf/*= | Maybe |
+| System binaries | =/usr/bin/hadoop= | No |
+| JARs | =/usr/lib/hadoop/*= | No |
+
+---+++ Edit /etc/sysconfig/hadoop
+
+The most common site configuration settings can be changed in =/etc/sysconfig/hadoop=.  In most cases, this file will be identical on the namenode and datanodes.  The configuration settings are documented in the file itself, but we document some of the most commonly edited ones in the table below:
+
+| Option Name | Needs editing? | Suggested value |
+| HADOOP_NAMENODE | Yes | The host name of your namenode; should match the output &#39;hostname -s&#39; on the namenode server.  Note that this hostname should match the public hostname of the server. |
+| HADOOP_NAMEPORT | Yes | 9000 |
+| HADOOP_SECONDARY_NAMENODE | Yes | The host name of the secondary namenode; should match the output of &#39;hostname -s&#39; |
+| HADOOP_CHECKPOINT_DIRS | Yes | Comma-separated (*important:* no spaces between commas!) list of directories to store checkpoints on.  The safest configuration is to store 2 checkpoints locally on 2 block devices and 1 checkpoint on a NFS server.  At least 1 checkpoint directory is required.  |
+| HADOOP_CHECKPOINT_PERIOD | Yes | The time, in seconds, between checkpoints.  600 is suggested for small sites |
+| HADOOP_REPLICATION_DEFAULT | Yes | Default number of replications.  Suggested: 2 |
+| HADOOP_REPLICATION_MIN | Yes | Minimum number of replications; below this, an error will be thrown.  Suggested: 1 or 2. |
+| HADOOP_REPLICATION_MAX | Yes | Maximum number of replications.  Suggested: 512 |
+| HADOOP_GANGLIA_ADDRESS | Maybe | Hostname or IP of your Ganglia gmetad.  If left empty then hadoop will try to extract the ganglia metad address from /etc/gmond.conf.  If you aren&#39;t using Ganglia just leave it blank. |
+| HADOOP_DATADIR | Yes | The base directory where HDFS temp and management data will be written.  On datanodes this is usually the parent of the first data partition. It is safe to leave this empty for client-only installations.|
+| HADOOP_DATA | Yes | A comma-separated list of directories (no spaces!) where the HDFS data blocks will be stored.  The first one is typicall the same as $HADOOP_DATADIR/data.  It is safe to leave this empty for client-only installations. |
+| HADOOP_USER | Maybe | The username that the hadoop datanode daemons will run under.  Suggested: hdfs |
+| HADOOP_NAMENODE_HEAP | Maybe | The Java heap size for the namenode; bigger is better, but the node shouldn&#39;t swap.  Minimum: 2048m.  Suggested: 8192m |
+| HADOOP_MIN_DATANODE_SIZE | Maybe | A value in GB; if the data directory is smaller than this size, HDFS will refuse to start.  Safeguards against starting the datanode daemon on non-datanodes.  Suggested: 300 (this value will vary widely with your datanode size). Set to zero or an empty string to bypass this check. |
+
+*Note:* If you have separate public and private hostnames for your servers, then use the public FQDN hostnames for all requested hostnames in this document.  Otherwise, you may run into problems.
+
+After making changes to the file, you must run:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service hadoop-firstboot start
+&lt;/pre&gt;
+
+This propagates the changes to the hadoop configuration files in =/etc/hadoop= and must be run every time you make changes to =/etc/sysconfig/hadoop=.
+
+*NOTE:* If you just installed Hadoop for the first time, you must log in/out of your shell or source /etc/profile.d/hadoop.sh before your you try playing with the command line tools.
+
+*Upgrade note:* Configuration files will be saved with a =.rpmsave= extension if you ever update your hadoop rpms with rpm or yum.  *Make sure to copy your settings from =/etc/sysconfig/hadoop.rpmsave= to =/etc/sysconfig/hadoop= if you ever update your hadoop rpms.*  Any manual changes to the hadoop configuration files in =/etc/hadoop/= should be preserved during an upgrade, but may be overwritten when running =hadoop-firstboot=.
+
+---+++ Side topic: Multiple data directories on a datanode.
+
+Hadoop has the ability to store data in multiple directories on a datanode.  This can be useful if you have multiple drives on your datanode and don&#39;t want to run them in a raid array, or if you have multiple large storage volumes mounted on your datanode.  To configure a datanode to use multiple directories, you need to enter each directory in the =HADOOP_DATA= setting in =/etc/sysconfig/hadoop= as a comma-separated list of directories (no spaces!) and then run =service hadoop-firstboot start=.  Here is an example of a datanode with 4 storage directories:
+
+&lt;pre class=&quot;file&quot;&gt;
+HADOOP_DATA=/data1/hadoop/data,/data2/hadoop/data,/data3/hadoop/data,/data4/hadoop/data
+&lt;/pre&gt;
+
+---++ Running Hadoop
+
+The Hadoop rpms install a startup script in =/etc/init.d/hadoop=.  The same command is used to start hadoop services on a datanode, namenode, or secondary namenode:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service hadoop start
+&lt;/pre&gt;
+
+You will also want to configure hadoop to start at boot time with:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT%  chkconfig hadoop on
+&lt;/pre&gt;
+
+---%SHIFT%+++ Side topic: Client-only installation
+
+Sometimes it is handy to configure a node to be a client, that is, a system that has access to hadoop but will not serve as a datanode or namenode.  The installation and configuration for such a node is the same as above, except that you do not need to start any hadoop services with =/etc/init.d/hadoop=.  It is still necessary to modify =/etc/sysconfig/hadoop=, but it is not necessary to specify any datanode directories in =HADOOP_DATA=.
+
+
+---++ FUSE
+
+A FUSE mount is only required on the *SRM node* and any other node you would like to use standard POSIX-like commands on the Hadoop filesystem. If these cases don&#39;t apply you may skip to the [[#HadoopValidation][Hadoop Validation]] section.
+
+%NOTE% Before using FUSE you may need to add the module using =modprobe= first:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% modprobe fuse
+&lt;/pre&gt;
+
+#FuseMount
+---+++ Mounting FUSE at Boot Time 
+
+You can mount FUSE by adding the following line to =/etc/fstab= (Be sure to change the =/mnt/hadoop= mount point and =namenode.host= to match your local configuration.  To match the help documents, we recommend using =/mnt/hadoop= as your mountpoint):
+
+&lt;pre class=&quot;file&quot;&gt;
+hdfs# %RED%/mnt/hadoop%ENDCOLOR% fuse server=%RED%namenode.host%ENDCOLOR%,port=9000,rdbuffer=131072,allow_other 0 0
+&lt;/pre&gt;
+
+Alternatively this can be taken care of automatically when running =hadoop-firstboot= if in your =/etc/sysconfig/hadoop= file you set the following line:
+
+&lt;pre class=&quot;file&quot;&gt;
+HADOOP_UPDATE_FSTAB=1
+&lt;/pre&gt;
+
+Once your =/etc/fstab= is updated, to mount FUSE run:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% mount /mnt/hadoop
+&lt;/pre&gt;
+
+When mounting the HDFS FUSE mount, you will see the following harmless warnings printed to the screen:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+# mount /mnt/hadoop
+port=32767,server=(
+fuse-dfs didn&#39;t recognize /mnt/hadoop,-2
+fuse-dfs ignoring option allow_other
+&lt;/pre&gt;
+If you have troubles mounting FUSE refer to [[#TroubFuseDeb][Running FUSE in Debug Mode]] in the Troubleshooting section.
+
+#HadoopValidation
+---++ Validation
+
+The first thing you may want to do after installing and starting your *Namenode* is to verify that the web interface works.  In your web browser go to:
+
+&lt;pre class=&quot;file&quot;&gt;
+http://%RED%namenode.hostname%ENDCOLOR%:50070/dfshealth.jsp
+&lt;/pre&gt;
+
+Get familiar with Hadoop commands.  Run hadoop with no arguments to see the list of commands.
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% hadoop
+%TWISTY{%TWISTY_OPTS_OUTPUT%}%
+Usage: hadoop [--config confdir] COMMAND
+where COMMAND is one of:
+  namenode -format     format the DFS filesystem
+  secondarynamenode    run the DFS secondary namenode
+  namenode             run the DFS namenode
+  datanode             run a DFS datanode
+  dfsadmin             run a DFS admin client
+  mradmin              run a Map-Reduce admin client
+  fsck                 run a DFS filesystem checking utility
+  fs                   run a generic filesystem user client
+  balancer             run a cluster balancing utility
+  fetchdt              fetch a delegation token from the NameNode
+  jobtracker           run the MapReduce job Tracker node
+  pipes                run a Pipes job
+  tasktracker          run a MapReduce task Tracker node
+  job                  manipulate MapReduce jobs
+  queue                get information regarding JobQueues
+  version              print the version
+  jar &lt;jar&gt;            run a jar file
+  distcp &lt;srcurl&gt; &lt;desturl&gt; copy file or directories recursively
+  archive -archiveName NAME -p &lt;parent path&gt; &lt;src&gt;* &lt;dest&gt; create a hadoop archive
+  oiv                  apply the offline fsimage viewer to an fsimage
+  classpath            prints the class path needed to get the
+                       Hadoop jar and the required libraries
+  daemonlog            get/set the log level for each daemon
+ or
+  CLASSNAME            run the class named CLASSNAME
+Most commands print help when invoked w/o parameters.
+%ENDTWISTY%
+&lt;/pre&gt;
+
+For a list of supported filesystem commands:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% hadoop fs
+%TWISTY{%TWISTY_OPTS_OUTPUT%}%
+Usage: java FsShell
+           [-ls &lt;path&gt;]
+           [-lsr &lt;path&gt;]
+           [-df [&lt;path&gt;]]
+           [-du &lt;path&gt;]
+           [-dus &lt;path&gt;]
+           [-count[-q] &lt;path&gt;]
+           [-mv &lt;src&gt; &lt;dst&gt;]
+           [-cp &lt;src&gt; &lt;dst&gt;]
+           [-rm [-skipTrash] &lt;path&gt;]
+           [-rmr [-skipTrash] &lt;path&gt;]
+           [-expunge]
+           [-put &lt;localsrc&gt; ... &lt;dst&gt;]
+           [-copyFromLocal &lt;localsrc&gt; ... &lt;dst&gt;]
+           [-moveFromLocal &lt;localsrc&gt; ... &lt;dst&gt;]
+           [-get [-ignoreCrc] [-crc] &lt;src&gt; &lt;localdst&gt;]
+           [-getmerge &lt;src&gt; &lt;localdst&gt; [addnl]]
+           [-cat &lt;src&gt;]
+           [-text &lt;src&gt;]
+           [-copyToLocal [-ignoreCrc] [-crc] &lt;src&gt; &lt;localdst&gt;]
+           [-moveToLocal [-crc] &lt;src&gt; &lt;localdst&gt;]
+           [-mkdir &lt;path&gt;]
+           [-setrep [-R] [-w] &lt;rep&gt; &lt;path/file&gt;]
+           [-touchz &lt;path&gt;]
+           [-test -[ezd] &lt;path&gt;]
+           [-stat [format] &lt;path&gt;]
+           [-tail [-f] &lt;file&gt;]
+           [-chmod [-R] &lt;MODE[,MODE]... | OCTALMODE&gt; PATH...]
+           [-chown [-R] [OWNER][:[GROUP]] PATH...]
+           [-chgrp [-R] GROUP PATH...]
+           [-help [cmd]]
+
+Generic options supported are
+-conf &lt;configuration file&gt;     specify an application configuration file
+-D &lt;property=value&gt;            use value for given property
+-fs &lt;local|namenode:port&gt;      specify a namenode
+-jt &lt;local|jobtracker:port&gt;    specify a job tracker
+-files &lt;comma separated list of files&gt;    specify comma separated files to be copied to the map reduce cluster
+-libjars &lt;comma separated list of jars&gt;    specify comma separated jar files to include in the classpath.
+-archives &lt;comma separated list of archives&gt;    specify comma separated archives to be unarchived on the compute machines.
+
+The general command line syntax is
+bin/hadoop command [genericOptions] [commandOptions]
+%ENDTWISTY%
+&lt;/pre&gt;
+
+An online guide is also available at [[http://hadoop.apache.org/common/docs/current/commands_manual.html][Apache Hadoop commands manual]].
+You can use Hadoop commands to perform filesystem operations with more consistency.
+
+Example, to look into the internal hadoop namespace:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% hadoop fs -ls /
+Found 1 items
+drwxrwxr-x   - engage engage          0 2011-07-25 06:32 /engage
+&lt;/pre&gt;
+
+Example, to adjust ownership of filesystem areas (there is usually no need to specify the mount itself =/mnt/hadoop= in Hadoop commands):
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% hadoop fs -chown -R engage:engage /engage
+&lt;/pre&gt;
+
+Example, compare =hadoop fs= command vs. using FUSE mount:
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% hadoop fs -ls /engage
+Found 3 items
+-rw-rw-r--   2 engage engage  733669376 2011-06-15 16:55 /engage/CentOS-5.6-x86_64-LiveCD.iso
+-rw-rw-r--   2 engage engage  215387183 2011-06-15 16:28 /engage/condor-7.6.1-x86_rhap_5-stripped.tar.gz
+-rw-rw-r--   2 engage engage    9259360 2011-06-15 16:32 /engage/glideinWMS_v2_5_1.tgz
+
+%UCL_PROMPT% ls -l /mnt/hadoop/engage
+total 935855
+-rw-rw-r-- 1 engage engage 733669376 Jun 15 16:55 CentOS-5.6-x86_64-LiveCD.iso
+-rw-rw-r-- 1 engage engage 215387183 Jun 15 16:28 condor-7.6.1-x86_rhap_5-stripped.tar.gz
+-rw-rw-r-- 1 engage engage   9259360 Jun 15 16:32 glideinWMS_v2_5_1.tgz
+&lt;/pre&gt;
+
+---++ Creating VO and User filesystem areas
+
+Prior to starting basic day-to-day operations, it is important to create dedicated areas for each VO and/or user. This is similar to user management in simple UNIX filesystems. 
+
+%NOTE% Create (and maintain) usernames and groups with UIDs and GIDs on *all nodes*. These are maintained in basic system files such as =/etc/passwd= and =/etc/group=.
+
+%NOTE% In the examples below It is assumed a FUSE mount is set to =/mnt/hadoop=.  As an alternative =hadoop fs= commands could have been used.
+
+For clean HDFS operations and filesystem management:
+
+(a) Create top-level VO subdirectories under =/mnt/hadoop=.
+
+Example: 
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% mkdir /mnt/hadoop/cms
+%UCL_PROMPT_ROOT% mkdir /mnt/hadoop/dzero
+%UCL_PROMPT_ROOT% mkdir /mnt/hadoop/sbgrid
+%UCL_PROMPT_ROOT% mkdir /mnt/hadoop/fermigrid
+%UCL_PROMPT_ROOT% mkdir /mnt/hadoop/cmstest
+%UCL_PROMPT_ROOT% mkdir /mnt/hadoop/osg
+&lt;/pre&gt;
+
+(b) Create individual top-level user areas, under each VO area, as needed.
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% mkdir -p /mnt/hadoop/cms/store/user/tanyalevshina
+%UCL_PROMPT_ROOT% mkdir -p /mnt/hadoop/cms/store/user/michaelthomas
+%UCL_PROMPT_ROOT% mkdir -p /mnt/hadoop/cms/store/user/brianbockelman
+%UCL_PROMPT_ROOT% mkdir -p /mnt/hadoop/cms/store/user/douglasstrain
+%UCL_PROMPT_ROOT% mkdir -p /mnt/hadoop/cms/store/user/abhisheksinghrana
+&lt;/pre&gt;
+
+(c) Adjust username:group ownership of each area. 
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% chown -R cms:cms /mnt/hadoop/cms
+%UCL_PROMPT_ROOT% chown -R sam:sam /mnt/hadoop/dzero
+
+%UCL_PROMPT_ROOT% chown -R michaelthomas:cms /mnt/hadoop/cms/store/user/michaelthomas
+&lt;/pre&gt;
+
+---+ Installing !GridFTP
+
+%NOTE% !GridFTP must be installed on the *GridFTP node*
+
+---++ Prerequisites
+
+   1. %STARTSECTION{&quot;HadoopReq&quot;}%Install the Hadoop RPM on your !GridFTP node, edit =/etc/sysconfig/hadoop=, and verify your installation.%ENDSECTION{&quot;HadoopReq&quot;}%
+   1. %STARTSECTION{&quot;GumsReq&quot;}%We assume your site is running a sufficiently recent GUMS server &gt;= 1.3 (grid-mapfiles are not currently tested or supported).%ENDSECTION{&quot;GumsReq&quot;}%
+
+%INCLUDE{&quot;Documentation/Release3.InstallOSGGridFTP&quot; section=&quot;GridUsers&quot;}% 
+
+The !GridFTP server for Hadoop can be very memory-hungry, up to 500MB/transfer in the default configuration.
+You should plan accordingly to provision enough !GridFTP servers to handle the bandwidth that your site can support.
+
+The installation includes the latest CA Certificates package from the OSG as well as the fetch-crl CRL updater.
+
+%INCLUDE{&quot;InstallCertAuth&quot; section=&quot;FetchCRLConfig&quot; TOC_SHIFT=&quot;+&quot;}%
+
+*Note:* You do not need FUSE mounted on !GridFTP nodes
+
+---++ Installation
+
+To install gridftp-hdfs server, run:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install osg-gridftp-hdfs
+&lt;/pre&gt;
+
+Updates can be installed with:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum upgrade osg-gridftp-hdfs
+&lt;/pre&gt;
+
+---++ Configuration
+
+The installation of gridftp-hdfs and its dependencies creates several directories.
+In addition to the Hadoop installation files, you will also find:
+
+| Log files | =/var/log/gridftp-auth.log=, =/var/log/gridftp.log= |
+| init.d script | =/etc/init.d/globus-gridftp-server= |
+| runtime config files | =/etc/gridftp-hdfs/*=, =/etc/sysconfig/gridftp-hdfs= |
+| System binaries | =/usr/bin/gridftp-hdfs-standalone=, =/usr/sbin/globus-gridftp-server= |
+| System libraries | =/usr/lib64/libglobus_gridftp_server_hdfs.so*= |
+| GUMS client (called by LCMAPS) configuration | =/etc/lcmaps.db= |
+| CA certificates | =/etc/grid-security/certificates/*= |
+
+gridftp-hdfs reads the Hadoop configuration file to learn how to talk to Hadoop.
+As per the prerequisites section, you should have already edited =/etc/sysconfig/hadoop= and run =service hadoop-firstboot start=.
+If you did not follow the directions, please do that now.
+
+It is *not* necessary to start any Hadoop services with =service hadoop start= if you are running a dedicated !GridFTP server (that is, no datanode or namenode services will be run on the host).
+
+%INCLUDE{&quot;InstallOSGGridFTP&quot; section=&quot;Gums&quot;}%
+
+The default settings in =/etc/gridftp-hdfs/*.conf= should be ok for most installations.
+The file =gridftp.conf= is used by the init.d script for starting up the !GridFTP server.
+The file =gridftp-debug.conf= is used by =/usr/bin/gridftp-hdfs-standalone= for starting up the !GridFTP server in a testing mode.
+=/etc/sysconfig/gridftp-hdfs= contains additional site-specific environment variables that are used by the gridftp-hdfs dsi module in both the init.d and standalone !GridFTP server.
+Some of the environment variables that can be used in =/etc/sysconfig/gridftp-hdfs= include:
+
+| Option Name | Needs Editing? | Suggested value|
+| GRIDFTP_HDFS_REPLICA_MAP | No | File containing a list of paths and replica values for setting the default # of replicas for specific file paths |
+| GRIDFTP_BUFFER_COUNT | No | The number of 1MB memory buffers used to reorder data streams before writing them to Hadoop |
+| GRIDFTP_FILE_BUFFER_COUNT | No | The number of 1MB file-based buffers used to reorder data streams before writing them to Hadoop |
+| GRIDFTP_SYSLOG | No | Set this to 1 in case if you want to send transfer activity data to syslog (only used for the HadoopViz application) |
+| GRIDFTP_HDFS_MOUNT_POINT | Maybe | The location of the FUSE mount point used during the Hadoop installation.  Defaults to /mnt/hadoop.  This is needed so that gridftp-hdfs can convert fuse paths on the incoming URL to native Hadoop paths. *Note:* this does not imply you need FUSE mounted on !GridFTP nodes! |
+| GRIDFTP_LOAD_LIMIT | No | !GridFTP will refuse to start new transfers if the load on the !GridFTP host is higher than this number; defaults to 20. |
+| TMPDIR | Maybe | The temp directory where the file-based buffers are stored.  Defaults to /tmp. |
+
+=/etc/sysconfig/gridftp-hdfs= is also a good place to increase per-process resource limits. For example, many installations will require more than the default number of open files (=ulimit -n=).
+
+To troubleshoot LCMAPS authorization, you can add the following to =/etc/sysconfig/gridftp-hdfs= and choose a higher debug level:
+&lt;pre class=&quot;file&quot;&gt;
+# level 0: no messages, 1: errors, 2: also warnings, 3: also notices,
+#  4: also info, 5: maximum debug
+LCMAPS_DEBUG_LEVEL=2
+&lt;/pre&gt;
+Output goes to =/var/log/messages= by default. 
+
+---++ Running !GridFTP 
+
+To run the !GridFTP service use the following commands:
+
+%INCLUDE{&quot;InstallOSGGridFTP&quot; section=&quot;Starting&quot;}%
+
+---++ Validation
+
+%NOTE% The commands used to verify !GridFTP below assume you have access to a node where you can first generate a valid proxy using =voms-proxy-init= or =grid-proxy-init=.  Obtaining grid credentials is beyond the scope of this document.
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% globus-url-copy file:///home/users/jdost/test.txt gsiftp://devg-7.t2.ucsd.edu:2811/mnt/hadoop/engage/test.txt
+&lt;/pre&gt;
+
+If you are having troubles running !GridFTP refer to [[#GridFTPStand][Starting !GridFTP in Standalone Mode]] in the Troubleshooting section.
+
+
+---+ Installing !BeStMan
+
+%NOTE% !BeStMan must be installed on the *SRM node*
+
+%NOTE% Starting on 11 February 2014, all OSG-issued Digicert certificates (host, service, and personal) use the SHA-2 algorithm. &lt;span style=&quot;color: #F60;&quot;&gt;The !BeStMan software must be on a recent version to support SHA-2 certificates.&lt;/span&gt; Please visit [[SHA2Compliance][our SHA-2 compliance page]] for more information about minimum required versions of software components.
+
+
+---++ Prerequisites
+   * Make sure FUSE is installed and [[#FuseMount][mounted]] on the *SRM node*.
+   * A !GridFTP-HDFS server must also be installed, but this does not need to be on the same node as the !BeStMan server.  A larger site will prefer to have their !GridFTP and !BeStMan servers installed on separate hosts.
+   * CA Certificates installed in =/etc/grid-security/certificates=.
+
+%INCLUDE{&quot;Documentation/Release3.InstallOSGGridFTP&quot; section=&quot;GridUsers&quot;}% 
+
+!BeStMan is preconfigured to look for the *host* certificate and key in =/etc/grid-security/bestman/bestman*.pem=. Either, these files *must* exist and be *owned* by the *bestman* user, or you must change the settings in =bestman2.rc=. Note that you must use host certificates here or lcg-utils may experience issues.
+
+*NOTE* This RPM no longer brings in the OSG CA Certificates package or fetch-crl CRL updater as dependencies.  However we still provide the packages in the repo.  If you would like them run:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install osg-ca-certs
+&lt;/pre&gt;
+
+%INCLUDE{&quot;InstallCertAuth&quot; section=&quot;FetchCRLInstallShort&quot;}%
+
+*NOTE* if you chose not to install them you must install the certificates in another way.  !BeStMan still assumes you have them located in =/etc/grid-security/certificates=.
+
+*NOTE* the fetch-crl service does not start by default on installation.  To have fetch-crl update automatically, run:
+
+%INCLUDE{&quot;InstallCertAuth&quot; section=&quot;OSGBriefFetchCrlStart&quot;}%
+
+Cron will check for CRL updates every 6 hours.  If this is your first time installing you may need to run it immediately:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /usr/sbin/fetch-crl -r 20  -a 24 --quiet
+&lt;/pre&gt;
+
+The rpm/yum installation will create a &#39;bestman&#39; system account and group (uid,gid &lt; 500) on the host system for running the !BeStMan SRM process. If you would like to control the uid/gid that is used, then you should create the &#39;bestman&#39; user and group manually before installing the rpms.
+
+
+---++ Installation
+
+   1. Install Java using [[Documentation/Release3.InstallSoftwareWithOpenJDK7#InstallingJava][these instructions]] 
+   1. Install the !BeStMan server:\
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install bestman2-server
+&lt;/pre&gt;
+
+
+---++ Configuration
+
+%INCLUDE{&quot;InstallOSGBestmanSE&quot; section=&quot;Settings&quot; }%
+
+---++ Hadoop-specific configuration
+
+!BeStMan SRM uses the Hadoop FUSE mount to perform namespace operations, such as mkdir, rm, and ls.  As per the Hadoop install instructions, edit =/etc/sysconfig/hadoop= and run =service hadoop-firstboot start=.  It is *not* necessary (or even recommended) to start any hadoop services with =service hadoop start=.
+
+Make sure that you modify =localPathListAllowed= to use the Hadoop mount  in =/etc/bestman2/conf/bestman2.rc=.
+
+---++ Modify /etc/sudoers
+
+%INCLUDE{&quot;InstallOSGBestmanSE&quot; section=&quot;Sudoers&quot; }%
+
+---++ Copy certificates to bestman location
+
+%INCLUDE{&quot;InstallOSGBestmanSE&quot; section=&quot;Certificate&quot; }%
+
+
+---++ Running !BeStMan
+
+%INCLUDE{&quot;InstallOSGBestmanSE&quot; section=&quot;Starting&quot; }%
+
+---++ File Locations
+
+%INCLUDE{&quot;InstallOSGBestmanSE&quot; section=&quot;Locations&quot; }%
+
+---++ Validation
+
+%INCLUDE{&quot;InstallOSGBestmanSE&quot; section=&quot;Testing&quot; }%
+%INCLUDE{&quot;InstallOSGBestmanSE&quot; section=&quot;ClientInstall&quot; }%
+
+---+ Installing Gratia Transfer Probe
+
+%NOTE% The Gratia Transfer Probe must be installed on the *GridFTP node*
+
+---++ Prerequisites
+
+   1 !GridFTP is installed and working
+
+The Gratia probe requires the file =user-vo-map= to exist and be up to date. This file is created and updated by the =gums-client= package that comes in as a dependency of =osg-gridftp-hdfs=.
+
+---++ Installation
+
+Assuming you installed !GridFTP using the =osg-gridftp-hdfs= rpm, the Gratia Transfer Probe will already be installed.
+
+Updates can be installed with:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum upgrade gratia-probe-gridftp-transfer
+&lt;/pre&gt;
+
+---++ Configuration
+
+
+%INCLUDE{&quot;GratiaTransferProbe&quot; section=&quot;Configuration&quot; }%
+
+---++ Validation
+
+%INCLUDE{&quot;GratiaTransferProbe&quot; section=&quot;Validation&quot; }%
+
+
+---+ Installing Hadoop Storage Probe
+
+%NOTE% The Hadoop Storage Probe must be installed on the *Namenode*
+
+---++ Installation
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install gratia-probe-hadoop-storage
+&lt;/pre&gt;
+
+Updates can be installed with:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum upgrade gratia-probe-hadoop-storage
+&lt;/pre&gt;
+
+---++ Configuration
+
+Here are the most relevant file and directory locations:
+
+| Purpose | Needs Editing? | Location |
+| Probe Configuration | Yes | /etc/gratia/hadoop-storage/ProbeConfig |
+| Probe Executable | No | /usr/share/gratia/hadoop-storage/hadoop_storage_probe |
+| Log files | No | /var/log/gratia |
+| Temporary files | No | /var/lib/gratia/tmp |
+
+The RPM installs the Gratia probe into the system crontab, but does not configure it.  The configuration of the probe is controlled by two files
+
+&lt;verbatim&gt;
+/etc/gratia/hadoop-storage/ProbeConfig
+/etc/gratia/hadoop-storage/storage.cfg
+&lt;/verbatim&gt;
+
+---+++ !ProbeConfig
+This is usually one XML node spread over multiple lines.  Note that comments (#) have no effect on this file.  You will need to edit the following:
+
+| Attribute | Needs Editing | Value |
+| !CollectorHost | Maybe | Set to the hostname and port of the central collector.  By default it sends to the OSG collector.  You probably do not want to change it. |
+| !SiteName | Yes | Set to the resource group name of your SE as registered in OIM. |
+| !Grid | Maybe | Set to &quot;ITB&quot; if this is a test resource; otherwise, leave as OSG. |
+| !EnableProbe | Yes | Set to 1 to enable the probe. |
+
+---+++ storage.cfg
+This file controls which paths in HDFS should be monitored.  This is in the Windows INI format.
+
+*Note: for the current version of the storage.cfg, there is an error, and you may need to delete the &quot;probe/&quot; subdirectory for the !ProbeConfig location*
+&lt;pre class=&quot;file&quot;&gt;
+ProbeConfig = /etc/gratia/%RED%probe/%ENDCOLOR%hadoop-storage/ProbeConfig
+&lt;/pre&gt;
+
+For each logical &quot;area&quot; (arbitrarily defined by you), specify both a given name and a list of paths that belong to that area.  Unix globs are accepted.
+
+To configure an area named &quot;CMS /store&quot; that monitors the space usage in the paths /user/cms/store/*, one would add the following to the storage.cfg file.
+
+&lt;pre class=&quot;file&quot;&gt;
+[Area CMS /store]
+Name = CMS /store
+Path = /user/cms/store/*
+Trim = /user/cms
+&lt;/pre&gt;
+
+For each such area, add a section to your configuration file.
+
+---++++ Example file
+Below is a configuration file that includes three distinct areas.  Note that you shouldn&#39;t have to touch the [Gratia] section if you edited the !ProbeConfig above:
+
+&lt;pre class=&quot;file&quot;&gt;
+[Gratia]
+gratia_location = /opt/vdt/gratia
+ProbeConfig = %(gratia_location)s/probe/hadoop-storage/ProbeConfig
+
+[Area /store]
+Name = CMS /store
+Path = /store/*
+
+[Area /store/user]
+Name = CMS /store/user
+Path = /store/user/*
+
+[Area /user]
+Name = Hadoop /user
+Path = /user/*
+&lt;/pre&gt;
+
+**NOTE These lines in the [gratia] section are wrong and need to be changed to the following by hand for now until the rpm is updated:*
+&lt;pre class=&quot;file&quot;&gt;
+gratia_location = /etc/gratia
+ProbeConfig = %(gratia_location)s/hadoop-storage/ProbeConfig
+&lt;/pre&gt;
+
+---+ Installing Hadoop Storage Reports (Optional)
+
+**NOTE the !GratiaReporting rpm has not yet been migrated to the new osg repos and this section is subject to change.  Please skip this section until this warning goes away or request Nebraska to host your reports*
+
+%NOTE% The Hadoop Storage Reports may be installed on any node that has access to a local Gratia Collector 
+
+The Hadoop storage reports provides a daily report on the status and usage of your SE.  This serves as a handy tool for both site administrators and site executives.  An example report is copied at the end of this guide.
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Click here for Hadoop Storage Reports information&quot;
+hidelink=&quot;Hide the example&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+---++ Prerequisites
+
+   1. A working HDFS installation
+   1. A local [[Trash.ReleaseDocumentationGratiaSiteCollector][Gratia Collector]] installed
+   1. A Hadoop Storage Probe installed and configured to point to the local Gratia Collector
+
+---++ Installation
+
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+[root@client ~]$ yum install GratiaReporting
+&lt;/verbatim&gt;
+
+Updates can be installed with:
+
+&lt;verbatim class=&quot;rootscreen&quot;&gt;
+[root@client ~]$ yum upgrade GratiaReporting
+&lt;/verbatim&gt;
+
+
+---++ Configuration
+
+This RPM uses Linux-standard file locations.  Here are the most relevant file and directory locations:
+
+| Purpose | Needs Editing? | Location |
+| Report Configuration | Yes | /etc/gratia_reporting |
+| Cron template | Yes |  /etc/gratia_reporting/gratia_reporting/gratia_reporting.cron (move to /etc/cron.d) |
+| Logging Configuration | No | /etc/gratia_reporting/logging.cfg |
+| Log files | No | /var/log/gratia_reporting.log |
+
+---+++ Configuration file
+Copy the file =/etc/gratia_reporting/reporting.cfg= to a new filename in =/etc/gratia_reporting= (for example, =/etc/gratia_reporting/reporting_cms.cfg=).  You will do this once for every report you want to send out.
+
+| Attribute | Needs Editing | Value |
+| !SiteName | Yes | Set to the resource group name of your SE as registered in OIM. |
+| database | Maybe | Set to the database section containing the login details for your Gratia Collector (a few, non-functioning examples sections are included). Installing a Gratia Collector is [[Trash.ReleaseDocumentationGratiaSiteCollector][covered here]], but ask around on osg-hadoop: Nebraska will usually run these reports for you if requested. |
+| toNames | Yes | Python list for the &quot;to names&quot; for the report email. |
+| toEmails | Yes | Python list for the &quot;to emails&quot; for the report email. |
+| smtphost | Maybe | Hostname of a SMTP server that accepts email from this host. |
+| fromName | Maybe | Set to the &quot;from name&quot; for the report email. |
+| fromEmail | Maybe | Set to the &quot;from email&quot; for the report email. |
+
+---+++ Cron
+Copy the file =/etc/gratia_reporting/gratia_reporting.cron= to =/etc/cron.d=.  There is one line per report; comment out all except the hadoop report.  It is the line containing =-n hadoop=.  Update the line to point at your new configuration file.
+
+%ENDTWISTY%
+
+---++ Sample report
+
+%TWISTY{%TWISTY_OPTS_OUTPUT%}%
+This is a sample report from the Nebraska HDFS instance.
+&lt;pre class=&quot;file&quot;&gt;
+============================================================
+  The Hadoop Chronicle | 85 % | 2009-09-25
+============================================================
+
+--------------------
+| Global Storage   |
+-----------------------------------------------------
+|                  |  Today  | Yesterday | One Week |
+-----------------------------------------------------
+| Total Space (GB) | 311,470 |   357,818 |  368,711 |
+| Free Space (GB)  |  47,304 |    93,719 |  128,391 |
+| Used Space (GB)  | 264,166 |   264,100 |  240,320 |
+| Used Percentage  |     85% |       74% |      65% |
+-----------------------------------------------------
+--------------
+| CMS /store |
+-------------------------------------------------------------------------------------------------------------------------------------
+|           Path           | Size(GB) | 1 Day Change | 7 Day Change | Remaining | # Files | 1 Day Change | 7 Day Change | Remaining |
+-------------------------------------------------------------------------------------------------------------------------------------
+| /store/user              |      771 |            0 | UNKNOWN      | NO QUOTA  |   4,859 |            0 | UNKNOWN      | NO QUOTA  |
+| /store/mc                |   95,865 |         -353 | UNKNOWN      | NO QUOTA  |  86,830 |         -171 | UNKNOWN      | NO QUOTA  |
+| /store/test              |        0 |            0 | UNKNOWN      | NO QUOTA  |     569 |           25 | UNKNOWN      | NO QUOTA  |
+| /store/results           |      237 |            0 | UNKNOWN      | NO QUOTA  |     198 |            0 | UNKNOWN      | NO QUOTA  |
+| /store/phedex_monarctest |      729 |            0 | UNKNOWN      | NO QUOTA  |     257 |            0 | UNKNOWN      | NO QUOTA  |
+| /store/unmerged          |    3,681 |            3 | UNKNOWN      | NO QUOTA  |  35,687 |           23 | UNKNOWN      | NO QUOTA  |
+| /store/CSA07             |        0 |            0 | UNKNOWN      | NO QUOTA  |       0 |            0 | UNKNOWN      | NO QUOTA  |
+| /store/data              |        0 |            0 | UNKNOWN      | NO QUOTA  |       0 |            0 | UNKNOWN      | NO QUOTA  |
+| /store/PhEDEx_LoadTest07 |        0 |          -21 | UNKNOWN      | NO QUOTA  |       1 |          -22 | UNKNOWN      | NO QUOTA  |
+-------------------------------------------------------------------------------------------------------------------------------------
+
+-------------------
+| CMS /store/user |
+----------------------------------------------------------------------------------------------------------------------------------
+|          Path         | Size(GB) | 1 Day Change | 7 Day Change | Remaining | # Files | 1 Day Change | 7 Day Change | Remaining |
+----------------------------------------------------------------------------------------------------------------------------------
+| /store/user/hpi       |        0 |            0 | UNKNOWN      |     1,099 |      15 |            0 | UNKNOWN      |     9,985 |
+| /store/user/gattebury |        0 |            0 | UNKNOWN      |     1,100 |       1 |            0 | UNKNOWN      |     9,999 |
+| /store/user/mkirn     |        0 |            0 | UNKNOWN      |     1,100 |       3 |            0 | UNKNOWN      |     9,997 |
+| /store/user/spadhi    |       12 |            0 | UNKNOWN      |     1,062 |   1,114 |            0 | UNKNOWN      |     8,886 |
+| /store/user/creed     |        0 |            0 | UNKNOWN      |     1,100 |       0 |            0 | UNKNOWN      |    10,000 |
+| /store/user/rossman   |        0 |            0 | UNKNOWN      |     1,099 |       5 |            0 | UNKNOWN      |     9,995 |
+| /store/user/eluiggi   |        0 |            0 | UNKNOWN      |     1,099 |       6 |            0 | UNKNOWN      |     9,994 |
+| /store/user/ewv       |        7 |            0 | UNKNOWN      |     1,081 |     284 |            0 | UNKNOWN      |     9,716 |
+| /store/user/test      |        0 |            0 | UNKNOWN      | NO QUOTA  |     167 |            0 | UNKNOWN      |     9,833 |
+| /store/user/schiefer  |      751 |            0 | UNKNOWN      |     1,044 |   3,264 |            0 | UNKNOWN      |     6,736 |
+----------------------------------------------------------------------------------------------------------------------------------
+
+----------------
+| Hadoop /user |
+----------------------------------------------------------------------------------------------------------------------------------
+|       Path      | Size(GB) | 1 Day Change | 7 Day Change | Remaining | # Files | 1 Day Change | 7 Day Change |    Remaining    |
+----------------------------------------------------------------------------------------------------------------------------------
+| /user/djbender  |        0 |            0 | UNKNOWN      | NO QUOTA  |       1 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/lhcb      |        0 |            0 | UNKNOWN      |        54 |       0 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/dzero     |      897 |            0 | UNKNOWN      |       347 |  89,376 |            0 | UNKNOWN      |         410,624 |
+| /user/bloom     |      454 |            0 | UNKNOWN      | NO QUOTA  |   1,410 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/uscms01   |  101,384 |         -362 | UNKNOWN      | NO QUOTA  | 129,739 |         -141 | UNKNOWN      | NO QUOTA        |
+| /user/cdf       |        0 |            0 | UNKNOWN      | NO QUOTA  |       6 |            0 | UNKNOWN      | 536,870,911,994 |
+| /user/osg       |        1 |            0 | UNKNOWN      | NO QUOTA  |       3 |            0 | UNKNOWN      |   5,368,709,117 |
+| /user/dweitzel  |       20 |            0 | UNKNOWN      | NO QUOTA  |   2,282 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/gattebury |        5 |            0 | UNKNOWN      | NO QUOTA  |  10,002 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/brian     |       72 |            0 | UNKNOWN      | NO QUOTA  |   2,697 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/usatlas   |        0 |            0 | UNKNOWN      | NO QUOTA  |       0 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/powers    |        1 |            1 | UNKNOWN      | NO QUOTA  |     211 |          211 | UNKNOWN      | NO QUOTA        |
+| /user/ifisk     |        0 |            0 | UNKNOWN      | NO QUOTA  |       1 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/gpn       |      261 |           -5 | UNKNOWN      |     1,360 |   3,805 |            1 | UNKNOWN      |         996,195 |
+| /user/engage    |      461 |          367 | UNKNOWN      | NO QUOTA  |      16 |           13 | UNKNOWN      |         999,984 |
+| /user/clundst   |        0 |            0 | UNKNOWN      | NO QUOTA  |       6 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/che       |        0 |            0 | UNKNOWN      | NO QUOTA  |      13 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/store     |        0 |            0 | UNKNOWN      | NO QUOTA  |       0 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/dteam     |        0 |            0 | UNKNOWN      |        53 |      18 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/root      |        0 |            0 | UNKNOWN      | NO QUOTA  |       1 |            0 | UNKNOWN      | NO QUOTA        |
+----------------------------------------------------------------------------------------------------------------------------------
+
+-------------
+| FSCK Data |
+-------------
+ Total size:	114592906796932 B (Total open files size: 38923141120 B)
+ Total dirs:	41293
+ Total files:	295431 (Files currently being written: 38)
+ Total blocks (validated):	1356788 (avg. block size 84458962 B) (Total open file blocks (not validated): 297)
+ Minimally replicated blocks:	1356788 (100.0 %)
+ Over-replicated blocks:	1 (7.370348E-5 %)
+ Under-replicated blocks:	0 (0.0 %)
+ Mis-replicated blocks:		0 (0.0 %)
+ Default replication factor:	3
+ Average block replication:	2.2943976
+ Corrupt blocks:		0
+ Missing replicas:		0 (0.0 %)
+ Number of data-nodes:		101
+ Number of racks:		1
+The filesystem under path &#39;/&#39; is HEALTHY
+&lt;/pre&gt;
+
+%ENDTWISTY%
+
+---+ Troubleshooting
+
+---++ Hadoop
+
+To view all of the currently configured settings of Hadoop from the web interface, enter the following url in your browser:
+
+&lt;pre class=&quot;file&quot;&gt;
+http://%RED%namenode.hostname%ENDCOLOR%:50070/conf
+&lt;/pre&gt;
+
+You will see the entire configuration in XML format, for example:
+
+%TWISTY{%TWISTY_OPTS_OUTPUT%}%
+&lt;verbatim class=&quot;file&quot;&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&lt;configuration&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.s3n.impl&lt;/name&gt;&lt;value&gt;org.apache.hadoop.fs.s3native.NativeS3FileSystem&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.task.cache.levels&lt;/name&gt;&lt;value&gt;2&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;map.sort.class&lt;/name&gt;&lt;value&gt;org.apache.hadoop.util.QuickSort&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-site.xml--&gt;&lt;name&gt;hadoop.tmp.dir&lt;/name&gt;&lt;value&gt;/data1/hadoop//scratch&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;hadoop.native.lib&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.namenode.decommission.nodes.per.interval&lt;/name&gt;&lt;value&gt;5&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.https.need.client.auth&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;ipc.client.idlethreshold&lt;/name&gt;&lt;value&gt;4000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.system.dir&lt;/name&gt;&lt;value&gt;${hadoop.tmp.dir}/mapred/system&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.datanode.data.dir.perm&lt;/name&gt;&lt;value&gt;755&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.tracker.persist.jobstatus.hours&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.namenode.logging.level&lt;/name&gt;&lt;value&gt;all&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.datanode.address&lt;/name&gt;&lt;value&gt;0.0.0.0:50010&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;io.skip.checksum.errors&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.block.access.token.enable&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from Unknown--&gt;&lt;name&gt;fs.default.name&lt;/name&gt;&lt;value&gt;hdfs://nagios.t2.ucsd.edu:9000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.child.tmp&lt;/name&gt;&lt;value&gt;./tmp&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.har.impl.disable.cache&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.skip.reduce.max.skip.groups&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.safemode.threshold.pct&lt;/name&gt;&lt;value&gt;0.999f&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.heartbeats.in.second&lt;/name&gt;&lt;value&gt;100&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.namenode.handler.count&lt;/name&gt;&lt;value&gt;40&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.blockreport.initialDelay&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.jobtracker.instrumentation&lt;/name&gt;&lt;value&gt;org.apache.hadoop.mapred.JobTrackerMetricsInst&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.tasktracker.dns.nameserver&lt;/name&gt;&lt;value&gt;default&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;io.sort.factor&lt;/name&gt;&lt;value&gt;10&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.task.timeout&lt;/name&gt;&lt;value&gt;600000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.max.tracker.failures&lt;/name&gt;&lt;value&gt;4&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;hadoop.rpc.socket.factory.class.default&lt;/name&gt;&lt;value&gt;org.apache.hadoop.net.StandardSocketFactory&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.tracker.jobhistory.lru.cache.size&lt;/name&gt;&lt;value&gt;5&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.hdfs.impl&lt;/name&gt;&lt;value&gt;org.apache.hadoop.hdfs.DistributedFileSystem&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.skip.map.auto.incr.proc.count&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.block.access.key.update.interval&lt;/name&gt;&lt;value&gt;600&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapreduce.job.complete.cancel.delegation.tokens&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;io.mapfile.bloom.size&lt;/name&gt;&lt;value&gt;1048576&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapreduce.reduce.shuffle.connect.timeout&lt;/name&gt;&lt;value&gt;180000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.safemode.extension&lt;/name&gt;&lt;value&gt;30000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-site.xml--&gt;&lt;name&gt;tasktracker.http.threads&lt;/name&gt;&lt;value&gt;50&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.shuffle.merge.percent&lt;/name&gt;&lt;value&gt;0.66&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.ftp.impl&lt;/name&gt;&lt;value&gt;org.apache.hadoop.fs.ftp.FTPFileSystem&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.output.compress&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-site.xml--&gt;&lt;name&gt;io.bytes.per.checksum&lt;/name&gt;&lt;value&gt;4096&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.healthChecker.script.timeout&lt;/name&gt;&lt;value&gt;600000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;topology.node.switch.mapping.impl&lt;/name&gt;&lt;value&gt;org.apache.hadoop.net.ScriptBasedMapping&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.https.server.keystore.resource&lt;/name&gt;&lt;value&gt;ssl-server.xml&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.reduce.slowstart.completed.maps&lt;/name&gt;&lt;value&gt;0.05&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.reduce.max.attempts&lt;/name&gt;&lt;value&gt;4&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.ramfs.impl&lt;/name&gt;&lt;value&gt;org.apache.hadoop.fs.InMemoryFileSystem&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.block.access.token.lifetime&lt;/name&gt;&lt;value&gt;600&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.skip.map.max.skip.records&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.name.edits.dir&lt;/name&gt;&lt;value&gt;${dfs.name.dir}&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;hadoop.security.group.mapping&lt;/name&gt;&lt;value&gt;org.apache.hadoop.security.ShellBasedUnixGroupsMapping&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.tracker.persist.jobstatus.dir&lt;/name&gt;&lt;value&gt;/jobtracker/jobsInfo&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-site.xml--&gt;&lt;name&gt;hadoop.log.dir&lt;/name&gt;&lt;value&gt;/var/log/hadoop&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.s3.buffer.dir&lt;/name&gt;&lt;value&gt;${hadoop.tmp.dir}/s3&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.block.size&lt;/name&gt;&lt;value&gt;134217728&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;job.end.retry.attempts&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.file.impl&lt;/name&gt;&lt;value&gt;org.apache.hadoop.fs.LocalFileSystem&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.output.compression.type&lt;/name&gt;&lt;value&gt;RECORD&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.local.dir.minspacestart&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.datanode.ipc.address&lt;/name&gt;&lt;value&gt;0.0.0.0:50020&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.permissions&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;topology.script.number.args&lt;/name&gt;&lt;value&gt;100&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;io.mapfile.bloom.error.rate&lt;/name&gt;&lt;value&gt;0.005&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.max.tracker.blacklists&lt;/name&gt;&lt;value&gt;4&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.task.profile.maps&lt;/name&gt;&lt;value&gt;0-2&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.datanode.https.address&lt;/name&gt;&lt;value&gt;0.0.0.0:50475&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-site.xml--&gt;&lt;name&gt;dfs.umaskmode&lt;/name&gt;&lt;value&gt;002&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.userlog.retain.hours&lt;/name&gt;&lt;value&gt;24&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.secondary.http.address&lt;/name&gt;&lt;value&gt;gratia-1:50090&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.replication.max&lt;/name&gt;&lt;value&gt;32&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.tracker.persist.jobstatus.active&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;hadoop.security.authorization&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;local.cache.size&lt;/name&gt;&lt;value&gt;10737418240&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.min.split.size&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.namenode.delegation.token.renew-interval&lt;/name&gt;&lt;value&gt;86400000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-site.xml--&gt;&lt;name&gt;mapred.map.tasks&lt;/name&gt;&lt;value&gt;7919&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.child.java.opts&lt;/name&gt;&lt;value&gt;-Xmx200m&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.https.client.keystore.resource&lt;/name&gt;&lt;value&gt;ssl-client.xml&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from Unknown--&gt;&lt;name&gt;dfs.namenode.startup&lt;/name&gt;&lt;value&gt;REGULAR&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.queue.name&lt;/name&gt;&lt;value&gt;default&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.tracker.retiredjobs.cache.size&lt;/name&gt;&lt;value&gt;1000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.https.address&lt;/name&gt;&lt;value&gt;0.0.0.0:50470&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.balance.bandwidthPerSec&lt;/name&gt;&lt;value&gt;2000000000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;ipc.server.listen.queue.size&lt;/name&gt;&lt;value&gt;128&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;job.end.retry.interval&lt;/name&gt;&lt;value&gt;30000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.inmem.merge.threshold&lt;/name&gt;&lt;value&gt;1000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.skip.attempts.to.start.skipping&lt;/name&gt;&lt;value&gt;2&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;fs.checkpoint.dir&lt;/name&gt;&lt;value&gt;/var/hadoop/checkpoint-a&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-site.xml--&gt;&lt;name&gt;mapred.reduce.tasks&lt;/name&gt;&lt;value&gt;1543&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.merge.recordsBeforeProgress&lt;/name&gt;&lt;value&gt;10000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.userlog.limit.kb&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;webinterface.private.actions&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.max.objects&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.shuffle.input.buffer.percent&lt;/name&gt;&lt;value&gt;0.70&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;io.sort.spill.percent&lt;/name&gt;&lt;value&gt;0.80&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.map.tasks.speculative.execution&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;hadoop.util.hash.type&lt;/name&gt;&lt;value&gt;murmur&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.datanode.dns.nameserver&lt;/name&gt;&lt;value&gt;default&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.blockreport.intervalMsec&lt;/name&gt;&lt;value&gt;3600000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.map.max.attempts&lt;/name&gt;&lt;value&gt;4&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapreduce.job.acl-view-job&lt;/name&gt;&lt;value&gt; &lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.tracker.handler.count&lt;/name&gt;&lt;value&gt;10&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.client.block.write.retries&lt;/name&gt;&lt;value&gt;3&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.max.reduces.per.node&lt;/name&gt;&lt;value&gt;-1&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapreduce.reduce.shuffle.read.timeout&lt;/name&gt;&lt;value&gt;180000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.tasktracker.expiry.interval&lt;/name&gt;&lt;value&gt;600000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.https.enable&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.jobtracker.maxtasks.per.job&lt;/name&gt;&lt;value&gt;-1&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.jobtracker.job.history.block.size&lt;/name&gt;&lt;value&gt;3145728&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;keep.failed.task.files&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.datanode.failed.volumes.tolerated&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.task.profile.reduces&lt;/name&gt;&lt;value&gt;0-2&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;ipc.client.tcpnodelay&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.output.compression.codec&lt;/name&gt;&lt;value&gt;org.apache.hadoop.io.compress.DefaultCodec&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;io.map.index.skip&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;ipc.server.tcpnodelay&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.namenode.delegation.key.update-interval&lt;/name&gt;&lt;value&gt;86400000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.running.map.limit&lt;/name&gt;&lt;value&gt;-1&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;jobclient.progress.monitor.poll.interval&lt;/name&gt;&lt;value&gt;1000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.default.chunk.view.size&lt;/name&gt;&lt;value&gt;32768&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;hadoop.logfile.size&lt;/name&gt;&lt;value&gt;10000000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.reduce.tasks.speculative.execution&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapreduce.tasktracker.outofband.heartbeat&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.s3n.block.size&lt;/name&gt;&lt;value&gt;67108864&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.datanode.du.reserved&lt;/name&gt;&lt;value&gt;10000000000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;hadoop.security.authentication&lt;/name&gt;&lt;value&gt;simple&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;fs.checkpoint.period&lt;/name&gt;&lt;value&gt;3600&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.running.reduce.limit&lt;/name&gt;&lt;value&gt;-1&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.reuse.jvm.num.tasks&lt;/name&gt;&lt;value&gt;1&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.web.ugi&lt;/name&gt;&lt;value&gt;webuser,webgroup&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.jobtracker.completeuserjobs.maximum&lt;/name&gt;&lt;value&gt;100&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.df.interval&lt;/name&gt;&lt;value&gt;60000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.task.tracker.task-controller&lt;/name&gt;&lt;value&gt;org.apache.hadoop.mapred.DefaultTaskController&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.data.dir&lt;/name&gt;&lt;value&gt;/data1/hadoop//data&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.s3.maxRetries&lt;/name&gt;&lt;value&gt;4&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.datanode.dns.interface&lt;/name&gt;&lt;value&gt;default&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.support.append&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapreduce.job.acl-modify-job&lt;/name&gt;&lt;value&gt; &lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.local.dir&lt;/name&gt;&lt;value&gt;${hadoop.tmp.dir}/mapred/local&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.hftp.impl&lt;/name&gt;&lt;value&gt;org.apache.hadoop.hdfs.HftpFileSystem&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.permissions.supergroup&lt;/name&gt;&lt;value&gt;root&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.trash.interval&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.s3.sleepTimeSeconds&lt;/name&gt;&lt;value&gt;10&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.submit.replication&lt;/name&gt;&lt;value&gt;10&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.replication.min&lt;/name&gt;&lt;value&gt;1&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.har.impl&lt;/name&gt;&lt;value&gt;org.apache.hadoop.fs.HarFileSystem&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.map.output.compression.codec&lt;/name&gt;&lt;value&gt;org.apache.hadoop.io.compress.DefaultCodec&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.tasktracker.dns.interface&lt;/name&gt;&lt;value&gt;default&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.namenode.decommission.interval&lt;/name&gt;&lt;value&gt;30&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from Unknown--&gt;&lt;name&gt;dfs.http.address&lt;/name&gt;&lt;value&gt;nagios:50070&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-site.xml--&gt;&lt;name&gt;mapred.job.tracker&lt;/name&gt;&lt;value&gt;nagios:9000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.heartbeat.interval&lt;/name&gt;&lt;value&gt;3&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;io.seqfile.sorter.recordlimit&lt;/name&gt;&lt;value&gt;1000000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.name.dir&lt;/name&gt;&lt;value&gt;${hadoop.tmp.dir}/dfs/name&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.line.input.format.linespermap&lt;/name&gt;&lt;value&gt;1&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.jobtracker.taskScheduler&lt;/name&gt;&lt;value&gt;org.apache.hadoop.mapred.JobQueueTaskScheduler&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.tasktracker.instrumentation&lt;/name&gt;&lt;value&gt;org.apache.hadoop.mapred.TaskTrackerMetricsInst&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.datanode.http.address&lt;/name&gt;&lt;value&gt;0.0.0.0:50075&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;jobclient.completion.poll.interval&lt;/name&gt;&lt;value&gt;5000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.max.maps.per.node&lt;/name&gt;&lt;value&gt;-1&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.local.dir.minspacekill&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.replication.interval&lt;/name&gt;&lt;value&gt;3&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;io.sort.record.percent&lt;/name&gt;&lt;value&gt;0.05&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.kfs.impl&lt;/name&gt;&lt;value&gt;org.apache.hadoop.fs.kfs.KosmosFileSystem&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.temp.dir&lt;/name&gt;&lt;value&gt;${hadoop.tmp.dir}/mapred/temp&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-site.xml--&gt;&lt;name&gt;mapred.tasktracker.reduce.tasks.maximum&lt;/name&gt;&lt;value&gt;4&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.replication&lt;/name&gt;&lt;value&gt;2&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.checkpoint.edits.dir&lt;/name&gt;&lt;value&gt;${fs.checkpoint.dir}&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.tasktracker.tasks.sleeptime-before-sigkill&lt;/name&gt;&lt;value&gt;5000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.reduce.input.buffer.percent&lt;/name&gt;&lt;value&gt;0.0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.tasktracker.indexcache.mb&lt;/name&gt;&lt;value&gt;10&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapreduce.job.split.metainfo.maxsize&lt;/name&gt;&lt;value&gt;10000000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.skip.reduce.auto.incr.proc.count&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;hadoop.logfile.count&lt;/name&gt;&lt;value&gt;10&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.automatic.close&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;io.seqfile.compress.blocksize&lt;/name&gt;&lt;value&gt;1000000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.hosts.exclude&lt;/name&gt;&lt;value&gt;/etc/hadoop-0.20/conf/hosts_exclude&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.s3.block.size&lt;/name&gt;&lt;value&gt;67108864&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.tasktracker.taskmemorymanager.monitoring-interval&lt;/name&gt;&lt;value&gt;5000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.acls.enabled&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapreduce.jobtracker.staging.root.dir&lt;/name&gt;&lt;value&gt;${hadoop.tmp.dir}/mapred/staging&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.queue.names&lt;/name&gt;&lt;value&gt;default&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.access.time.precision&lt;/name&gt;&lt;value&gt;3600000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.hsftp.impl&lt;/name&gt;&lt;value&gt;org.apache.hadoop.hdfs.HsftpFileSystem&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.task.tracker.http.address&lt;/name&gt;&lt;value&gt;0.0.0.0:50060&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.reduce.parallel.copies&lt;/name&gt;&lt;value&gt;5&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;io.seqfile.lazydecompress&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.safemode.min.datanodes&lt;/name&gt;&lt;value&gt;0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;io.sort.mb&lt;/name&gt;&lt;value&gt;100&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;ipc.client.connection.maxidletime&lt;/name&gt;&lt;value&gt;10000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.compress.map.output&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.task.tracker.report.address&lt;/name&gt;&lt;value&gt;127.0.0.1:0&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.healthChecker.interval&lt;/name&gt;&lt;value&gt;60000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;ipc.client.kill.max&lt;/name&gt;&lt;value&gt;10&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;ipc.client.connect.max.retries&lt;/name&gt;&lt;value&gt;10&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.s3.impl&lt;/name&gt;&lt;value&gt;org.apache.hadoop.fs.s3.S3FileSystem&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.job.tracker.http.address&lt;/name&gt;&lt;value&gt;0.0.0.0:50030&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;io.file.buffer.size&lt;/name&gt;&lt;value&gt;4096&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.jobtracker.restart.recover&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;io.serializations&lt;/name&gt;&lt;value&gt;org.apache.hadoop.io.serializer.WritableSerialization&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.task.profile&lt;/name&gt;&lt;value&gt;false&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-site.xml--&gt;&lt;name&gt;dfs.datanode.handler.count&lt;/name&gt;&lt;value&gt;10&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;mapred.reduce.copy.backoff&lt;/name&gt;&lt;value&gt;300&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.replication.considerLoad&lt;/name&gt;&lt;value&gt;true&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-default.xml--&gt;&lt;name&gt;jobclient.output.filter&lt;/name&gt;&lt;value&gt;FAILED&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from hdfs-default.xml--&gt;&lt;name&gt;dfs.namenode.delegation.token.max-lifetime&lt;/name&gt;&lt;value&gt;604800000&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from mapred-site.xml--&gt;&lt;name&gt;mapred.tasktracker.map.tasks.maximum&lt;/name&gt;&lt;value&gt;4&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;io.compression.codecs&lt;/name&gt;&lt;value&gt;org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.BZip2Codec&lt;/value&gt;&lt;/property&gt;
+&lt;property&gt;&lt;!--Loaded from core-default.xml--&gt;&lt;name&gt;fs.checkpoint.size&lt;/name&gt;&lt;value&gt;67108864&lt;/value&gt;&lt;/property&gt;
+&lt;/configuration&gt;
+&lt;/verbatim&gt; 
+%ENDTWISTY%
+
+Please refer to [[https://twiki.grid.iu.edu/bin/view/Storage/HadoopDebug][OSG Hadoop debug webpage]] and [[http://wiki.apache.org/hadoop/FAQ][Apache Hadoop FAQ webpage]] for answers to common questions/concerns
+
+---++ FUSE
+
+#TroubFuseMod
+---+++ Notes on Building a FUSE Module
+
+If you are running a custom kernel, then be sure to enable the =fuse= module with =CONFIG_FUSE_FS=m= in your kernel config.  Building and installing a =fuse= kernel module for your custom kernel is beyond the scope of this document.
+
+*Note:* If you cannot find a =fuse= kernel module to match your kernel, ATRPMs has a [[http://people.atrpms.net/~pcavalcanti/LCG_kernel_modules.html][guide for using their RPM spec files]] in order to generate a module.  That page mostly works, although sections are a bit out dated.  Contact the osg-hadoop@opensciencegrid.org list if you need help.
+
+
+
+#TroubFuseDeb
+---+++ Running FUSE in Debug Mode
+
+To start the FUSE mount in debug mode, you can run the FUSE mount command by hand:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT%  /usr/bin/hadoop-fuse-dfs  /mnt/hadoop -o rw,server=%RED%namenode.host%ENDCOLOR%,port=9000,rdbuffer=131072,allow_other -d
+&lt;/pre&gt;
+
+Debug output will be printed to stderr, which you will probably want to redirect to a file.  Most FUSE-related problems can be tackled by reading through the stderr and looking for error messages.
+
+---++ !GridFTP
+
+#GridFTPStand
+---+++ Starting !GridFTP in Standalone Mode
+
+If you would like to test the gridftp-hdfs server in a debug standalone mode, you can run the command:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% gridftp-hdfs-standalone
+&lt;/pre&gt;
+
+The standalone server runs on port 5002, handles a single !GridFTP request, and will log output to stdout/stderr.
+
+---++ Known Issues
+
+---+++ copyFromLocal java IOException
+
+When trying to copy a local file into Hadoop you may come across the following java exception:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%TWISTY{%TWISTY_OPTS_OUTPUT%}%
+11/06/24 11:10:50 WARN hdfs.DFSClient: Error Recovery for block null bad datanode[0]
+nodes == null
+11/06/24 11:10:50 WARN hdfs.DFSClient: Could not get block locations. Source file
+&quot;/osg/ddd&quot; - Aborting...
+copyFromLocal: java.io.IOException: File /osg/ddd could only be replicated to 0
+nodes, instead of 1
+11/06/24 11:10:50 ERROR hdfs.DFSClient: Exception closing file /osg/ddd :
+org.apache.hadoop.ipc.RemoteException: java.io.IOException: File /osg/ddd could only
+be replicated to 0 nodes, instead of 1
+        at
+org.apache.hadoop.hdfs.server.namenode.FSNamesystem.getAdditionalBlock(FSNamesystem.java:1415)
+        at org.apache.hadoop.hdfs.server.namenode.NameNode.addBlock(NameNode.java:588)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at
+sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:597)
+        at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:528)
+        at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:1319)
+        at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:1315)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at javax.security.auth.Subject.doAs(Subject.java:396)
+        at
+org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1063)
+        at org.apache.hadoop.ipc.Server$Handler.run(Server.java:1313)
+%ENDTWISTY%
+&lt;/pre&gt;
+
+This can occur if you try to install a Datanode on a machine with less than 10GB of disk space available.  This can be changed by lowering the value of the following property in =/usr/lib/hadoop-0.20/conf/hdfs-site.xml=:
+
+&lt;verbatim class=&quot;file&quot;&gt;
+&lt;property&gt;
+  &lt;name&gt;dfs.datanode.du.reserved&lt;/name&gt;
+  &lt;value&gt;10000000000&lt;/value&gt;
+&lt;/property&gt;
+&lt;/verbatim&gt;
+
+Hadoop always requires this amount of disk space to be available for non-hdfs usage on the machine.
+
+---+ How to get Help?
+
+
+If you cannot resolve the problem, there are several ways to receive help:
+
+   * For bug support and issues, submit a ticket to the [[https://ticket.grid.iu.edu/goc][Grid Operations Center]].
+   * For community support and best-effort software team support contact osg-software@opensciencegrid.org.
+   * For additional community support, contact osg-hadoop@opensciencegrid.org.  Note, this is only best-effort help from OSG Software team.
+
+For a full set of help options, see [[HelpProcedure][Help Procedure]].
+
+---+ References
+
+   * [[https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationHadoopInstallationHandsOn][Hadoop Hands On Tutorial]].
+   * [[Storage.HadoopUpgrade][Instructions for Upgrading from Hadoop 0.19 to Hadoop 0.20]]
+      * **NOTE these instructions are subject to change and the upgrade doc linked is intended to upgrade from the caltech hosted 0.19 rpms in the caltech hosted 0.20 rpms, NOT the new rpms hosted in the new OSG repos.*
+
+---++ Benchmarking
+
+   * [[http://www.iop.org/EJ/article/1742-6596/180/1/012047/jpconf9_180_012047.pdf][Using Hadoop as a Grid Storage Element]], &lt;i&gt;Journal of Physics Conference Series, 2009&lt;/i&gt;.
+   * [[http://osg-docdb.opensciencegrid.org/0009/000911/001/Hadoop.pdf][Hadoop Distributed File System for the Grid]], &lt;i&gt;IEEE Nuclear Science Symposium, 2009&lt;/i&gt;.
+
+---+ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = DouglasStrain
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Installation
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       =  NehaSharma
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %IN_PROGRESS%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = NehaSharma
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+############################################################################################################
+--&gt;
+

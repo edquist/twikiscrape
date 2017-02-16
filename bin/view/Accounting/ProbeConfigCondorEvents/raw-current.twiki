@@ -1,0 +1,36 @@
+---+OSG Gratia probe configuration: Condor Events
+
+The Condor Events probe is a slight twist on normal accounting - it creates a usage record for each event in the Condor batch system.  This allows one to see who is consuming the most central batch system resources by viewing the submit, start, or finish events.
+
+*NOTE*: You will probably want to configure !CondorBinaryDir and !CondorConfig in the !ProbeConfig below.
+
+&lt;ol&gt;
+&lt;li&gt;[[ProbeInstallation][Install]] the software using pacman or RPM.&lt;/li&gt;
+
+#ProbeConfig&lt;li&gt;Customize the Gratia =ProbeConfig= file. The following variables (at least)
+should have appropriate values:
+
+| *Gratia Configuration Variable=&amp;quot;Default&amp;quot;* | *Set value information* |
+| !MeterName = &amp;quot;generic&amp;quot; | This value will be entered in the database to indicate where the record came from.&lt;br /&gt;We recommend a =batchsystem:FQDN= such as &quot;condor-events:fermigrid1.fnal.gov&quot;. |
+| !SiteName = &amp;quot;Generic Site&amp;quot; | This value should be set to the registered RESOURCE NAME in OIM. |
+| !VDTSetupFile = &amp;quot;&lt;tt&gt;MAGIC_VDT_LOCATION&lt;/tt&gt;/setup.sh&amp;quot; |Path to the VDT =setup.sh= file. Please expand =MAGIC_VDT_LOCATION=. |
+| !EnableProbe = &amp;quot;1&amp;quot; | If present, this attribute must be set to one to enable probe reporting. |
+| !CollectorHost = &quot;collector.example.com:80&quot; | The location of the collector; usually set to the official OSG one. |
+| !CondorBinaryDir = &quot;/path/to/condor&quot; | The directory that contains the condor binaries (necessary ones are condor_version and condor_config_val) |
+| !CondorConfig = &quot;/path/to/condor_config&quot; | The location of the condor config file. |
+
+Note that the !CondorBinaryDir and !CondorConfig may be in the PATH and CONDOR_CONFIG, respectively, of your environment.  However, when run as a cron job, more often than not, these are not set because your profile is not sourced.
+&lt;/li&gt;
+
+&lt;li&gt;Set up !EventLog.  This probe uses the Condor !EventLog to parse condor events.  The following needs to be in your local condor configuration:
+
+&lt;verbatim&gt;
+EVENT_LOG=$(LOG)/EventLog
+EVENT_LOG_USE_XML=True
+EVENT_LOG_JOB_AD_INFORMATION_ATTRS=Owner,CurrentHosts,x509userproxysubject,AccountingGroup,GlobalJobId,QDate,JobStartDate,JobCurrentStartDate,JobFinishedHookDone
+&lt;/verbatim&gt;
+
+The !EventLog does not necessarily need to be written to the file specified above, but it should be in XML format and at least have the attributes given above.
+&lt;/li&gt;
+
+&lt;/ol&gt;

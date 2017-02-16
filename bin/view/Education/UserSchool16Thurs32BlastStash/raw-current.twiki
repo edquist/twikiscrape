@@ -1,0 +1,174 @@
+---+ Thursday Exercise 3.2: Using !StashCache for Large Shared Data
+%TOC% 
+
+This exercise will use a [[http://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&amp;PAGE_TYPE=BlastHome][BLAST]] workflow to demonstrate the functionality of !StashCache for transferring input files to jobs on OSG.
+
+Because our individual blast jobs from [[UserSchool16Thu31BlastProxy][Exercise 3.1]] would take a bit longer with a larger database (too long for an workable exercise!), we&#39;ll imagine for this exercise that our =pdbaa_files.tar.gz= file is too large for a web proxy (larger than ~1 GB). For this exercise, we will use the input from [[UserSchool15Thu32BlastProxy][fExercise 3.2]], but instead of using the web proxy for the =pdbaa= database, we will place it in !StashCache via the OSG Connect server, and demonstrate that you can then submit !StashCache-dependent jobs from any OSG submit point, like =osg-learn.chtc.wisc.edu=.
+
+!StashCache is a distributed set of caches spread across the U.S. They are connected with high bandwidth connections to each other, and to the data origin servers, where your data is originally placed.
+
+%ATTACHURL%/Screen_Shot_2016-07-06_at_4.15.32_PM.png
+
+There are two methods of pulling data from !StashCache, within jobs.  We are in the middle of a transition from one to another.  They are:
+
+   1. *stashcp* (old): A command line program to copy files from !StashCache with ==cp== like syntax.
+   2. *StashCache-over-CVMFS* (new): A much more intuitive and fault tolerant method for accessing !StashCache files.  But only available on a few resources, for now.
+
+In the below tutorials, we will use *stashcp*, which will continue to be supported even after *StashCache-over-CVMFS* is fully functional.
+
+---++ Setup
+
+   * Make sure you&#39;re logged in to =osg-learn.chtc.wisc.edu=
+   * Transfer the following files from [[UserSchool16Thu31BlastProxy][Exercise 3.1]] to a new directory called =thur-data-3.2=: =blast_wrapper.sh=, =mouse_rna.fa.1=, =mouse_rna.fa.2=, =mouse_rna.fa.3=, and the most recent submit file.
+
+---++ Place the Database in !StashCache
+
+---+++ Copy to your =public= space on OSG Connect
+!StashCache provides a public space for you to store data which can be accessed through the caching servers. First, you need to move your blast database into this public directory. If you remember the &quot;public&quot; directory in your home directory on the OSG Connect server =login.osgconnect.net=, it&#39;s this location where you will place files that need to end up in the !StashCache data origin. So, from =osg-learn.chtc.wisc.edu= you can place the pdbaa_files.tar.gz from the previous exercise into !StashCache using a command like the following, which refers to the current location of the =pdbaa_file.tar.gz= file on =osg-learn.chtc.wisc.edu=, and to your =username= and =public= location on =login.osgconnect.net=:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;scp ../thur-data-blast/pdbaa_files.tar.gz %RED%username%ENDCOLOR%@login.osgconnect.net:~/public/&lt;/strong&gt;
+&lt;/pre&gt;
+
+As the =public= directory name indicates *your files placed in the =public= directory will be accessible to anyone&#39;s jobs if they know how to use =stashcp=*, though no one else will be able to edit the files, since only you can _place_ or _change_ files in your =public= space. For your own work in the future, make sure that you never put any sensitive data in such locations. 
+
+---+++ Check the file on OSG Connect
+
+Next, you can check for the file and test the command that we&#39;ll use in jobs on the OSG Connect login node:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;ssh %RED%username%ENDCOLOR%@login.osgconnect.net&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;ls public&lt;/strong&gt;
+&lt;/pre&gt;
+
+Now, load the =stashcp= module, which will allow you to test a copy of the file from !StashCache into your home directory on =login.osgconnect.net=:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;. /cvmfs/oasis.opensciencegrid.org/osg/modules/lmod/current/init/bash&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;module load stashcp&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;stashcp /user/%RED%username%ENDCOLOR%/public/pdbaa_files.tar.gz ./&lt;/strong&gt;
+&lt;/pre&gt;
+
+You should now see the =pdbaa_files.tar.gz= file in your current directory. Notice that we had to include the ==/user== and ==username== in the file path for =stashcp=, which make sure you&#39;re copying from *your* =public= space.
+
+---++ Modify the Submit File and Wrapper
+
+Return to your =thur-data-stash= directory on =osg-learn.chtc.wisc.edu= where you will modify the files as described below:
+
+1. At the top of the wrapper script (after =#!/bin/bash=), add the line to activate OSG Connect modules, followed by the above two lines that load the =stashcp= module and to copy the =pdbaa_files.tar.gz= file into the current directory of the job:
+
+&lt;pre class=&quot;file&quot;&gt;
+. /cvmfs/oasis.opensciencegrid.org/osg/modules/lmod/current/init/bash
+module load stashcp
+stashcp /user/%RED%username%ENDCOLOR%/public/pdbaa_files.tar.gz ./
+&lt;/pre&gt;
+
+2. Since HTCondor will no longer transfer or download the file for you, make sure to add the following line (or modify your existing =rm= command, if you&#39;re confident) to make sure the =pdbaa_files.tar.gz= file is also deleted and not copied back as perceived output.
+
+&lt;pre class=&quot;file&quot;&gt;
+rm pdbaa_files.tar.gz
+&lt;/pre&gt;
+
+3. Delete the =http= address from =transfer_input_files= in the submit file, since the =pdbaa_files.tar.gz= will be obtained from !StashCache by the wrapper.
+
+4. Add the following line to the submit file and update the &quot;requirements&quot; statement to require servers with OSG Connect modules (for accessing the =stashcp= module), somewhere before the word =queue=.
+
+&lt;pre class=&quot;file&quot;&gt;
++WantsStashCache = true
+requirements = (OpSys == &quot;LINUX&quot;) &amp;&amp; (HAS_MODULES =?= true)
+&lt;/pre&gt;
+
+5. Last, create a new =list.txt= file, to list only the =mouse_rna.fa.*= files that you copied into the =thur-data-stash= directory.
+
+---++ Submit the Job
+
+Now submit and monitor the job! If your 100 jobs from the previous exercise haven&#39;t started running yet, this job will not yet start. However, after it has been running for ~2 minutes, you&#39;re safe to continue to the next exercise!
+
+---++ Note: Keeping !StashCache &#39;Clean&#39;
+
+Just as for data on a web proxy, it is VERY important to remove old files from !StashCache when you no longer need them, especially so that you&#39;ll have plenty of space for such files in the future. For example, you would delete (=rm=) files from =public= on =login.osgconnect.net= when you don&#39;t need them there anymore, but only after all jobs have finished. The next time you use !StashCache after the school, remember to first check for old files that you can delete.
+
+
+&lt;!-- Saving for now, to be used in the Bonus exercise, later
+
+Using !StashCache-over-CVMFS
+
+Next, we will show the use of !StashCache-over-CVMFS.  This is an abbreviated tutorial.
+
+   1. First log into the OSG Connect submit host (login.osgconnect.net), download the tutorial files using the *tutorial* command, and cd into the newly created directory:
+   &lt;pre class=&quot;screen&quot;&gt;
+$ tutorial stashcache-blast
+$ cd tutorial-stashcache-blast
+&lt;/pre&gt;
+   1. The tutorial-stashcache-blast directory contains a number of files, described below:
+      * HTCondor submit script: *blast.submit*
+      * Job wrapper script: *blast_wrapper.sh*
+      * Query files: *query_0.fa  query_1.fa*
+   2. In addition to these files, the following input files are needed for the jobs:
+      * database file: *nt.fa*
+      * database index files: *nt.fa.nhr  nt.fa.nin  nt.fa.nsq*
+
+   These files are currently being stored in ==/cvmfs/stash.osgstorage.org/user/eharstad/public/blast_database/==.
+
+The CVMFS Submit File
+
+First, let&#39;s take a look at the HTCondor job submission script:
+
+&lt;pre class=&quot;file&quot;&gt;
+universe = vanilla
+
+executable = blast_wrapper.sh
+arguments  = blastn -db /cvmfs/stash.osgstorage.org/user/eharstad/public/blast_database/nt.fa -query $(queryfile)
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files = $(queryfile)
+
++WantsCvmfsStash = true
+requirements = (GLIDEIN_ResourceName == &quot;MWT2&quot; || GLIDEIN_ResourceName == &quot;Nebraska&quot; || GLIDEIN_ResourceName ==  &quot;Sandhills&quot;)
+	
+output = job.out.$(Cluster).$(Process)
+error = job.err.$(Cluster).$(Process)
+log = job.log.$(Cluster).$(Process)
+
+# For each file matching query*.fa, submit a job
+queue queryfile matching query*.fa
+&lt;/pre&gt;
+
+The executable for this job is a wrapper script, `blast_wrapper.sh`, that takes as arguments the blast command that we want to run on the compute host.  We specify which query file we want transferred (using HTCondor) to each job site with the *transfer_input_files* command.
+
+Note the one additional line that is required in the submit script of any job that uses !StashCache:
+
+&lt;pre class=&quot;file&quot;&gt;
++WantsCvmfsStash = true
+&lt;/pre&gt;
+
+Finally, since there are multiple query files, we submit them with the command `queue queryfile matching query*.fa` command.  Because we have used the $(queryfile) macro in the name of the query input files, only one query file will be transferred to each job.
+
+The Wrapper Script
+
+Now, let&#39;s take a look at the job wrapper script which is the job&#39;s executable:
+
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash
+# Load the blast module
+module load blast
+
+&quot;$@&quot;
+&lt;/pre&gt;
+
+The wrapper script loads the blast modules so that it can access the Blast software on the compute host.
+
+You are now ready to submit the jobs:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ condor_submit blast.submit
+&lt;/pre&gt;
+
+ Each job should run for approximately 3-5 minutes.  You can monitor the jobs with the condor_q command:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ condor_q &lt;userid&gt;
+&lt;/pre&gt;
+
+--&gt;
+

@@ -1,0 +1,109 @@
+---+ OSG Software and Release Teams Meeting, 18 November 2013
+
+*Attending:* !BrianB, !BrianL, Edgar, Mat, Neha, !TimC, !TimT, Xin
+&lt;!-- !BrianB, !BrianL, Carl, Edgar, Igor, !JohnW, Mat, Neha, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+
+---+++ Triage Duty
+   * !TimC this week
+   * !BrianL next week
+   * &lt;span style=&quot;color: #F60;&quot;&gt;11 (–3) open tickets&lt;/span&gt;
+
+---+++ JIRA
+   * Open: 168 (–2)
+   * In Progress: 35 (+10)
+   * Ready for Testing: 8 (+1)
+   * Ready for Release: 1 (–29)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+|  *Version*  |  *Testing*  |  *Freeze*  |  *Release*  | *Notes* |
+| 3.1.27 / 3.2.1 | 2013-11-25 | 2013-12-02 | 2013-12-10 | Short testing week due to Thanksgiving Holiday |
+| 3.1.28 / 3.2.2 | 2013-12-30 | 2013-01-07 | 2013-01-14 | Short testing week due to Holidays |
+| 3.1.29 / 3.2.3 | 2013-01-27 | 2013-02-03 | 2013-02-11 | |
+
+*Notes:* Additional “emergency” releases may be scheduled for the 4th Tuesday of each month. The *Testing* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+
+---++ OSG Software Team
+
+---+++ Work Completed
+
+   * Supported release of OSG 3.2.0
+   * Emailed an announcement about the root cause and workaround for the !OpenJDK 1.7.0_45 and !BeStMan problem
+   * Wrote a patch to make grid-proxy-init default to 1024-bit proxies ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1286][SW-1286]])
+   * Rebuilt HDFS with block-healing-extension patch ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1184][SW-1184]])
+   * Updated build tools with small bug fixes and improvements ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1287][SW-1287]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1288][SW-1288]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1289][SW-1289]])
+   * Added a few small (but nice!) features to osg-test ([[https://jira.opensciencegrid.org/browse/SOFTWARE-649][SW-649]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-810][SW-810]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1292][SW-1292]])
+   * Added basic documentation for osg-info-services
+   * Drafted an annual report for the NSF No-Cost Extension on the old OSG award
+
+---+++ Work In Progress
+
+Work with !TimC to make sure work is reflected in JIRA and that tickets are correct state. &lt;span style=&quot;color: #F60;&quot;&gt;Be sure to mark active work as _In Progress_.&lt;/span&gt;
+
+   * GSI-OpenSSH 5.7: complete one connection test and then it is RFT (Carl; [[https://jira.opensciencegrid.org/browse/SOFTWARE-1282][SW-1282]])
+   * osg-info-services: determine remaining tasks for version 1.0 (Mat, !BrianB)
+   * HTCondor-CE and PBS: working on bugs with Jaime Frey (Suchandra)
+   * Make RSV Java probe work locally, too (Carl; [[https://jira.opensciencegrid.org/browse/SOFTWARE-1147][SW-1147]])
+   * Move gridftp-hdfs to Globus: schedule a time to discuss with !BrianB, Joe (or someone), and !TimC (Mat; [[https://jira.opensciencegrid.org/browse/SOFTWARE-1214][SW-1214]])
+   * Disaster recovery project for OSG infrastructure at UW–Madison: define project (!TimC, Mat)
+   * Handle empty-* packages better: Finish design and make tickets for actual work (Mat)
+   * Automated testing: make trunk runs possible, set up AFS on osghost, run tests from cron, transfer results into AFS (!BrianL, Mat, !TimC)
+   * Support HCC and US-ATLAS in Koji: configure security policies, may wait until testing freeze has passed (Mat)
+   * Futuregrid: setting up (Igor)
+
+---+++ Work Upcoming
+
+   * RSV for VOs (Carl, !BrianB)
+   * Waiting for Globus Toolkit update containing our patches (Mat to ping Joe et al. about tickets and !BrianB about next batch)
+
+---+++ Notes
+
+&lt;strong&gt;empty-* packages:&lt;/strong&gt; The other proposal being considered is to create a separate repository just for these RPMs. That would be more work upfront but easier for sites to maintain. Mat will contact some sites (BNL, FNAL, MWT2 (Rob Gardner), UNL, Wisconsin) to find out how often they construct their own repository files. With that information, and a better estimate of the work involved in each proposal, we will make a decision and create JIRA tickets.
+
+*Globus Toolkit:* We need to decide whether to upgrade to 5.2.5 soon but without the OSG patches, or wait for 5.4.0 and our patches plus new GT features. !BrianB is not worried about the proposed GT 5.4 changes, in part because we are good at testing the primary affected component (!GridFTP), but still recommends that we update to 5.2.5 now anyway. The update will certainly go into 3.2; whether we update 3.1 as well depends on the release series policy that we create.
+
+*Madison ITB Site:* We have open questions to resolve from our 8 November meeting, and Mat is on point to get them answered or delegate to others. The next major milestone to shoot for is asking our sysadmins to re-image and re-network the machines in 3370A, but that has to wait until we know what to put where.
+
+---++ OSG Release Team
+
+---+++ Accomplishments
+
+!BrianL handled the release with extra work because of the new series and lots of coordination with !TimT.
+
+%TABLE{sort=&quot;off&quot;}%
+|  *Version*  |  *Date*  |  *Summary*  |
+| [[Documentation.Release3.Release3126][3.1.26]] | 2013-11-12 | CVMFS 2.1.15, Xrootd 3.3.3, osg-info-services, VO Package v49  |
+| [[Documentation.Release3.Release320][3.2.0]] | 2013-11-12 | 3.1.26 + glideinWMS 3.2.0, HTCondor 8.0.4, HTCondor-CE, HDFS 2, removed CEMon  |
+
+%TABLE{sort=&quot;off&quot;}%
+| *3.1.26* | *Both* | *3.2.0* | *Total* | *Status* |
+| 0(-0) | 0(-1) | 0(-0) | 0(-1) | Open |
+| 0(-0) | 0(-0) | 0(-1) | 0(-1) | In Progress |
+| 0(-0) | 0(-2) | 0(-0) | 0(-2) | Ready for Testing |
+| 0(-2) | 0(-18) | 0(-9) | 0(-29) | Ready for Release |
+| 0(+0) | 22(+22) | 11(+10) | 33(+32) | Closed |
+| 0(-2) | 22(+1) | 11(+0) | 33(-1) | Totals |
+
+---+++ Projects
+
+%TABLE{sort=&quot;off&quot;}%
+|  *3.1.27*  |  *Both*  |  *3.2.1*  | *Total* |  *Status*  |
+| 0(-0) | 4(+2) | 1(-2) | 5(-0) | Open |
+| 0(+0) | 8(+5) | 4(+3) | 12(+8) | In Progress |
+| 0(+0) | 6(+2) | 1(+1) | 7(+3) | Ready for Testing |
+| 0(+0) | 0(+0) | 0(+0) | 0(+0) | Ready for Release |
+| 0(+0) | 18(+9) | 6(+2) | 24(+11) | Totals |
+
+   * New Series Release
+      * Suggestions for improvement
+      * Documentation lag
+   * Focus is on Documentation
+      * New series and upgrade and what is disruptive (new).
+      * Acceptance Testing Documentation
+   * 7 Tickets Ready to Test
+      * Take short Thanksgiving week into account
+
+---+++ Notes

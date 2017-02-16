@@ -1,0 +1,37 @@
+---+!! %TOPIC%
+
+The fragment below can be used in a sidebar navigation to establish a folder-like subweb navigation.
+This uses the jqTreeview widget of the TWiki:Plugins/JQueryPlugin.
+
+Use it by adding =%&lt;nop&gt;INCLUDE{&quot;%WEB%.%TOPIC%&quot;}%= to your WebLeftBar or TWikiWebSideBar.
+
+If you want to hide the web navigation from &lt;nop&gt;TWikiGuests then uncomment the following:
+   * #Set DENYTOPICVIEW = %MAINWEB%.TWikiGuest
+
+&lt;verbatim&gt;
+%STARTINCLUDE%&lt;!-- flexweblist tree --&gt;
+%TWISTY{
+  prefix=&quot;&lt;h2 &gt;&quot;
+  link=&quot;Webs &quot;
+  suffix=&quot;&lt;/h2&gt;&quot;
+  showimg=&quot;%ICONURLPATH{&quot;plus&quot;}%&quot;
+  hideimg=&quot;%ICONURLPATH{&quot;minus&quot;}%&quot;
+  remember=&quot;on&quot;
+}%
+&lt;div class=&quot;jqTreeview closed unique&quot;&gt;
+%~~ FLEXWEBLIST{
+~~~   webs=&quot;%MAINWEB%,User,People,public,%TWIKIWEB%&quot; 
+~~~   exclude=&quot;^(TestCases|Trash).*&quot; 
+~~~   adminwebs=&quot;Applications.*&quot;
+~~~   header=&quot;&lt;ul&gt;&quot;
+~~~   format=&quot;&lt;li&gt;$percntWEBLINK{\&quot;$web\&quot;}$percnt&quot;
+~~~   separator=&quot;&lt;/li&gt;&quot;
+~~~   footer=&quot;&lt;/li&gt;&lt;/ul&gt;&quot;
+~~~   subheader=&quot;&lt;ul class=\&quot;natSubWebs\&quot;&gt;&quot;
+~~~ }%
+&lt;/div&gt;
+%ENDTWISTY%
+%STOPINCLUDE%
+&lt;/verbatim&gt;
+
+

@@ -1,0 +1,53 @@
+
+
+%TOC%
+
+---+ Purpose
+
+With the upcoming LHC turn on and the increased load expected by CMS and ATLAS the GOC is reviewing our trouble ticket exchange mechanisms. This document is intended to describe the exchange processes with each of the important LHC stakeholders and log any problems. The final deliverable will be recomendations to update and improve the exchanges under the following timeline.
+
+| Date | Deliverable |
+| Sept 1 | Report and Conclusions available for stakeholder input. |
+| Sept 8 | Sign off by stakeholders and OSG Facility to proceed. |
+| Sept 29 | Updates to exchange mechanism ready for testing. |
+| Oct 6 | All Updates in place for LHC turn up. |
+
+---+ Report of Current Trouble Ticket Exchange
+
+---++ GOC/GGUS Ticket Exchange
+
+The GOC currently maintains the scripts for tickets incoming/outgoing. GGUS emails are sent in XML format and the GOC&#39;s parser strips those details from the email. Then it queries the GOC&#39;s ticketing system database to see if a new ticket should be opened, or if the update to should be appended to an existing one. The incoming parser script runs every five minutes. Tickets from GGUS to the GOC are opened without human intervention.
+
+However, in order for the GOC to open/update a ticket with the GGUS system the GOC must create the ticket then login to the ticketing system&#39;s database server to run a perl script which will query data from the database for a specific ticket and format it into an email to be addressed to GGUS. This process has potential faults since it does require the GOC to take manual steps in order to send every update to GGUS. With other ticket exchanges this process requires no special action. Another problem with this is that is only sends the most recent update, not every update that hasn&#39;t yet made it to GGUS. This leads to GGUS missing updates unless the GOC staff recognizes that additional updates, other than just the most recent one, should be sent to GGUS.
+
+The GOC will propose that GGUS take ownership of parsing the incoming emails from Footprints. Benefits include:
+
+   * GGUS will receive &lt;span style=&quot;font-weight: bold&quot; class=&quot;Apple-style-span&quot;&gt;every&lt;/span&gt; update from the GOC. No longer will the GOC staff be required to update the ticket and manually run a script on a remote server in addition to updating the ticket. Any incoming email submissions to the GOC ticket would automatically be pushed out via an email update to GGUS; updates won&#39;t be missed. 
+   * GGUS can write their parser script to more accurately populate their ticket fields, like Status, for example. 
+   * As GGUS schema changes occur, they are in a better position to maintain the script/parser. 
+
+---++ GOC/ATLAS Ticket Exchange
+
+ATLAS uses the RT ticketing system. Since RT and the GOC&#39;s Footprints ticket systems automatically send acknowledgments to all incoming email, RT has employed a perl script (designed by VDT) that prevents ticket looping. Simply updating the sending ticket will send mail to the receiving ticket, updating it. The GOC is not required to deviate from normal ticket processing procedures when working ATLAS tickets. Problems are often due to delays in the manual assignments of tickets once they are received by RT at ATLAS.
+---++ GOC/CMS Ticket Exchange
+
+CMS is hosted at Fermilab and they use Remedy as their ticketing system. They have developed a script to parse incoming emails from the GOC. The script also prevents mail loops. The GOC has made modifications to the outgoing emails in order to help CMS parsing, providing them with ticket numbers (ours and theirs) in the email. Providing these ticket numbers allows them to determine whether to open a new ticket, or update an existing one.
+
+While this system works, there can be problems. For example, some fields are occasionally not set accurately in the GOC&#39;s Footprint system by GOC staff.&amp;dagger; While the process for setting these fields correctly is documented (see attachment), it is still prone to human error. The GOC will address this as a training issue and see if there are automated options or validation checks that can be utilized within Footprints to increase accuracy.
+
+&amp;dagger;The script on the receiving VO end will parse the incoming email and update the ticket in Remedy only if specific fields (Assignee = USCMS or Fermilab &amp; Destination VO Support Center = USCMS, Fermilab (or sub-VO)) match specific criteria.
+
+---+ Log of Problems Reported
+
+&lt;table width=&quot;100%&quot; align=&quot;center&quot; cellspacing=&quot;1&quot; cellpadding=&quot;1&quot; height=&quot;86&quot; border=&quot;1&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;originating ticketing system&lt;/td&gt;&lt;td&gt;original ticket #&lt;/td&gt;&lt;td&gt; destination ticket system&lt;/td&gt;&lt;td&gt;destination ticket #&lt;/td&gt;&lt;td&gt;direction of exchange while encountering problem &lt;/td&gt;&lt;td&gt; date of occurence&lt;/td&gt;&lt;td&gt; details of incident&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt; ggus &lt;/td&gt;&lt;td&gt;37059&lt;/td&gt;&lt;td&gt; GOC footprints&lt;/td&gt;&lt;td&gt;5059&lt;/td&gt;&lt;td&gt;GGUS to GOC FP&lt;/td&gt; &lt;td&gt; 06/23/2008, 07/09/2008, 7/24/08&lt;/td&gt;&lt;td&gt; original entry on GGUS tickets are relayed to FP rather than the most recent updates, which had to be manually retrieved from the GGUS ticket system&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+
+-- Main.RobQ - 21 Jul 2008
+
+   * [[%ATTACHURL%/Remedy_Footprints_Ticket_Exchange.pdf][Remedy_Footprints_Ticket_Exchange.pdf]]: How the GOC to Fermilab/USCMS trouble ticket exchange works. 
+
+   * [[%ATTACHURL%/VO_tt_exchange.html][VO_tt_exchange.html]]: VO&#39;s exchanging tickets with the GOC.
+
+
+---+++ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+

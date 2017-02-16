@@ -1,0 +1,96 @@
+&lt;div class=3D&quot;twikiTopic&quot;&gt;
+&lt;h1&gt;&lt;a name=3D&quot;LIGO_Privilege_use_and_configurat&quot;&gt;
+&lt;/a&gt; LIGO Privilege use and configuration for OSG &lt;/h1&gt;
+&lt;div class=3D&quot;twikiToc&quot;&gt;
+&lt;ul&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;p /&gt;
+&lt;p /&gt;
+&lt;h2&gt;&lt;a name=3D&quot;Introduction&quot;&gt; &lt;/a&gt; Introduction
+&lt;/h2&gt;
+&lt;!-- format copied from &lt;a class=3D&quot;twikiLink&quot;
+href=3D&quot;/twiki/bin/view/Provisioning/LigoPrivilege&quot;
+title=3D&quot;David Meyers - 20 September 2005 - 16:28 - 1.2: LIGO Privilege use
+and configuration for OSG TOC STARTINCLUDE Introduction As part of the
+deployment of OSG (0.2.1 at present), collected here is the
+configuration information for OSG resource providers wanting to support the LIGO VOMS.
+
+&quot;&gt;LigoPrivilege&lt;/a&gt; --&gt;
+&lt;p /&gt;
+As part of the deployment of OSG (0.4.0 at present), collected here is the
+configuration information for OSG resource providers wanting to support the LIGO VOMS.
+&lt;p /&gt;
+
+Whether you are using the grid mapfile or a GUMS server we recommend you create
+an account with userid &quot;ligo&quot; on your CE nodes including, in the case of Condor,
+on your Worker Nodes for account mapping.
+
+&lt;h2&gt;&lt;a name=3D&quot;Grid3 authorization via the grid mapfile on the gatekeeper&quot;&gt; &lt;/a&gt;
+OSG authorization via the grid mapfile on the gatekeeper &lt;/h2&gt;
+If you are using the file $VDT/edg/etc/edg-mkgridmap.conf
+
+Simply add the one line:
+
+group vomss://ligo-web.aset.psu.edu:8443/voms/LIGO ligo
+&lt;p /&gt;
+&lt;ul&gt;
+&lt;/ul&gt;
+&lt;p /&gt;
+&lt;h2&gt;&lt;a name=3D&quot;GUMS_configuration&quot;&gt; &lt;/a&gt; GUMS
+Configuration &lt;/h2&gt;
+&lt;p /&gt;
+Here is an example the groupMapping for your GUMS server taken from the
+Caltech GUMS 1.0 server&#39;s gums.config file.
+&lt;p /&gt;
+&lt;pre&gt;
+&amp;lt;!-- VOMS Proxy mapping for LIGO Users --&amp;gt;
+&lt;verbatim&gt;
+&lt;groupMapping name=&#39;ligo&#39; accountingVo=&#39;ligo&#39; accountingDesc=&#39;LIGO&#39;&gt;
+     &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+     url=&#39;https://ligo-web.aset.psu.edu:8443/voms/LIGO/services/VOMSAdmin
+     persistenceFactory=&#39;mysql&#39; 
+     name=&#39;ligo&#39; 
+     voGroup=&#39;/LIGO&#39;
+     sslCertfile=&#39;/etc/grid-security/hostcert.pem&#39;
+     sslKey=&#39;/etc/grid-security/hostkey.pem&#39;
+     ignoreFQAN=&#39;true&#39;
+/&gt;
+
+&lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39;
+                 groupName=&#39;ligo&#39; /&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+&lt;h2&gt;Information Services Support for the LIGO VO&lt;/h2&gt;
+A file grid3-user-vo-map.txt located at $VDT_HOME/monitoring/ contains the
+account mapping needed by information service such as Trash.ReleaseDocumentationMonALISA. Assuming
+that you have created an account &quot;ligo&quot; to map ligo users on your CE, you
+need to add a line to the file grid3-user-vo-map.txt to support the monitoring
+of job and gsiftp acitivity for this user class. Here is an excerpt of
+the grid3-user-vo-map.txt file:
+&lt;verbatim&gt;
+...
+ivdgl ivdgl
+ligo ligo
+mis mis
+...
+&lt;/verbatim&gt;
+
+A convenient method of generating the grid3-user-vo-map.txt file is to
+use the web-based GUMS administration client interface from BNL.
+From the GUMS admininstration home page, select the menu item: 
+Generate Inverse Map. You may need to move the generated page to 
+a file at the proper location on the host you specified in the interface.
+
+&lt;h2&gt;No Support for Attribute Certificates in the LIGO VO&lt;/h2&gt;
+
+As of March 6, 2006, LIGO is not supporting attribute certificates
+so you cannot obtain one with the -voms option to voms-proxy-init.
+
+&lt;h2&gt;LIGO VO Administration Contact Information&lt;/h2&gt;
+Name: Murali Ramsunder
+Title: LIGO VO Administator
+Email: rmurali dot psu dot edu
+URL: http://ligo.aset.psu.edu/
+Country: USA
+&lt;/body&gt;&lt;/html&gt;

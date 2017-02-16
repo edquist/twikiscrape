@@ -1,0 +1,138 @@
+-- Main.DanFraser - 08 Sep 2009
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+---++ Action/Significant Items:
+   * Availability report for the newly consolidated BNL-ATLAS site is still problematic, ticket opened to trace it. (GOC)
+   * It is important for LIGO to be able to identify SL5 sites for testing. LIGO was previously able to get &quot;ENV&quot; information from MyOSG as a result of running a centralized probe and thereby generate a sites catalog in Pegasus. Since centralized probes are no longer being run by the GOC, we need to figure out the best strategy to proceed (Rob, Britta, Dan)
+   * Last week&#39;s D0 complaint about preemption triggered an investigation by metrics.  It turns out the problem was *not* preemption nor amount of time lost, *but* the number of preemptions.  Ill-designed Condor preemption policies at MIT, Caltech, and Florida caused D0 jobs to be scheduled and preempted every 2-5 minutes (sometimes hundreds of times). New policies have been implemented at Caltech &amp; Florida, MIT is planning come along soon. (Brian)
+   * Bestman/xrootd will be removed as a service type in OIM at the end of the month. (Brian)
+   * Abhishek suggested that a new categorization is needed in OIM to correctly label discontinued VOs. This needs further discussion and a suggestion concerning how to proceed (Abhishek, Rob)
+
+---++ Attendees:
+   * Xin, Armen, Britta, Mats, Brian, Suchandra, Burt, Marco, Abhishek, Rob Q., Dan 
+---++ CMS (Burt)
+   * Computing: 252  khour/day, 96% success. CPU/wallclock at 83%
+   * Storage: Tier 1 transferred 1.5 PB last week (peak of 435 TB/day). Tier 2s transferred 450 TB (peak: 99 TB/day). Probes not functional at UERJ, MIT, Florida, Purdue.
+   * OSG: No change again: we have 3 CEs at OSG 1.2 (both Nebraska and cit-gatekeeper2). Tier 3s at 1.2: UCDavis, FIT, UMD, Vanderbilt, UCR.
+   * RSV: Status of gratia probe in ITB? 
+---++ Atlas (Armen &amp; Xin)
+
+   * After some delay, this Monday reprocessing finally started, but there was significant job failure rate. A couple of new bugs were found, so submission of new reprocessing jobs was stopped, and a new software release will be prepared. At the moment sites are running simulation jobs, remaining reprocessing jobs, validation of the new major MC release. Production is dominated by US sites, and during the week was quite stable at the level of 6-7K running jobs.
+
+   * job statistics for last week. 
+      * Gratia report: USATLAS ran 801K jobs, with CPU/Walltime ratio of 87%. 
+      * PanDA world-wide production report (real jobs): no report this week due to absence of people.
+   * LFC upgrade to latest 1.7.X release
+      * Updated by VDT, tests using atlas jobs look ok. 
+   * Availability report for the newly consolidated BNL-ATLAS site is still problematic, ticket opened to trace it. 
+
+
+---++ LIGO (Britta)
+  * Gratia reports:
+      * 4 users utilized 17 sites   
+      * 16807 jobs total (15159 / 1648 = 90.2% success);
+      * 126326.5 wall clock hours total (116850.4 / 9476.1 = 92.5% success);
+
+      * Last week&#39;s total usage: 4 users utilized 18 sites; 
+      * 7368 jobs total (6211 / 1157 = 84.3% success);
+      * 48164.6 wall clock hours total (39651.6 / 8513.0 = 82.3% success);
+
+  * E@OSG reports
+      * Recent Average Credit (RAC): 271,826.44862 Last week: 167,328.39915
+      * E@H rank based on RAC: 7 (+1)
+      * E@H rank based on accumulated Credits: 18 (+1)
+
+   * Details:
+      * Robert on vacation until Thursday, will ramp up upon return
+     
+      * MYOSG:  %RED%ENV%ENDCOLOR%(Information Not available)%RED%ENV%ENDCOLOR% for ALL LIGO supporting sites
+         * can&#39;t generate pegasus site catalog, can&#39;t test SL5 sites 
+      
+---++ Integration (Suchandra)
+   * Currently update to osg 1.2.2
+      * Update to gip, lcg-utils, configure-osg
+   * Update will be released tomorrow
+   * RSV testing on hold for some additional changes to go into vdt
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.2.1
+      * 21 OSG 1.2.X resources (10 are 1.2.1)
+      * 30 OSG 1.0.X resources (19 are 1.0.4)                                                                                                                                                                  
+      * 30 OSG 1.0.0
+      * 2 OSG 0.8.0 (OU_OCHEP_SWT2, UIC_PHYSICS)
+
+---++ Engagement (Mats)
+
+13 users utilized 34 sites;
+
+5737 jobs total (5108 / 629 = 89.0% success);
+
+9952.5 wall clock hours total (6247.9 / 3704.6 = 62.8% success);
+
+No production issues.
+
+
+---++ Metrics (Brian)
+   * We will be deprecating the Bestman/Xrootd service type (as it is not really a service).  This may affect WLCG availability scores if the transition isn&#39;t handled correctly.  The Bestman/Xrootd sites reporting to WLCG are BU, SWT2_CPB, and WT2.  The schedule is:
+      1 (Today) Notify downstream stakeholders.
+      1 (1 week before end of month)  Add service type SRMv2 to all resources that provide Bestman/Xrootd service.  Verify with SAM everything is OK (should be harmless).  Done by sites/GOC
+      1 (last day of month) Remove Bestman/Xrootd service type in OIM.  Done by GOC.
+      1 (first day of October) Remove Bestman/Xrootd service type from SAM.  Done by WLCG.
+      1 (first week of October) Receive confirmation from GridView group that the scores were not adversely affected for the three sites.
+   * Last week&#39;s complaint about preemption triggered an investigation by metrics.  It turns out the problem was *not* preemption nor amount of time lost, *but* the number of preemptions.  Ill-designed Condor preemption policies at MIT, Caltech, and Florida caused D0 jobs to be scheduled and preempted every 2-5 minutes.
+      * Caltech and Florida successfully updated their policies.  MIT has not fully deployed the new policy.
+
+---++ Virtual Organizations Group (Abhishek)
+
+---+++ VOs with High Activity
+
+   * D0 -- (i) MC Production dropped; average at 25,000 hours/day. Equivalent 4.6 Million Events/week. Job efficiency 60%, Wall efficiency 90%,  CPU/wall 80%. Problems are D0-internal; and expected to resolve after a few weeks. Failures at site atlas.dpcc.uta.edu; now resolved. (ii) Pre-emption effects being discussed between D0, Brian, and OSG teams. Dan Bradley/Condor recommended a configuration change that improves site configuration. Brian/Metrics helped apply the fix at CMS Tier2&#39;s. 
+   
+   * Fermi-VO -- (i) Fermilab VO has 12+ sub-VOs (or subgroups). Steve is helping keep the parentVO/subVO classification uniform across various systems. (ii) Fermi KCA changes are upcoming; packages are being tested, not fully ready yet. In the interim, a few users of Fermi-VO, CDF, D0, ILC, CMS, DES are likely to be affected. OSG Security has advised to delay the change. (iii) Implementing GIP configuration changes to advertise subcluster parameters.
+   
+   * CDF -- CDF is affected by Enterprise Linux 4 to 5 migration. Current focus to find all packages, and ship dependencies with application to sites. Work in progress. CDF and other VOs are finding Burt&#39;s utility to query OSG-wide status useful.
+   
+---+++ VOs with Limited Activity
+
+   * nanoHUB -- Average 500 hours/day. Influx of &#39;User jobs&#39; also started; in addition to &#39;Application jobs&#39;. nanoHUB is preparing an accounting web to display job-statistics. Details awaited in next few days.
+   
+   * NYSGrid -- Planning a state-wide portal using HUBzero (http://www.hubzero.org). Similar to nanoHUB.
+   
+   * !IceCube -- Work in progress with !IceCube simulation team (P. Desiati, J. Velez, S. Barnet), GLOW and UCSD site teams. GLOW has setup a glidein schedd, to port !IceCube jobs for glideinWMS. Short-term plan is to use Squid (not SRM) to minimize failure modes. Currently, !IceCube team is porting the jobs. Part of !IceCube team is planning travel to the South Pole; so effort is being delayed. 
+   
+   * SBGrid/NEBioGrid -- Team&#39;s current focus is to port MPI jobs; possibly integrating into Condor job manager. Can use guidance from Trash/Engagement team.
+   
+---+++ General
+
+   * Version 5 of Enterprise Linux on sites -- Different ways to adapt to OS versions; different trade-offs. Encouraging VOs to prepare for the transition.
+   
+   * OIM categorization of old and new VOs -- Unregistered VOs, and new applicants, should be marked differently in OIM. Currently, these are marked as &quot;inactive VOs in OSG&quot;; this can lead to inaccurate assessments (e.g., by Gratia accounting). 
+
+---++ Grid Operations Center (Rob Q.)
+
+---+++ Operations Last Week 
+   * [[https://twiki.grid.iu.edu/bin/view/Operations/Minutes2009August31][Previous Week Agenda]]
+   * ITB-BDII Testing Inconclusive see [[https://twiki.grid.iu.edu/bin/view/Operations/BDIIRootCauseAnalysis#Testing_on_Sept_11_2009][RCA]]
+   * Bloomington Machine Room Maintenance [[http://osggoc.blogspot.com/2009/09/osg-goc-service-outage-friday-sept-11.html][Link]] - Went off with out notice, BDII was rerouted to Indianapolis.
+      * Indianapolis BDII Traffic and Load During RR Switch&lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/Picture_1.png&quot; alt=&quot;Picture_1.png&quot; width=&#39;300&#39; height=&#39;180&#39; /&gt;   
+     &lt;img src=&quot;%ATTACHURLPATH%/Picture_2.png&quot; alt=&quot;Picture_2.png&quot; width=&#39;300&#39; height=&#39;170&#39; /&gt;    
+   * RSV Daily reports have been fixed and should resume tomorrow. If anyone needs the reports that were not sent over the past two weeks, please request via [[https://ticket.grid.iu.edu/goc/][a GOC ticket]].
+
+---+++ Operations This Week
+   * !MyOSG 1.7 and OIM 2.7 has been under testing and will be released yesterday. There are no updates that will affect the critical components of the !MyOSG. Several new features will be included.
+      http://osggoc.blogspot.com/2009/09/oim-and-myosg-updates.html
+      * OIM - User can set local timezone in profile, after this downtimes can be scheduled in local time rather than UTC.
+      * !MyOSG - iCal export of downtimes
+      * Other Bug Fixes and Updates
+   * More ITB-BDII testing was conducted yesterday as we close in on understanding how BDII and DNS interact. [[https://twiki.grid.iu.edu/bin/view/Operations/BDIIRootCauseAnalysis#Testing_on_Sept_11_2009_and_Sep][DONE]]
+
+---+++ Future Events
+   * Machine Room Move in Bloomington October 17 2009 - All GOC Services in Bloomington are expected to be down. IUPUI will still be handling BDII and !MyOSG traffic. GOC will attempt to install as many other services on an Indianapolis-based server/VM as possible, especially other critical ones like !MyOSG. 
+
+ 
+

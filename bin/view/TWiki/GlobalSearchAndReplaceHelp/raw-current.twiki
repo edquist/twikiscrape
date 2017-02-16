@@ -1,0 +1,75 @@
+---+ Global Search and Replace Help
+
+---++ Rows Explained
+
+The three rows with *&lt;font color=&quot;#0c2577&quot;&gt;blue&lt;/font&gt;* headers are used to find topics that contains text to be replaced. The three rows with *black* headers are used to find and replace text within the topics found in the previous three *&lt;font color=&quot;#0c2577&quot;&gt;blue&lt;/font&gt;* rows
+
+
+&lt;table border=&quot;0&quot; cellspacing=&quot;2&quot; cellpadding=&quot;1&quot; &gt;
+&lt;tr&gt;&lt;td align=&quot;center&quot; bgcolor=&quot;#999999&quot;&gt;&lt;font color=&quot;#FFCC33&quot;&gt;&lt;b&gt;Row&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td align=&quot;center&quot; bgcolor=&quot;#999999&quot;&gt;&lt;font color=&quot;#FFCC33&quot;&gt;&lt;b&gt;Meaning&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td align=&quot;center&quot; bgcolor=&quot;#999999&quot;&gt;&lt;font color=&quot;#FFCC33&quot;&gt;&lt;b&gt;Default&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#0c2577&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Topic Search String&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt; Fully supported regular expression search&lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt;empty string&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#0c2577&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Search Scope&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt;text or topic&lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt;text&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#0c2577&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Web&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt; A single web name, e.g., TWiki&lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt;current web (now %WEB%)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#000000&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Replace Search String&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt;Fully supported regular expression search. Up to four substrings in the found string may be &quot;captured&quot; by enclosing them in parentheses&lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt;empty string&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#000000&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Replace String&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt;Text that will replace the found text. Captured substrings from the =Replace Search String= are accessed with $1, $2, $3, and $4. Use $topic for the topic name.&lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt;empty string&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot; bgcolor=&quot;#000000&quot;&gt;&lt;font color=&quot;#FFFF99&quot;&gt;&lt;b&gt;Case Sensitive Replace Search&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt; yes or no &lt;/td&gt;&lt;td bgcolor=&quot;#DDDDDD&quot;&gt;yes&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+---++ Using Global Search And Replace
+
+Example Global Search and Replace: &lt;br /&gt;
+&lt;img src=&quot;%ATTACHURLPATH%/GSR.gif&quot; alt=&quot;Global Search and Replace Example&quot;  width=&quot;796&quot; height=&quot;474&quot;  /&gt;
+
+Note that there are two different search strings to define:
+   1 The search string to select a set of topics (the =Topic Search String=)
+   1 The search string to find the expression to replace within a topic (the =Replace Search String=)
+
+These strings may be the same, especially when searching within the text, but both must be specified.
+
+__Note:__ Steps 1 and 2 may be combined.
+
+---+++ Step 1: Select the Topics
+
+Start by specifying the search criteria that will select the set of topics that contain the expression that is to be replaced. Using the top three rows first, you can try out different expressions. The =Topic Search String= fully supports regular expressions.
+
+Select a =Search Scope= of =text= to search within a topic (the default), or select =topic= to search within the topic name only.
+
+Enter the web to search (default: the current web). Only a single web is supported.
+
+Click =Search=.
+
+TWiki will display a list of topics meeting the search criteria. If the list is correct, proceed to Step 2; otherwise, go =Back= in your browser, correct the search criteria, and click =Search= again. (Or click =Start Over= to clear all fields.)
+
+Note: You do not need to escape special characters, i.e. the double quote (&quot;), or worry about TWiki variables rendering in =Replace Search String= and =Replace String=. However, =Topic Search String= must be written as you would for the =search= parameter of a %SE%NOP%ARCH%. Thus, to have =%W%NOP%EB%= search correctly in =Topic Search String=, you must use =%WEB[%]= to escape the TWiki rendering. There is a known bug that if you escape a double quote with =\&quot;= upon hitting the =Search= button the escape character, &#39;\&#39;, will disappear but the search will have functioned properly.
+
+---+++ Step 2: Find the Text to Replace and Specify the Replacement
+
+The next step is to define a =Replace Search String=: the string to search for and replace within each topic selected by Step 1. The =Replace Search String= also fully supports regular expressions. Like regular expressions, you can capture up to four substrings using parentheses. Then use $1, $2, $3, and $4 in the =Replace String= to insert the captured substrings. See above example.
+
+Set the =Replace String= to the new string which is to replace the found strings. The =Replace String= can be blank (which will delete the strings found in the selected topics). A known issue with the replace string is documented below. 
+
+Again click =Search=. TWiki will display a page of all &quot;hits&quot; on each topic selected in Step 1. Each hit has a checkbox and shows the =Replace Search String= highlighted in red and the =Replace String= in orange. If possible, the results will display the 40 characters on each side of the hit for context. 
+
+Nothing will be saved until completing Steps 3 and 4 below.
+
+Once satisfied, proceed to Step 3. If the results are not as required, go =Back= in your browser, correct any of the fields in the form, and click =Search= again to display a new set of results.
+
+---+++ Step 3: Select the Hits to be Replaced
+
+Click the checkboxes for the hits you want to replace. Use the =Set All= and =Clear All= buttons below the hits if convenient.
+
+---+++ Step 4: Make the Replacements
+
+Once the checkboxes are as required, click =Replace All Check Marked Hits= to commit your changes.
+
+Only members of the Main.TWikiAdminGroup will be allowed to commit changes. 
+
+
+---++ Known Issues
+
+   1 Currently, the =Replace String= cannot handle more than one set of double quotes. For example, =%&lt;nop&gt;META:FIELD{name=&quot;TopicClassification&quot; title=&quot;TopicClassification&quot; value=&quot;TWikiChangeRequest&quot;}%= will be truncated to =%&lt;nop&gt;META:FIELD{name=&quot;TopicClassification&quot;= if you try to commit the changes. 
+
+__More Help:__
+   * [[%TWIKIWEB%.RegularExpression]]
+   * [[%TWIKIWEB%.TWikiVariables]] %&lt;nop&gt;SEARCH% Section
+

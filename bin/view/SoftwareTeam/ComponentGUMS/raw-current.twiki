@@ -1,0 +1,79 @@
+---+ OSG Software Component: GUMS
+
+---++ Purpose
+
+GUMS is a service that authorizes and maps users from their global identity to a local (Unix id) identity. It is not a required service (some sites use the simple =edg-mkgridmap= to construct a =grid-mapfile= instead), but it is commonly used. It is helpful when you have more than one resource (Compute Element, Storage Element, etc.), because they can share authorization and mapping data. It is particularly helpful when using !gLExec at a site, because !gLExec runs on every worker node and needs authorization and mapping information.
+
+GUMS is a web application that runs in Tomcat.
+
+---++ Usage
+
+---++ Source
+
+GUMS is owned and maintained by Brookhaven National Laboratory. The only current person working on it is John Hover. Work for GUMS is tracked in the OSG JIRA, under the GUMS project.
+
+---++ Packaging
+
+*Repository:* OSG.
+
+---++ History
+
+---+++ Use of VOMS APIs
+
+[Written by John Hover, 2 October 2012; some edits for !TWiki by Tim Cartwright.]
+
+From 2004 to 2012, GUMS retrieved users from VOMS servers via the VOMSAdmin web service interface.
+
+From 2004 to about 2009 the service endpoint URL was described via a combination of baseUrl and remainderURL in the virtualOrganization and userGroup definitions, e.g.:
+
+&lt;verbatim&gt;
+  &lt;virtualOrganization
+    name=&#39;virtualOrganizationA&#39;
+    baseUrl=&#39;https://lcg-voms.cern.ch:8443/voms&#39;
+&lt;/verbatim&gt;
+
+&lt;verbatim&gt;
+ &lt;userGroup
+    virtualOrganization=&#39;virtualOrganizationA&#39;
+    remainderUrl=&#39;/atlas/services/VOMSAdmin&#39;/&gt;
+&lt;/verbatim&gt;
+
+In 2009, we realized that lots of VOs shared particular VOMS servers, so we instead defined baseUrl in a vomsServer element, with the remainderUrl in a vomsUserGroup element, e.g.:
+
+&lt;verbatim&gt;
+  &lt;vomsServer
+    name=&#39;lcg-voms.cern.ch&#39;
+    baseUrl=&#39;https://lcg-voms.cern.ch:8443/voms&#39;
+&lt;/verbatim&gt;
+
+&lt;verbatim&gt;
+ &lt;vomsUserGroup
+    vomsServer=&#39;lcg-voms.cern.ch&#39;
+    remainderUrl=&#39;/atlas/services/VOMSAdmin&#39;/&gt;
+&lt;/verbatim&gt;
+
+During all this time, the URL included the full path to the VOMSAdmin interface in the remainderUrl element.
+
+In 2012, we learned that GUMS had always been doing this wrong. We should have been pulling users from a different VOMS API, VOMSCompatibility. The reasons for this have to do with what is returned by the calls:
+
+VOMSAdmin.listMembers() returns a list of the *primary* DNs for each registered user. If you want *all* the user DNs, you must then explicitly ask for secondary certs.
+
+VOMSCompatibility.getGridmapUsers() returns a flat list of all DNs for all registered users.
+
+This distinction never mattered until recent changes to VOMSAdmin intended to take advantage of the multi-cert VO user concept.
+
+GUMS 1.3.18 dropped the service path from the config. The baseUrl + remainderUrl element should now just point to the base of that VO, e.g.:
+
+&lt;verbatim&gt;
+https://lcg-voms.cern.ch:8443/voms/atlas
+&lt;/verbatim&gt;
+
+The decision about whether to use the VOMSCompatibility API or the VOMSAdmin API will be made dynamically, and internally. Currently I&#39;m always just using VOMSCompatibility.getGridmapUsers(). But this change sets the stage to allow implementation of the multi-cert VO user model in future versions of GUMS. What this would permit is for users with multiple certificates to always be mapped to the same UNIX user, regardless of which cert is used.
+
+Now, I don&#39;t especially like that idea, as I think OSG sites shouldn&#39;t even guarantee that all jobs from one user are necessarily mapped to the same UNIX ID if separated widely in time. EGI/LCG does not. Users there are mapped to small number of pool accounts which get rapidly recycled.
+
+But it seemed prudent to set up the code in advance to make it possible to do complex user updates if it becomes a critical feature.
+
+As far as documentation, what is needed to prepare for GUMS 1.3.18 is for the GOC VO package to have the =/services/VOMSAdmin= and/or =/services/VOMSCompatibility= strings removed from all the vomsUserGroup elements. Site admins would need to be directed to remove those manually if they instead intend to copy their old config files.
+
+---++ Future

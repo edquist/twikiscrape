@@ -1,0 +1,138 @@
+-- Main.DanFraser - 08 Feb 2012
+---++ Action/Significant Items:
+   * 
+
+---++ Attendees:
+   * (to be updated after the meeting) Alain, Mats, Xin, Armen, Britta, Brian, Suchandra, Tony, Marco, Rob Q., Scott T., Mine, Chander, Dan
+ 
+---++ CMS (Burt / Tony)
+   * Job statistics for last week
+      * 13,173 jobs/day
+
+   * Transfer statisics for last week
+      * ~636 TB/day
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * US ATLAS production during the week was still not very stable, at the level of ~4-5K running jobs at the beginning of last week, then growing up to the level of ~14K running jobs, and then dropping again this week. MC11 bulk production is done, some small requests still coming. Waiting for new MC12 production. Probably evaluation will finish next week.
+   * Job statistics for last week.      
+      * Gratia report: 2.5M pilot jobs run on USATLAS sites, with CPU/walltime ratio of 81%  
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 720K
+   * Data Transfer statistics for last week
+      * Data transfer rate was 200~350TB/day at BNL T1 in last week.  
+   * Issues
+
+---++ LIGO (Britta)
+
+ * Current week&#39;s total usage: 4 users utilized 12 sites
+      * 40041 jobs total (16260 / 23781 = 40.6% success)
+      * 43626.7 wall clock hours total (35387.1 / 8239.6 = 81.1% success)
+   * Previous week&#39;s total usage: 3 users utilized 7 sites
+      * 21810 jobs total (6419 / 15391 = 29.4% success)
+      * 14306.5 wall clock hours total (9116.6 / 5189.9 = 63.7% success)
+
+---+++ LIGO/PULSAR
+
+   * Monitoring 50,000 job dag submitted to local glidein factory, running over 12 OSG sites
+
+---++ Grid Operations Center (Rob Q.)
+
+---+++ Operations Last Week
+   * [[http://tinyurl.com/42j3mgl][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * Short outage in Ticket exchange between GOC and !ServiceNow. Patched and currently working.
+   * ITB release, largely internal updates. [[http://osggoc.blogspot.com/2012/02/goc-service-update-tuesday-february-28.html][Release note]]
+   * !FermiGrid Ops
+      * Investigated outage between GOC-TX and !ServiceNow.  Both S. Timm and A. Tiradani are now on !ServiceNow integration list which means we will get a heads-up from further WSDL changes.  Support model still under discussion with !ServiceNow maintainers to work with Axis and other Java-based services.
+      * GOC ticket 11711, a spam ticket about hair extensions, was opened via ticket.grid.iu.edu and forwarded to !ServiceNow on Sat. 2/25.
+      * Gratia operations investigation discovered a !MyOSG bug that wasn&#39;t sending email to contacts that didn&#39;t have DN&#39;s, will that be fixed in production release this week?
+      * Gratia total VO count now stands at 87, down from a max of 564.  Much of it traced to misconfigured PBS and LSF sites.  Patches already made available for Gratia PBS in osg 1.2.27, in progress for LSF.
+   * WMS Glide In Factory
+      * Condor failing with bug when calling glexec in europe; ATLAS pilots require glexec
+         * Dan Bradley from condor team gave us a patched condor tarball to send out with glideins only for problem sites.
+         * This only affects UCSD factory since ATLAS only submits from there for now while ramping up.
+      * Hold limits have changed for gwms 2.5.4.  If any single VO reaches the limit it stops submission for all other VOs.  This is not expected behavior.
+         * Should be fixed in gwms 2.5.6
+         * Until then we have to manually remove glideins as they approach limits.
+      * XSEDE pilots now accepted at Nebraska (was gums mapping error)
+      * We are testing glideinWMS 2.5.5
+
+---+++ Operations This Week
+   * Production release, notes above.
+   * software.grid.iu.edu moved to LVS.
+   * OSG 1.2.28 Release in progress 
+   * Domain switch and web page move are in progress. 
+      * opensciencegrid.org DNS will be moving to IU.
+         * Done - [[https://twiki.grid.iu.edu/bin/view/Operations/OpenScienceGridDomain][Plan]]
+         * FNAL DNS will be removed tomorrow afternoon if no problems are experienced. 
+      * Current webpages at www.opensciencegrid.org will point to the OSG TWiki. 
+         * Done - [[https://twiki.grid.iu.edu/bin/view/Operations/OpenScienceGridWeb][Plan]]
+   * WMS Glide In Factory
+      * May upgrade ITB Factory only to glideinWMS 2.5.5 
+      * Will begin testing condor 7.7.4
+      * No plans to upgrade Production Factories this week
+
+---+++ Gratia Review
+
+   * 21 Tickets opened on sites that had stopped or never reported to Gratia
+      * Deactivated: NYSGRID-CUNY-GRID, OSG_LIGO_MIT, UTA_DPCC, GLOW-OSG, UCLA_Saxon_ Tier3, SBGrid-Harvard-Exp 
+      * 14 Tickets Still Open
+
+---++ Campus Infrastructures / HTPC (Dan, Brooklin)
+
+---+++Bosco
+
+   * We have beta code, commands that work and a download site. We have identified three beta testers and are starting to work with them. Overall, the project is on track.
+
+---+++HTPC
+
+   * Greg fixed the broken sites and we have released Condor 7.7.5 with dynamic slots. We are experimenting with configs in the CHTC. While Nebraska is running 600 dynamic slots with minimal problems, at the CHTC we have uncovered issues that are causing us to re-think the architecture. *This project is currently %RED%at risk%ENDCOLOR% of slipping schedule by 4-8 weeks.*
+
+---++ Engage (Mats)
+
+
+---++ Integration (Suchandra, Alain)
+   * Released OSG 1.2.28 update
+      * Security updates for java and mysql
+   * Released OSG 3.0.8
+      * Few fixes incorporated including SL 6 worker node, osg-configure updates, gratia probes, java, and rsv
+   * Completed LHC/digicert/interop testing for ATLAS and CMS, will do ALICE testing later
+   * SL6 testing so far looks good
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.2.26
+      *       87 (-1) OSG 1.2.X resources (       0 are 1.2.26)
+      *        2 (0) OSG 1.0.X resources (       0 are 1.0.6)
+      *        2 (0) OSG 1.0.0 resources
+      *       12 (2) OSG 3.0 (new sites: !GridUNESP_CENTRAL, !UConn-OSG_CE)
+
+---++ User Support (Chander)
+   * GLOW production running well
+   * Adding LSST as a new VO
+   * Attempting to grow number of accessible sites for !SuperB
+   * [[https://twiki.grid.iu.edu/bin/view/Trash/Trash/Trash/Trash/VirtualOrganizations/OSGasXsedeSp][OSG-XSEDE submit host ready for friendly user testing]]
+
+---++ Security (Mine)
+   * No serious vulnerabilities/incidents. For low-risk updates, we will send an announcement once a month instead of making an announcement frequently. Java and mysql updates wil be released to production this week. 
+
+   * Concern with main OSG web page. This page used to be http. Now it is https. is there a reason for https? So it causes browser exceptions/errors. Can we move this page to http? We do not have anything sensitive on this page and we want to make it accessible to everyone without a problem -- it is the first page about OSG.  
+
+   * Updating CA release process is 90% complete. Only two things are missing: update to goc web pages (software.grid.iu.edu) and an announcement to OSG sites. 
+   * Digicert LHC tests are complete. No problems. 
+
+   * AHM . Hands on training with ssh attacks. We will go through a typical attack scenario and show how to mitigate. 
+
+   * Working on project plan for incident drill. We will conduct this after the AHM. 
+
+   * Problem with cert-request scripts. There is a static list of VOs in scripts&#39; config file. Updated the list-- short term solution. JIRA ticket 547 open: will have a permanent solution for having a dynamic list at GOC 
+    
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings

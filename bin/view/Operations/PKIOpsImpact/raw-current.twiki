@@ -1,0 +1,48 @@
+---+ Operation Trash/Trash/Trash/Assessment of adding the OSG PKI Front-End to OIM
+
+The follow Impact Trash/Trash/Trash/Assessment is modeled on the ITIL framework of Business Impact Analysis (BIA). 
+
+---++ Define Change to Service
+
+The current scope of OIM is as a topology database and defined formally in the document located at https://twiki.grid.iu.edu/bin/view/Operations/OIMScopeDef. This change assesses the impact to the OIM service by adding PKI mechanisms within OIM for providing x509 certificates. 
+
+The current SLA for OIM is located in the document at https://twiki.grid.iu.edu/bin/view/Operations/OIMServiceLevelAgreement.
+
+OIM will not be involved with signing of certificates and distributing CRLs. These being critical operational function contracted to !DigiCert. OIM acts as a client to !DigiCert for the former and is uninvolved in the latter.
+
+---++ Key Differences in Service
+
+The following list focuses on the *key* differences in service that will impact OIM operations. Please see the technical documentation for a full explanation of *all* services updates. 
+   1 Under the proposed change OIM will be used to provide a front-end for requesting !DigiCert x509 certificates. This will be a modular add-on to the OIM service and not interfere with existing functionality as a topology database. 
+   2 It will impact Contact (User) data. The proposed change will connect the user registration to the !DigiCert DN. Thus at the time of requesting a cert the user will be registered as a Contact in OIM. The PKI front end will also add the !DigiCert signing server as an additional dependency to OIM. OIM will function without this dependency but will not issue certificates. 
+   3 Due to the importance of user credentials in the OSG this change will also increase the priority of the service to OSG. OIM is currently considered a &quot;Normal Priority&quot; service. This change will give it priority over Normal Priority services, but does not include after hours support. 
+   4 The change will also create certificate request tracking within the existing ticketing system. These tickets will serve both to ensure certificates are issued and as an audit record once they are.
+   5 The OSG RA will now be responsible for user documentation, tracking, reporting and auditing. 
+
+---++ Effects of Key Differences
+
+| *Effect* | *Effort* |
+| Contact (user) registration is now tied to obtaining OSG credentials. | No change |
+| If OIM fails users will not be able to request new certificates. | No change |
+| If the !DigiCert signing service fails OSG users will not be able to request new certificates. (This will have a larger impact to OSG overall, but not to OIM.) | No Change |
+| Physical machinery along with standard services is required (network, power, cooling, etc.) | .05 FTE | 
+| Human effort for front-end documentation for both RA agents and users will need to be written, each user request will need to be tracked to resolution, automated reporting will need to be reviewed and acted upon, and audits will need to be conducted as required. | .20 FTE |
+| Upon investigation, restoring the OIM service from bare metal will take between 10-30 minutes, with the 10 minute case being the most probable. Due to the ability of Operations to rebuild this service quickly, redundant services are unnecessary to operate at &quot;High Priority&quot; service levels. Under this plan the only work necessary is to have VM space available and and updated installation scripts in case a restoration is needed. | 0.05 FTE |
+| Updates, feature requests and bug fixes to OIM software functionality as well as addressing browser compatibility issues. Security audits. | .15 FTE | 
+
+---++ Impact of Change
+
+Upgrading service priority will include more effort from both Support Desk and Engineering. Some processes that were previously the responsibility of the CA will become the responsibility of the front-end service providers. 
+
+Additional engineering activities will include but are not limited to browser compatibility testing, change management of signing service, automated reporting, bug fix and user update requests. Additional support activities will include but are not limited to user documentation, action on activity reports, logging user requests via ticketing, tracking bug requests, and conducting audits. During the first several months of operation the OSG RA will act as both the !DOEGrids and !DigiCert OSG RA. GOC will become the point of contact for DigiCert interactions with OSG, procedures for addressing these contacts will be added to the SLA. 
+
+We will also need to monitor the DigiCert interface to be sure the service can communicate requests from the OIM web form. 
+
+
+---++ Supporting Documentation
+
+   * [[https://twiki.grid.iu.edu/bin/view/Operations/ServiceLevelAgreements][OSG Service Level Agreements]]
+   * [[https://twiki.grid.iu.edu/twiki/pub/Operations/DigiCertAgreements/OSG_RPS_Apr_4_clean.docx][Registration Practice Statement]]
+   * [[https://docs.google.com/document/d/1-noGy__JKaXP218k3jxtlbl--iuOUCNarL5vBDbxbSk/edit][System Design Document]] - Private Document Please Contact Rob or Soichi for access
+
+-- Main.RobQ - 29 May 2012

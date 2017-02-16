@@ -1,0 +1,199 @@
+---+ Advanced Network and Distributed Storage Laboratory (ANDSL)
+
+%TOC%
+
+---++ Brief Overview of Goals
+
+The primary goal of ANDSL is to shrink the time between 100Gbps network links becoming available, and the OSG
+Science Stakeholders being able to benefit from their capacity. As we have very modest means within this project,
+we are focusing on the following areas:
+
+   * Creation of an easy to operate &quot;load generator&quot; that can generate traffic between Storage Systems on the Open Science Grid.
+   * Instrumenting the existing, and emerging production software stack in OSG to allow benchmarking.
+   * Benchmark the production software stack, identify existing bottlenecks, and work with the external software developers on improving
+      the performance of this stack.
+
+---++ Architecture Description
+
+OSG is a Grid of &quot;sites&quot;. Each site has compute and storage resources, and is connected to one or several of the major US Research Networks.
+As of 2009, roughly twenty sites have shared 10Gbps WAN connectivity, and a few have multiple 10Gbps links available to them.
+
+The Storage Elements (SE) 
+at the sites are generally distributed in nature. WAN data movement between two sites thus generally involves O(100) or more simultaneous flows
+between these distributed SEs. This data movement is orchestrated via a layered software stack. The implementation details vary considerably
+from site to site, and we will provide here only a conceptual description.
+
+   * hardware layer: commodity disk systems with or without software or hardware RAID configuration. Disks are generally read from and written
+     to simultaneously, from both LAN and WAN. The individual disk IO at the hardware layer that can be relied upon per flow is thus typically modest.
+   * distributed filesystem layer: a variety of different technical implementations are deployed. The common characteristics among them is that 
+      they virtualize the hundreds or thousands of hard disks per site into one coherent
+     system. Some of the implementations furthermore provide replication and/or traffic shaping capabilities in order to increase reliability
+     and/or availability of the stored files.
+   * transfer protocol layer: gridftp is the de facto standard for WAN transfers, and there are at least two implementation of gridftp deployed. 
+     LAN transfer protocols are much more heterogeneous, and it is conceivable that WAN transfers may become more heterogeneous in
+     the future. Possible alternatives to gridftp include FDT and Xrootd.
+   * Storage Resource Management (SRM): All large SEs on OSG presently support SRM v2. However, not all of them support a 
+     complete implementation thereof.
+     The purpose of SRM is generally to provide a single entrypoint to the O(100) gridftp servers per site. SRM is thus largely used
+     as an aggregation point for transfer request handling etc. The space reservation features are sometimes omitted in the
+     deployments because they slow down the performance.
+   * File Transfer Service (FTS): The SRM specification does not include any form of bandwidth shaping or throtteling. SEs at sites are thus easily
+      overloaded, especially if they are used by many VOs simultaneously. Some sites thus require WAN accesses to be managed by FTS on top
+      of SRM.
+   * VO specific data management system: This layer of Middleware is outside the OSG software stack, but nevertheless essential
+      for understanding end-to-end performance characteristics. Each Virtual Organization operates their own data management and
+      transfer systems. These systems include databases for managing namespaces (&quot;file catalogues&quot;), as well as middleware
+      to queue up transfer requests, recover from transfer errors, etc.
+      Depending on the scope of the data to be managed and transfered, this layer
+      of Middleware can be quite complex.
+
+Over time, we expect 100Gbps network connectivity between OSG sites to become an essential capability for our Science Stakeholders.
+At first, this capability will be needed for aggregation of traffic between a matrix of !NxM sites on the transnational backbone. Sites themselves
+will at that point be required to support no more than a couple to a few 10Gbps. At some future point, 100Gbps connectivity
+will become available to more and more OSG sites.
+
+We expect that network bandwidth reservations will become an important new capability in the Middleware stack. However, at this point, it is
+not clear where in the stack this functionality belongs. In fact, we expect a period of experimentation with the emerging APIs at different
+layers of this stack.
+
+---++ State of the Art
+
+Data movement in excess of 10Gbps into, or out of OSG sites has been observed under standard operating conditions. 
+Under testing conditions like Supercomputing 2009, and with heavily modified software stacks, aggregate bidirectional IO rates in excess of 100Gbps have been accomplished. At the same time, transferring a complete dataset of O(10) TBs in a predictably short period of time
+continues to be a challenge. A typical example is depicted in the figure below. Here, the CMS experiment reprocessed it&#39;s entire 2009
+dataset from LHC collision data, and the corresponding Monte Carlo simulation data over Xmass, 
+and physicists at UCSD wanted access to this data
+asap between Xmass and New Years 2009. A total of roughly 15TB was transferred, mostly from the two archival centers in France and the US.
+
+What is remarkable in this plot is that roughly half the data arrived at UCSD in less than 3 hours at a rate of about 6Gbps via a mix
+of several national and international research networks, 
+while the remainder trickled in over another 21 hours. It&#39;s these transfer tails that limit the overall end-to-end throughput. 
+
+To benefit from high capacity networks of the future, we need to gain a much better understanding of the existing limitations in the
+Middleware stack at the endpoints. Especially the interplay between problems in the various layers of the stack is at present poorly
+monitored, and even more poorly understood.
+
+   * Example IO pattern into an OSG site: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/quantity_rates.png&quot; alt=&quot;quantity_rates.png&quot; width=&#39;400&#39; height=&#39;250&#39; /&gt;   
+
+This example is typical of large volume data movement on OSG for multiple reasons:
+   * The Science goal is to move a significant but fixed amount of data in a short period of time. I.e. traffic expectations are very spiked.
+      There is not much data moving before and after the specific transfer request. The Scientists would like to have full use
+       of a significant fraction of a 10Gbps connection for a period of a few hours to a day.
+   * The are multiple sources for the data, both national as well as international in nature. 
+   * The OSG site is more often a sink than a source.
+      Typical use pattern is to move datasets to a site, analyze them, then eventually delete them, and move different datasets in. 
+
+---++ Initial Testbed
+
+As explained in the previous section, the present limitation on the end-to-end performance
+is generally not in the WAN layer but rather in the complex layers of Middleware on top of the hardware at the endpoints.
+
+To make progress in better understanding the limitations, and prepare endpoints for the emerging 100Gbps transnational
+connectivity, we are thus focusing on a testbed capable of up to 30Gbps across the UCSD campus. To do so, we are presently
+exploring possible collaboration with SDSC, the Rocks cluster management team, and Future Grid.
+
+One endpoint will be located at the CMS T2 Center, an OSG production site. 
+This endpoint is equipped with a Cisco 6509 with one 4port 10Gbps module, and sufficient fiber to hook up all 4 ports to
+the campus backbone. At present, only two of the 4 ports are used, one to provide 10Gbps connectivity to ESnet, a second
+for 10Gbps to CENIC. Two more ports are presently not used.
+
+A second endpoint will be dynamically deployed
+for the duration of performance tests on hardware located at SDSC. The details still need to be worked out. A basic diagram of the
+network capabilities on the OSG side is shown below.
+
+   * testbed diagram: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/diagram_network.gif&quot; alt=&quot;diagram_network.gif&quot; width=&#39;300&#39; height=&#39;400&#39; /&gt;    
+
+---++ Partnership with the Adavanced Network Initiative (ANI) testbed
+
+As the OSG Testbed evolves, we are partnering with other groups interested in testing fast networks. In particular, Fermilab has been working with the Advanced Network Initiative (ANI) to identify gaps in the current middleware when using high-speed networks. 
+
+ANI provides a testbed between New York and Brookhaven National Laboratory, initially connected with 30 Gbps. The Fermilab team (Grid and Cloud Computing department) has evaluated !GridFTP and Globus Online to transfer data between the two sites.
+
+     &lt;img src=&quot;%ATTACHURLPATH%/GO-ANI.jpg&quot; alt=&quot;GO-ANI.jpg&quot; width=&#39;600&#39;/&gt;    
+
+The first test consisted of !GridFTP data transfers divided in small, medium, and large file sizes across 3 x 10Gbit/s to bnl-1 machine (see figure above). Local tests (blue arrows) consisted of !GridFTP clients pulling data to bnl-1 and mostly saturating the network. 
+
+The second test focused on Globus Online (GO). A Virtual Private Network gateway (VPN) was set up at Fermilab to allow GO to forward the !GridFTP control channel to the private network (&quot;FNAL VPN gateway&quot; in the diagram). As a practical maximum reference, the team first measured the performance of a standard !GridFTP client instead of GO (&quot;FNAL initiator&quot;). The client forwarded its control channel (red arrows) to the ANI testbed through the VPN gateway (using inetd port forwarding), initiating a 3rd party transfers between the bnl-2 / newy-1 machines and the bnl-1 machine. As expected, the increased latency reduced the overall bandwidth. Finally, the team used GO to execute the same transfers. The diagram below shows a summary of the results.
+
+     &lt;img src=&quot;%ATTACHURLPATH%/ANI-test-measurements.jpg&quot; alt=&quot;ANI-test-measurements.jpg&quot; width=&#39;400 &#39;/&gt;    
+
+
+GO performed close to the practical maximum reference for medium size files. For small and large files, the team is working with the GO group to improve the transfer parameters. A [[http://cd-docdb.fnal.gov/cgi-bin/ShowDocument?docid=4532][full report]] is also available.
+
+
+---++ The Demo at Super Computing 2011
+
+The Grid and Cloud Computing department at Fermilab and UCSD have partnered to demonstrate the use of 100 Gbps networks to move CMS data in a [[https://my.es.net/topology/sc11/demos/8][demo at Super Computing 2011]]. This demo was one step in the goal to understand and prepare the end-to-end software changes and instrumentation needed for future dynamic data placement of LHC data connected through 100 Gbps networks. After initial tuning, the data was transferred at a sustained rate of 70 Gbps, with peaks of 76 Gbps.
+
+Following graphs show network bandwidth measured at ANL and NERSC during one of the Demo slot.
+
+     &lt;img src=&quot;%ATTACHURLPATH%/ANL-Demo-17Nov2011-1pm.png&quot; alt=&quot;ANL-Demo-17Nov2011-1pm.png&quot; width=&#39;640&#39; height=&#39;295&#39; /&gt;    
+
+     &lt;img src=&quot;%ATTACHURLPATH%/Nersc-Demo-17Nov2011-1pm.png&quot; alt=&quot;Nersc-Demo-17Nov2011-1pm.png&quot; width=&#39;640&#39; height=&#39;295&#39; /&gt;    
+
+---+++ Network Topology
+
+The demo testbed consisted of 15 machines at NERSC (8 cores, Intel Xeon CPU @ 2.67 GHz, 48 GB RAM) and 26 at ANL (12 cores, same processor, 48 GB RAM). All machines had 10 Gbps network cards for the fast network and regular 1 Gbps for control.  NERSC and ANL were connected through a 100 Gbps network organized in two subnets, so that some machines at NERSC and ANL were in a subnet, some in another. The ANL machines could be accessed from a UCSD virtual machine via a condor batch system. NERSC provided interactive access. The 100 Gbps network was managed by the Advanced Network Initiative of ESNet.
+
+The diagram below shows the network topology for the SC11 demo. ESnet and Nersc both have Alcatel-Lucent 7750 routers deployed on site for routing 100G traffic.  At the ANL site, a Brocade router feeds into 2 Juniper EX4500 switches.
+
+     &lt;img src=&quot;%ATTACHURLPATH%/SC11NetworkTopology.png&quot; alt=&quot;SC11NetworkTopology&quot; width=&#39;640&#39; height=&#39;480&#39; /&gt;    
+
+The diagram below shows a semi-instantaneous value and recent history of network bandwidth as well as the network path utilized during the demo.
+
+     &lt;img src=&quot;%ATTACHURLPATH%/Screen_Shot_2011-11-17_at_3.59.21_PM.png&quot; alt=&quot;Screen_Shot_2011-11-17_at_3.59.21_PM.png&quot; width=&#39;640&#39; height=&#39;480&#39; /&gt;    
+
+Machines at NERSC ran !GridFTP servers (v4.0.8). Both data and control channels were forced to bind to the fast network (e.g. 10.200.200.1). Each server received connection from one or two machines (jobs) at ANL from its own subnet. !GridFTP clients were run on ANL machines. Each machine ran 48 globus-url-copy (4 per core) with 2 parallel streams and an FTP data channel buffer of 2 MB  (globus-url-copy -fast -p 2 -tcp-bs 2097152 ...).
+
+10 CMS files of about 2 GB were transferred over and over again from memory to memory, as access to storage systems was identified as a bottleneck to this network-focussed demonstration. Total of ~30TB of data was transmitted during 1 hour demo.
+
+Following graphs show data transmitted and the bandwidth on individual server machines
+
+     &lt;img src=&quot;%ATTACHURLPATH%/DataTransmitted.png&quot; alt=&quot;DataTransmitted.png&quot; width=&#39;640&#39; height=&#39;295&#39; /&gt;    
+
+     &lt;img src=&quot;%ATTACHURLPATH%/BandwidthPerServer.png&quot; alt=&quot;BandwidthPerServer.png&quot; width=&#39;640&#39; height=&#39;295&#39; /&gt;    
+
+---+++ Tuning
+The demo and testing slots consisted of 6 time windows of 1 hour each, used to tune the parameters to achieve the final result of 1 hour sustained data transfer at 70 Gbps (max 76 Gbps, min 65 Gbps). Table below shows the bandwidth measured at interfaces on ANL and NERSC along with the tuning parameters used.
+
+&lt;img src=&quot;%ATTACHURLPATH%/ANL-SC11-Annotated.png&quot; alt=&quot;ANL-SC11-Annotated.png&quot; width=&#39;640&#39; height=&#39;295&#39; /&gt;
+
+&lt;img src=&quot;%ATTACHURLPATH%/NERSC-SC11-Annotated.png&quot; alt=&quot;NERSC-SC11-Annotated.png&quot; width=&#39;640&#39; height=&#39;295&#39; /&gt;
+
+| *Slot* | *Type* | *Time* | *GUC per core* | *GUC Parallel Streams* | *GUC TCP Window Size* | *Files per GUC* | *Max BW (Gbps) * | *Sustained BW (Gbps)* |
+| T1 | Testing | 15-Nov-2011, 7:00am - 8:00am | - | - | - | - | - | - |
+| D1 | Demo | 15-Nov-2011, 12:00pm - 1:00pm | 1 | 2 | default | 60 | 65 | 50 |
+| T2 | Testing | 16-Nov-2011, 9:00am - 10:00am | 1 | 2 | 2MB | 1 | 65 | 52 |
+| D2 | Demo | 16-Nov-2011, 4:00pm - 5:00pm | 1 | 2 | 2MB | 1 | 65 | 52 |
+| T3 | Testing | 17-Nov-2011, 7:00am - 9:00am | 4 | 2 | 2MB | 1 | 73 | 70 |
+| D3 | Demo | 17-Nov-2011, 1:00pm - 3:00pm | 4 | 2 | 2MB | 1 | 75 | 70 |
+
+*NOTE:*
+   * GUC = globus-url-copy
+   * Testing slot T1 was unavailable due to network outage.
+   * During testing slots, several options were tried to tune the transfers. Table only shows the options that gave best performance.
+
+
+---++ Future 100Gbps testbed
+
+We&#39;ll fill this in once the details of what will be available are more clear.
+Fundamentally, we want to dynamically deploy SE endpoints on hardware that connects to the 100Gbps testbed.
+We are presently somewhat unclear as to the future availability of hardware at the endpoints that would allow realistic tests.
+To set the scale, we estimate that roughly 1000 spinning disks are needed to realistically sink 100Gbps at the endpoint.
+
+---++ Activities, Papers and Publications
+
+Part of the objective of this project is to assemble documentation on the performance of the Middleware stack.
+In general, the work referred here is done in collaboration with a variety of partners. ANDSL does not own any hardware itself,
+nor does it have the effort to do any serious development of Middleware. We thus depend on these collaborations in order to
+achieve our goals.
+
+   * [[http://osg-docdb.opensciencegrid.org/cgi-bin/ShowDocument?docid=936][UCSD Data Transfer in Bandwidth Challenge of Supercomputing 2009]]
+   * [[http://osg-docdb.opensciencegrid.org/cgi-bin/ShowDocument?docid=911][Hadoop distributed file system for the Grid Storage Element]]
+   * [[https://osg-docdb.opensciencegrid.org:440/cgi-bin/ShowDocument?docid=937][Using Condor glideins for distributed testing of network-facing services]]
+
+-- Main.FkW - 29 Dec 2009
+ 
+

@@ -1,0 +1,17 @@
+#VarWEBLIST
+
+---+++ WEBLIST{&quot;format&quot;} -- index of all webs
+   * List of all webs. Obfusticated webs are excluded, e.g. webs with a =NOSEARCHALL = on= preference variable. The =&quot;format&quot;= defines the format of one web item. The =$name= variable gets expanded to the name of the web, =$qname= gets expanded to double quoted name, =$marker= to =marker= where web matches =selection=.
+   * Syntax: =%&lt;nop&gt;WEBLIST{&quot;format&quot; ...}%=
+   * Supported parameters:
+     | *Parameter:* | *Description:* | *Default:* |
+     | =&quot;format&quot;= | Format of one line, may include =$name= (the name of the web), $qname (the name of the web in double quotes), =$indentedname= (the name of the web with parent web names replaced by indents, for use in indented lists), and =$marker= (which expands to =marker= for the item matching =selection= only) | =&quot;$name&quot;= |
+     | =format=&quot;format&quot;= | (Alternative to above) | =&quot;$name&quot;= |
+     | =separator=&quot;, &quot;= | line separator | =&quot;$n&quot;= (new line) |
+     | =webs=&quot;public&quot;=   | comma separated list of webs, =public= expands to all non-hidden | =&quot;public&quot;= |
+     | =marker=&quot;selected&quot;= | Text for =$marker= if the item matches =selection= | =&quot;selected&quot;= |
+     | =selection=&quot;%&lt;nop&gt;WEB%&quot;= | Current value to be selected in list | =section=&quot;%&lt;nop&gt;WEB%&quot;= |
+   * Example: =%&lt;nop&gt;WEBLIST{&quot;   * [&lt;nop&gt;[$name.%HOMETOPIC%]]&quot;}%= creates a bullet list of all webs.
+   * Example: =%&lt;nop&gt;WEBLIST{&quot;&amp;lt;option $marker value=$qname&amp;gt;$name&amp;lt;/option&amp;gt;&quot; webs=&quot;Trash, public&quot; selection=&quot;%WEB%&quot; separator=&quot; &quot;}%= creates a dropdown of all public webs + Trash web, with the current web highlighted.
+   * Related: [[#VarTOPICLIST][TOPICLIST]], [[#VarSEARCH][SEARCH]]
+

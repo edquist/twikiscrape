@@ -1,0 +1,154 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Jeff Dost
+   * Neha Sharma
+   * Alex Sim
+   * Doug Strain
+   * Tanya Levshina
+
+
+---+++ Guests
+   * Alain Roy
+   * Terrence Martin
+---++ Status Report
+Alex:&lt;pre class=&quot;screen&quot;&gt;
+  - Discussions with EMI on SRM interop testing
+  - Support for STAR experiment on slow gridftp transfers (managed by bestman) from NERSC to BNL
+  - Support on bestman scalability
+  - support on bestman2 2.0.13 release candidate and release of bestman-client-2.0.13
+&lt;/pre&gt;
+
+Doug:&lt;pre class=&quot;screen&quot;&gt;
+- Building bestman RPM: Looks like only a few small issues left to fix before it is usable.
+- Xrootd: Still waiting on 3.0.4 release.
+- RSV probes created for FNAL test pool SRM endpoints and put on validation page
+- UConn: Problem debugged for Richard Jones regarding misconfiguration of storage element path
+&lt;/pre&gt;
+
+Jeff:&lt;pre class=&quot;screen&quot;&gt;
+Hadoop 0.20 repo
+- created stable release branch
+- put osg-hadoop-0.20 rpm in official download location and updated
+links in documentation:
+http://vdt.cs.wisc.edu/hadoop/osg-hadoop-20-2.el5.noarch.rpm
+
+Documentation
+- added sections &quot;Installing Hadoop&quot; &quot;Installing GridFTP&quot; &quot;Installing
+BeStMan2&quot; to
+https://twiki.grid.iu.edu/bin/view/ReleaseDocumentation/Hadoop20Install
+- should be ready for review / testing in the next few days
+&lt;/pre&gt;
+
+Neha:&lt;pre class=&quot;screen&quot;&gt;
+- Was able to build gratia probes under MOCK environment. 
+- Installed/tested them on cloud node to make sure probes were reporting correctly.
+- Put them in VDT repository. Asked Suchandra to test them too.
+   Documented the procedure.   
+- Sent out Survey to OSG Bestman 2 admins 
+&lt;/pre&gt;
+
+Tanya:&lt;pre class=&quot;screen&quot;&gt;
+- continued with testing of bestman rpm, hdfs rpms set including gridftp-hdfs and  gratia probes, provided feedback
+- started various tests against newly installed bestman - can not reproduce the EOF problem so far
+- organized osg-atlas-xrootd meeting, wrote summary, discussed future work
+- discussed GO work with Brian
+- support
+&lt;/pre&gt;
+
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+!BeStMan2
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+!BeStMan2 release
+
+   1. !BeStMan2 rpm for osg-hdfs release is ready
+   1. Generic !BeStMan2 rpm still needs some work. This rpm 
+       * is built from source
+       * preserves native configuration script
+   1. Tests works fine so far, we will need to monitor rsv results as well
+   1. More work is required in order to package the current !BeStMan2. Due to upcoming freeze of pacman and  transition to native packaging we have decided to stop !BeStMan2 packaging in pacman. According to our survey it looks like this will not cause major problems to the sites already running !BeStMan2:
+
+| *Site Name* | *SE host* | *BeStMan2 version* | * Site Admin* | *packaging *|
+|UColorado_HEP|hepse02.colorado.edu|bestman2.2.2.0.5|Douglas Johnson|already using RPMS|
+|FSU-HEP|se.hep.fsu.edu|bestman2.2.2.0.5|Douglas Johnson|already using RPMS|
+|Nebraska|dcache07.unl.edu| bestman2.2.2.0.4|Carl Lundstedt|already using RPMS|
+|Nebraska|red-srm1.unl.edu| bestman2.2.2.0.4|Carl Lundstedt|already using RPMS|
+|Nebraska|srm.unl.edu| bestman2.2.2.0.4|Carl Lundstedt|already using RPMS|
+|UCSDT2|bsrm-1.t2.ucsd.edu|bestman2.2.2.0.5|Terrence Martin|already using RPMS|
+|UCSDT2|bsrm-1.t2.ucsd.edu|bestman2.2.2.0.5|Terrence Martin|already using RPMS|
+|OUHEP_OSG|ouhep2.nhn.ou.edu|bestman2.2.2.0.1|Horst Severini|Using Pacman. Interested in RPM|
+|GLOW|cmssrm.hep.wisc.edu|bestman2.2.2.0.10|Daniel Bradley|already using RPMS|
+|UTA_SWT2|gk05.swt2.uta.edu|bestman2.2.2.0.9|Patrick McGuigan|Don&#39;t use Pacman. Interested in rpm|
+|uprm-cms|cms-se.hep.uprm.edu|bestman2.2.2.0.5|Juan Eduardo Ramirez Vargas|Use Pacman. Interested in RPM|
+   
+
+
+Terrence&#39;s problem: intermittent rsv failures seem to be different from the ones we have observed. RSV srm read-write is failing on PUT/GET operation. Tanya will run some tests against UCSD SRM. %RED%Note:%ENDCOLOR%We have established shortly after the meeting that the problem is related to unresponsive grdiftp servers.
+ 
+---++ Second agenda Item
+&lt;!-- DESCRIPTION --&gt;
+OSG-HDFS release
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+The rpms have been moved to stable repo (http://vdt.cs.wisc.edu/hadoop/stable/2.0). Jeff is finishing work on documentation. To do list:
+   1. minor fixes in gratia storage rpm
+   1. upgrade procedure: Jeff will install osg-hdfs-1.0, upgrade to osg-hdfs-2.0, and fix documentation if needed.
+   1. testing - Neha will install bestman-hdfs from scratch following the installation guide and provided feedback 
+   1. Tanya will be a reviewer 
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+Pacman to RPM transition
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Alain has outlined plans and tentative schedule for pacman freeze and gradual transition to native packaging. Still. a lot of questions remains. We will continue the discussion on Monday, during software team meeting. 
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+xrootd packaging
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+We are waiting for a new xrootd release. It looks like Phase I can be closed as soon the official version becomes available. We still need to understand:
+   1. the release flow for vdt rpms (dev -&gt; testing-&gt;stable)
+   1. if  we need to build/distribute xrootd core rpms, Rmps are now available from http://xrootd.org/binaries/stable/slc/ . Is it a duplication of efforts?
+   1. requirements for phase II. 
+
+---++ Fifth agenda item
+Tickets
+
+++++++++++++
+New tickets
+++++++++++++
+
+Follow up in progress:
+
+46 - OSG Storage: Bestman: Checksum support
+
+47 - OSG Storage: Bestman:  RSV errors at UCSD
+
+48 - OSG Storage: Pigeon Tool: wrong working directory being used by tests
+
+++++++++++++
+Old tickets
+++++++++++++
+
+Closed:
+
+10160 - OSG-Storage: Resource Specific Issue on T2_Nebraska_OSG
+
+10484 - NET2_DATADISK failing FT: failed to contact on remote SRM
+
+10400 - srmcp command not working as expected
+
+No Update
+
+42 - OSG Storage: Xrootd: Help with documentation and troubleshooting
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 09 Jun 2011

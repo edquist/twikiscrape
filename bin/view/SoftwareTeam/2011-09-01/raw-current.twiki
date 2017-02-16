@@ -1,0 +1,64 @@
+---+ Meeting between Executive Team and OSG Software Coordinator, 1-Sep-2011
+
+
+---++ The transition document
+[[RPMTimeline][The current state of the RPM transition]]
+
+I&#39;m working hard to keep the RPM transition information up to date. Since I&#39;ve last shared it with you, I&#39;ve done several things:
+
+   * I have worked with other people to take responsibility for  chunks of the time line. In particular:
+      * Robert/Jim for documentation
+      * Igor for Evaluation
+      * Suchandra for ITB and External Beta Testing
+      * Tanya for the SE (at least until the end of September)
+      * Tim for internal testing framework
+   * I have staggered the releases so they are not all simultaneous and more clearly indicated the release dates
+   * I have added more details to make it easier to see what&#39;s going on. It includes:
+      * Owners for each row. (Not all are filled in yet, but will be soon)
+      * Summary at the top
+      * Color coding for completed tasks to show if they were on time (green) or late (red)
+
+Overall I&#39;m happy with the plan as it stands. One small thing: I think we need to move the security work (CA packages) to be released sooner. I&#39;m working with Mine to adjust this. 
+
+---++ Effort
+We&#39;ve had a lot of effort in the software team, but we are ramping down. In July we had roughly 6.25 FTE, while in November we will lose 2.3 FTE in November:
+
+   * Derek and Brian (who have a _ton_ of RPM experience) have left the software team (roughly 0.5 FTE)
+   * Tanya (who has a _ton_ for storage software experience, and now has RPM experience) will leave at the end of September (0.5 FTE)
+   * Robert (documentation) will leave at the end of September. We was at 50% and will be replaced by Jim Weichel at 20%.
+   * Neha is on maternity leave until November 7th.  (0.5 FTE)
+   * In late October and November, Tim may be teaching a class. This could consume roughly 50% of his time. (Exact time is to be determined.)
+   * We are still trying to hire the extra position at UW-Madison. We&#39;re reviewing resumes now, but it will be a while before we can hire and get someone up to speed.
+
+In theory, we&#39;re okay because much of the packaging will be has been done or will be done by the end of September and we can focus on testing. In practice, I&#39;m deeply worried because when we find serious problems in testing (and I&#39;m sure we will), we will be missing some critical experts. This isn&#39;t a question of finding comparable effort--it takes a while to get up to speed on what we&#39;ve done. Lack of expertise could cause serious delays when problems are found. 
+
+I have a couple of ideas, but I need your expertise to help address these problems. Ideas:
+   * In case of need, could we request a percent of Brian&#39;s time on an as-needed basis to address problems?
+   * Can we make Tanya&#39;s transition more gradual, so she can deal with problems throughout October? Perhaps also have her on-call for problems?
+   * Is there someone available to temporarily cover the loss of Neha? 
+
+---++ Globus 5.2
+One of my worries is Globus 5.2. The story has been evolving lately: The short story is that the Globus team has promised Globus 5.2 to be in beta by September 2 and released two weeks later. We are copying Globus 5.2 into the OSG Software repository to shelter ourselves against release slippage. 
+
+Longer story: Globus is working to move Globus into EPEL. I&#39;m worried about the move into EPEL for a couple of reasons:
+
+   * It&#39;s a bit complicated technically due to incompatibilities in shared libraries. It can&#39;t just be dropped in.  
+   * I don&#39;t think Globus understands EPEL well, though they are working to remedy this.
+
+Globus 5.2 will end up in EPEL, but I don&#39;t want slowdowns in that effort to affect our timeline. To avoid this, we:
+
+   1. Have copied Globus 5.2 into the OSG Software repository. We have a few patches, but these are being absorbed by Globus. 
+   1. Have copied packages from EPEL that depend on Globus into the OSG Software repository (there are six)
+   1. Will rebuild all packages in the OSG Software Stack that depend on Globus against the new Globus (about 20, including the ones from #2). This should be a straightforward rebuild, but we&#39;re awaiting the pending beta release to complete the work.
+
+This will insulate us against the timeline for getting Globus into EPEL. When Globus 5.2 is in EPEL, we can test it then remove it from our repository. 
+
+---++ Management
+
+We are continuing our [[https://twiki.grid.iu.edu/bin/view/SoftwareTeam/Meetings#TeamMeetings][weekly software team phone meetings]]. These have helped focus the direction of the team and have greatly facilitated coordination between team members.
+
+We are tracking work to be done in [[https://jira.opensciencegrid.org/browse/SOFTWARE][JIRA]]. I constantly monitor the work being done via JIRA, and this has been an excellent hands-on tool. 
+
+
+---++ Documentation
+As of this week, we have started to get a plan for documentation. It&#39;s not quite complete yet, but I think we finally have the documentation group (Robert, Jim, et. al.) aligned with the RPM plan. We met on Monday to hash it out, and it&#39;s coming together now. 

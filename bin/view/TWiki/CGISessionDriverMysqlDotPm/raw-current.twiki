@@ -1,0 +1,48 @@
+---+ Package ==
+*extends* &lt;tt&gt;CGI::Session::Driver::DBI &lt;/tt&gt;
+
+
+%TOC%
+=head1 NAME
+
+CGI::Session::Driver::mysql - CGI::Session driver for MySQL database
+
+=head1 SYNOPSIS
+
+    $s = new CGI::Session( &quot;driver:mysql&quot;, $sid);
+    $s = new CGI::Session( &quot;driver:mysql&quot;, $sid, { DataSource  =&gt; &#39;dbi:mysql:test&#39;,
+                                                   User        =&gt; &#39;sherzodr&#39;,
+                                                   Password    =&gt; &#39;hello&#39; });
+    $s = new CGI::Session( &quot;driver:mysql&quot;, $sid, { Handle =&gt; $dbh } );
+
+=head1 DESCRIPTION
+
+B&lt;mysql&gt; stores session records in a MySQL table. For details see L&lt;CGI::Session::Driver::DBI|CGI::Session::Driver::DBI&gt;, its parent class.
+
+It&#39;s especially important for the MySQL driver that the session ID column be
+defined as a primary key, or at least &quot;unique&quot;, like this:
+
+ CREATE TABLE sessions (
+     id CHAR(32) NOT NULL PRIMARY KEY,
+     a_session TEXT NOT NULL
+  );
+
+=head2 DRIVER ARGUMENTS
+
+B&lt;mysql&gt; driver supports all the arguments documented in L&lt;CGI::Session::Driver::DBI|CGI::Session::Driver::DBI&gt;. In addition, I&lt;DataSource&gt; argument can optionally leave leading &quot;dbi:mysql:&quot; string out:
+
+    $s = new CGI::Session( &quot;driver:mysql&quot;, $sid, {DataSource=&gt;&#39;shopping_cart&#39;});
+    # is the same as:
+    $s = new CGI::Session( &quot;driver:mysql&quot;, $sid, {DataSource=&gt;&#39;dbi:mysql:shopping_cart&#39;});
+
+=head2 BACKWARDS COMPATIBILITY
+
+For backwards compatibility, you can also set the table like this before calling C&lt;new()&gt;. However, it is not recommended because it can cause conflicts in a persistent environment. 
+
+    $CGI::Session::MySQL::TABLE_NAME = &#39;my_sessions&#39;;
+
+=head1 LICENSING
+
+For support and licensing see L&lt;CGI::Session|CGI::Session&gt;.
+
+

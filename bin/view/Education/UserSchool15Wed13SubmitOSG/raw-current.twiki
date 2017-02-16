@@ -1,0 +1,52 @@
+---+ Wednesday Exercise 1.2: Running jobs in the OSG
+
+The goal of this exercise is to have your jobs running on the OSG and map their geographical locations. To do this, we will write another simple, linear DAG like the last exercise but their payloads will be slightly different.
+
+---++ Where in the World Are My Jobs? Pt 2
+
+
+
+To find the physical location of the computers your jobs our running on, you will be utilizing a method called geolocation. Geolocation uses a registry to match computer&#39;s public IP address to an approximate location. The following is a Python script that geolocates the machine that it is running on, returning latitude and longitude coordinates:
+
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/env python
+
+import socket
+import urllib2
+import json
+
+hostname = socket.getfqdn()
+ipaddr = socket.gethostbyname(hostname)
+try:
+    response = urllib2.urlopen(&#39;http://www.freegeoip.net/json/&#39; + ipaddr).read()
+    json_response = json.loads(response)
+    print &quot;%s,%s&quot; % (json_response[&#39;latitude&#39;], json_response[&#39;longitude&#39;])
+except urllib2.HTTPError:
+    pass
+&lt;/pre&gt;
+
+   1. In a new folder on =osg-ss-submit=, save the above Python script as a file named =location.py=
+   1. Create a submit file that runs =location.py= ten times and uses the $(Process) macro to write different =output=, =error= and =log= files
+   1. For the &#39;summary&#39; part of your DAG, create a submit file that runs =/bin/cat= and uses each of the output files of the &#39;location&#39; jobs as its arguments
+   1. Write a DAG with the &#39;summary&#39; job as the child of the &#39;location&#39; job
+   1. Submit your DAG and wait for the results
+
+*Note:* It is also possible to set up the wide part of the DAG using VARS and a single submit file. If you would like the extra challenge, do this version instead of or in addition to the one above! 
+
+---++ Mapping Your Jobs
+
+To visualize the locations of the machines that your jobs ran on, we will be using http://www.mapcustomizer.com/. Copy and paste the results from your DAG into the bulk creation text box at the bottom of the screen. Are the results what you expected? 
+
+
+---+ Wednesday Exercise 1.2: Running jobs in the OSG
+
+---++ Submitting Jobs to the OSG
+
+To submit jobs into the OSG we will be using a different machine, =osg-ss-glidein-submit.chtc.wisc.edu=. If you have trouble getting =ssh= access to this machine, ask the instructors right away!
+
+   1. Copy the submit file from the previous section.
+   1. In the submit file, add the following two lines above the =queue= statement:\
+&lt;pre class=&quot;file&quot;&gt;+WantGlidein = True
+Requirements = (PoolName =!= &#39;CHTC&#39;)&lt;/pre&gt;
+   1. Submit the file and track your jobs through =condor_q=
+

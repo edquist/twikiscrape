@@ -1,0 +1,265 @@
+%DOC_STATUS_TABLE%
+---+ Measurements and Metrics Graphing (Gratia Web) Development Guide
+%TOC{depth=&quot;3&quot;}%
+
+Metrics and Measurements provides a web graphing system designed for experts to pull data out of the Gratia system and other data sources.  It is based upon !GraphTool.
+
+---++ Installation
+
+Since the Gratia Web have multiple dependencies, the best way to install it with its dependencies is to install it from the OSG repositories. Please follow the instructions on:
+[[Documentation/Release3.InstallGratiaWeb][Install Gratia Web from the OSG repository]]
+
+---++ Development Directions
+
+Gratia Web is composed of 2 different projects whose source code is kept in github, the projects are =OSG-Measurements-Metrics= and =graphtool=.
+
+The source code for =OSG-Measurements-Metrics= is kept here:
+
+   * [[https://github.com/opensciencegrid/OSG-Measurements-Metrics][https://github.com/opensciencegrid/OSG-Measurements-Metrics]]
+
+=OSG-Measurements-Metrics= uses =graphtool= to submit database queries and create plots.
+ The source code for =graphtool= is kept here:
+
+   * [[https://github.com/opensciencegrid/graphtool][https://github.com/opensciencegrid/graphtool]]
+
+These 2 github projects are also eclipse/!PyDev projects. 
+
+---+++ RPM Build
+
+Both projects contain and RPM building script called =buildrpms.sh= in the base folder of each project. The changelog file is also kept in the base folder of each project with the name =changelog.txt=. 
+The RPM builiding configuration is set in different configuration files. 
+
+For =OSG-Measurements-Metrics= these files are:
+   * =./setup/setup_basic.cfg=
+   * =./setup/setup_Db.cfg=
+   * =./setup/setup_static_graphs.cfg=
+   * =./setup/setup_Web.cfg=
+   * =./setup/setup.cfg=
+
+For =graphtool= these files are:
+   * =./setup.cfg=
+
+In this files you can change the release number of the rpm that is going to be built.
+&lt;pre class=&quot;file&quot;&gt;
+[bdist_rpm]
+...
+release = %RED%X%ENDCOLOR%
+...
+&lt;/pre&gt;
+*%RED%X%ENDCOLOR% is the release number.*
+
+To rebuild the RPMs run the following from the base folder: 
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT%./buildrpms.sh
+&lt;/pre&gt;
+%NOTE% The path to this directory must not contain any spaces
+
+This will put the new copy of the RPM(s) in =dist/=.  
+
+To clean the temporary directories, created with the previous script, run from the base folder:
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT%./local-clean.sh
+&lt;/pre&gt;
+
+---+++ Deploy changes on Development machine
+
+After changes have been made to the project code those changes can be deployed on the development machine running from the base folder of each project:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT%./local-deploy.sh %RED%X%ENDCOLOR%
+&lt;/pre&gt;
+*Where %RED%X%ENDCOLOR% is the release number of the project.*
+
+As well they could be uninstalled running from the base folder of each project:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT%./local-uninstall.sh
+&lt;/pre&gt;
+
+To deploy changes for =OSG-Measurements-Metrics= and =graphtool= at the same time the following script can be used from the base folder of =OSG-Measurements-Metrics=:
+
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT%./local-deploy-with-graphtool.sh %RED%X%ENDCOLOR% %BLUE%Y%ENDCOLOR% 
+&lt;/pre&gt;
+*Where %RED%X%ENDCOLOR% is the release number of OSG-Measurements-Metrics and %BLUE%Y%ENDCOLOR%  is the release number of graphtool.*
+
+%NOTE% Root access will be requested to run these scripts.
+
+%NOTE% graphtool uninstall script will fail if osg-measurements-metrics-db package is still installed on the machine.
+
+%NOTE% =./local-deploy.sh= and =./local-deploy-with-graphtool.sh= will uninstall the current RPMs on the machine, build the required rpms and install them.
+
+---++ Eclipse + !PyDev
+---+++ Installation
+   1. Verify that you have Java installed
+      &lt;pre class=&quot;screen&quot;&gt;%UCL_PROMPT% java -version
+*If Java is installed you must get something like:*
+java version &quot;1.7.0_75&quot;
+OpenJDK Runtime Environment (rhel-2.5.4.0.el6_6-x86_64 u75-b13)
+OpenJDK 64-Bit Server VM (build 24.75-b04, mixed mode)&lt;/pre&gt;
+      If Java is not installed, it can be downloaded from [[https://www.java.com][https://www.java.com]].
+   1. Download Eclipse from [[https://eclipse.org/][https://eclipse.org/]]
+
+      %NOTE% Any eclipse should work, but the Eclipse IDE for Java Developers is recommended
+   1. Open Eclipse (You can create a new workspace or use the default one)
+   1. Go to the menu =Help -&gt; Eclipse Marketplace=
+   1. Search for !PyDev and install !PyDev (Python IDE for Eclipse)
+   1. *(Optional)* Use the marketplace to install !EasyShell, this plug-in will let you open terminals easily for the projects locations you&#39;ll work on.
+   1. Go to the menu =Window -&gt; Open Perspective -&gt; Other=
+   1. Select !PyDev and open it
+   1. A prompt will request to configure python
+      * If python is installed in the default location select =Quick Autoconfig=
+      * If not select =Manual Configuration= and setup python
+   1. Go to =Window -&gt; Preferences -&gt; Editors -&gt; Text Editor=
+   1. Check the =Show whitespace characters= and =Insert spaces for tabs= and press =OK=
+      %WARNING% This will help you avoid errors caused by incorrect indentation  
+
+---+++ Import Python Projects on !PyDev
+
+---++++If you already have a clone of the repository:
+   1. Go to the menu =File -&gt; Import -&gt; General -&gt; Existing Projects into Workspace=
+   1. Browse and select the base folder of the project you want to import
+   1. Select the project you want to open and press =Finish=
+
+---++++If you don&#39;t have already a clone of the repository:
+   1. Setup your machine to use github with the public key configuration.
+   1. Go to the menu =File -&gt; Import -&gt; Git -&gt; Projects from Git=
+   1. Select Clone URI
+   1. Insert the clone SSH URI
+   1. Select SSH as connection protocol
+      %NOTE% User must be git with no password
+   1. Select the branches you are going to work on
+   1. Select the directory where the repository is going to be cloned in your local machine and press =Next=
+   1. Select =Import existing projects= and press =Next=
+   1. Check the project you want to import and press =Finish= 
+
+---+++ Running/Debugging with !PyDev
+!PyDev projects have source folders. These source folder can be recognized because they have a package symbol over the folder icon in the Package Explorer, and python packages have a package icon instead. All of the source folders in the project are included in the =PYTHONPATH= when running a script from eclipse. 
+
+   * Source Folders and Packages in !PyDev: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/src-pkg.png&quot; alt=&quot;src-pkg.png&quot; width=&#39;554&#39; height=&#39;299&#39; /&gt;   
+
+%NOTE% To create a new source folder you can do right click on the project and select =New -&gt; Source Folder=
+
+%NOTE% To create a package in python you must add the new folder and include an =__init__.py= file (even if is an empty file).
+
+%NOTE% To include code in the =PYTHONPATH= that is not included in the project by itself or in the system python libraries you can:
+   * Do right click on the project and go to =Properties -&gt; Project References= where you can select other projects that are imported in eclipse to be included in your project =PYTHONPATH=
+   * Do right click on the project and go to =Properties -&gt; !PyDev - PYTHONPATH= and setup manually the =PYTHONPATH= 
+
+---++++ Running a Script
+   1. Select or open the script you want to run (it must be in a source folder).
+   1. Do right click on the script and go to =Run As -&gt; Python Run=.
+   1. The console will prompt displaying the output of the script and will give you the option to terminate the script.
+
+%NOTE% If the console does not prompt go to =Window -&gt; Show View -&gt; Console=
+
+---++++ Debugging a Script
+   1. Open the script you want to debug
+   1. Go to the line of code where you want to start to control the program execution
+   1. Over the line number on the left do right click and select =Add Breakpoint=
+   1. Do right click on the script and go to =Debug As -&gt; Python Run=.
+   1. Wait until the program execution gets to the line where you added the breakpoint
+   1. If =Confirm Perspective Switch= is prompt select =Yes=
+   1. The Debug Perspective opens and will allow you to control the program execution as well as examine the variable contents
+
+   * !PyDev Variable Explorer: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/Variables.png&quot; alt=&quot;Variables.png&quot; width=&#39;648&#39; height=&#39;304&#39; /&gt;    
+
+%NOTE%
+Debug controls allow you to:
+   * *Step Into (shortcut F5):* If a function is about to be invoked will continue the step-by-step control inside the function definition
+   * *Step Over (shortcut F6):* Will continue the step-by-step control in the next line of code of the current script
+   * *Step Return (shortcut F7):* Will continue the step-by-step control in the next =return=
+   * *Resume (shortcut F8):* Will resume the normal program execution until the next breakpoint
+   * *Terminate (shortcut ctrl+F2):* Will terminate the program execution
+
+   * !PyDev debug controls: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/DebugControls.png&quot; alt=&quot;DebugControls.png&quot; width=&#39;280&#39; height=&#39;77&#39; /&gt;    
+%NOTE%
+To return to the !PyDev develpoment perspective click on !PyDev on the upper right corner, or go to the menu =Window -&gt; Open Perspective -&gt; Other= and select !PyDev.
+
+   * !PyDev Quick Perspective Change: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/PyDevPerspective.png&quot; alt=&quot;!PyDevPerspective.png&quot; width=&#39;472&#39; height=&#39;189&#39; /&gt;    
+
+---++ Gratia Web Development with !PyDev
+=OSG-Measurements-Metrics= and =graphtool= are already configured as !PyDev projects. =OSG-Measurements-Metrics= is configured to reference the =graphtool= project to include its code in the =PYTHONPATH=. However the =graphtool= !PyDev project is not required to be imported if the code that need to be modified is included only in =OSG-Measurements-Metrics=. If =graphtool= !PyDev project is imported in your eclipse workspace, when you run a script from the =OSG-Measurements-Metrics= source folder in eclipse, it will include the changes of code that you have on eclipse in the =graphtool= project. To avoid this and use the =graphtool= code installed in your computer you can close the =graphtool= eclipse project. 
+
+Before you run the =OSG-Measurements-Metrics= server from eclipse you will need to adjust the =website-devel.xml= file. This file is located in =src/gratia/config=. Replace the =/home/user/git/OSG-Measurements-Metrics/static= for the absolute path to the =OSG-Measurements-Metrics/static= folder in your machine.
+&lt;pre class=&quot;file&quot;&gt;
+&amp;lt;graphtool-config&amp;gt;
+...
+  &amp;lt;class name=&quot;static-site&quot; type=&quot;StaticContent&quot;&amp;gt;
+    &amp;lt;directory location=&quot;/gratia/static-site&quot; name=&quot;/gratia/static-site&quot;&amp;gt;/home/user/git/OSG-Measurements-Metrics/static/&amp;lt;/directory&amp;gt;
+  &amp;lt;/class&amp;gt;
+...
+&amp;lt;/graphtool-config&amp;gt;
+&lt;/pre&gt;
+
+After this go to =src/gratia/tools/gratia_web_dev.py= and run the script from eclipse. This will start the server and will be available from [[http://localhost:8086/gratia][http://localhost:8086/gratia]].
+
+%NOTE% The development server will use the database configuration located at =/etc/DBParam.xml=.
+
+---++ Adding queries to !GratiaWeb
+Check the following documentation about queries in !GratiaWeb:
+[[GratiaWebAddQuery][Adding/Modifying Queries to !GratiaWeb ]]
+
+---++ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = JuanFelipeMosqueraMorales
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|General|Trash/Trash/Integration|Monitoring|Operations|Security|Storage|Trash/Tier3|User|VO)
+   * Local DOC_AREA       = General
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (Developer|Documenter|Scientist|Student|SysAdmin|VOManager)
+   * Local DOC_ROLE       = Developer
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (HowTo|Installation|Knowledge|Navigation|Planning|Training|Troubleshooting)
+   * Local DOC_TYPE       = Installation
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %NO%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = MarcoMambelli
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %NO%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = 
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %NO%
+############################################################################################################
+--&gt;
+-- Main.JuanFelipeMosqueraMorales - 11 Feb 2015 
+

@@ -1,0 +1,150 @@
+---++ Coordinates
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-866-740-1260, code 8266135 
+
+---++ Announcements:
+   * No Production Meetings 24th and 31st of December. 
+
+---++ Action/Significant Items: 
+   * !OpenSSL Issue - [[http://osggoc.blogspot.com/2013/12/openssl-101e-linked-to-gsi-failures.html][Notification]]
+      * EL 6.5 updated to !OpenSSL 1.0.1e
+      * This breaks GRAM and !GridFTP, at least, down deep in GSI
+      * !GridFTP may be OK with latest Globus Toolkit (5.2.5), but not GRAM
+      * Still working on solution and, then, deployment plan
+      * For now: Avoid !OpenSSL 1.0.1e
+      * Reminder Notification should be sent later this week
+
+
+     &lt;img src=&quot;%ATTACHURLPATH%/Screen_Shot_2013-12-10_at_3.19.22_PM.png&quot; alt=&quot;Screen_Shot_2013-12-10_at_3.19.22_PM.png&quot; width=&#39;792&#39; height=&#39;543&#39; /&gt;  
+
+
+---++ Attendees: Rob Q., Tony, Chander, Tim T., Kevin, Xin, Scott, Tim C.
+
+---++ CMS (Tony)
+   * Job statistics for last week
+      * 12,144 jobs/day
+
+   * Transfer statisics for last week
+      * ~252 TB/day
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status.
+      * Very similar to the last time, there were not enough jobs to keep the sites full, so USATLAS total production over this week was also unstable, fluctuating at the 7-30K running job level.
+   * Job statistics for last week.      
+      * Gratia report: 2.1 M pilots processed, with CPU/Walltime ratio of 71%
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 1.44M
+   * Data Transfer statistics for last week 
+      * Data transfer rate was around ~650TB/day at BNL T1.
+   * BNL T1 downtime Dec 16~17: network and dcache upgrade 
+   * Issues
+
+
+---++ Grid Operations Center (Scott T.)
+   * [[http://tinyurl.com/ct2mfy6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * [[http://steige.grid.iu.edu/steige/myosgldr.php][OSG version information]] Updated 10:49:07 10/Dec/13
+      * 12 (-1) resources are running 1.2.x
+      * 99 (-8) are 3.1.x
+      * 14 (-4) are 3.1.26
+      * 4 (+2) are 3.2.x
+      * 4 (+2) are 3.2.0
+
+---+++ Operations Last Week
+
+   * Grid Operations Center
+      * !OpenSSL Issue - [[http://osggoc.blogspot.com/2013/12/openssl-101e-linked-to-gsi-failures.html][Link]]
+   * WMS Glide In Factory
+      * 400 GB SSD has been ordered.
+      * Tested and made HTCondor 8.0.4 the default for glideins.
+      * Performed more cleanup on GOC Factory disk, got it under 80%
+      * Began working with CMS to get an entry into the production factories for the CERN HLT cloud resource.
+   * OSG-Connect
+      * Stash storage outage
+         * Friday morning to Sunday afternoon
+         * Instability caused by Ceph upgrade (0.67 -&gt; 0.72), combined with rebalancing due to configuration change, and unknown bug that caused rebalancing to grind to a halt until servers were rebooted (would have been fixed much earlier if not for this bug). Upon restarting Ceph metadata service (MDS), the MDS stop file accesses until pools return to &quot;HEALTH_OK&quot;, which resulted in a hung mount until the rebalance was complete.
+         * Stash mount hung / unmounted until problem was resolved. Users had to submit jobs to write to homedir instead of stash.
+         * Only one active user impacted. 
+
+---+++ Operations This Week
+   * No releases in December
+
+---+++ Upcoming
+   * Holiday schedule 24/Dec - 2/Jan
+      * Rob working except 25/Dec, 1/Jan. Scott working weekend schedule throughout.
+
+---++ Campus Infrastructures Community (Rob G)
+
+
+---++ Software (Tim C.)
+
+   * Java fire &amp;hellip; doused in today’s release
+      * In most cases, requires no user action
+      * Simple workaround for rare errors
+
+   * !OpenSSL and GSI fire
+      * EL 6.5 updated to !OpenSSL 1.0.1e
+      * This breaks GRAM and !GridFTP, at least, down deep in GSI
+      * !GridFTP may be OK with latest Globus Toolkit (5.2.5), but not GRAM
+      * Still working on solution and, then, deployment plan
+      * For now: Avoid !OpenSSL 1.0.1e
+
+   * In progress:
+      * Working on Globus Toolkit 5.2.5 updates, faster now, just in case
+      * Will transition to gridftp-hdfs from Globus Toolkit, too
+      * Still working on HTCondor-CE for PBS
+      * Plan to improve handling of empty packages for January release
+      * Defining a disaster recovery plan for OSG Software (mostly tools, etc., not IU&#39;s repos)
+      * Continued work on automated testing
+      * Working on adding a UW ITB site, to be maintained by Software/Release teams
+
+
+---++ Release (Tim T.)
+%TABLE{sort=&quot;off&quot;}%
+|  *Version*  |  *Testing*  |  *Freeze*  |  *Release*  | *Notes* |
+| 3.1.27 / 3.2.1 | 2013-11-25 | 2013-12-02 | 2013-12-10 | Short testing week due to Thanksgiving Holiday |
+| 3.1.28 / 3.2.2 | 2013-12-30 | 2014-01-07 | 2014-01-14 | Short testing week due to Holidays |
+| 3.1.29 / 3.2.3 | 2014-01-27 | 2014-02-03 | 2014-02-11 | |
+
+   * Both (3.1.27 and 3.2.1)
+      * Resolve install failures recently introduced by an !OpenJDK update on EL6
+      * Add Cooperative Computing Lab&#39;s cctools (Parrot, Chirp, Makeflow, etc.)
+      * Update osg-info-services to version 1.0 with mostly minor bug fixes
+      * Update RSV with many small fixes
+      * Update CA packages to reflect IGTF 1.55
+      * Change grid-proxy-init and RSV to use 1024-bit RSA certificates
+   * 3.2.1
+      * glideinWMS 3.2.2
+      * Hadoop patch for block healing extension (UCSD)
+
+---++ User Support (Chander, Mats)
+
+OSG-XD continues to operate uneventfully; 2.4M hours in last 2 weeks under vo=osg.
+ 
+!BakerLab flocking has been moved from the UCSD submit host (vo=engage) to the OSG-XD submit host.
+
+We are re-designing the group structure in the OSG-XD submit host to better manage priorities and provide better access to resources for flocking connections.
+
+Opportunistic access to BNL from vo=osg has been restored; a GUMS issue was resolved.
+
+
+---++ Security (Kevin)
+   * No new major incidents or vulnerabilities
+   * Kernel update in SL/RHEL for information leak in Xen
+   * New CA bundle ready for release with new IGTF version 1.55. No other changes.
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+-- Main.RobQ - 08 Oct 2013
+
+
+
+-- Main.RobQ - 08 Oct 2013
+
+
+
+-- Main.RobQ - 08 Oct 2013
+
+  
+

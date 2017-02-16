@@ -1,0 +1,128 @@
+---++ Coordinates
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-866-740-1260, code 8266135 
+---++ Announcements:
+   * OASIS Workshop for Developers - November 14th and 15th at IUPUI.
+   * OSG All Hands Meeting, April 7-11 2014 SLAC-- Save the Date [[http://osggoc.blogspot.com/2013/10/save-date-for-2014-open-science-grid.html][Notification]]
+
+---++ Action/Significant Items: 
+&lt;img src=&quot;%ATTACHURLPATH%/Screen_Shot_2013-11-05_at_3.50.14_PM.png&quot; alt=&quot;Screen_Shot_2013-11-05_at_3.50.14_PM.png&quot; width=&#39;814&#39; height=&#39;439&#39; /&gt;    
+   * Java 1.7.0_45 Bestman issue. 
+      * Further information available below. 
+      * Affects both server and client side. 
+   * SHA2 certificate issuing by OSG/PKI postponed to January 14th. 
+
+---++ Attendees: Tony, Rob Q, Tim T, Scott, Kevin, Chander, Armen, Rob G, Xin, Tim C
+
+---++ CMS (Tony)
+   * Job statistics for last week
+      * 17,997 jobs/day
+
+   * Transfer statisics for last week
+      * ~552 TB/day
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status.
+      * USATLAS total production over the last week was very stable, at the average level around 28-34K running jobs.
+   * Job statistics for last week.      
+      * Gratia report: 1.7 M pilots processed, with CPU/Walltime ratio of 90%
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 1.3M
+   * Data Transfer statistics for last week 
+      * Data transfer rate was around ~400TB/day at BNL T1.
+   * Issues
+
+---++ Grid Operations Center (Scott T.)
+   * [[http://tinyurl.com/ct2mfy6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * [[http://steige.grid.iu.edu/steige/myosgldr.php][OSG version information]] (Updated 4/Nov 14:15 UTC)
+      * 15 (-1) resources are running 1.2.x
+      * 104 (+4) are 3.1.x
+      * 39 (+11) are 3.1.25
+
+---+++ Operations Last Week
+---++++ Grid Operations Center
+   * Fifth Tuesday, no maintenance.
+   * Indiana Statewide IT meeting in Bloomington through Wednesday.
+   * ENMR successfully submitted to FNAL. 
+   * !FermiGrid Ops
+      * Large amount of data submitted to Gratia over the weekend, it has caught up with the backlog
+   * WMS Glide In Factory
+      * SDSC Factory stopped at 13:28 PDT Thursday Oct 31st. The factory collector was temporarily unresponsive, and new code in glideinWMS v3_2_1 caused the factory to stop unexpectedly.
+         * A protection was added in v3_2_1 to prevent the factory from starting if condor wasn&#39;t started first.  We hit an unintended corner case that would cause the factory to shut off if condor becomes temporarily unavailable due to load issues.
+         * glideinWMS developers supplied a patch for us that we put in place, so this should not happen again.
+   * osg-xd. A single user submitted a large number of jobs all using a single, large input file. This saturated the upload queue and nearly saturated the network connection. Mats has contacted the user and Marko is working with him to improve his workflow.
+
+      * up/download queue: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/xd-queue.png&quot; alt=&quot;xd-queue.png&quot; width=&#39;549&#39; height=&#39;106&#39; /&gt;    
+
+      * network on osg-xd: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/xd-network.png&quot; alt=&quot;xd-network.png&quot; width=&#39;631&#39; height=&#39;394&#39; /&gt;    
+
+---+++ Operations This Week
+
+---++++ Grid Operations Center
+   * First Tuesday, ITB release. [[http://osggoc.blogspot.com/2013/11/goc-service-update-tuesday-november.html][Release note]] is available.
+   * On Saturday, November 9th, OSG Operations will be participating in a disaster recovery drill with the Global Research Network Operation Center (GRNOC). During this time internal monitoring services and ticketing services will be tested. No OSG monitoring services outside the GOC internal monitoring will be part of this drill. This will occur between the hours of 10:00 and 14:00 EST Saturday, November 9. We expect this drill to be transparent to all OSG users. [[http://osggoc.blogspot.com/2013/10/osg-operations-and-global-research.html][Announcement]]
+
+---+++ Upcoming
+
+
+---++ Campus Infrastructures Community (Rob G)
+
+---++ Software (Tim C.)
+   * New hire (Edgar Fajardo, UCSD, but working from CERN for “a few months”) started Friday
+   * OSG 3.2.0 on track for 12 November release
+   * Problem with !BeStMan clients, !GridFTP server, and !OpenJDK 1.7.0_45
+      * Client connects to server, but then hangs up immediately \
+&lt;pre class=&quot;screen&quot;&gt;
+The GSI XIO driver failed to establish a secure connection. The failure occured during a handshake read.
+System error in recv: Connection reset by peer
+A system call failed: Connection reset by peer
+&lt;/pre&gt;
+      * Root cause: Change in Java security setting rejects RSA keys &lt; 1024 bits; grid-proxy-init defaults to 512
+      * Unofficial workaround #1: Edit /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.45.x86_64/jre/lib/security/java.security: \
+&lt;pre class=&quot;screen&quot;&gt;
+jdk.certpath.disabledAlgorithms=MD2&lt;strike&gt;, RSA keySize &lt; 1024&lt;/strike&gt;
+&lt;/pre&gt;
+      * Unofficial workaround #2: Use =grid-proxy-init -bits 1024= (or higher, see =-help=)
+   * Packaging Doug Thain’s cctools for OSG Software
+   * Not much progress recently:
+      * Still working on HTCondor-CE for PBS
+      * RSV for VOs (aka Grid Exerciser II) — in progress
+      * Improving osg-info-services for its 1.0 release
+      * Continued work on automated testing
+
+
+---++ Release (Tim T.)
+%TABLE{sort=&quot;off&quot;}%
+|  *Version*  |  *Testing*  |  *Freeze*  |  *Release*  | *Notes* |
+| 3.1.26 / 3.2.0 | 2013-10-28 | 2013-11-04 | 2013-11-12 | First release of 3.2 series |
+| 3.1.27 / 3.2.1 | 2013-11-25 | 2013-12-02 | 2013-12-10 | Short testing week due to Thanksgiving Holiday |
+| 3.1.28 / 3.2.2 | 2013-12-30 | 2013-01-07 | 2013-01-14 | Short testing week due to Holidays |
+
+   * Wrapping up testing for 3.1.26 and 3.2.0
+   * CVMFS 2.1.15
+   * Xrootd 3.3.3 (ATLAS Tier 2 request)
+   * glideinWMS 3.2.0: is in OSG 3.2.0 (stays 2.7.2 in 3.1.26)
+      * (glideinWMS 3.2.1 is expected for OSG 3.2.1)
+   * HTCondor 8.0.4 in 3.2.0 (stays 7.8.8 in 3.1.26)
+   * Hadoop 2.0 in 3.2.0 (from upcoming), (stay 0.20 in 3.1.26)
+   * HTCondor-CE for PBS bumped to next release
+   * Updated Release Procedure for two concurrent series
+
+---++ User Support (Chander, Mats)
+
+---++ Security (Kevin)
+   * No new incidents or vulnerabilities.
+   * Updated firefox/thunderbird last week.
+   * Recommending updating java where possible.
+   * Looks like sites accepting CILogon certs accounted for about 45% of computing hours last week.
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+-- Main.RobQ - 08 Oct 2013
+
+
+

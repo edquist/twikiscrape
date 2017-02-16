@@ -1,0 +1,213 @@
+---+!! Running Phenomenology Codes on OSG
+
+The [[http://www.slac.stanford.edu/grp/th/th.html][SLAC Theory Group]]
+has started working with OSG User
+Support to try running some phenomenology codes on OSG
+as a proof-of-principle.
+
+The theory group works with
+the following experiments within SLAC:
+[[http://atlas.web.cern.ch/][ATLAS]],
+[[http://www-public.slac.stanford.edu/babar/][BaBar]],
+[[http://cdms.berkeley.edu/][CDMS]],
+[[http://fgst.slac.stanford.edu/][FGST]],
+BICEP/SPUD,
+and Super-B. More broadly, it works with
+[[http://cms.web.cern.ch/][CMS]],
+[[http://lhcb.web.cern.ch/][LHCb]],
+[[http://www-cdf.fnal.gov/][CDF]],
+[[http://www-d0.fnal.gov/][D0]],
+[[http://h1.desy.de/][H1]],
+[[http://www.lnf.infn.it/kloe/][Kloe]],
+[[http://www.rssd.esa.int/index.php?project=Planck][Planck]],
+PAMELA/HESS,
+[[http://www.gsi.de/][GSI]],
+[[https://www.jlab.org/][Jlab]], and
+[[http://www.bnl.gov/rhic/][RHIC]].
+
+
+%TOC%
+
+---++ Job Requirements
+
+We will initially be running a pair of applications,
+[[http://projects.hepforge.org/sherpa/dokuwiki/][Sherpa]]
+and
+[[http://today.slac.stanford.edu/feature/2008/theory-one-loop-computations.asp][Blackhat]],
+that do multiparticle QCD calculations.
+
+In actual use they will produce about 2 or 3 GB of data
+stored in a root NTuple, and take about 8 to 12 hours
+to run.
+
+They are independent Monte Carlo jobs whose output
+files will record the random number seed, so no special
+parallelization is needed. If some jobs fail, we don&#39;t
+have to resubmit them.
+
+There will be very roughly 500 jobs submitted at
+one time for the proof-of-principle phase.
+
+The executables will be 2 or 3 GB also, and should
+be prestaged at the sites. The executable
+shouldn&#39;t change too often--on the order of once
+per year.
+
+For testing, the output data will be more like
+160KB, and the executable and input data are in a
+50MB file.
+
+Ideally we should be able to do a single
+exploration (&quot;pilot&quot;) run to figure out how many
+jobs will be needed, and then submit all the jobs.
+The variable number of jobs may be difficult to
+handle with Condor DAGMAN.
+
+---++ Basic Idea for Data Handling
+
+We would direct jobs to sites that have a hadoop
+file system available. Each job can copy its output
+data to its site&#39;s file system, usually via a POSIX
+interface, before exiting. Then, later, the user can
+retrieve and delete the data from the site using srm
+or gridftp.
+
+There are
+[[https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationOSGStorageDiscoveryTool][OSG Discovery Tools]] 
+that indicate which sites have storage elements and (at least nominally) how much room
+they have.
+
+As an example
+&lt;pre class=&quot;screen&quot;&gt;
+   get_srm_storage_element_id --vo engage --free_online_size 100000 --show_site_name
+&lt;/pre&gt;
+
+The User Support team wrote custom scripts to implement a workflow
+that uses SRM to store output data. It was mostly serviceable but
+had limited functionality and could lose track of data.
+
+---++ Using iRODS and Running Multi-Core Jobs
+
+The User Support group has implemented a workflow that
+uses [[Trash/Trash/VirtualOrganizations/IRODSOSG][iRODS]] to stage
+the application to $OSG_APP, and to store the output data
+from the application. This would replace the &quot;basic&quot; handling
+mentioned above. We are also trying to run this workflow
+on sites that support
+[[Documentation/HighThroughputParallelComputing][HTPC]].
+
+Here&#39;s a draft of the instructions:
+
+&lt;pre&gt;
+Running Multi-Core Jobs Using iRODS for Data Handling
+
+0. Setup the environment:
+
+     voms-proxy-init -valid 48:00 -voms osg:/osg/Pheno
+     source /opt/irods_client/setup_irods.sh
+
+   It&#39;s important that the proxy not expire before the
+   jobs are done, otherwise iRODS won&#39;d be able to save
+   the output data.
+
+1. Create a tar file with the application, and move it
+   to the iRODS store at each site:
+
+      tar cfh test_application.tar test_application
+      iput -R  osgAppGridFtpGroup test_application.tar
+      irepl-osg -f /osg/home/pheno/test_application.tar -G osgAppGridFtpGroup
+      for site in $(ilsresc-osg -G osgAppGridFtpGroup | perl -ne &#39;/Group: osg Resource: (\S+)/ and print &quot;$1 &quot;&#39;); do ibun-osg  -f
+test_application.tar -R $site -G osgAppGridFtpGroup; done
+
+   When this step is done, can use
+
+      ils -l /osg/home/pheno
+
+   to see the untarred files on the submit host. From
+   the jobs, the files are accessible using normal file
+   system operations at
+
+         $OSG_APP/osg/irods/pheno
+
+   Other notes:
+     Use -f with iput to overwrite a file that is already there.
+     Can use -a with ibun to do the operations
+     asynchronously with email notification.
+     The tar file shouldn&#39;t be compressed.
+
+   Files do not get directly uploaded to Tusker. iRODS
+   puts them at GLOW, and then relies on cvmfs to move
+   them to Tusker which should take about an hour.
+
+
+2. Create the submit file. It should have lines like
+   this
+
+       x509userproxy = /tmp/x509up_uZZZZ
+       +UsesiRODS=True
+       +SiteList = &quot;GLOW,UCSDT2,Firefly,Tusker,Nebraska,prariefire&quot;
+       Requirements = (stringListMember(GLIDEIN_ResourceName,SiteList) == True)
+       +RequiresWholeMachine = True
+       +ProjectName = &quot;Pheno&quot;
+
+   The ZZZZ in the x509userproxy is your unix user id
+   available with the &#39;id&#39; command.
+
+   The five listed sites are all set up for iRODS and
+   should work for multicore jobs, although so far our
+   fully-featured test jobs have only run at Tusker.
+
+   We also have an example of a run available.
+
+        We are in the process of testing a
+        DESIRED_HTPC_Resources attribute. It&#39;s similar
+        to SiteList above, but should direct glideins
+        to only the listed sites.
+
+3. Create a wrapper that will run the job. The condor
+   jobs should no longer use &quot;transfer_output_files&quot;
+   for anything big. The necessary lines for iRODS on
+   the worker node could look something like this:
+
+     OUTPUT=tp_outputA_$1_$2.txt
+     export JOB_ID=$1_$2
+     $IRODS_PLUGIN_DIR/icp $OUTPUT irodse://pheno@gw014k1.fnal.gov:1247?/osg/home/pheno/$OUTPUT
+     if [ $? -eq 0 ]
+     then
+        echo &quot;`date` icp success&quot;
+        rm -f $OUTPUT
+     else
+        echo &quot;`date` icp failure&quot;
+     fi
+
+   This &quot;if statement&quot; doesn&#39;t delete the output file
+   if the icp fails, which allows condor to bring
+   that file back.
+
+   It might be best for the worker node to make a
+   single tar file to hold all the files to put in
+   iRODS.
+
+4. Submit the jobs
+
+      condor_submit test18_pheno.condor
+
+   and wait for them to run and finish.
+
+5. Look at and possibly download the output and remove it:
+
+     ils -l /osg/home/pheno
+     iget /osg/home/pheno/tp_outputA_863567_9.txt
+     irm -f /osg/home/pheno/tp_outputA_863567_9.txt
+&lt;/pre&gt;
+
+---++ Needs for MPI Jobs (from September Meeting)
+
+Would like to try running MPI jobs. Ideally there would be
+about 128 jobs of 32 cores that run for 23 hours each, or
+approximately 100K hours. Would also be ok to have 500
+jobs of 8 cores for 23 hours each. May be ok to spread
+out runs over about 3 days.
+
+-- OSG User Support
+

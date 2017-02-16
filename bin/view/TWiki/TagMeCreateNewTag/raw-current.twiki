@@ -1,0 +1,124 @@
+---+!! Tag-me: Create New Tag
+
+%STARTINCLUDE%
+&lt;table class=&quot;tagmeNavigation&quot; border=&quot;0&quot; cellpadding=&quot;3&quot; cellspacing=&quot;0&quot;&gt;&lt;tr&gt;
+&lt;td&gt;&amp;nbsp; &amp;nbsp;&lt;/td&gt;
+&lt;td bgcolor=&quot;#EAE9DE&quot;&gt;&amp;nbsp; *Create New Tag* &amp;nbsp;&lt;/td&gt;
+&lt;td&gt;&amp;nbsp;&lt;/td&gt;
+&lt;td bgcolor=&quot;#F6F4EB&quot;&gt;&amp;nbsp; [[TagMeRenameTag][Rename Tag]] &amp;nbsp;&lt;/td&gt;
+&lt;td&gt;&amp;nbsp;&lt;/td&gt;
+&lt;td bgcolor=&quot;#F6F4EB&quot;&gt;&amp;nbsp; [[TagMeDeleteTag][Delete Tag]] &amp;nbsp;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=&quot;0&quot; cellpadding=&quot;5&quot; cellspacing=&quot;0&quot; style=&quot;width:100%;&quot;&gt;
+&lt;tr bgcolor=&quot;#EAE9DE&quot;&gt;&lt;td style=&quot;width:100%;&quot;&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+%STARTSECTION{&quot;create&quot;}%
+Create a new tag - then add it to a topic.
+
+&lt;noautolink&gt;%TAGME{ tpaction=&quot;%URLPARAM{&quot;newaction&quot; default=&quot;nop&quot;}%&quot; tag=&quot;%URLPARAM{newtag}%&quot; note=&quot;%URLPARAM{newtagnote}%&quot; }%&lt;form name=&quot;addtag&quot; action=&quot;%SCRIPTURL{viewauth}%/%BASEWEB%/%BASETOPIC%&quot; method=&quot;post&quot; onsubmit=&quot;return cleanTag(this.newtag.value);&quot;&gt;
+&lt;div class=&quot;twikiFormSteps&quot;&gt;
+&lt;div class=&quot;twikiFormStep twikiLast&quot;&gt;
+Name of new tag: &lt;input type=&quot;text&quot; class=&quot;twikiInputField&quot; name=&quot;newtag&quot; id=&quot;newtag&quot; size=&quot;30&quot; value=&quot;%URLPARAM{&quot;createtag&quot;}%&quot; onblur=&quot;this.value=cleanTag(this.value)&quot; /&gt; &lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;%MAKETEXT{&quot;Create&quot;}%&quot; /&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;newaction&quot; value=&quot;newtag&quot; /&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;from&quot; value=&quot;%URLPARAM{&quot;from&quot;}%&quot; /&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;newtagnote&quot; value=&quot;Return to [&lt;nop&gt;[%URLPARAM{&quot;from&quot; default=&quot;%BASEWEB%.%HOMETOPIC%&quot; }%]]&quot; /&gt;
+&lt;/form&gt;
+&lt;/noautolink&gt;
+%ENDSECTION{&quot;create&quot;}%
+
+%STARTSECTION{&quot;existing&quot;}%
+Existing tags: %TAGME{ tpaction=&quot;showalltags&quot; format=&quot;[[%SCRIPTURL{view}%/%TWIKIWEB%/TagMeSearch?tag=$tag][$tag]]&quot; separator=&quot;, &quot; }%
+%ENDSECTION{&quot;existing&quot;}%
+%STOPINCLUDE%
+
+%BR%
+&lt;span class=&quot;twikiGrayText&quot;&gt;Other tag options: [[TagMeViewAllTags][View all tags]], [[TagMeViewMyTags][View my tags]], [[TagMeSearch][Search tags]]&lt;/span&gt;
+
+%STARTSECTION{&quot;cleanTagJavascript&quot;}%
+&lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot;&gt;
+&lt;!-- // &lt;pre&gt;-hide
+function cleanTag(inTagString) {
+   var shouldTranslate = 0%TAGMEPLUGIN_NORMALIZE_TAG_INPUT%;
+   var cleanName = &quot;&quot;;
+   if (shouldTranslate) {
+      cleanName = translateEntities(inTagString);
+   } else {
+      cleanName = makeSafe(inTagString);
+   }
+   return cleanName;
+}
+/**
+Translates international characters to ASCII.
+*/
+function translateEntities(inText) {
+   var translated = &#39;&#39;;
+   for ( var i = 0; i &lt; inText.length; i++ ) {
+      var ch = inText.charAt( i );
+      var chVal = ch.charCodeAt(0);
+      var ch2 = &#39;&#39;;
+      if( (chVal==192) || (chVal==193) || (chVal==194) || (chVal==195) ) { ch = &#39;A&#39;; }
+      if( chVal==196) { ch = &#39;A&#39;; ch2 = &#39;E&#39;; }
+      if( chVal==197) { ch = &#39;A&#39;; ch2 = &#39;A&#39;; }
+      if( chVal==198) { ch = &#39;A&#39;; ch2 = &#39;E&#39;; }
+      if( chVal==199) { ch = &#39;C&#39;; }
+      if( (chVal==200) || (chVal==201) || (chVal==202) || (chVal==203) ) { ch = &#39;E&#39;; }
+      if( (chVal==204) || (chVal==205) || (chVal==206) || (chVal==207) ) { ch = &#39;I&#39;; }
+      if( chVal==208) { ch = &#39;d&#39;; }
+      if( chVal==209) { ch = &#39;N&#39;; }
+      if( (chVal==210) || (chVal==211) || (chVal==212) || (chVal==213) ) { ch = &#39;O&#39;; }
+      if( chVal==214) { ch = &#39;O&#39;; ch2 = &#39;E&#39;; }
+      if( chVal==216) { ch = &#39;O&#39;; ch2 = &#39;E&#39;; }
+      if( (chVal==217) || (chVal==218) || (chVal==219) ) { ch = &#39;U&#39;; }
+      if( chVal==220) { ch = &#39;U&#39;; ch2 = &#39;E&#39;; }
+      if( chVal==221) { ch = &#39;Y&#39;; }
+      if( chVal==222) { ch = &#39;P&#39;; }
+      if( chVal==223) { ch = &#39;s&#39;; ch2 = &#39;s&#39;; }
+      if( (chVal==224) || (chVal==225) || (chVal==226) || (chVal==227) ) { ch = &#39;a&#39;; }
+      if( chVal==228) { ch = &#39;a&#39;; ch2 = &#39;e&#39;; }
+      if( chVal==229) { ch = &#39;a&#39;; ch2 = &#39;a&#39;; }
+      if( chVal==230) { ch = &#39;a&#39;; ch2 = &#39;e&#39;; }
+      if( chVal==231) { ch = &#39;c&#39;; }
+      if( (chVal==232) || (chVal==233) || (chVal==234) || (chVal==235) ) { ch = &#39;e&#39;; }
+      if( (chVal==236) || (chVal==237) || (chVal==238) || (chVal==239) ) { ch = &#39;i&#39;; }
+      if( chVal==240) { ch = &#39;d&#39;; }
+      if( chVal==241) { ch = &#39;n&#39;; }
+      if( (chVal==242) || (chVal==243) || (chVal==244) || (chVal==245) ) { ch = &#39;o&#39;; }
+      if( chVal==246) { ch = &#39;o&#39;; ch2 = &#39;e&#39;; }
+      if( chVal==248) { ch = &#39;o&#39;; ch2 = &#39;e&#39;; }
+      if( (chVal==249) || (chVal==250) || (chVal==251) ) { ch = &#39;u&#39;; }
+      if( chVal==252) { ch = &#39;u&#39;; ch2 = &#39;e&#39;; }
+      if( chVal==253) { ch = &#39;y&#39;; }
+      if( chVal==254) { ch = &#39;p&#39;; }
+      if( chVal==255) { ch = &#39;y&#39;; }
+      ch = toUnderscore(ch);
+      ch = ch.toLowerCase();
+      if( ((ch&gt;=&#39;a&#39;)&amp;&amp;(ch&lt;=&#39;z&#39;)) || ((ch&gt;=&#39;0&#39;)&amp;&amp;(ch&lt;=&#39;9&#39;)) || (ch==&#39;_&#39;) ) { translated += ch }
+      if( ch2!=&#39;&#39; ) { translated += ch2; }
+   }
+   // remove double underscores
+   var re = new RegExp(/_+/g);
+   translated = translated.replace(re, &quot;_&quot;);
+   return translated;
+}
+function toUnderscore (inChar) {
+   if (inChar.length == 0) return &quot;&quot;;
+   var safeChar = inChar;
+   if( ((safeChar==&#39;-&#39;) || (safeChar==&#39; &#39;) || (safeChar==&#39;/&#39;)) ) { safeChar = &#39;_&#39;; }
+   return safeChar;
+}
+function makeSafe (inText) {
+   if (inText.length == 0) return &quot;&quot;;
+   var re = new RegExp(/[\x01-\x1f^\#\,\&#39;\&quot;\|\*]/g);
+   var perlSafeString = inText.replace(re, &quot;&quot;);
+   return perlSafeString;
+}
+addLoadEvent(setHandyFocus);
+function setHandyFocus () {
+   document.getElementById(&#39;newtag&#39;).focus();
+}
+// &lt;/pre&gt;-hide --&gt;
+&lt;/script&gt;
+
+%ENDSECTION{&quot;cleanTagJavascript&quot;}%

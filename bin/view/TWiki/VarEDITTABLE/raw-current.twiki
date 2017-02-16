@@ -1,0 +1,21 @@
+#VarEDITTABLE
+---+++ EDITTABLE{ _attributes_ } -- edit TWiki tables using edit fields and other input fields
+   * The =%&lt;nop&gt;EDITTABLE{}%= variable is handled by the EditTablePlugin
+   * Syntax: =%&lt;nop&gt;EDITTABLE{ _attributes_ }%=
+%STARTSECTION{&quot;edittable_attributes&quot;}%
+   * Supported attributes:
+     | *Attribute* | *Comment* | *Default* |
+     | =header= | Specify the header format of a new table like =&quot;%VBAR%*Food*%VBAR%*Drink*%VBAR%&quot;=. Useful to start a table with only a button | (no header) |
+     | =format= | The format of one column when editing the table. A cell can be a text input field, or any of these edit field types:%BR% %BB% Text input field (1 line):%BR% &amp;nbsp; =%VBAR% text, &amp;lt;size&amp;gt;, &amp;lt;initial value&amp;gt; %VBAR%= %BR% %BB% Textarea input field:%BR% &amp;nbsp; =%VBAR% textarea, &amp;lt;rows&amp;gt;x&amp;lt;columns&amp;gt;, &amp;lt;initial value&amp;gt; %VBAR%= %BR% %BB% Drop down box: %BR% &amp;nbsp; =%VBAR% select, &amp;lt;size&amp;gt;, &amp;lt;option 1&amp;gt;, &amp;lt;option 2&amp;gt;, etc*&lt;nop&gt; %VBAR%= %BR% &amp;nbsp; =*= only one item can be selected %BR% %BB% Radio buttons: %BR% &amp;nbsp; =%VBAR% radio, &amp;lt;size*&amp;gt;, &amp;lt;option 1&amp;gt;, &amp;lt;option 2&amp;gt;, etc %VBAR%= %BR% &amp;nbsp; =*= size indicates the number of buttons per line in edit mode %BR% %BB% Checkboxes: %BR% &amp;nbsp; =%VBAR% checkbox, &amp;lt;size*&amp;gt;, &amp;lt;option 1&amp;gt;, &amp;lt;option 2&amp;gt;, etc %VBAR%= %BR% &amp;nbsp; =*= size indicates the number of checkboxes per line in edit mode  %BR% %BB% Fixed label: %BR% &amp;nbsp; =%VBAR% label, 0, &amp;lt;label text&amp;gt; %VBAR%= %BR% %BB% Row number: %BR% &amp;nbsp; =%VBAR% row, &amp;lt;offset&amp;gt; %VBAR%= %BR% %BB% Date: %BR% &amp;nbsp; =%VBAR% date, &amp;lt;size&amp;gt;, &amp;lt;initial value&amp;gt;, &amp;lt;DHTML date format&amp;gt; %VBAR%= (see [[#DateField][Date Field Type]]) | =&quot;text, 16&quot;= %BR% for all cells |
+     | =changerows= | Rows can be added and removed if =&quot;on&quot;= &lt;br /&gt; Rows can be added but not removed if =&quot;add&quot;= &lt;br /&gt; Rows cannot be added or removed if =&quot;off&quot;= | =CHANGEROWS= %BR% Plugin setting |
+     | =quietsave= | Quiet Save button is shown if =&quot;on&quot;=, hidden if =&quot;off&quot;= | =QUIETSAVE= %BR% Plugin setting |
+     | =include= | Other topic defining the EDITTABLE parameters. The first %&lt;nop&gt;EDITTABLE% in the topic is used. This is useful if you have many topics with the same table format and you want to update the format in one place. | (none) |
+     | =helptopic= | Topic name containing help text shown below the table when editing a table. The %&lt;nop&gt;STARTINCLUDE% and %&lt;nop&gt;STOPINCLUDE% variables can be used in the topic to specify what is shown. | (no help text) |
+     | =headerislabel= | Table header cells are read-only (labels) if =&quot;on&quot;=; header cells can be edited if =&quot;off&quot;= or &quot;0&quot; | =&quot;on&quot;= |
+     | =editbutton= | Set edit button text, e.g. =&quot;Edit this table&quot;=; set button image with alt text, e.g. =&quot;Edit table, %&lt;nop&gt;PUBURL%/%&lt;nop&gt;TWIKIWEB%/TWikiDocGraphics/edittopic.gif&quot;=; hide edit button at the end of the table with =&quot;hide&quot;= (Note: Button is automatically hidden if an edit button is present in a cell) | =EDITBUTTON= %BR% Plugin setting |
+%ENDSECTION{&quot;edittable_attributes&quot;}%
+   * Example:%BR%
+     =%&lt;nop&gt;EDITTABLE{ format=&quot;| text, 20 | select, 1, one, two, three |&quot; changerows=&quot;on&quot; }%= %BR%
+     =| &lt;nop&gt;*Name*&lt;nop&gt; | &lt;nop&gt;*Type*&lt;nop&gt; |= %BR%
+     =| Foo | two |=
+   * Related: See EditTablePlugin for more details

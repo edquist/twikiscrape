@@ -1,0 +1,66 @@
+---+ RSS News Feeds
+
+---++ Find out What&#39;s New
+
+There are several ways to find out what&#39;s new in each TWiki web:
+   1. Visit WebChanges to see recent changes
+   1. Subscribed in WebNotify get notified of recent changes by e-mail
+   1. Use a news readers such as TWiki:Plugins/HeadlinesPlugin to display the recent changes
+      * The source can be a RSS 1.0 feed (WebRss) or ATOM 1.0 feed (WebAtom)
+      * Learn more on RSS at TWiki:Codev/TWikiSyndication
+      * Learn more on ATOM at WebAtomBase and TWiki:Codev/AtomSyndication
+
+---++ RSS Feed Usage
+
+   * The URL for an RSS feed is =%SCRIPTURL{&quot;view&quot;}%/&amp;lt;web&amp;gt;/WebRss=
+   * For this &lt;nop&gt;%WEB% web it is %SCRIPTURL{&quot;view&quot;}%/%WEB%/WebRss
+   * You can also create a custom feed based on a search. Add a =search=value= parameter to the URL, e.g. %SCRIPTURL{&quot;view&quot;}%/%WEB%/WebRss?search=plugin is a what&#39;s new feed about Plugins.
+
+---++ RSS Feed Internals
+
+Each web has a WebRss topic which includes part of this &lt;nop&gt;%TOPIC% topic. This topic is the base for the RSS feed and generates an RSS 1.0 feed for TWiki:Codev/TWikiSyndication.
+
+The WebRss topic in each web contains the following text:
+
+-----
+&lt;pre&gt;
+&amp;lt;channel rdf:about=&quot;%&lt;nop&gt;SCRIPTURL{&quot;view&quot;}%/%&lt;nop&gt;INCLUDINGWEB%&quot;&gt;
+  &amp;lt;title&gt;%&lt;nop&gt;WIKITOOLNAME%&#39;s &amp;lt;nop&gt;%&lt;nop&gt;INCLUDINGWEB% web&amp;lt;/title&gt;
+  &amp;lt;link&gt;%&lt;nop&gt;SCRIPTURL{&quot;view&quot;}%/%&lt;nop&gt;INCLUDINGWEB%&amp;lt;/link&gt;
+  &amp;lt;description&gt;(the description of the web). TWiki is a Web-Based Collaboration Platform for the Enterprise.&amp;lt;/description&gt;
+%&lt;nop&gt;INCLUDE{&quot;%SYSTEMWEB%.WebRssBase&quot;}% &amp;lt;!--
+   * Set &lt;nop&gt;SKIN = rss
+--&gt;
+&lt;/pre&gt;
+-----
+
+
+Below part is included by each &lt;nop&gt;WebRss topic:
+
+
+-----
+&lt;verbatim&gt;
+%STARTINCLUDE%&lt;image rdf:resource=&quot;%WIKILOGOIMG%&quot; /&gt;
+  &lt;dc:language&gt;en-us&lt;/dc:language&gt;
+  &lt;dc:rights&gt;%WEBRSSCOPYRIGHT%&lt;/dc:rights&gt;
+  &lt;dc:publisher&gt;%WIKIWEBMASTERNAME% [%WIKIWEBMASTER%]&lt;/dc:publisher&gt;
+  &lt;dc:creator&gt;The contributing authors of %WIKITOOLNAME%&lt;/dc:creator&gt;
+  &lt;dc:source&gt;%WIKITOOLNAME%&lt;/dc:source&gt;
+  &lt;items&gt;
+    &lt;rdf:Seq&gt;
+%SEARCH{&quot;%URLPARAM{&quot;search&quot; encode=&quot;quote&quot; default=&quot;.*&quot; }%&quot; web=&quot;%URLPARAM{&quot;web&quot; encode=&quot;quote&quot; default=&quot;%INCLUDINGWEB%&quot; }%&quot; excludetopic=&quot;%URLPARAM{&quot;excludetopic&quot; encode=&quot;quote&quot; default=&quot;WebStatistics&quot; }%&quot; type=&quot;%URLPARAM{&quot;type&quot; encode=&quot;quote&quot; default=&quot;regex&quot; }%&quot; nosearch=&quot;on&quot; order=&quot;modified&quot; reverse=&quot;on&quot; nototal=&quot;on&quot; limit=&quot;%URLPARAM{&quot;limit&quot; encode=&quot;quote&quot; default=&quot;16&quot; }%&quot; scope=&quot;%URLPARAM{&quot;scope&quot; encode=&quot;quote&quot; default=&quot;text&quot; }%&quot; casesensitive=&quot;%URLPARAM{&quot;casesensitive&quot; encode=&quot;quote&quot; default=&quot;on&quot; }%&quot; date=&quot;%URLPARAM{&quot;date&quot; encode=&quot;quote&quot; default=&quot;&quot; }%&quot; format=&quot;      &lt;rdf:li rdf:resource=\&quot;%SCRIPTURL{&quot;view&quot;}%/$web/$topic\&quot; /&gt;&quot;}%
+    &lt;/rdf:Seq&gt;
+  &lt;/items&gt;
+&lt;/channel&gt;
+&lt;image rdf:about=&quot;%WIKILOGOIMG%&quot;&gt;
+  &lt;title&gt;%WIKILOGOALT%.%INCLUDINGWEB%&lt;/title&gt;
+  &lt;link&gt;%SCRIPTURL{&quot;view&quot;}%/%INCLUDINGWEB%&lt;/link&gt;
+  &lt;url&gt;%WIKILOGOIMG%&lt;/url&gt;
+&lt;/image&gt;
+%SEARCH{&quot;%URLPARAM{&quot;search&quot; encode=&quot;quote&quot; default=&quot;.*&quot; }%&quot; web=&quot;%URLPARAM{&quot;web&quot; encode=&quot;quote&quot; default=&quot;%INCLUDINGWEB%&quot; }%&quot; excludetopic=&quot;%URLPARAM{&quot;excludetopic&quot; encode=&quot;quote&quot; default=&quot;WebStatistics&quot; }%&quot; type=&quot;%URLPARAM{&quot;type&quot; encode=&quot;quote&quot; default=&quot;regex&quot; }%&quot; nosearch=&quot;on&quot; order=&quot;modified&quot; reverse=&quot;on&quot; nototal=&quot;on&quot; limit=&quot;%URLPARAM{&quot;limit&quot; encode=&quot;quote&quot; default=&quot;16&quot; }%&quot; scope=&quot;%URLPARAM{&quot;scope&quot; encode=&quot;quote&quot; default=&quot;text&quot; }%&quot; casesensitive=&quot;%URLPARAM{&quot;casesensitive&quot; encode=&quot;quote&quot; default=&quot;on&quot; }%&quot; date=&quot;%URLPARAM{&quot;date&quot; encode=&quot;quote&quot; default=&quot;&quot; }%&quot; format=&quot;&lt;item rdf:about=\&quot;%SCRIPTURL{&quot;view&quot;}%/$web/$topic\&quot;&gt;$n  &lt;title&gt;$topic&lt;/title&gt;$n  &lt;link&gt;%SCRIPTURL{&quot;view&quot;}%/$web/$topic&lt;/link&gt;$n  &lt;description&gt;$summary (last changed by &lt;nop&gt;$wikiname)&lt;/description&gt;$n  &lt;dc:date&gt;$isodate&lt;/dc:date&gt;$n  &lt;dc:contributor&gt;$n    &lt;rdf:Description link=\&quot;%SCRIPTURL{&quot;view&quot;}%?topic=$wikiusername\&quot;&gt;$n      &lt;rdf:value&gt;$username&lt;/rdf:value&gt;$n    &lt;/rdf:Description&gt;$n  &lt;/dc:contributor&gt;$n&lt;/item&gt;&quot;}%
+%STOPINCLUDE%
+&lt;/verbatim&gt;
+-----
+
+__See also__: WebAtomBase, TWiki:Codev/RichSiteSummary, TWiki:Codev/TWikiSyndication 
+

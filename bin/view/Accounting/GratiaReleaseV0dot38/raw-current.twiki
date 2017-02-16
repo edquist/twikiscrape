@@ -1,0 +1,293 @@
+&lt;!--
+These are general in nature and should be changed in the this template if the location changes:
+   * Set CURRENT_TOMCAT = ==gratia09==
+   * Set CURRENT_MYSQL = __gratia06__
+   * Set NEW_TOMCAT = ==gratia07==
+   * Set NEW_MYSQL = __ gratia07__
+   * Set TOMCAT_ALIAS = ==gratia.opensciencegrid.org==
+   * Set MYSQL_ALIAS = ==gratia-db01.fnal.gov==
+   * Set RELEASE_TAR_REPOSITORY = /afs/fnal.gov/files/expwww/gratia/html/Files
+
+These are specific to a release and require changing:
+   * Set RELEASE_DATE = 9/16/08
+   * Set CURRENT_RELEASE = v0.38.3
+   * Set RELEASE_TAG = v0-38-3
+   * Set NEXT_DEVEL_VERSION = v0.39
+   * Set BUILD_DIRECTORY = /home/weigand/cdcvs/gratia-%CURRENT_RELEASE%
+
+
+
+--&gt;
+---+!! Gratia Release %CURRENT_RELEASE% (%RELEASE_DATE%)%BR% 
+
+
+%TOC%
+
+%STARTINCLUDE%
+---+ Overview
+The main purpose of this release (%CURRENT_RELEASE%) is a maintenance release.
+
+---++ Main Release Features:
+   * Fully automated install and updates; major simplification of the procedures.
+   * Support for Firefox 3.
+   * Summary table for Transfer record.
+   * Overhaul of replication and GUI replication control.
+   * Overhaul of collector logging.
+   * MetricRecord fixes and improvements
+
+---++ Reports
+   * Provide report for VO&#39;s that use many sites on the distribution of usage across the sites
+   * Clean ups of psacct reports.
+   * Monthly report for emailing summarizing usage by Site for OSG VO users by DN (ready to be sent, waiting for email to sen to)
+   * Weekly report of usage by user on each site.
+   * Update the ownership and reporting grade reports to use the information from OIM; including properly detecting &#39;hidden site&#39;.
+   * Fix problem with timezone setting depending on the services load ordering which was leading to report date being off (and drill through report to be useless)
+   * Updated reports to support birt 2.3.1 required by Firefox 3.
+
+---++ Collector Improvement
+   * Outstanding issues
+ 
+   * Code Cleanups
+      * Major simplification and rationalization of the log file output (use exclusively log4j)
+            1. 30 logs of each type kept.
+            1. Initialization of logger is now easy -- properties are read from Logging.java.
+            1. straighten out the time-zone of the printed time
+            1.  Change relative positions of custom (CONFIG, FINE, FINER, FINEST, etc) log levels with respect to standard log4j levels (INFO, DEBUG TRACE) to remove confusion.
+      * Simplification and rationalization of Admin pages.
+         * Replication Pages:
+            1. Shows entries read-only, except the one you want to edit.
+            1. Uses hibernate (also in Replication Data Pump)
+            1. Sorts entries, &quot;sensibly.&quot;
+            1. Allows one to specify the bundle size.
+      * Fix insert point focus issue in the Admin pages.
+      * Fix updates of the Probe information in case the probe is sending only an handshake. This was leading to report as broken site with no job but properly configured
+      * !HouseKeeping
+         * Reduce size of bunch to avoid out of memory errors.
+         * Improve responsiveness to interrupt.
+         * Improve performance of !RawXML deletion.
+         * Delete record without !EndTime (based on the !ServerDate instead)
+         * Fix cleanup of trace table (use for reporting)
+      * Fix recording of !ApplicationExitCode in the summary table.
+      * FIx handling of Condor job that terminated by a signal.
+      * Fix replication for !MetricRecord
+      * Fix duplicate record detection of !MetricRecord when replicated.
+      * Fix recording of information about !MetricRecord duplicate.
+      * Improve indexing for MetricRecord information.
+      * Enhance error handling in receiving replicated record with bad xml
+      * Enhance error handling when loading configuration settings and at startup.
+      * Fix problem in duplicate record detection for !ProbeDetails (handshake)
+
+---++ Additional Features:
+ .
+&lt;!--   -------------------------------------------- --&gt;
+---+ Anticipated downtime
+It is expected that this release will require the Gratia services and reporting to be unavailable beginning at:
+   * Start: %RELEASE_DATE%  hh:mm CST
+   * Available: %RELEASE_DATE% hh:mm CST
+The changes affecting downtime  for this release are:
+   1 Length of time to make a backup of the database to the backup area using =mysqlhotcopy=
+   1 Installation and validation on the 6 Gratia schemas
+
+
+
+
+&lt;!--   -------------------------------------------- --&gt;
+---+ Collectors and Databases Affected
+
+The following Gratia collectors and databases will be converted with this release:
+   1 gratia08
+      * tomcat-fermi_transfer
+      * tomcat-fermi_osg
+      * tomcat-fermi_itb
+      * tomcat-qcd
+      * tomcat-ps
+   1 gratia09
+      * tomcat-osg_transfer
+      * tomcat-osg_daily
+      * tomcat-osg_integration
+      * tomcat-itb
+      * tomcat-gratia
+
+&lt;!-- BUILD DISTRIBUTION -------------------- --&gt;
+---+ Build the %CURRENT_RELEASE% for distribution
+&lt;ol&gt;
+&lt;li&gt;Make sure your build area contains all _committed_ changes.
+&lt;ul&gt;&lt;li&gt;cvs update&lt;/li&gt;&lt;/ul&gt;
+%GREEN%Done -v0.38 -  9/15/2008 12:15%ENDCOLOR% %BR%
+%GREEN%Done - v0.38.1 - 9/15/2008 14:18%ENDCOLOR% %BR%
+%GREEN%Done - v0.38.3 - 9/18/2008 16:00%ENDCOLOR% %BR%
+&lt;/li&gt;
+
+&lt;li&gt;After the initial release of v0.38, the following changes were made due to initial upgrade of the fermi_itb collector:
+&lt;pre&gt;
+gratia/common/configuration/create_build-stored-procedures-sql
+Missed commit removing JobName from query
+
+gratia/reporting/gratia-reports/WebContent/MenuConfig/UserConfig_osg.xml
+inexplicably missed commit adding Site Usage by VO report
+
+gratia/collector/gratia-services/net/sf/gratia/services/CollectorService.java
+
+gratia/collector/gratia-services/net/sf/gratia/storage/DatabaseMaintenance.java
+Put missing indexes on MetricRecord, MetricRecord_Meta and ProbeDetails_Meta.
+&lt;/pre&gt;
+&lt;/li&gt;
+
+&lt;li&gt;In _gratia/build-scripts/Makefile_ , change the _version_default_ to:
+&lt;ul&gt;&lt;li&gt;version_default = %NEXT_DEVEL_VERSION%&lt;/li&gt;
+       &lt;li&gt;commit the change&lt;/li&gt;
+&lt;/ul&gt;
+%GREEN%Done - v0.38 - 9/15/2008 12:20%ENDCOLOR% %BR%
+&lt;/li&gt;
+
+&lt;li&gt;Tag the release (for all committed changes). *Suggest waiting 5 minutes for this to get distributed across all nodes at source forge.*
+&lt;ul&gt;&lt;li&gt;cvs rtag -R %RELEASE_TAG% gratia&lt;/li&gt;&lt;/ul&gt;
+%GREEN%Done -v0.38 -  9/15/2008 12:25%ENDCOLOR% %BR%
+%GREEN%Done - v0.38.1 - 9/15/2008 14:27 %ENDCOLOR% %BR%
+%GREEN%Done - v0.38.3 - 9/18/2008 16:18 %ENDCOLOR% %BR%
+&lt;/li&gt;
+
+&lt;li&gt; As *gratia* user, in */home/gratia/gratia-releases* , export the tagged release:
+&lt;ul&gt;
+   &lt;li&gt;cd /home/gratia/gratia-releases&lt;/li&gt;
+  &lt;li&gt;cvs export -d gratia-%CURRENT_RELEASE% -r %RELEASE_TAG% gratia &lt;/li&gt;
+&lt;/ul&gt;
+%GREEN%Done -v0.38 -  9/15/2008 12:35%ENDCOLOR% %BR%
+%GREEN%Done - v0.38.1 - 9/15/2008 14:43%ENDCOLOR% %BR%
+%GREEN%Done - v0.38.3 - 9/18/2008 16:26%ENDCOLOR% %BR%
+&lt;/li&gt;
+
+&lt;li&gt; As *gratia* user, build it for this release (this insures that tar files are produced for VDT):
+&lt;ul&gt;&lt;li&gt;cd gratia-%CURRENT_RELEASE%/build-scripts&lt;/li&gt;
+&lt;li&gt;source setup-jdk15.sh&lt;/li&gt;
+&lt;li&gt;make release&lt;/li&gt;&lt;/ul&gt;
+%GREEN%Done -v0.38 -  9/15/2008 12:38%ENDCOLOR% %BR%
+%GREEN%Done - v0.38.1 - 9/15/2008 14:52%ENDCOLOR% %BR%
+%GREEN%Done - v0.38.3 - 9/18/2008 16:28 %ENDCOLOR% %BR%
+&lt;/li&gt;
+
+
+&lt;li&gt; *As gratia user*, copy the tarballs for this release to a &#39;save&#39; area:
+&lt;ul&gt;
+&lt;li&gt;cd /home/gratia/gratia-releases/gratia-%CURRENT_RELEASE%/target
+&lt;li&gt;cp -p gratia_reporting_%CURRENT_RELEASE%.tar   /home/gratia/gratia-releases/tarballs/.
+&lt;li&gt;cp -p gratia_services_%CURRENT_RELEASE%.tar   /home/gratia/gratia-releases/tarballs/.
+&lt;/ul&gt;
+%GREEN%Done - v0.38.3 - 9/19/2008 10:49 %ENDCOLOR% %BR%
+&lt;/li&gt;
+
+&lt;li&gt;As  *yourself* (assuming you have permissions), copy the built tar files to the release area:
+&lt;ul&gt;
+  &lt;li&gt;cd /home/gratia/gratia-releases/gratia-%CURRENT_RELEASE%/target &lt;/li&gt;
+  &lt;li&gt;scp gratia_reporting_%CURRENT_RELEASE%.tar flxi07.fnal.gov:%RELEASE_TAR_REPOSITORY% &lt;/li&gt;
+  &lt;li&gt;scp gratia_services_%CURRENT_RELEASE%.tar flxi07.fnal.gov:%RELEASE_TAR_REPOSITORY%&lt;/li&gt;
+&lt;/ul&gt; 
+%GREEN%Done - v0.38.1 - 9/17/2008 07:55%ENDCOLOR% %BR%
+%GREEN%Done - v0.38.3 - 9/18/2008 16:33%ENDCOLOR% %BR%
+&lt;/li&gt;
+
+&lt;li&gt;Update the version number on the [[InstallationGuideVDT][services release TWiki page]]:&lt;/li&gt;
+&lt;ul&gt;&lt;li&gt;Edit and update the TWiki variable _&lt;nop&gt;ReleaseVersion_.&lt;/li&gt;
+&lt;/ul&gt;
+%GREEN%Done - v0.38.1 - 9/17/2008 07:55%ENDCOLOR% %BR%
+%GREEN%Done - v0.38.3 - 9/18/2008 16:35 %ENDCOLOR% %BR%
+&lt;/li&gt;
+
+&lt;li&gt;As *yourself* , create a VDT support ticket via email so it gets prioritized with the VDT team. *Example* : 
+
+&lt;table width=&quot;451&quot; height=&quot;77&quot; border=&quot;0&quot;&gt; &lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;To: &lt;/td&gt;&lt;td&gt;vdt-support@opensciencegrid.org &lt;br /&gt; &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; Reply-to:&lt;/td&gt;&lt;td&gt;gratia-operation@fnal.gov&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; Subject&lt;/td&gt;&lt;td&gt;Gratia %CURRENT_RELEASE% available for inclusion in next VDT release&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td valign=&quot;top&quot;&gt; Content:&lt;/td&gt;
+&lt;td&gt;
+The Gratia %CURRENT_RELEASE% is available for inclusion in the next VDT release&lt;br&gt;
+and can be obtained here:&lt;br&gt;
+  - https://twiki.grid.iu.edu/bin/view/Accounting/InstallationGuideVDT
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt; &lt;/table&gt;
+%GREEN%Done - v0.38.1 - ???????%ENDCOLOR% %BR%
+&lt;/li&gt;
+
+&lt;/ol&gt;
+ 
+
+&lt;!-- ----------------- DATABASE BACKUP ------------- --&gt;
+---+ Database backups and cron/init.d services
+ *The upgrade should not performed until all database backups have been completed.*
+
+If it is expected that the upgrade will take a long time, then
+   1 on the tomcat/collector nodes (gratia08/gratia09) 
+      * the static report crons should be commented 
+      * disable the _init.d_ services 
+   1 on the database node (gratia06) 
+      * the backup crons should be commented out. 
+      * daily reports cron should be commented out 
+      * the Gratia-APEL interface crons should be commented out 
+
+---++ On the tomcat/collector nodes (gratia08/gratia09)
+   1 __comment__ out the __root__ user cron entry for the static reports. Example: 
+ &lt;pre&gt;42 0 * * * &#39;/data/tomcat-fermi_itb/gratia/staticReports.py&#39; &#39;/data/tomcat-fermi_itb&#39; &#39;http://gratia-fermi.fnal.gov:8881/gratia-reporting/&#39;  &lt;/pre&gt; 
+   1 Disable _init.d_ services as __root__ user: 
+      * chkconfig tomcat-[GRATIA_INSTANCE] off 
+
+---++ On the !MySql server node ( %CURRENT_MYSQL% )
+   1 __comment__ out the cron entries for: &lt;p&gt; __gratia__ user cron jobs. &lt;/p&gt;
+ &lt;pre&gt;0 0 1-15 * * dir=/home/gratia/interfaces/apel-lcg; cd $dir; ./lcg.sh --config=lcg.conf --date=previous --update  30 01 * * * dir=/home/gratia/interfaces/apel-lcg; cd $dir; ./lcg.sh --config=lcg.conf --date=current --update  &lt;/pre&gt; 
+   1 __root__ user cron entry. 
+ &lt;pre&gt;43 2 * * * names supplied when required &lt;/pre&gt;
+
+&lt;!-- ----------------- UPGRADE AND IMPLEMENTATION ------------- --&gt;
+---+ Upgrade and implementation
+ The __upgrades should be single-threaded__ , that is, performed for each database schema one at a time.
+
+We will perform these upgrades based on the size of the individual database schema, in ascending order.
+
+Tomcat/collector nodes and instances:
+   1 gratia08
+      * tomcat-fermi_transfer
+      * tomcat-fermi_osg
+      * tomcat-fermi_itb
+      * tomcat-qcd
+      * tomcat-ps
+   1 gratia09
+      * tomcat-osg_transfer
+      * tomcat-osg_daily
+      * tomcat-osg_integration
+      * tomcat-itb
+      * tomcat-gratia
+
+
+---++ On the tomcat/collector nodes
+To install the new software on a Gratia tomcat instance, run the following script: 
+   * /home/gratia/gratia-releases/gratia-%CURRENT_RELEASE%/build-scripts/gratia-upgrade.sh 
+
+This script will perform the following:
+   * Shuts down the tomcat instance 
+   * runs the update-gratia-local script to update the software 
+   * backs up the tomcat/gratia logs and places in the /data directory as tarballs 
+   * deletes all logs from the /data/tomcat-[GRATIA_INSTANCE]/logs directory so you have a fresh view when the re-start the service 
+   * optionally allows you to start the Gratia/tomcat instance. 
+
+When you have restarted the service, go to the /data/tomcat-[GRATIA_INSTANCE]/logs directory and tail the logs looking for any bizarre errors. Definition of bizarre will be supplied later.
+
+Run the static reports cron as _root_ and verify these reports are generated. At the end of the gratia-update.sh execution, the root cron for the static reports for that instance will be displayed. Run them as root. Then in the UI, view the reports to verify they look correct.
+
+
+
+&lt;!-- ----------------- POST MORTEM  ------------- --&gt;
+---+ Post-mortem
+At this time, this will appear to be random notes.  After the conversion, they may be organized.
+
+&lt;ol&gt;
+
+&lt;/ol&gt;
+
+
+%STOPINCLUDE%
+
+&lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+---++!! Major updates
+&lt;!--Future editors should add their signatures beneath yours!--&gt;

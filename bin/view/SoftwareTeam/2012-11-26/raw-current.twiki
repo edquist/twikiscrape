@@ -1,0 +1,110 @@
+---+ OSG Software Team Meeting, 26 November 2012
+
+*Attending:* Brian, Doug, Jeff Dost, Marco, Mat, Neha, Suchandra, Tim, Xin
+
+---++ Announcements
+
+*Triage Duty:* Suchandra this week, Neha next week; %RED%16 open tickets%ENDCOLOR%.
+
+*OSG Deployments:* OSG 3.x: 57 (+1) last week; 13 (+1) using 3.1.11; OSG 1.2: 49 (+4) sites, 0 using 1.2.31.
+
+---++ Accomplishments
+
+Short week due to the Thanksgiving holiday.
+
+   * Promoted all of the voms-api-java changes to osg-testing
+   * Made some progress on resolving !BeStMan, !jGlobus packaging problems
+   * Tested !dCache interoperability testing and found problems
+
+---++ Issues
+
+Special topics this week:
+
+   * OSG Software 3.2 discussion
+   * Hosting BNL’s modular dashboard code
+
+%RED%Work with Tim to make sure work is reflected in JIRA and that tickets are resolved/closed when done.%ENDCOLOR%
+
+   * !BeStMan/jGlobus: test failures, broader testing, release timing, etc.
+   * !XRootD GSI fix and 3.3 update (which affects plug-ins)
+   * Pakiti
+   * SLURM
+   * GUMS, list of issues
+   * Automated testing: Still want more tests and improved infrastructure
+   * Help debug Texas Tech (Alan Sill et al.), Caltech (Steven Lo), and Oklahoma (Horst)
+   * !GlideinWMS
+   * osg-configure bug fixes
+   * voms-api-java resolution
+
+---+++ Coming Soon(ish)
+
+   * HTCondor name change (pending, eventually)
+   * CVMFS (for OASIS) (December)
+   * HTCondor-CE (February)
+
+---++ Actions
+
+   * %RED%Define December release goals!%ENDCOLOR% (Tim with input from everyone!)
+   * !BeStMan: Resolve test failures (Neha)
+   * !BeStMan: Identify documentation changes in a ticket or declare that there are none (Neha)
+   * !BeStMan: Get commitments for  ITB testing (Suchandra, with help from others as needed)
+   * !BeStMan: Discuss scalability testing with Igor (Tim)
+   * !XRootD: Get 3.2.6 into testing, work on 3.3 plugins (Doug, Brian)
+   * osg-configure: Schedule ITB testing (Suchandra)
+   * SLURM CE: Continue development and testing (Suchandra)
+   * voms-api-java: Test and document (?) (Mat)
+
+   * GUMS: Work on library improvements (Doug)
+   * HDFS: Work on bugs in 2.0.0 (Doug), finish new HDFS tests (Doug)
+   * Request !jPackage archive at Wisconsin (Mat)
+   * Identify other easy GUMS improvements (Tim, Brian)
+   * Write new VOMS Admin automated tests (Mat)
+   * Design next step for testing infrastructure (Tim, Mat)
+   * Help with TTU and Caltech debugging as needed (Suchandra)
+   * Write a more explicit proposal for dealing with the LCMAPS packaging changes (Tim)
+   * Triage Globus patches for upstream (Tim, Brian)
+   * Evaluate how much effort is needed to fork SVN, YUM repos, internal docs and osg build tools for OSG 3.2 (Mat)
+
+---++ Notes
+
+---+++ OSG Software 3.2 discussion
+
+One large issue that the discussion revealed is that we need to revisit our policy with how we do version numbering.
+Our current policy is that the minor version number increments when an upgrade requires configuration changes or scheduled downtime for a site;
+the major version number increments when an upgrade is not possible and a full reinstall is needed.
+This issue should be discussed in the production meeting.
+
+According to the above policy, the Hadoop, CVMFS and Xrootd upgrades would qualify for a minor version number increment.
+The hadoop change in particular affects 10 to 15 sites and 7 of 8 of the US CMS Tier 2 sites.
+
+A new minor version will require separate areas for the code, packages, and documentation.
+This would mean creating new tags in koji/new yum repos, possibly a new branch in SVN.
+Mat should evaluate how much effort this will take.
+We are particularly effort-starved right now.
+Should also take a look at what tools we can use or make to help us work with these splits and make sure that code isn&#39;t merged into the wrong branch or packages into the wrong koji tag.
+Brian suggests looking at how Fedora has solved this problem.
+
+The GOC should be notified ahead of time if new repositories (i.e. new public koji tags) are made -- that is, whenever the total size of our repos jumps up by a large amount.
+
+We need a policy about how long we are going to support old versions.
+Not only for effort reasons, but if we have doo many different versions to support, we won&#39;t get enough test sites to test each of them.
+Brian suggests negotiating with ATLAS about additional testing effort.
+
+We need to understand all the implications of this change from an upgrade perspective.
+
+
+---+++ Modular dashboard 
+
+BNL has written a piece of software called Modular Dashboard that they would like to make public under an open source license.
+Their lawyers will only allow that if this code is hosted at the OSG.
+However, nothing prevents them from hosting the code here and then immediately forking that code and putting it in github.
+No reason why we can&#39;t let them do that.
+Toss it in to the software/ tree in SVN, with a README to explain why.
+
+
+---+++ Bestman scalability testing
+
+Jeff Dost is going through a list that Brian put together of 5 things to test for Bestman scalability.
+Currently, due to interference from other packages, bestman / jglobus does not install cleanly from osg-testing.
+Jeff can test out of development for now.
+

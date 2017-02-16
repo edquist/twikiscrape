@@ -1,0 +1,73 @@
+---+!! Installing an OSG Build Box
+
+This page contains instructions for setting up an EL6 or EL7 host for use as a
+build machine.
+
+---++ Installing OSG and EPEL repos
+Like with any OSG software, the OSG and EPEL repos (preferably the latest) must
+be installed.  See [[Documentation.Release3.YumRepositories]] for instructions.
+
+---++ Installing the osg-build tool
+
+The primary development tool for packages is called osg-build, and is
+documented at [[SoftwareTeam.OSGBuildTools]].  It is a wrapper for tools like
+rpmbuild, mock, and koji.  It is available in the regular OSG repositories, and
+can be installed by running:
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install osg-build
+&lt;/pre&gt;
+
+The latest version is also available on !GitHub at
+[[https://github.com/opensciencegrid/osg-build]].
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% git clone https://github.com/opensciencegrid/osg-build
+&lt;/pre&gt;
+If the software prerequisites are installed, osg-build can be run directly from
+the Git clone.
+
+---++ Checking out the package source from subversion
+Current work is done in subversion.  The command to check out the subversion is:
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% svn co https://vdt.cs.wisc.edu/svn/native/redhat
+&lt;/pre&gt;
+
+---++ Using Koji
+See [[https://twiki.grid.iu.edu/bin/view/SoftwareTeam/KojiWorkflow#Using_Koji][the Using Koji section of the Koji Workflow page]].
+
+---++ Setting up Mock (optional)
+Mock allows you to build packages on your local machine in a clean chroot
+environment. It allows you to replicate the Koji build environment on your
+local machine.
+
+For security reasons, in order to use mock, your user must be in the =mock=
+Unix group.  To add your user to the mock group, edit =/etc/group=, add your
+%RED%username%ENDCOLOR% (as returned by =id=) to the mock line:
+&lt;pre class=&quot;file&quot;&gt;
+mock:x:109:%RED%username%ENDCOLOR%
+&lt;/pre&gt;
+
+---+++ Performance Suggestions (optional)
+It is suggested that mock builds are done in ram, if you have enough -- 4GB or more.
+Mock build are all conducted under =/var/lib/mock/=.
+Mounting that directory in a tmpfs file system will cause builds to be much faster.
+
+An example mount command for creating a 3GB &#39;tmpfs&#39; filesystem in =/var/lib/mock=:
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_ROOT% mount -t tmpfs -o size=3072m tmpfs /var/lib/mock
+&lt;/pre&gt;
+
+---++ Enabling OSG-Development Repo by default (optional)
+Edit =/etc/yum.repos.d/osg-development.repo= or =/etc/yum.repos.d/osg-el6-development.repo=, changing enabled to %RED%1%ENDCOLOR%.
+&lt;pre class=&quot;file&quot;&gt;
+[osg-development]
+name=OSG Software for Enterprise Linux 7 - Development - $basearch
+#baseurl=http://repo.grid.iu.edu/osg/3.3/el7/development/$basearch
+mirrorlist=http://repo.grid.iu.edu/mirror/osg/3.3/el7/development/$basearch
+failovermethod=priority
+priority=98
+enabled=%RED%1%ENDCOLOR%
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+&lt;/pre&gt;
+

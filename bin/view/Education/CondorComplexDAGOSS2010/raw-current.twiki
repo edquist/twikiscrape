@@ -1,0 +1,185 @@
+---+ A More Complex DAG
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; border: 1px solid black; padding: 0.5em;&quot;&gt;
+---+++ Objective of this exercise
+The objective of this exercise is to run a real set of jobs with DAGMan.
+&lt;/div&gt;
+
+
+Each job in a DAGMan DAG must have only one queue command in it, so a DAG with multiple jobs has one submit file per job. Theoretically you can reuse submit files if you are careful and use the $(Cluster) macro, but that is rarely desirable. We will now make a DAG with four nodes in it: a setup node, two nodes that do analysis, and a cleanup node. For now, of course, all of these nodes will do the same thing, but hopefully the principle will be clear.
+
+First, make sure that your _submit_ file has only one queue command in it, as when we first wrote it: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+Universe                = vanilla
+Executable              = simple
+Arguments               = 4 10
+Log                     = simple.log
+Output                  = simple.output
+Error                   = simple.error
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+Queue
+&lt;/pre&gt;
+
+Now copy these files: 
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% cp submit job.setup.submit
+% cp submit job.work1.submit
+% cp submit job.work2.submit
+% cp submit job.finalize.submit
+&lt;/pre&gt;
+
+Edit the various submit files. Change the log, output and error entries to point to results.NODE.log, results.NODE.output and results.NODE.error files where NODE is actually the middle word in the submit file (job.NODE.submit). So job.finalize.error would include: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+Log    = results.finalize.log
+Output = results.finalize.output
+Error  = results.finalize.error
+&lt;/pre&gt;
+
+Here is one possible set of settings for the output entries: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% grep -i  &#39;^output&#39; job.*.submit
+job.finalize.submit:Output = results.finalize.output
+job.setup.submit:Output = results.setup.output
+job.work1.submit:Output = results.work1.output
+job.work2.submit:Output = results.work2.output
+&lt;/pre&gt;
+
+This is important so that the various nodes don&#39;t overwrite each other&#39;s output.
+
+DAGMan doesn&#39;t actually require that the log files be in separate files.
+
+Also change the arguments entries so that the second argument is something unique to each node. This way each of our jobs will calculate something different and we can tell apart their outputs.
+For example, change job work1 so that the second argument is 11: something like: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+Arguments = 4 11
+&lt;/pre&gt;
+
+Now construct your dag in the file called simple.dag: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+Job  Setup job.setup.submit
+Job  Work1 job.work1.submit
+Job  Work2 job.work2.submit
+Job  Final job.finalize.submit
+
+PARENT Setup CHILD Work1 Work2
+PARENT Work1 Work2 CHILD Final
+&lt;/pre&gt;
+
+Submit your new DAG and monitor it. 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_submit_dag simple.dag
+
+-----------------------------------------------------------------------
+File for submitting this DAG to Condor           : simple.dag.condor.sub
+Log of DAGMan debugging messages                 : simple.dag.dagman.out
+Log of Condor library output                     : simple.dag.lib.out
+Log of Condor library error messages             : simple.dag.lib.err
+Log of the life of condor_dagman itself          : simple.dag.dagman.log
+
+Submitting job(s).
+Logging submit event(s).
+1 job(s) submitted to cluster 60486.
+-----------------------------------------------------------------------
+
+% watch -n 10 condor_q -sub roy
+
+-- Submitter: roy@vdt-itb.cs.wisc.edu : &lt;198.51.254.90:53928&gt; : vdt-itb.cs.wisc.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+60486.0   roy             7/9  19:00   0+00:00:10 R  0   7.3  condor_dagman -f -
+
+%RED%DAGMan runs and submit the first job:%ENDCOLOR%
+
+-- Submitter: roy@vdt-itb.cs.wisc.edu : &lt;198.51.254.90:53928&gt; : vdt-itb.cs.wisc.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+60486.0   roy             7/9  19:00   0+00:00:16 R  0   7.3  condor_dagman -f -
+60487.0   roy             7/9  19:00   0+00:00:00 I  0   0.7  simple 4 10       
+
+2 jobs; 1 idle, 1 running, 0 held
+
+%RED%That first job starts.%ENDCOLOR%
+
+1 jobs; 0 idle, 1 running, 0 held
+-- Submitter: roy@vdt-itb.cs.wisc.edu : &lt;198.51.254.90:53928&gt; : vdt-itb.cs.wisc.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+60486.0   roy             7/9  19:00   0+00:00:22 R  0   7.3  condor_dagman -f -
+60487.0   roy             7/9  19:00   0+00:00:02 R  0   0.7  simple 4 10       
+
+2 jobs; 0 idle, 2 running, 0 held
+
+%RED%The first job finishes, but DAGMan hasn&#39;t reacted yet%ENDCOLOR%
+
+-- Submitter: roy@vdt-itb.cs.wisc.edu : &lt;198.51.254.90:53928&gt; : vdt-itb.cs.wisc.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+60486.0   roy             7/9  19:00   0+00:00:25 R  0   7.3  condor_dagman -f -
+
+1 jobs; 0 idle, 1 running, 0 held
+
+%RED%The next two jobs start up.%ENDCOLOR%
+
+-- Submitter: roy@vdt-itb.cs.wisc.edu : &lt;198.51.254.90:53928&gt; : vdt-itb.cs.wisc.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+60486.0   roy             7/9  19:00   0+00:00:44 R  0   7.3  condor_dagman -f -
+60488.0   roy             7/9  19:00   0+00:00:04 R  0   0.7  simple 4 11       
+60489.0   roy             7/9  19:00   0+00:00:04 R  0   0.7  simple 4 12       
+
+3 jobs; 0 idle, 3 running, 0 held
+
+%RED%Now our final node is running%ENDCOLOR%
+-- Submitter: roy@vdt-itb.cs.wisc.edu : &lt;198.51.254.90:53928&gt; : vdt-itb.cs.wisc.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+60486.0   roy             7/9  19:00   0+00:01:05 R  0   7.3  condor_dagman -f -
+60490.0   roy             7/9  19:01   0+00:00:05 R  0   0.7  simple 4 20       
+
+2 jobs; 0 idle, 2 running, 0 held
+
+%RED%All finished!%ENDCOLOR%
+-- Submitter: roy@vdt-itb.cs.wisc.edu : &lt;198.51.254.90:53928&gt; : vdt-itb.cs.wisc.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+
+0 jobs; 0 idle, 0 running, 0 held
+&lt;/pre&gt;
+
+You can see that the Final node wasn&#39;t run until after the Work nodes, which were not run until after the Setup node. 
+
+Examine your results: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% tail --lines=500 results.*.output
+==&gt; results.finalize.output &lt;==
+Thinking really hard for 4 seconds...
+We calculated: 26
+
+==&gt; results.setup.output &lt;==
+Thinking really hard for 4 seconds...
+We calculated: 20
+
+==&gt; results.work1.output &lt;==
+Thinking really hard for 4 seconds...
+We calculated: 22
+
+==&gt; results.work2.output &lt;==
+Thinking really hard for 4 seconds...
+We calculated: 24
+&lt;/pre&gt;
+
+Examine your log files and DAGMan output files. Do they look as you expect? Can you see the progress of the DAG in the DAGMan output file?
+
+Clean up your results. Be careful about deleting the simple.dag.* files, you do not want to delete the simple.dag file, just simple.dag.* . 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% rm simple.dag.*
+% rm results.*
+&lt;/pre&gt;
+
+---++ On your own
+
+   * Re-run your DAG. When jobs are running, try =condor_q -dag=. What does it do differently?
+   * Make a bigger DAG. Can you extend the DAG to have a few extra nodes that run after the work jobs but before the finalize job? 
+   * Go back to the example where we [[CondorFilesOSS2010][processed data files]]. Make a DAG where you process all four of the extra text files I gave you in parallel. For the final job, concatenate the results into a single file. OK, it may not be the most exciting DAG example, but can you do it?

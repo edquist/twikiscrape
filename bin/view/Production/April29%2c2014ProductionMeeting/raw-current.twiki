@@ -1,0 +1,103 @@
+---++ Coordinates
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-866-740-1260, code 8266135 
+
+---++ Announcements: Scott, Tony, Xin, Bo, Chander, Rob, Armen
+
+---++ Action/Significant Items: 
+   * OSG PKI Host Cert Revocation Issue
+      * GOC is informed that there was a long delay on CRLs updates
+      * Inquiry about CRLs update was sent to DigiCert
+      * DigiCert reports revoked host certs request were in the pending status
+      * It was determined that a 2nd API was need to approve revocation requests
+      * Revocation request in the &quot;pending&quot; state were manually approved by OSG RA via the online web interface
+      * API is implemented and tested in ITB before releasing to production
+      * API is released to production
+      * A weekly check will be performed for any outstanding revocation request that may be stuck  in the &quot;pending&quot; state 
+   * Gratia DB Outage
+
+---++ Attendees:
+
+---++ CMS (Tony)
+   * No statistics today... gratiaweb is down, presumably due to the ongoing gratia database issues
+      * Side note:  gratiaweb really should have a &quot;downtime&quot; or &quot;maintenance&quot; page to notify users instead of timing out
+   
+   * reverse DNS failure at Fermilab
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status.
+      * USATLAS total production over the last weeks was not stable, at the average level around 10-35K running jobs. Not enough tasks are in the pipeline to keep the production stable.
+   * Job statistics for last week.      
+      * Gratia report: (gratia DB outage)
+      * 1.8M real Jobs processed by US sites for last week, reported from the Atlas dashboard.
+   * Data Transfer statistics for last week (Gratia DB outage)
+   * BNL will have a downtime on May 6th, all day long.  
+
+---++ Grid Operations Center (Scott T.)
+---+++ Operations Last Week
+   * [[http://tinyurl.com/ct2mfy6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * gratia issues prevent putting the hours/week plot here...
+   * [[http://steige.grid.iu.edu/steige/myosgldr.php][OSG Version information]]
+      * 11 (0) resources are running 1.2.x
+      * 78 (+2) are 3.1.x
+      * 13 (0) are 3.1.32
+      * 31 (+) are 3.2.x
+      * 11 (+1) are 3.2.8
+   * Grid Operations Center
+      * Production release, [[http://osggoc.blogspot.com/2014/04/goc-service-update-tuesday-april-22nd.html][Release note]]
+      * gratiaweb updates
+      * TX housekeeping
+      * OS updates with reboots.
+   * !FermiGrid Ops
+      * We had a disk fail on the OSG gratia database machine.  It was a raid10 mirror and within a couple of hours of that disk failing the mirrored disk start getting errors reading sectors on the disk.  This caused database corruption and we lost the filesystem.
+      * We provisioned a new SLF6 mysql 5.1 machine and restored the database to it.  There were a few issues initially getting this setup to work but we did get that up by Thursday.  It became clear that there were performance issues and we tried tuning a few variables related to memory heap sizes but by Friday evening the database was backed up again.
+      * The database group here at Fermilab is working with Mysql consultants at the RDX consulting company to optimize the performance so queries don&#39;t pile up as they&#39;re doing now.  We&#39;re hoping these guys are expert enough that we&#39;ll get fast results.
+   * WMS Glide In Factory
+      * Applied Tony&#39;s patch to fix HTCondorCE support for glideinWMS v3_2_4 on GOC-ITB, confirmed it works.
+  
+---++ Operations This Week
+   * Fifth Tuesday, special release. [[http://osggoc.blogspot.com/2014/04/goc-service-update-tuesday-april-29th.html][Release note]]
+      * Version update for oasis-replica (One of three strata-1)
+   * Gratiaweb currently running single instance. Will return redundant instances in coordination with FNAL. Gratiaweb-itb is shutdown.
+
+---++ Campus Infrastructures Community (Rob G)
+
+
+---++ Software (Tim C.)
+
+
+---++ Release (Tim T.)
+
+---++ User Support (Chander, Mats)
+
+It has been a challenging week due to the Gratia DB outage; we are unable to see if our users are getting the needed production levels.  
+
+As follow-up from the 2014 OSG AHM we are in contact with two potential OSG users.  
+
+   * Zhiyong Zhang is part of the Stanford Research  Computing Center which is lead by Ruth Marinshaw and he is interested in exploring the use of OSG for Stanford researchers; we have redirected him to get an OSG-Connect account as a path for becoming familiar with OSG.
+
+   * Santosh Suram is a researcher at Caltech/JCAP and he gave a presentation at the OSG AHM on their work with fast protyping and selection of materials.  OSG User Support is working with him to explore the feasibility of running his application on OSG; we are setting him up as an OSG-Direct user on the OSG-XD submit node.
+
+
+---++ Security (Mine)
+
+   * Emergencies
+      * None
+   * Operations
+      * Problems identified with CRL issuance and revocations. GOC and OIM staff is fixing the problem. Security team added an extra step into the incident response process that whenever we revoke a certificate for security reasons, the security team will check the CRL files whether they include the revoked cry numbers or not. 
+      * We are working on IdM solutions. Experimenting with the IdP service, figuring out how to install and operate the IdP service that can be useful to OSG.
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+
+
+
+-- Main.ScottTeige - 25 Feb 2014
+
+
+
+
+
+-- Main.RobQ - 25 Feb 2014

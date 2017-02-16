@@ -1,0 +1,132 @@
+---+!! *&lt;nop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+
+&lt;!--
+   * Set EDITTHISTEXT = &lt;div class=&quot;twikiSmall&quot;&gt;&lt;a href=&quot;%TOPIC%&quot;&gt;edit this section&lt;/a&gt;&lt;/div&gt;
+--&gt;
+
+%TOC%
+
+%STARTINCLUDE%
+
+%BR%
+---+ _%SPACEOUT{ &quot;%TOPIC%&quot; }%_
+%EDITTHISTEXT%
+%BR%
+There are several attributes you may wish to configure before accepting accounting data from the Gratia probes.  This are in the
+The =$VDT_LOCATION/tomcat/v55/gratia/service-configuration.properties= file.  This topic will not cover all of them as the file contains a reasonable explanation of each attribute.  It will just cover a couple you may want to look at initially.
+   * Connections
+   * Monitoring
+
+Additionally, if you are installing remote installation for the purpose of capturing your local accounting data and then forwarding selected accounting data to the OSG or ITB instances of Gratia, you will be need to do 2 additional steps:
+   * Change your Gratia probes to report to your instance of a remote/local  Gratia collector
+   * Set up Gratia replication to forward selective probes to the OSG or ITB Gratia collectors.
+
+---++ Connections
+You have two ports by which you can access the Gratia reporting and administration services that are     defined by these attributes in the file:
+   * service.open.connection (defaults to 8880);
+   * service.secure.connection (defaults to 8443).
+
+These are pre-set during installation by the =$VDT_location/vdt/setup/configure_gratia= script.
+
+---++ Monitoring
+The attributes control whether or not to have Gratia post an email if it hasn&#39;t received
+a job usage record from a probe within a specified amount of time.
+
+These attributes are not set in the =configure_gratia= script and should be changed.  They are:
+   * monitor.smtp.server=YOUR-SMTP-SERVER
+   * monitor.smtp.authentication.required=false
+   * monitor.smtp.user=EMAIL-USER-NAME
+   * monitor.smtp.password=EMAIL-PASSWORD
+   * monitor.from.address=FROM-EMAIL-ADDRESS
+   * monitor.to.address.0=TO-EMAIL-ADDRESS
+   * monitor.subject=EMAIL-SUBJECT
+
+---++ Changing your Gratia probes
+To start reporting the accounting data to your local/remote Gratia collector, you will need to change the configuration file for your Gratia probes.  All references to VDT_LOCATION in this section of the document refer to the installation on your CE node or worker node if you have glexec probes configured.
+
+*VERY VERY IMPORTANT: Before you do this, you need to insure that all accounting data for each probe as been reported to the current collector.*  
+
+On each host that you will be changing to report to your local Gratia collector, you will do the following to insure that all data has been transferred:
+
+1. Verify that there are no probe records in the gratia queue (this would only occur if the current collector has been unavailable).
+       There should be no files in =$VDT_LOCATION/gratia/var/tmp/gratiafiles= . If there are files here, you will want to wait until these have been process by your Gratia probe cron service entry.  When there are no files in the queue, you can proceed.
+
+2. Comment or remove the Gratia probe cron process for your scheduler, named gratia-&amp;lt;scheduler&amp;gt;.%BR%
+       For example, the command to disable a condor probe is =vdt-control --off gratia-condor=
+   
+3. You can now make the changes to =ProbeConfig= file necessary to report to your local/remote collector.
+The configuration file for the various probes are shown here:
+| %BLUE%&lt;b&gt;Probe&lt;/b&gt;%ENDCOLOR% | %BLUE%&lt;b&gt;$VDT_LOCATION/gratia/probe&lt;/b&gt;%ENDCOLOR% |
+| Condor | ./condor/&lt;nop&gt;ProbeConfig|
+| PBS | ./pbs/&lt;nop&gt;ProbeConfig |
+| LSF | ./lsf/&lt;nop&gt;ProbeConfig |
+| SGE | ./sge/&lt;nop&gt;ProbeConfig |
+| gLexec| ./glexec/&lt;nop&gt;ProbeConfig |
+| metric| ./metric/&lt;nop&gt;ProbeConfig | 
+%RED%&lt;strong&gt;Note&lt;/strong&gt;%ENDCOLOR% that the metric probe reports to the official OSG RSV collector at GOC, Indiana. It&#39;s highly unlikely that you would want to collect this information locally since there are no graphical reports for this data type.
+
+There are 3 attributes that need to be changed to report to your local/remote collector based on the attributes specified in the =service-configuration.properties= file:
+| %BLUE%&lt;b&gt;&lt;nop&gt;ProbeConfig%BR% attribute&lt;/b&gt;%ENDCOLOR% | %BLUE%&lt;b&gt;service-configuration.properties%BR% attribute&lt;/b&gt;%ENDCOLOR% |
+| &lt;nop&gt;SSLHost | service.secure.connection |
+| &lt;nop&gt;SSLRegistrationHost |service.open.connection |
+| &lt;nop&gt;CollectorHost | service.open.connection |
+
+4. Uncomment your Gratia probe cron service or run vdt-control --on for the relevant probe.
+
+You will now be reporting to your local collector for each of these hosts. You can verify this by going the Gratia administration web service for the collector.  You may have to wait for the cron job, which runs every ten minutes.
+
+If you will be forwarding this accounting data to the OSG or ITB Fermilab Gratia Collectors, you will need to set up replication as described in the next section.
+
+
+
+
+---++ Setting up Gratia replication
+Gratia has the ability to replicate its database contents (actually, the &lt;nop&gt;JobUsageRecords) to another instance of Gratia running &amp;#8220;out there somewhere&amp;#8221;. This replication service can be found on the gratia-administration web service menu. 
+
+Assuming your database is the source, and the OSG/ITB Gratia collectors at Fermilab are the target(s):
+
+1. Under the =Replication= menu, select =Job Usage Replication= or =Metric Replication= depending on the accounting data you wish to forward.
+
+2. On the =Replication= screen, under =Remote Host=, you will add an entry and then click on the =Update= button.
+
+If you are forwarding to the central Gratia OSG services, these are the URLs for the respective collectors:
+%INCLUDE{&quot;Trash.AccountingOperatedList&quot; section=&quot;osg-collectors&quot;}%
+
+You can select specific probes below to ensure that information is forwarded to the right place.
+
+3.Then, for your entry, select =Test= under the =Options= column on the far right.
+
+Your server will send a dummy transaction to the remote host and let you know whether or not the connection was made.
+
+It should indicate either success or failure.  A failure means either your entry was incorrect or the =Remote Host= is not available (an error message including the number &quot;503&quot; indicates the latter and is fine: try again later). If a non-transient problem is indicated and you are sure the URL is correct., try to access the remote via your web browser and contact the Gratia administrator of the remote host if you are unable to resolve the problem locally.
+
+4. Now you will select the probes that you want to forward. 
+
+Under the =Probe Name= column, you can specify selective probes, probes for specific VOs or All.  Press the =Update= button to add the entry to the database.
+
+&lt;b&gt;NOTE:&lt;/b&gt; If do not specify =All=, you will need to create a replication entry for each probe or VO you desire to forward.  This means repeating steps 2 through 5.
+
+5. Finally, start the replication process by using the =Start= button under the =Options= column. Replication should start within a minute or so. You can stop the process with the =Stop= link (which will also take a minute or so).
+
+Please also consider replicating !ProbeDetails records (same procedure as above but select the !ProbeDetails replication page): this enables the OSG collectors to receive probe version information and also to distinguish between a probe that is not reporting and a probe that merely has nothing to report.
+
+From our testing gratia can replicate roughly 2000 records per minute.
+
+You can view the status of your Replication entries by viewing:
+   * =Running= column which indicates naturally if it is running or not
+   * =DBID= column indicating the last =dbid= (key of the &lt;nop&gt;JobUsageRecord table) sent
+   * =Row Count= column indicating the number of replication entries sent
+
+
+
+
+
+
+
+
+
+
+%STOPINCLUDE%
+
+-- Main.JohnWeigand - 24 Apr 2008
+

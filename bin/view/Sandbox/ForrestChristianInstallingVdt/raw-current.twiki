@@ -1,0 +1,413 @@
+%LINKCSS%
+
+---+ Installing the VDT: One Person&#39;s Experience
+%TOC%
+
+%NOTE% These are from [[Main.PenelopeConstanta][Penelope Constanta&#39;s]] notes.
+
+Follow the [[http://vdt.cs.wisc.edu/releases/1.3.11/installation.html][VDT installation instructions]] as follows:
+
+---++ Install pacman: 
+Create the top level directory that pacman will be installed under and then get and install the package:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;mkdir &amp;#8230;/pacman&lt;/userinput&gt;
+$ &lt;userinput&gt;cd &amp;#8230;/pacman&lt;/userinput&gt;
+$ &lt;userinput&gt;wget http://physics.bu.edu/pacman/sample_cache/tarballs/pacman-latesttar.gz&lt;/userinput&gt;
+$ &lt;userinput&gt;tar xzvf pacman-latest.tar.gz&lt;/userinput&gt;
+$ &lt;userinput&gt;cd pacman-3.xx&lt;/userinput&gt;
+$ &lt;userinput&gt;source setup.sh&lt;/userinput&gt;    # or setup.csh according to shell used
+&lt;/pre&gt;
+
+%NOTE% The first execution of the =setup.sh= or =setup.csh= needs to be done from the pacman-xxx directory.
+
+---++ Install VDT
+Full installation requires root access on the machine. The following are the steps in order they need to be done:
+
+   * Create users for the various daemons:
+      * =/usr/sbin/adduser -d /home/globus globus=
+      * =/usr/sbin/adduser -d /home/monalisa monalisa=
+      * =/usr/sbin/adduser -d /home/condor condor=
+   * Go to the top-level directory of the VDT installation. Create the =vdt= directory and use pacman to install it. For example:
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cd /data&lt;/userinput&gt;
+$ &lt;userinput&gt;mkdir vdt&lt;/userinput&gt;
+$ &lt;userinput&gt;cd vdt&lt;/userinput&gt;
+$ &lt;userinput&gt;export VDT_LOCATION=/data/vdt/&lt;/userinput&gt;
+&lt;/pre&gt;
+
+---+++ Installing over a previous version of VDT
+To install on a system that already has a previous version of VDT you need to stop tomcat and apache. The installation will fail if they are running. 
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;ksu&lt;/userinput&gt;
+$ &lt;userinput&gt;service tomcat-5 stop&lt;/userinput&gt;
+$ &lt;userinput&gt;service tomcat-55 stop&lt;/userinput&gt;
+$ &lt;userinput&gt;service apache stop&lt;/userinput&gt;
+&lt;/pre&gt;
+
+---+++ Installing on Scientific Linux
+To install on a system running Scientific Linux run pacman as follows:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;pacman   &amp;#8211;pretend-platform:RHEL-3   &amp;#92;
+   &amp;#8211;get http://www.cs.wisc.edu/vdt/vdt_139_cache:VDT&lt;/userinput&gt;
+&lt;/pre&gt;
+
+Or one might use two commands:
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;pacman   &amp;#8211;pretend-platform:RHEL-3&lt;/userinput&gt;
+$ &lt;userinput&gt;pacman &amp;#8211;get http://www.cs.wisc.edu/vdt/vdt_139_cache:VDT&lt;/userinput&gt;
+&lt;/pre&gt;
+
+---++ Using VDT
+To use VDT, =source= the VDT setup file under the =vdt= directory:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cd vdt&lt;/userinput&gt;
+$ &lt;userinput&gt;source setup.sh&lt;/userinput&gt;   #or setup.csh
+&lt;/pre&gt;
+
+---++ Installing Tomcat v5.5
+
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;source $PACMAN_LOCATION/setup.sh&lt;/userinput&gt;
+$ &lt;userinput&gt;export VDT_LOCATION=/data/vdt_1_3_11&lt;/userinput&gt;
+$ &lt;userinput&gt;cd $VDT_LOCATION&lt;/userinput&gt;
+$ &lt;userinput&gt;pacman -get http://vdt.cs.wisc.edu/vdt_1311_cache:Tomcat-5.5&lt;/userinput&gt;
+&lt;/pre&gt;
+
+---++ Installing VDT Tests
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;source $PACMAN_LOCATION/setup.sh&lt;/userinput&gt;
+$ &lt;userinput&gt;source $VDT_LOCATION/setup.sh&lt;/userinput&gt;
+$ &lt;userinput&gt;cd $VDT_LOCATION&lt;/userinput&gt;
+$ &lt;userinput&gt;pacman -get VDT:VDT-Test&lt;/userinput&gt;
+&lt;/pre&gt;
+
+---++ Certificates
+Once you have exported from the browser your certificate as a file with extension p12, to get the usercert.pem and userkey.pem files do the following, do not ignore the last step of changing the access rights:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;openssl pkcs12 -in mycertificate.p12 -nocerts -out usercert.pem&lt;/userinput&gt;
+ Enter Import Password: 
+ MAC verified OK
+$ &lt;userinput&gt;openssl pkcs12 -in mycertificate.p12 -nocerts -out userkey.pem&lt;/userinput&gt;
+ Enter Import Password: 
+ MAC verified OK
+ Enter PEM pass phrase:
+ Verifying - Enter PEM pass phrase:
+$ &lt;userinput&gt;chmod go-rw *.pem&lt;/userinput&gt;
+&lt;/pre&gt;
+
+---+++ Get Host and service certificates:
+The certificate related files location depends on the answer to the VDT installation question:
+
+&lt;pre class=&quot;screen&quot;&gt;
+Where would you like to install CA files?
+
+Choices:
+        r (root)  - install into /etc/grid-security/certificates
+            (existing CA files will be preserved)
+        l (local) - install into $VDT_LOCATION/globus/share/certificates
+        n (no)    - do not install
+&lt;/pre&gt;
+
+If you answered to be installed as root (r &amp;#8211; root) then the =/etc/grid-security/certificates=
+directory is created (if its does exist) and populated. 
+
+If the answer to be installed as local (l &amp;#8211; local) then all the files are under =$VDT_LOCATION/globus/=.
+
+The link =TRUSTED_CA= in the =$VDT_LOCATION/globus/= directory points to your certificate area. 
+For example: 
+   =TRUSTED_CA= &amp;#8594;  =/etc/grid-security/certificates=
+
+---+++ Get a host certificate using VDT globus installation:
+If the installation was done as root, then the =/etc/grid-security doegrids= directory was also created with the appropriate files. (I have not done that local installation for instructions there but something similar undet the =$VDT_LOCATION/globus/= must be installed). The following are the commands to use to get a host certificate, where =cd-psg2.fnal.gov= is the host name for which a certificate is requested:
+
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cd /etc/grid-security/doegrids&lt;/userinput&gt;
+$ &lt;userinput&gt;./doegrids-cert-request -host cd-psg2.fnal.gov&lt;/userinput&gt;
+&lt;/pre&gt;
+
+This will create three files under =/etc/grid-security=:
+   * =hostkey.pem= 
+   * =hostcert.pem=
+   * =hostcert_request.pem=
+   
+The script will supply also the following information:
+
+Go to https://pki1.doegrids.org and choose the &quot;Grid or SSL Server&quot; menu item on the Enrollment page. There, cut and paste the file =/etc/grid-security/hostcert_request.pem= into the =PKCS#10= text field. 
+
+An email will be sent with the URL of the certificate. Copy the text under &amp;#8220;Base 64 encoded certificate&amp;#8221; and paste it in =/etc/grid-security/hostcert.pem=.
+
+Under =/etc/grid-security= there are three valid pem files that contain the host certificate.
+
+Get an http service certificate using VDT globus installation:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cd /etc/grid-security/doegrids&lt;/userinput&gt;
+$ &lt;userinput&gt;./doegrids-cert-request &amp;#8211;service http &amp;#8211;host cd-psg2.fnal.gov&lt;/userinput&gt;
+&lt;/pre&gt;
+
+This will create two three files under the =/etc/grid-security/http=:
+   * =httpkey.pem=
+   * =httpcert.pem=
+   * =httpcert_request.pem=
+
+The script will supply also the following information:
+
+Go to https://pki1.doegrids.org and choose the &quot;Grid or SSL Server&quot; menu item on the Enrollment page. There, cut and paste the file =/etc/grid-security/http/httpcert_request.pem= into the =PKCS#10= text field. 
+
+An email will be sent with the URL of the certificate. The email has the wrong information about where to copy the certificate, So, copy the text under &amp;#8220;Base 64 encoded certificate&amp;#8221; and paste it into =/etc/grid-security/http/httpcert.pem=.
+
+Under =/etc/grid-security/http= there are three valid pem files that contain the http service certificate.
+
+---+++ Get a host or service certificate
+Get a host or service certificate using the doegrids site instructions. The following is if you need to get the scripts from the doegrids site:
+
+
+---++++ Getting service/host certificates
+Get the service/host certificates from [[http://www.doegrids.org/pages/ModelCertificateDeployment.html][Model Certificate Trash/Deployment page]].  Get [[http://pki1.doegrids.org/Other/doegrids.tar][doegrid.tar]].
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;mkdir /etc/grid-security&lt;/userinput&gt;
+$ &lt;userinput&gt;cd /etc/grid-security&lt;/userinput&gt;
+$ &lt;userinput&gt;tar xvf doegrids.tar&lt;/userinput&gt;
+&lt;/pre&gt;
+
+This creates three directories. All information on what to do next is in %BR% =/etc/grid-security/doegrids/README.doegrids=
+
+Before running the /etc/grid-security/doegrids/grid-cert-request,  the following files need to be copied as follows (the script requires these files in order to work properly):
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cp  /data/vdt/globus/TRUSTED_CA/grid-security.conf.1c3f2ca8    &amp;#92;
+   /data/vdt/globus/etc/grid-security.conf&lt;/userinput&gt;
+$ &lt;userinput&gt;cp  /data/vdt/globus/TRUSTED_CA/globus-host-ssl.conf.1c3f2ca8    &amp;#92;
+   /data/vdt/globus/etc/globus-host-ssl.conf&lt;/userinput&gt;
+&lt;/pre&gt;
+
+
+To create a host or service certificate follow the instructions above this section
+
+ 
+---++ JCLARENS
+
+---+++ Starting and stopping Apache:
+
+VDT installation adds user daemon to run apache and tomcat as daemon. To change the user you will need to add the new user that apache and tomcat will run under and then modify the =/etc/init.d/{apache, tomcat-5}= services to reflect the new user.
+
+Need to make some changes in the =$VDT_LOCATION/apache/conf/httpd.conf=:
+
+&lt;pre class=&quot;programlisting&quot;&gt;
+Listen 80  &lt;em&gt;(port that apache will listen to)&lt;/em&gt;
+ServerAdmin &lt;em&gt;adminaddress@wherever.youare&lt;/em&gt;
+&lt;/pre&gt;
+
+---++++ To start or stop apache:
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;service apache start&lt;/userinput&gt;
+$ &lt;userinput&gt;service apache stop&lt;/userinput&gt;
+&lt;/pre&gt;
+
+
+---+++ Starting Tomcat:
+Customize =$VDT_LOCATION/tomcat/v5/conf/server.xml= to include the port that tomcat will run under and the secure ports that jclarens services will use:
+&lt;pre class=&quot;programlisting&quot;&gt;
+&amp;lt;Connector port=&quot;8080&quot;
+   maxThreads=&quot;150&quot; minSpareThreads=&quot;25&quot; maxSpareThreads=&quot;75&quot;
+   enableLookups=&quot;false&quot;  acceptCount=&quot;100&quot;
+   debug=&quot;0&quot; connectionTimeout=&quot;20000&quot;
+   disableUploadTimeout=&quot;true&quot; maxHttpHeaderSize=&quot;8192&quot; /&gt;
+
+&amp;lt;Connector port=&quot;8443&quot;
+sSLImplementation=&quot;org.glite.security.trustmanager.tomcat.TMSSLImplementation&quot;
+   sslCAFiles=&quot;/etc/grid-security/certificates/*.0&quot;
+   crlFiles=&quot;/etc/grid-security/certificates/*.crl_url&quot;
+   sslCertFile=&quot;/etc/grid-security/http/httpcert.pem&quot;
+   sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot;
+   log4jConfFile=&quot;/data/test-vdt/tomcat/v5/conf/log4j-trustmanager.properties&quot;
+   maxThreads=&quot;150&quot; minSpareThreads=&quot;25&quot; maxSpareThreads=&quot;75&quot;
+   enableLookups=&quot;false&quot; disableUploadTimeout=&quot;true&quot;
+   acceptCount=&quot;100&quot; debug=&quot;0&quot; scheme=&quot;https&quot; secure=&quot;true&quot;
+   clientAuth=&quot;true&quot; sslProtocol=&quot;TLS&quot; /&gt;
+
+&amp;lt;Connector port=&quot;8009&quot;
+   enableLookups=&quot;false&quot; redirectPort=&quot;8443&quot; debug=&quot;0&quot;
+   protocol=&quot;AJP/1.3&quot; /&gt;
+&lt;/pre&gt;
+
+---++++ To start or stop tomcat:
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;service tomcat-5 start&lt;/userinput&gt;
+$ &lt;userinput&gt;service tomcat-5 stop&lt;/userinput&gt;
+&lt;/pre&gt;
+
+---+++ Customize jclarens
+To create a new service under jclarens the following should be done:
+
+   1. Write the appropriate java application code and place them under the package directory structure naming the top directory =java=, e.g. if the package is =osg.gratia=, then all java files should be under the following directory tree: %BR% =~myhome/GratiaServices/java/osg/gratia=
+   1. Since =jclarens= uses the =ant= building tool, do not name any of your java files as:
+   * =MyService.java=
+   * =MyServiceService.java=
+   * =MyServiceServiceLocator.java=
+   * =MyServiceSoapBindingImpl.java=
+   * =MyServiceSoapBindingStub.java=
+   * =MyServiceXmlRpcBinding.java=
+
+The main service call should be in a file named:
+   * =MyServiceImpl.java=
+
+The file should look like:
+&lt;pre class=&quot;programlisting&quot;&gt;
+package osg.gratia;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.io.File;
+import org.dom4j.*;
+import org.dom4j.io.SAXReader;
+import org.hibernate.*;
+import org.hibernate.cfg.Configuration;
+
+public class MyServiceImpl implements osg.gratia.MyService {
+your service implementation
+}
+&lt;/pre&gt;
+
+Under the top directory of the source code (for example =~myhome/GratiaServices/=), the following files need to be in place (for an example of these files look at the appendix). You may pickup example files from the [[http://clarens.sourceforge.net/jclarens/][jclarens site]].
+   * =build.xml=
+   * =MyService.wsdl=
+   
+Assuming that you have installed the VDT, before doing anything else you need to pickup some environment variables from the package, so:
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;source $VDT_LOCATION/setup.sh&lt;/userinput&gt;   &lt;em&gt;#or setup.csh&lt;/em&gt;
+$ &lt;userinput&gt;ant wsdl2java&lt;/userinput&gt;
+&lt;/pre&gt;
+
+The ant command will create the following files under your package java directory tree:
+   * =MyService.java=
+   * =MyServiceService.java=
+   * =MyServiceServiceLocator.java=
+   * =MyServiceSoapBindingImpl.java=
+   * =MyServiceSoapBindingStub.java=
+   * =MyServiceXmlRpcBinding.java=
+   * =deploy.wsdd=
+   * =undeploy.wsdd=
+
+Also, at the top directory structure the following files will be copied (if included in the build file): 
+   * =MyService_deploy.wsdd=
+   * =MyService_undeploy.wsdd=
+
+
+At this point you should edit the =MyServiceSoapBindingImpl.java= to contain the specifics for your service, e.g.:
+
+&lt;pre class=&quot;programlisting&quot;&gt;
+package osg.gratia;
+
+public class CollectorSoapBindingImpl implements osg.gratia.MyService {
+    public java.lang.String MyServiceRoutine(java.lang.String MyArg1, java.lang.String MyArg2) 
+    throws java.rmi.RemoteException {
+        return null;
+    }
+}
+&lt;/pre&gt;
+
+Now you need to compile the sources and create the jar files. Use ant and the associated =build.xml= file for this. Remember to include any jar libraries required in the build path. This step will create the directory classes and the main service jar file =MyService.jar=:
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;ant jar&lt;/userinput&gt;
+&lt;/pre&gt;
+
+Before going to the installation step, the =MyService_service.properties= jclarens-specific file needs to be edited. For an example look at the appendix.
+
+The next step is to install the service under jclarens (=$VDT_LOCATION/tomcat/v5/webapps/jclarens=)
+The steps for this are simply to copy the created files to certain locations. Look at the =build.xml= file example.
+
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;ant install&lt;/userinput&gt;
+&lt;/pre&gt;
+
+Once this is done, you need to add the service to jclarens. To do so:
+&lt;pre class=&quot;screen&quot;&gt;
+$ &lt;userinput&gt;cd $VDT_LOCATION/tomcat/v5/webapps/jclarens/ &lt;/userinput&gt;
+&lt;/pre&gt;
+
+Edit =xmlrpc_handlers.properties= and add the following line:
+&lt;pre class=&quot;programlisting&quot;&gt;
+service.MyService.properties= MyService_service.properties
+&lt;/pre&gt;
+
+
+The general JClarens configuration is stored at =$VDT_LOCATION/tomcat/v5/webapps/jclarens/xmlrpc_handlers.properties=. The following were changed: 
+   * &lt;tt&gt;service.system.hostKeyPass=password&lt;/tt&gt;
+   * &lt;tt&gt;clarens.admin=&lt;/tt&gt;
+
+The following were commented (could not find these files): 
+   * =# clarens.trustStore=/usr/lib/jclarens/jakarta-tomcat-5.0.28/webapps/jclarens/keystores/cacerts.jks=
+   * =#  clarens.trustStorePassword=changeit=
+
+
+---++++ Java
+&lt;pre class=&quot;programlisting&quot;&gt;
+CollectorImpl.java
+CollectorImpl.java.debug
+Collector.java
+CollectorService.java
+CollectorServiceLocator.java
+CollectorSoapBindingImpl.java
+CollectorSoapBindingStub.java
+CollectorXmlRpcBinding.java
+DateElement.java
+deploy.wsdd
+DurationElement.java
+FloatElement.java
+IntegerElement.java
+JobIdentity.java
+JobUsageRecord.java
+KeyInfoType.java
+RecordIdentity.java
+ResourceElement.java
+StringElement.java
+undeploy.wsdd
+UsageRecordLoader.java
+UsageRecordLoader.java.debug
+UserIdentity.java
+Utils.java
+Utils.java.debug
+Utils.java.orig
+XmlElement.java
+&lt;/pre&gt;
+
+---++++ Src
+&lt;pre class=&quot;programlisting&quot;&gt;
+CollectorImpl.java          
+Collector.java           
+DateElement.java            
+DurationElement.java     
+FloatElement.java     
+IntegerElement.java   
+JobIdentity.java
+JobUsageRecord.java
+KeyInfoType.java
+RecordIdentity.java
+ResourceElement.java
+StringElement.java
+UsageRecordLoader.java
+UserIdentity.java
+Utils.java
+XmlElement.java
+&lt;/pre&gt;
+
+
+---+++ Discovery Service
+The Discovery Service has two configuration files, but only one needs to be customized: %BR% =$VDT_LOCATION/tomcat/v5/webapps/jclarens/mlstore.properties=
+
+The Discovery Service group, defined by the &lt;tt&gt;lia.Monitor.Group = Test&lt;/tt&gt; property, must match the group set in the Trash.ReleaseDocumentationMonALISA configuration =$VDT_LOCATION/MonaLisa/Service/VDTFarm/ml.properties=.
+
+%BOTTOMMATTER%
+-- Main.PenelopeConstanta -- created the notes %BR%
+-- Main.ForrestChristian - transcribed and edited %BR%

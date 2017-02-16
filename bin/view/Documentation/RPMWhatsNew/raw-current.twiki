@@ -1,0 +1,29 @@
+%LINKCSS%
+
+&lt;!-- This is the default OSG documentation template. Please modify it in --&gt;
+&lt;!-- the sections indicated to create your topic.                        --&gt; 
+
+&lt;!-- By default the title is the WikiWord used to create this topic. If  --&gt;
+&lt;!-- you want to modify it to something more meaningful, just replace    --&gt;
+&lt;!-- %TOPIC% below with i.e &quot;My Topic&quot;.                                  --&gt;
+
+--+ What&#39;s different about the RPM-based OSG Software Stack?
+%TOC%
+
+This document should note the big changes in RPMs. It&#39;s an essential document. I don&#39;t have time to write it now, but have a few thoughts that should be expounded on:
+
+   * Moving from GT 4.0 to GT 5.2. No WS GRAM. GRAM from 5.2 should be compatible with GRAM from GT 4.
+   * Authorization with GUMS will only use newer XACML protocol, not older SAML protocol. This means you need GUMS 1.3 (_double-check that version_) or later. Older versions of GUMS will not work. 
+   * Some components are not yet packaged as RPMs and you still need to get them from existing Pacman installs. In particular: GUMS and Gratia Collector. 
+   * Files are installed in standard locations such as =/usr/bin= and =/etc=. Some implications of this:
+      * =$VDT_LOCATION= no longer exists
+      * =$VDT_LICATION/setup.sh= no longer exists and isn&#39;t needed. For user jobs that still expect =setup.sh= to exist, a dummy has been placed in =/etc/osg/wn-client/setup.sh=, and you can set =$OSG_GRID= to =/etc/osg/wn-client=.
+      * =$GLOBUS_LOCATION= no longer exists
+   * The single =config.ini= file has been replaced by a directory of files in =/etc/osg/*.ini=. They are read in alphabetical order.
+   * You will still use configure-osg for configuring your CE, but it doesn&#39;t do as much as it used to to. 
+   * The recommended method for installing a worker node is no longer to install it on a shared filesystem, but to install it via RPMs on each node. While this is a better approach, when you install or upgrade hundreds or thousands of nodes at your site, you will potentially overload our software repository. We recommend mirroring our software repository (instructions are not yet available but will be) or using a Squid proxy to lessen the load on our server.
+   * =configure-osg= has been renamed to =osg-configure=
+
+   * Please give a detailed overview of where packages will be installed (other than =/usr/bin/=, =/usr/lib/=, ...), so that admins can make sure there aren&#39;t any conflicts, like with a soft link =/etc/grid-security= pointing to a shared central file system.
+   * Also explain in more detail how to deal with repo priorities (if necessary), and how to disable the updates of certain packages the admins may already have installed, and cannot or do not wish to update, but there is a newer version of in =EPEL=.
+   * Is there a simple way in yum to remove all rpms which were installed with a meta package (such as =osg-wn-client=)?

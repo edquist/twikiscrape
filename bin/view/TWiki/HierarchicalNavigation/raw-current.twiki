@@ -1,0 +1,61 @@
+---+!! Hierarchical Navigation
+
+*Navigation block that displays the current topic, its parent and children (if any).* %BR%
+This is intended to be included in other topics, for example in a side navigation bar (WebLeftBar).
+
+_NOTE: The lookup for parent and children will increase the loading time of your pages._
+
+%TOC%
+
+---++ Usage
+Two sections are defined:
+   * =all=
+   * =children=
+   
+---+++ Displaying the Parent - Current - Children block
+&lt;blockquote&gt;
+&lt;verbatim&gt;
+%INCLUDE{&quot;%SYSTEMWEB%.HierarchicalNavigation&quot; section=&quot;all&quot;}%
+&lt;/verbatim&gt;
+&lt;/blockquote&gt;
+generates:
+
+%INCLUDE{&quot;%SYSTEMWEB%.HierarchicalNavigation&quot; section=&quot;all&quot;}%
+
+
+When included in WebLeftBar (using default Pattern skin) this is styled to:
+
+&lt;div id=&quot;patternLeftBarContents&quot;&gt;
+%INCLUDE{&quot;%SYSTEMWEB%.HierarchicalNavigation&quot; section=&quot;all&quot;}%
+&lt;/div&gt;
+
+---+++ Displaying child topics
+&lt;blockquote&gt;
+&lt;verbatim&gt;
+*Child topics:*
+%INCLUDE{&quot;%SYSTEMWEB%.HierarchicalNavigation&quot; section=&quot;children&quot;}%
+&lt;/verbatim&gt;
+&lt;/blockquote&gt;
+generates:
+
+*Child topics:*
+%INCLUDE{&quot;%SYSTEMWEB%.HierarchicalNavigation&quot; section=&quot;children&quot;}%
+
+
+&lt;div style=&quot;display:none;&quot;&gt;
+%STARTSECTION{name=&quot;all&quot;}%&lt;div class=&quot;twikiHierarchicalNavigation&quot;&gt;&lt;div class=&quot;twikiParentTopic&quot;&gt;
+%SEARCH{ &quot;^%BASETOPIC%$&quot; web=&quot;%BASEWEB%&quot; scope=&quot;topic&quot; type=&quot;regex&quot; nonoise=&quot;on&quot; format=&quot;$percntIF{$quot$parent$quot then=$quot   * [[$web.$parent][$parent]]$quot else=$quot&lt;nop&gt;$quot}$percnt&quot; }%&lt;nop&gt;
+&lt;/div&gt;
+&lt;div class=&quot;twikiCurrentTopic&quot;&gt;
+   * &lt;nop&gt;%BASETOPIC%
+&lt;/div&gt;
+&lt;div class=&quot;twikiChildTopics&quot;&gt;
+%METASEARCH{type=&quot;parent&quot; topic=&quot;%BASETOPIC%&quot; format=&quot;   * [[$web.$topic][$topic]]&quot;}%&lt;nop&gt;
+&lt;/div&gt;&lt;!--twikiChildTopics--&gt;&lt;/div&gt;&lt;!--/twikiHierarchicalNavigation--&gt;%ENDSECTION{name=&quot;all&quot;}%
+
+%STARTSECTION{name=&quot;children&quot;}%&lt;div class=&quot;twikiHierarchicalNavigation&quot;&gt;
+&lt;div class=&quot;twikiChildTopics&quot;&gt;
+%METASEARCH{type=&quot;parent&quot; topic=&quot;%BASETOPIC%&quot; format=&quot;   * [[$web.$topic][$topic]]&quot;}%&lt;nop&gt;
+&lt;/div&gt;&lt;!--twikiChildTopics--&gt;&lt;/div&gt;&lt;!--/twikiHierarchicalNavigation--&gt;%ENDSECTION{name=&quot;children&quot;}%
+
+&lt;/div&gt;

@@ -1,0 +1,113 @@
+---++ Coordinates
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-866-740-1260, code 8266135 
+
+---++ Announcements:
+
+---++ Action/Significant Items: 
+
+---++ Attendees:
+
+---++ CMS (Tony)
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status.
+      * USATLAS total production over the last weeks was not quite stable, at the average level around 20-34K running jobs, as there was no continuous flow of new tasks in the pipeline to keep the production stable. Transfer failures at some point last week due to invalid/expired CRL issue.
+   * Job statistics for last week.      
+      * Gratia report: 1.1M pilot jobs run on USATLAS sites last week, with cpu/walltime ratio of 92%.
+      * 1.7M real Jobs processed by US sites for last week, reported from the Atlas dashboard.
+   * Data Transfer was ~350TB/day, at BNL Tier1, for last week 
+   * BNL Tier1 is offline today, for network upgrade and facility maintenance. 
+
+---++ Grid Operations Center (Scott T.)
+---+++ Operations Last Week
+   * &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/hours.png&quot; alt=&quot;hours.png&quot; width=&#39;792&#39; height=&#39;550&#39; /&gt;    
+   * [[http://tinyurl.com/ct2mfy6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * [[http://steige.grid.iu.edu/steige/myosgldr.php][OSG Version information]]
+      * 11 (0) resources are running 1.2.x
+      * 77 (-1) are 3.1.x
+      * 13 (0) are 3.1.32
+      * 27 (-2) are 3.2.x
+      * 13 (+2) are 3.2.8
+
+   * gratiweb problems
+   * CRL issues
+   * Fifth Tuesday, special release. [[http://osggoc.blogspot.com/2014/04/goc-service-update-tuesday-april-29th.html][Release note]]
+      * Version update for oasis-replica (One of three strata-1)
+   * !FermiGrid Ops
+      * Looks like the gratia database is finally up and running well.  We don&#39;t seem to be missing any data.  We are considering using the consultants that helped us with this fire to do some analysis of the database and the queries against the database to optimize performance.  
+   * WMS Glide In Factory
+      * testing glideinWMS v3_2_5 release candidate on GOC-ITB factory
+      * Fixes HTCondorCE support
+      * Contains HTPC patches we&#39;ve been running in production
+
+---+++ Operations This Week
+
+   * Rob Q PTO 5,6/May
+   * Scott PTO 14-19/May (unavailable)
+   * ITB release
+   * WMS Glide In Factory
+      * Plan to upgrade SDSC to v3_2_5 as soon as it is officially released
+
+---++ Software (Tim C.)
+
+   * May release:
+      * Globus UDT driver for !GridFTP
+      * HTCondor CE 1.0
+      * osg-configure and RSV improvements to better support HTCondor CE
+      * !UberFTP 2.8
+      * cctools 4.1.3
+      * VOMS Admin change for suspended and expired users
+      * osg-configure update to handle fetch-crl errors
+      * A bunch of smaller updates
+
+   * github repository for contributed Puppet modules
+      * https://github.com/opensciencegrid/puppet-contrib
+      * Broad announcement going out tomorrow
+
+   * Coming soonish: IPv6 evaluation of OSG software
+   * DRP: Refining our ability to recover Koji; working on offsite backups
+   * Working on adding a UW ITB site, to be maintained by Software/Release teams
+
+
+---++ Release (Tim T.)
+%TABLE{sort=&quot;off&quot;}%
+|  *Version*  |  *Testing*  |  *Freeze*  |  *Release*  | *Notes* |
+| 3.1.33 / 3.2.9 | 2014-04-28 | 2014-05-05 | 2014-05-13 | |
+| 3.1.34 / 3.2.10 | 2014-05-27 | 2014-06-02 | 2014-06-10 | |
+| 3.1.35 / 3.2.11 | 2014-06-23 | 2014-06-30 | 2014-07-08 | |
+
+   * May 13th release
+      * Globus UDT driver for !GridFTP
+      * HTCondor CE 1.0
+         * Initial automated tests
+         * osg-configure and RSV improvements to better support HTCondor CE
+      * VOMS Admin change for suspended and expired users
+      * osg-configure update to handle fetch-crl errors
+      * Hadoop 2.0 patch from Purdue
+      * !UberFTP 2.8 (GOC 19959)
+      * gratia-probe update (GOC 20685)
+      * cctools 4.1.3
+      * osg-configure handles fetch-crl-errors
+      * VO Package update?
+      * other small updates
+---++ User Support (Chander, Mats)
+!GlueX is close to finishing their Data Challenge #2 using OSG opportunistic resources; they used ~5.5M opportunistic hours in the last 30 days.  They have struggled with effectively using Purdue-RCAC (seems similar to what the osg VO has been experiencing for the last few months; need to pursue again).
+
+---++ Security (Mine)
+   * Emergencies/Problems
+      * CRL problems are fixed now. The issue was because aching mechanism used by fetch-crl looks at http header expire value (7 days) to download a new CRL file. In the meantime,  the next update value contained in the CRL file was reduced to 3 days. So the fetch-crl could not pull down any new CRLs because it thought the CRL files did not expire. But of course the next update field was already expired in 3 days but it was too soon to download a new CRL file (7 days). So the authentication failures started. We are going through a root-cause analysis and change management review. We are setting up a meeting to go over the lessons learned from this incident. 
+      * An incident at XSEDE , user banned in XSEDE. No affect on OSG. 
+   * Operations
+      * Time for security controls are approaching. Security team will contact you this summer. 
+      
+   
+ 
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+
+-- Main.RobQ - 29 Apr 2014
+

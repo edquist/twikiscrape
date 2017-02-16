@@ -1,0 +1,28 @@
+---+ Tag-me: Tag Search
+
+%STARTINCLUDE%
+&lt;form name=&quot;tagmesearch&quot; action=&quot;%SCRIPTURL{view}%/%WEB%/%TOPIC%&quot; method=&quot;get&quot;&gt;
+&lt;table class=&quot;tagmeNavigation&quot; border=&quot;0&quot; cellpadding=&quot;3&quot; cellspacing=&quot;0&quot;&gt;&lt;tr&gt;
+&lt;td&gt;&amp;nbsp; &amp;nbsp;&lt;/td&gt;
+&lt;td bgcolor=&quot;#F6F4EB&quot;&gt;&amp;nbsp; [[TagMeViewAllTags][All Tags]] &amp;nbsp;&lt;/td&gt;
+&lt;td&gt;&amp;nbsp;&lt;/td&gt;
+&lt;td bgcolor=&quot;#F6F4EB&quot;&gt;&amp;nbsp; [[%SCRIPTURL{viewauth}%/%WEB%/TagMeViewMyTags][My Tags]] &amp;nbsp;&lt;/td&gt;
+&lt;td&gt;&amp;nbsp;&lt;/td&gt;
+&lt;td bgcolor=&quot;#EAE9DE&quot;&gt;&amp;nbsp; *Tag Search* &amp;nbsp;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=&quot;0&quot; cellpadding=&quot;5&quot; cellspacing=&quot;0&quot; style=&quot;width:100%;&quot;&gt;
+&lt;tr bgcolor=&quot;#EAE9DE&quot;&gt;&lt;td style=&quot;width:100%;&quot;&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr bgcolor=&quot;#F6F4EB&quot;&gt;&lt;td style=&quot;width:100%;&quot;&gt;
+Show topics tagged with 
+&lt;select class=&quot;twikiSelect&quot; name=&quot;tag&quot; multiple=&quot;multiple&quot; size=&quot;4&quot;&gt;
+%TAGME{ tpaction=&quot;showalltags&quot; format=&quot;&lt;option $marker&gt;$tag&lt;/option&gt;&quot; separator=&quot;$n&quot; selection=&quot;%URLPARAM{&quot;tag&quot; multiple=&quot;on&quot; separator=&quot;,&quot;}%&quot; }% &lt;/select&gt;
+&amp;nbsp; by
+&lt;input type=&quot;radio&quot; name=&quot;by&quot; id=&quot;byall&quot; value=&quot;all&quot; %CALC{&quot;$IF($EXACT(%URLPARAM{by}%,me), , checked=\&quot;checked\&quot;)&quot;}% /&gt;&lt;label for=&quot;byall&quot;&gt;all users&lt;/label&gt; &lt;input type=&quot;radio&quot; name=&quot;by&quot; id=&quot;byme&quot; value=&quot;me&quot; %CALC{&quot;$IF($EXACT(%URLPARAM{by}%,me), checked=\&quot;checked\&quot;)&quot;}% /&gt;&lt;label for=&quot;byme&quot;&gt;me only&lt;/label&gt; &lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;Go&quot; /&gt; &lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+&lt;/form&gt;
+
+%TAGME{ tpaction=&quot;query&quot; web=&quot;%URLPARAM{qweb}%&quot; topic=&quot;%URLPARAM{qtopic}%&quot; tag=&quot;%URLPARAM{&quot;tag&quot; multiple=&quot;on&quot; separator=&quot;,&quot;}%&quot; by=&quot;%URLPARAM{by}%&quot; }%
+%STOPINCLUDE%
+
+%BR%
+&lt;span class=&quot;twikiGrayText&quot;&gt;Other tag options: [[TagMeCreateNewTag][Create new tag]], &lt;a href=&quot;%SCRIPTURL{view}%/%TWIKIWEB%/TagMeRenameTag?renametagfrom=%URLPARAM{tag}%&quot;&gt;Rename tag&lt;/a&gt;, &lt;a href=&quot;%SCRIPTURL{view}%/%TWIKIWEB%/TagMeDeleteTag?deletetag=%URLPARAM{tag}%&quot;&gt;Delete tag&lt;/a&gt;&lt;/span&gt;

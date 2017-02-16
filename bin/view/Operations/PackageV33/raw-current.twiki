@@ -1,0 +1,149 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;VO Packages&quot; }%*
+%TOC{depth=&quot;2&quot;}%
+
+---+ v33
+
+---++ belle Vo Added
+
+---+++ vomses files changes
+Added
+&lt;verbatim&gt;
+&quot;belle&quot; &quot;voms.cc.kek.jp&quot; &quot;15020&quot; &quot;/C=JP/O=KEK/OU=CRC/CN=host/voms.cc.kek.jp&quot; &quot;belle&quot;
+&lt;/verbatim&gt;
+
+---+++ edg_mkgridmap.conf changes
+Added 
+&lt;verbatim&gt;
+#USER-VO-MAP belle belle - 44 - Tom Fifeld (fifieldt@unimelb.edu.au)
+group vomss://voms.cc.kek.jp:8443/voms/belle belle
+&lt;/verbatim&gt;
+
+---+++ GUMS Config Changes
+Added 
+&lt;verbatim&gt;
+&lt;!-- 44 belle --&gt;
+
+&lt;groupMapping name=&quot;belle&quot; accountingVo=&quot;belle&quot; accountingDesc=&quot;belle&quot;&gt;
+        &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+        url=&quot;https://voms.cc.kek.jp:8443/voms/belle/services/VOMSAdmin&quot; 
+        persistenceFactory=&quot;mysql&quot; 
+        name=&quot;belle&quot; 
+        voGroup=&quot;/belle&quot; 
+        sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+        sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+        matchFQAN=&quot;exact&quot;/&gt;
+        &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;belle&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;/verbatim&gt;
+
+Plus added belle to hostGroup className.
+
+---+++ UNIX Accounts
+Add:  belle
+
+---++ !MicroBoone Added to gums.template (Sub VO of FERMIGRID)
+
+---+++ GUMS Config Changes
+Added
+&lt;verbatim&gt;
+&lt;groupMapping name=&quot;uboone&quot; accountingVo=&quot;microboone&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+        &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+        url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+        persistenceFactory=&quot;mysql&quot; 
+        name=&quot;microboone&quot; 
+        voGroup=&quot;/fermilab/uboone&quot; 
+        sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+        sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+        &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;uboone&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;uboonepro&quot; accountingVo=&quot;microboone&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+        &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+        url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+        persistenceFactory=&quot;mysql&quot; 
+        name=&quot;uboonepro&quot; 
+        voGroup=&quot;/fermilab/uboone&quot; 
+        voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+        sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+        &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;uboonepro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;uboonegli&quot; accountingVo=&quot;microboone&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+        &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+        url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+        persistenceFactory=&quot;mysql&quot; 
+        name=&quot;uboonegli&quot; 
+        voGroup=&quot;/fermilab/uboone&quot; 
+        voRole=&quot;pilot&quot; 
+        sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+        sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+        &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;uboonegli&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;ubooneana&quot; accountingVo=&quot;microboone&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+        &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+        url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; 
+        persistenceFactory=&quot;mysql&quot; 
+        name=&quot;ubooneana&quot; 
+        voGroup=&quot;/fermilab/uboone&quot; 
+        voRole=&quot;Analysis&quot; 
+        sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; 
+        sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+        &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;ubooneana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;/verbatim&gt;
+
+Plus added uboone,uboonepro,uboonegil,ubooneana to hostGrop className.
+
+---+++ UNIX Accounts (GUMS users only)
+
+Add uboone, uboonepro, uboonegil, ubooneana local accounts.
+
+---++ !DZero Services Added to gums.template
+
+---+++ edg-mkgridmap.conf 
+
+Added
+&lt;verbatim&gt;
+group vomss://voms.fnal.gov:8443/voms/dzero?/dzero/services sam
+&lt;/verbatim&gt;
+
+---+++ GUMS Config Changes
+
+Added
+&lt;verbatim&gt;
+&lt;groupMapping name=&#39;dzeroservice&#39; accountingVo=&#39;dzero&#39; accountingDesc=&#39;DZERO&#39;&gt;
+    &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+    url=&#39;https://voms.fnal.gov:8443/voms/dzero/services/VOMSAdmin&#39;
+    persistenceFactory=&#39;mysql&#39;
+    name=&#39;dzeroservice&#39;
+    voGroup=&quot;/dzero/services&quot;
+    sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+    sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;
+    matchFQAN=&quot;exact&quot; acceptProxyWithoutFQAN=&quot;true&quot; /&gt;
+    &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39;
+    groupName=&#39;sam&#39; /&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Plus added dezeroservice to hostGrop className.
+
+---+++ UNIX Accounts 
+
+Add sam local account.
+
+---++ VO Package Files Location
+
+   * For ITB VO Files see:
+
+http://software-itb.grid.iu.edu/pacman/tarballs/vo-package/
+
+   * For Production VO Files see:
+
+http://software.grid.iu.edu/pacman/tarballs/vo-package/
+
+-- Main.RobQ - 24 Mar 2010%BR%
+
+-- Main.RobQ - 27 Sep 2010

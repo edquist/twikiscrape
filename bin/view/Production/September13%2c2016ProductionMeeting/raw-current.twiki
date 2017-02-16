@@ -1,0 +1,137 @@
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-812-856-7060, 231000# 
+   * [[https://bridge.iu.edu/webapp/#/][Video Link]]
+
+---++ Announcements:   
+   * FNAL planned outage, [[http://osggoc.blogspot.com/2016/09/scheduled-fermilab-power-outage.html][Announcement]]
+
+---++ Action/Significant Items: 
+   * CMS is back to running at full load. Projecting record number of CPU hours this week/
+   * !PerfSonar has returned to service and remains stable, Root Cause Analysis underway.
+   * Shawn Mckee (Networking) will attend this meeting
+
+---++ Attendees: 
+   * Scott, Kyle, Jeny, Tim C, Tim T, Krista, Armen, Shawn, Ken
+
+---++ Apologies:
+   * Rob Q (one time conflict), Xin (travel)
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status. 
+      * USATLAS total production over the past week was quite stable, at the average level of 50-60K running job slots.      
+   * Job statistics for last week.     
+      * Gratia report: 1.3M pilots, 4.M walltime hours, and CPU/walltime ratio of 82% (for single core jobs)
+      * 1.8M real Jobs reported from the Atlas dashboard.  
+
+---++ FIFE - !Fabric for Frontier Experiments (Tanya)
+
+   * Offsite production ramping up again (Mu2e and NOvA)
+      * &lt;img src=&quot;https://twiki.opensciencegrid.org/twiki/pub/Production/September13%2c2016ProductionMeeting/Screen_Shot_2016-09-13_at_3.09.44_PM.png&quot;/&gt;
+      * !NOvA software update is allowing them to run at Nebraska again
+   * Progress on running DES jobs at MIT (GUMS update problem fixed)
+
+---++ CMS (Tony &amp; Krista)
+   * CMS Production for the week:
+      * 9,718,901 hours
+      * 191,331 pilots
+
+---++ Grid Operations Center (Scott)
+   * [[http://tinyurl.com/pre26vw][GOC Services Availability/Reliability]]
+   * Current Status: [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][&lt;img src=&quot;http://steige.grid.iu.edu/steige/status_current.png&quot;&gt;]]
+      * [[http://monitor.grid.iu.edu/availability/status_overview.html][Overview board.]]
+   * &lt;a href=&quot;http://reports.grid.iu.edu/reports/&quot;&gt;Reports current: &lt;img src=&quot;http://steige.grid.iu.edu/steige/status_reports.png&quot;&gt;&lt;/a&gt;
+   * [[http://maddash.aglt2.org/maddash-webui/index.cgi?dashboard=OSG%20Grid%20Operations%20Center%20Test%20Mesh%20Config][PerfSonar]] service
+   * &lt;img src=&quot;http://gratiaweb1.grid.iu.edu/gratiastatic/today/osg_wall_hours.png&quot;/&gt;
+   * &lt;img src=&quot;http://osg-flock.grid.iu.edu/monitoring/condor/condor_7day.png&quot; width=&#39;630&#39; height=&#39;390&#39;  /&gt;&lt;br&gt;
+   * Grid Operations Center
+      * Production release. [[http://osggoc.blogspot.com/2016/09/goc-service-update-tuesday-september.html][Release note]]
+      * [[http://collector1.grid.iu.edu/][ce-view]] repaired on production condor collectors (configuration error)
+      * lustre capable compute element built and running at IU (a read/write global file system)
+      * !PerfSonar is behaving properly, repair mechanism is unknown, watching the affected component.
+   * !FermiGrid Ops
+      * voms1 will be down on Sept 15th from 9:30 am - 12:30pm for reinstall/reconfig
+      * Any clients contacting voms1 during the above window will fail
+      * POWER OUTAGE at Feynman Computing Center on Sept 17th from 6am.
+      * In preparation of outage all services including GUMS, VOMS , GRATIA will be down more than 24hrs. 
+      * Outage is from Friday September 16 4:00 PM until Saturday September 17 6:00 PM (estimate).
+   * WMS Glide In Factory
+      * !FactoryOps discuss with other VOs whether roll back to htcondor tarball shipped by pilots to version 8.4.2 is OK by everyone
+      * if above OK do a switch on all factories
+
+---++ Networking (Shawn)
+
+---++ Production Support (Ken)
+
+   * Progress at Stanford (jobs getting through; working on multicore pilots now)
+   * Work resuming at JINR for new !HTCondorCE (will support only !NOvA and !STAR at first)
+
+
+---++ Software (Tim C.)
+
+October release (3.3.17):
+   * Update to CVMFS 2.3.1 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-2408][SW-2408]])
+   * Update to !XRootD 4.4.0 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-2443][SW-2443]])
+   * Improve EL&amp;nbsp;7 packaging, esp. for systemd (e.g., but not limited to, [[https://jira.opensciencegrid.org/browse/SOFTWARE-2444][SW-2444]])
+
+
+---++ Release (Tim T.)
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| September | 3.3.16 | 2016-08-29 | 2016-09-06 | 2016-09-13 | 5 week cycle |
+| October | 3.3.17 | 2016-09-26 | 2016-10-03 | 2016-10-11 | |
+| November | 3.3.18 | 2016-10-24 | 2016-10-31 | 2016-11-08 | |
+
+[[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.3.16%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][September 13th Release]]
+
+   * OSG 3.3.16
+      * Updated most Globus Packages to latest available from EPEL
+         * Note: Now Globus Toolkit strictly checks host names against certificates
+         * The !MyProxy server now produces RFC compliant proxies
+      * BLAHP 1.18.25
+         * Added the ability to set SGE parallel environment policy
+         * Added multi-core support for PBS Pro
+         * Added mutli-core, partition, and remote_cerequirement support for Slurm
+      * [[http://glideinwms.fnal.gov/doc.v3_2_15/history.html][GlideinWMS 3.2.15]]
+      * Fixed major scalability problem in GUMS on EL7
+      * [[https://github.com/opensciencegrid/htcondor-ce/releases/tag/v2.0.8][HTCondor-CE 2.0.8]]
+         * Allow mapping of Terana eScience hostcerts (SOFTWARE-2433)
+         * Force &#39;condor_ce_q -allusers&#39; until QUEUE_SUPER_USER is fixed to be able to use CERTIFICATE_MAPFILE in 8.5.6 (SOFTWARE-2412)
+         * Fixed !OnExitHold to be set to expressions rather than their evaluated forms
+         * Ensure lockdir and rundir exist with correct permissions on startup
+         * Removed the HTCondor-CE init script on EL7 (SOFTWARE-2419)
+      * Fixed load-balancing in Globus !GridFTP when using IPv6 addresses
+      * Added the HTCondor !CREAM GAHP for EL7 platforms
+      * Completed porting components of OSG Software Stack to EL7
+      * Added [[https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/InstallRsvGlideinwmsTester][RSV GlideinWMS Tester]] for VO Front-ends to test site support
+      * Updated to [[https://github.com/opensciencegrid/osg-vo-config/releases/tag/release-68-3][VO Package v68]]: Added project8 VO
+      * [[https://github.com/opensciencegrid/osg-pki-tools/releases/tag/1.2.19][osg-pki-tools 1.2.19]]
+         * Reword &#39;bad VO info&#39; error from osg-*cert-request
+         * Fix formatting of CSRs
+      * Updated xrootd-dsi RPM to direct administrators where to add configuration changes and not destroy those changes upon update.
+      * Updated to lcas-lcmaps-gt4-interface to version 0.3.1: Added support for Globus &#39;sharing&#39; service
+      * Simplified Gratia !GridFTP probe by removing dependencies on gums-client
+      * Added JSON interfaces in GUMS for VO mapping
+      * Updated osg-configure package to require condor-python
+      * Added support for user certificates to osg-ca-generator
+
+---++ Security
+
+   * Vulnerabilities/Incidents
+      * Vulnerability reported in MySQL application [[http://legalhackers.com/advisories/MySQL-Exploit-Remote-Root-Code-Execution-Privesc-CVE-2016-6662.html][CVE-2016-6662]]. This vulnerability could potentially allow an attacker to execute arbitrary code with root privileges and gain control of the server hosting the affected version of MySQL.
+      * MariaDB and PerconaDB are also affected and published security updates
+         * [[https://mariadb.org/mariadb-server-versions-remote-root-code-execution-vulnerability-cve-2016-6662/][MariaDB]]
+         * [[https://www.percona.com/blog/2016/09/12/percona-server-critical-update-cve-2016-6662/][PerconaDB]]
+      * An undisclosed vulnerability CVE-2016-6663 will be published shortly. &quot;The undisclosed vulnerability makes it easy for certain attackers to create /var/lib/mysql/my.cnf file with arbitrary contents without the FILE privilege requirement.&quot;
+   * OSG considers that having the same GA submitting and approving a request is the expected behavior. We trust the GAs assigned to a VO and their requests. That&#39;s why others GAs don&#39;t get notified if the requestor is a GA herself.  https://ticket.grid.iu.edu/31172
+   * DigiCert API has been disabled for OSG: https://ticket.opensciencegrid.org/30812
+   * Security training for new VOs will be conducted by Jeny and Zhalak(new member of OSG Security Team) as part of onboarding process.
+
+---++ Communication (Kyle)
+
+   * Will put a set of 14 networking pages (per Shawn&#39;s request) on ITB website before moving to production.
+
+
+-- Main.ScottTeige - 13 Sep 2016
+

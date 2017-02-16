@@ -1,0 +1,105 @@
+---+ OSG Technology Area Meeting, 7 March 2016
+
+*Coordinates:* Conference: 857-216-4999, PIN: 32390; https://www.uberconference.com/osgcat
+
+*Attending:* !BrianB, !BrianL, Carl, Derek, Edgar, Jeff, Mat, Suchandra, !TimC, !TimT
+&lt;!-- !BrianB, !BrianL, Carl, Derek, Edgar, Jeff, !JohnH, Jose, Marian, Mat, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+
+---+++ Triage Duty
+   * This week: !BrianL
+   * Next week: Carl
+   * 8 (0) open tickets
+
+---+++ JIRA
+   * Open: 194 (&amp;minus;6)
+   * In Progress: 24 (&amp;minus;3)
+   * Ready for Testing: 0 (&amp;minus;17)
+   * Ready for Release: 29 (+22)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Development Freeze* | *Package Freeze* | *Release* | *Notes* |
+| March | 3.3.10 / 3.2.36 | 2016-02-22 | 2016-02-29 | 2016-03-08 | |
+| April | 3.3.11 / 3.2.37 | 2016-03-28 | 2016-04-04 | 2016-04-12 | 5 week cycle |
+| May | 3.3.12 / 3.2.38 | 2016-04-25 | 2016-05-02 | 2016-05-10 | |
+
+*Notes:* Additional “urgent” releases may be scheduled for the 4th Tuesday of each month. The *Testing* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+
+---++ OSG Software Team
+
+---+++ Discussions
+
+!GitHub plans converging. No major open issues that are holding things up.
+
+!BeStMan, VOMS API Java, etc. At the point of setting up a reproducible environment in !FermiCloud for testing. Next step is to tune the log4j properties to get good logging. Also, there was discussion about moving to VOMS API Java v3 — !BrianB thinks that this would be fairly easy for !BeStMan and GUMS, but well nigh impossible (or at least impractical) for VOMS Admin itself. We will continue to investigate both threads.
+
+---+++ Support Update
+   * Clemson (!BrianL) - Mem requests not being forwarded to batch system. Troubleshooting session with admin today, suspected bug in the BLAHP.
+   * Colorado (Marian) - Awaiting reponse about transfering SGE parameters into BLAHP ([[https://jira.opensciencegrid.org/browse/SOFTWARE-2199][SOFTWARE-2199]]). Issues with BLAHP and lcg-cp SAM tests
+   * FIU (!BrianL) - Assisting admins set up new CE for CMS Tier3
+   * Harvard (Marian/!BrianL) - Troubleshooting BLAHP SLURM submission
+   * MIT (!BrianL) - Neha assisting with GUMS issues
+   * OU (!BrianL) - Setting up new CentOS7 CE in front of their SLURM cluster
+   * Purdue (!BrianL) - Help Erik Gough investigate lengthy pool fill times
+
+---+++ Major Activities
+   * Support EL 7 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1541][SW-1541]])
+   * Fix routine automated test failures ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1996][SW-1996]])
+   * Documentation
+   * [[SW024_ConsolidateRepos][Software repository consolidation]]
+   * IPv6 evaluation ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1525][SW-1525]])
+
+
+---++ OSG Release Team
+   * March 8th Release - OSG 3.3.10 and OSG 3.2.36
+      * Tim Theisen is handling the [[https://jira.opensciencegrid.org/issues/?jql=project%20%3D%20SOFTWARE%20AND%20labels%20in%20%283.3.10%2C%203.2.36%29%20ORDER%20BY%20status%20ASC%2C%20priority%20DESC%2C%20assignee%20ASC][March 8th Release]]
+      * Release tomorrow
+
+%TABLE{sort=&quot;off&quot;}%
+| *3.2.36* | *Both* | *3.3.10* | *Total* | *Status* |
+| 0 (+0) | 0 (-1) | 0 (+0) | 0 (-1) | Open |
+| 0 (+0) | 0 (+0) | 1 (-2) | 1 (-2) | In Progress |
+| 0 (-1) | 0 (-2) | 0 (-16) | 0 (-19) | Ready for Testing |
+| 1 (+1) | 5 (+4) | 23 (+17) | 29 (+22) | Ready for Release |
+| 1 (+0) | 5 (+1) | 24 (-1) | 30 (+0) | Totals |
+
+3.3 series is the primary focus; only security updates and critical bug fixes for 3.2 series
+
+   * OSG 3.2.36 and OSG 3.3.10
+      * VO Package v64 - CILogon (OSG CA) migration
+      * CA certificates based on IGTF 1.72
+      * osg-ca-certs-updater: remove check for *-ca-certs-compat packages
+      * GFAL environment variables in tarballs
+   * OSG 3.3.10 Only
+      * HTCondor CE 2.0.2
+         * HTCondor CE view installable alongside HTCondor CE collector
+      * BLAHP 1.18.17
+         * SGE changes
+         * Handle LSF suspended states
+         * Report necessary attributes to gratia
+      * osg-configure: propagate SGE parameters into BLAHP
+      * EL7 Support
+         * xrootd-hdfs
+         * !GridFTP-HDFS plugin
+      * GUMS 1.5.2
+      * HTCondor 8.4.4
+      * gratia probes
+         * Fixed parsing of !GridJobIds starting with &quot;batch&quot;
+         * Eliminate file glob search from certinfo file lookup
+      * Updated configuration templates for !StashCache
+      * !AutoPyFactory
+      * Upcoming
+         * HTCondor 8.5.2
+   * OSG 3.2.36 Only
+      * emi-trustmanager
+
+---+++ Notes
+Policy and procedure document for releasing software to the GOC repository is expected to be completed this week.
+
+---++ OSG Investigations Team
+   * OASIS: Working toward a March release that has a number of small cleanups.  Particularly, we&#39;re moving away from the problematic NAS device and upgrading to CVMFS server 2.2.0.
+   * 2 weeks ago, had an extensive Gratia planning day at FNAL.  This resulted in plans for a new prototype service based on ElasticSearch + RabbitMQ using the same frontend parts of the collector.  Tanya is working on the writeup.
+   * New &quot;secure CVMFS&quot; features have been submitted upstream.  Hope to have these in an April release of CVMFS 2.2.2.

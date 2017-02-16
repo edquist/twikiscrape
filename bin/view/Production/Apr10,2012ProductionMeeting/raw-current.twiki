@@ -1,0 +1,111 @@
+-- Main.DanFraser - 04 Apr 2012
+---++ Action/Significant Items:
+   * The problem reported last week with DOE grids CA (not issuing renewal or service certs) has now been resolved thanks to lots of work from Mine as well as the GOC team. Information has been requested from the DOE grids team concerning what happened or a root cause analysis, but right now the cause of the issue has not been reported. 
+   * It is urgent that Mac (Lion and Snow Leopard) users update their Java asap. Java is being actively exploited and a large number of Mac users have been compromised (~500,000). (Mine)  
+
+---++ Attendees:
+   * Xin, Armen, Suchandra, Tony, Marco, Rob Q., Mine, Chander, Dan
+ 
+---++ CMS (Burt / Tony)
+   * Job statistics for last week
+      * 12,721 jobs/day
+
+   * Transfer statisics for last week
+      * ~292 TB/day
+
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * LHC first collisions with stable beams started Thu-Apr.5, and since then smooth operation with increasing bunches for each new fill (from 3 to 624 at the moment). Current collected luminosity for ATLAS 150 pb-1 (compared to ~5000 pb-1 last year).
+      * US ATLAS production during the week was overall stable, at the average level of 18-20K running jobs (some drop Fri-Sat due to dCache crash at BNL, recovered shortly). Mostly production is simulation jobs of new MC12 bulk production. 
+   * Job statistics for last week.      
+      * Gratia report: 1.4M pilot jobs run on USATLAS sites, with CPU/walltime ratio of 92%  
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 940K
+   * Data Transfer statistics for last week
+      * Data transfer rate was 200~400TB/day at BNL T1 in last week.  
+   * Issues
+
+---++ Grid Operations Center (Rob Q.)
+---+++ Operations Last Week
+   * [[http://tinyurl.com/74grr6b][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * [[http://osggoc.blogspot.com/2012/04/update-doegrids-certificate-service_04.html][DoEGrids outage]]
+      * Affected end user cert renewal, grid admin, and service certs. Some interfaces still worked (cert-request). We are not clear on the root cause of this outage, we are waiting for an explanation from DOEGrids. A configuration change at DOEGrids fixed the issue. 
+   * [[http://osggoc.blogspot.com/2012/04/goc-service-update-tuesday-april-10th.html][ITB release]]
+      * Services moving to new IP range
+         * Will work closely with all service providers to be sure this is transparent. We should let Glidein Ops know when the change is made and when the old IPs go away. 
+   * !FermiGrid
+      * Should the display-itb be querying the production Gratia collector? Some queries are causing issues at the collector. 
+   * WMS Glide In Factory
+      * Continued addressing load issues at UCSD Factory:
+         * Reduced number of condor schedds from 20 to 9
+         * Saw gridmanagers getting stuck in weird loops.  Jaime discovered a bug and supplied us a patch.  Our load improved greatly since applying the patch.
+      * Added OSG XSEDE to ~12 new sites for glidein submission
+      * Discovered glideinWMS bug where if we put one VO in temporary downtime from submitting to sites, others get put down as well.
+         * SBGrid submission is under extended maintenance... Engage to Tusker were affected. 
+         * We put in a temporary workaround.
+      * Upgraded UCSD factory to glideinWMS 2.5.7 on Fri Apr 6
+         * This fixes the auto held job removal issues we were hitting
+
+---+++ Operations This Week
+   * Production release
+      * Physical move of two servers out of the production rack
+      * Relocation of some VMs to new hosts
+      * Services moving to new IP range
+      * Version upgrade for Google maps, partial rollback on repo
+   * !FermiGrid
+      * April, 10 VOMRS will be be going away for all voms.opensciencegrid.org hosted VOs. 
+   * WMS Glide In Factory
+      * We will upgrade GOC Production to use glideinWMS 2.5.7 on tomorrow&#39;s production window.
+         * GOC will be in contact with glidein ops to be sure there is no physical maintenance going on during this upgrade. 
+   * New VO Package with LSST send to ITB for testing
+
+---++ Campus Infrastructures / HTPC (Dan, Brooklin)
+
+   * Started tracking metrics for Campus Infrastructures: email list members; number of deployed infrastructures profiled; number of best practices shared
+   * Bosco v0 is complete and released. We have finalized the Bosco v1 feature list and have almost completed the work plan. Target is a release by June 30.
+   * Condor 7.7.6 is in the final release stage. This version contains the elements required for dynamic provisioning to better support whole machine jobs.
+
+---++ Integration (Suchandra, Alain)
+   * OSG release today
+      * Primarily update of ca certs
+   * Working on major release:
+      * SL6 CE support
+      * Fixes for several other components
+      * ETA ~2 weeks
+ 
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 3.0.9 / 1.2.28
+      *       19 (-1) OSG 3.0 (       9 are 3.0.9)
+      *       82 (0) OSG 1.2.X resources (      14 are 1.2.28)
+      *        2 (0) OSG 1.0.X resources (       0 are 1.0.6)
+      *        1 (-1) OSG 1.0.0 resources
+
+---++ User Support (Chander, Mats)
+   * Started planning transition of jobs/users from RENCI engage submit host; first will be Baker Lab flocking to move to UCSD
+   * Need to plan the re-homing of the Virginia Tech Campus Grid flocking; who in OSG staff supports that team?
+   * Recent contact with U-Maryland about connecting a 1500 core cluster to OSG.  They are part of the Bioinformatics community and are part of a gene sequencing center at http://www.igs.umaryland.edu/ . They had originally started this dialog with John !McGee (Engage) but it now makes sense to transition this work to User Support.  The idea is to connect their site in VO=osg; and they hope to get that accomplished in 1-2 months.  
+
+
+
+---++ Security (Mine)
+   * Vacation Notices: Mine will be gone from 4/13/2012 till 5/1/2012. Anand will also be gone from 4/12/2012 till 5/7/2012. Kevin Hill will be attending these calls. 
+   * Emergencies/Vulnerabilities/Incidents
+      * DOEGrids CA outage. Everything is back to normal. Warren from LIGO emailed and confirmed that everything works as accepted. Asked for root-cause analysis. Have not heard form DOEgrids yet. 
+      * Mac Java Update. Affects the end user. Announcement is sent today. Large number of Mac users are compromised (500,000). Actively exploited. 
+      * Another VOMS vulnerability. Classified low risk. Will wait until patch makes it into EPEL. 
+      * Mysql 5.0.X series. end of life support. Contacted software team about this. 
+   * Normal operations
+      * IGTF release is completed. Sent to ITB, following the regular process. 
+      * All technical setup for incident drill is completed. We will conduct this once vacations are completed. Prospective sites are contacted and met with during AHM. 
+      * Cert-Request script looks up list of VOs when submitting a cert request. We were looking for a soltuion where script links a live copy of VO list -- right now it is a static list. We found out it is not easily possible. We wil request GOC to enhance new VO registration process with an email to the security team so we can add new VOs. Since this is not a frequent activity, this solution will be tolerable. 
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings

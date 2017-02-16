@@ -1,0 +1,94 @@
+&lt;sticky&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;title&gt;Document Tests&lt;/title&gt;
+&lt;style&gt;
+.hidden {
+	visibility:hidden;
+}
+.visible {
+	visibility:visible;
+}
+
+&lt;/style&gt;
+&lt;link href=&quot;https://twiki.grid.iu.edu/twiki/pub/TWiki/tests/osg-docs.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;
+&lt;/head&gt;
+&lt;header&gt;
+&lt;p&gt; news about contact &lt;/p&gt;
+&lt;/header&gt;
+&lt;body&gt;
+&lt;img src=&quot;https://twiki.grid.iu.edu/twiki/pub/TWiki/tests/osg-logo-nowords.gif&quot; class=&quot;logo&quot; height=&quot;80px&quot; width=&quot;150px&quot;&gt;
+&lt;h1&gt; Welcome to the &lt;span&gt;Open Science Grid&lt;/span&gt; Documentation Hub &lt;/h1&gt;
+&lt;h2&gt; What can we help you find today? &lt;/h2&gt;
+&lt;p&gt;
+I would like to... 
+&lt;select id = &quot;browseOrSearch&quot; onchange=&quot;reset2()&quot;&gt;
+  &lt;option value=&quot;0&quot;&gt; &lt;/option&gt;
+  &lt;option value=&quot;1&quot;&gt;search&lt;/option&gt;
+  &lt;option value=&quot;2&quot;&gt;browse&lt;/option&gt;
+&lt;/select&gt;
+the documentation intended for 
+&lt;select id = &quot;whichweb&quot;&gt;
+  &lt;option value=&quot;3&quot;&gt; &lt;/option&gt;
+  &lt;option value=&quot;4&quot;&gt;security&lt;/option&gt;
+  &lt;option value=&quot;5&quot;&gt;operations&lt;/option&gt;
+&lt;/select&gt;
+&lt;/p&gt;
+&lt;script&gt;
+function reset2(){
+	document.getElementById(&#39;whichweb&#39;).value = &quot;&quot;;
+	document.getElementById(&#39;OperationsSearch&#39;).setAttribute(&quot;class&quot;, &quot;hidden&quot;);
+    document.getElementById(&#39;SecuritySearch&#39;).setAttribute(&quot;class&quot;, &quot;hidden&quot;);
+};
+document.getElementById(&#39;whichweb&#39;).addEventListener(&#39;change&#39;, toggleVisibility);
+function toggleVisibility(){
+	var men1 = document.getElementById(&quot;browseOrSearch&quot;)
+	var men2 = document.getElementById(&quot;whichweb&quot;)
+if (men1.value==1 &amp;&amp; men2.value==5){
+ document.getElementById(&#39;OperationsSearch&#39;).setAttribute(&quot;class&quot;, &quot;visible&quot;);
+ document.getElementById(&#39;SecuritySearch&#39;).setAttribute(&quot;class&quot;, &quot;hidden&quot;);
+}
+else if (men1.value==1 &amp;&amp; men2.value==4){
+ document.getElementById(&#39;OperationsSearch&#39;).setAttribute(&quot;class&quot;, &quot;hidden&quot;);
+ document.getElementById(&#39;SecuritySearch&#39;).setAttribute(&quot;class&quot;, &quot;visible&quot;);
+}
+else if (men1.value==2 &amp;&amp; men2.value==5){
+ window.open (&quot;https://twiki.grid.iu.edu/bin/view/Operations&quot;,&quot;_self&quot;);
+ document.getElementById(&#39;OperationsSearch&#39;).setAttribute(&quot;class&quot;, &quot;hidden&quot;);
+ document.getElementById(&#39;SecuritySearch&#39;).setAttribute(&quot;class&quot;, &quot;hidden&quot;);
+}
+else if (men1.value==2 &amp;&amp; men2.value==4){
+ window.open (&quot;https://twiki.grid.iu.edu/bin/view/Security&quot;,&quot;_self&quot;);
+ document.getElementById(&#39;OperationsSearch&#39;).setAttribute(&quot;class&quot;, &quot;hidden&quot;);
+ document.getElementById(&#39;SecuritySearch&#39;).setAttribute(&quot;class&quot;, &quot;hidden&quot;);
+}
+else {
+document.getElementById(&#39;OperationsSearch&#39;).setAttribute(&quot;class&quot;, &quot;hidden&quot;);
+document.getElementById(&#39;SecuritySearch&#39;).setAttribute(&quot;class&quot;, &quot;hidden&quot;);
+	};
+}
+&lt;/script&gt;
+&lt;/p&gt;
+&lt;form name=&quot;quickSearchForm&quot; id=&quot;SecuritySearch&quot; class=&quot;hidden&quot; action=&quot;%SCRIPTURLPATH{view}%/Security/WebSearch&quot;&gt;%IF{&quot; &#39;%URLPARAM{&quot;search&quot; encode=&quot;entity&quot; scope=&quot;topic&quot;}%&#39; = &#39;&#39; &quot; then=&quot;&lt;input type=\&quot;text\&quot; class=\&quot;twikiInputField patternFormFieldDefaultColor\&quot; name=\&quot;search\&quot; value=\&quot;%MAKETEXT{&quot;Specific Web Search (Currently Set To Security)&quot;}%\&quot; size=\&quot;100\&quot; onfocus=\&quot;clearDefaultandCSS(this);\&quot; onblur=\&quot;setDefaultText(this);\&quot; /&gt;&quot; else=&quot;&lt;input type=\&quot;text\&quot; class=\&quot;twikiInputField\&quot; name=\&quot;search\&quot; value=\&quot;%URLPARAM{ &quot;search&quot; encode=&quot;entity&quot; scope=&quot;topic&quot; }%\&quot; size=\&quot;14\&quot; /&gt;&lt;input type=&quot;hidden&quot; name=&quot;web&quot; value=&quot;Security&quot; /&gt;&quot;}%&lt;/form&gt;
+
+&lt;form name=&quot;quickSearchForm&quot; id=&quot;OperationsSearch&quot; class=&quot;hidden&quot; action=&quot;%SCRIPTURLPATH{view}%/Operations/WebSearch&quot;&gt;%IF{&quot; &#39;%URLPARAM{&quot;search&quot; encode=&quot;entity&quot; scope=&quot;topic&quot;}%&#39; = &#39;&#39; &quot; then=&quot;&lt;input type=\&quot;text\&quot; class=\&quot;twikiInputField patternFormFieldDefaultColor\&quot; name=\&quot;search\&quot; value=\&quot;%MAKETEXT{&quot;Specific Web Search (Currently Set To Operations)&quot;}%\&quot; size=\&quot;100\&quot; onfocus=\&quot;clearDefaultandCSS(this);\&quot; onblur=\&quot;setDefaultText(this);\&quot; /&gt;&quot; else=&quot;&lt;input type=\&quot;text\&quot; class=\&quot;twikiInputField\&quot; name=\&quot;search\&quot; value=\&quot;%URLPARAM{ &quot;search&quot; encode=&quot;entity&quot; scope=&quot;topic&quot; }%\&quot; size=\&quot;14\&quot; /&gt;&lt;input type=&quot;hidden&quot; name=&quot;web&quot; value=&quot;Operations&quot; /&gt;&quot;}%&lt;/form&gt;
+&lt;/body&gt;
+&lt;footer&gt;
+&lt;table id=&quot;bottomtable&quot;&gt;
+&lt;tr&gt;
+&lt;td class=&quot;tablepad&quot;&gt;
+&lt;a href=&quot;http://ticket.opensciencegrid.org/submit&quot;&gt; I would prefer to open a support ticket with osg operations &lt;/a&gt;
+&lt;/td&gt;
+&lt;td class=&quot;tablepad&quot;&gt;
+&lt;a href=&quot;mailto:goc@opensciencegrid.org&quot;&gt; I would like to send an email to someone who can answer my questions &lt;/a&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/footer&gt;
+&lt;/html&gt;
+&lt;/sticky&gt;
+
+-- Main.ElizabethChism - 11 Jun 2015
+

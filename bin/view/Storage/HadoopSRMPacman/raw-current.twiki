@@ -1,0 +1,150 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+---+ Pacman Installation
+
+*Beware: The pacman installation method is deprecated!  Do not use for new installs.*
+
+Install the latest BeStMan from the OSG with pacman.
+
+If you are not using GUMS/PRIMA for authentication, first set:
+&lt;verbatim&gt;
+export VDT_NO_PRIMA=1
+&lt;/verbatim&gt;
+
+GUMS users don&#39;t need to set any special environment variables.  Next, run
+&lt;verbatim&gt;
+pacman -get http://t2.unl.edu/store/cache:Hadoop-Bestman
+&lt;/verbatim&gt;
+
+If you are using GUMS, make sure you have set =VDT_GUMS_HOST= to the
+hostname of the GUMS server.  This will install the BeStMan server
+with the Ganglia load-balancing plugin.
+
+---+ Configuration
+
+The BeStMan configuration file is in =$VDT_LOCATION/bestman/conf/bestman.rc=.
+The following configuration options are of interest:
+   
+   $ =supportedProtocolList=: semi-colon separated list of accessible
+      servers, including the protocol, hostname and port for each.
+      For example: =gsiftp://red-gridftp1.unl.edu:5000;gsiftp://dcache-s01.unl.edu:5000=
+   $ =noSudoOnLs=: use =sudo= to perform =ls= (default: True). Enable
+      this option if the SRM daemon&#39;s UID can&#39;t list a portion of
+      your namespace.
+   $ =staticTokenList=: list of statically-configured space tokens.
+      See the in-file help text for more information.
+   $ =GUMSserviceURL=: URL for GUMS lookups.
+   $ =accessFileSysViaSudo=: use =sudo= to perform POSIX operations
+     in the namespace. Enable this option or the server&#39;s =srmMkdir=
+     commands will result in directories owned by root.
+
+Add the following lines to =/etc/sudoers= so that BeStMan can
+manipulate the filesystem namespace:
+
+&lt;verbatim&gt;
+Cmnd_Alias SRM_CMD = /bin/rm, /bin/mkdir, /bin/rmdir, /bin/mv, /bin/cp, /bin/ls
+Runas_Alias SRM_USR = ALL, !root
+daemon     ALL=(SRM_USR) NOPASSWD: SRM_CMD
+&lt;/verbatim&gt;
+
+On RHEL 5+ systems you need to make sure the following is commented
+out:
+
+&lt;verbatim&gt;
+#Defaults    requiretty
+&lt;/verbatim&gt;
+
+---++ Customization
+
+You may want to enable any of the following customizations.
+
+---+++ JMX Monitoring
+
+This allows service administrators to closely monitor memory usage
+and thread activity in a much more Java-centric manner than Ganglia
+monitoring. To enable this, add the following command-line arguments
+to the call to =java= in =$VDT_LOCATION/bestman/sbin/bestman.server=:
+
+&lt;verbatim&gt;
+-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=8004
+&lt;/verbatim&gt;
+
+Note that this allows anyone with access to port 8004 access to read
+out your JVM internal metrics.
+
+---+++ Ganglia-Based Selection of GridFTP Servers
+
+By default, the SRM server will select a GridFTP server by cycling
+through a static-list (round-robin). Nebraska has developed a
+protocol plugin for BeStMan that randomly selects a server from the
+list with a probability distribution function built from the load
+and memory usage as reported by Ganglia. To enable this, add the
+following line to =$VDT_LOCATION/bestman/conf/bestman.rc=:
+
+&lt;verbatim&gt;
+protocolSelectionPolicy=class=edu.unl.rcf.BestmanGridftpSelector.BestmanGridftp&amp;jarFile=UNLGangliaBestman.jar&amp;name=gsiftp
+&lt;/verbatim&gt;
+
+Then, add the following command-line arguments to the call to =java=
+in =$VDT_LOCATION/bestman/sbin/bestman.server= after the
+=${MAXHEAP}= parameter:
+
+&lt;verbatim&gt;
+-Dedu.unl.rcf.BestmanGridftpSelector.host=localhost -Dedu.unl.rcf.BestmanGridftpSelector.port=8649
+&lt;/verbatim&gt;
+
+-- Main.WillMaier - 19 Mar 2009
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = BrianBockelman
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Installation
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %NO%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %NO%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = FirstName
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %NO%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = FirstLast
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %NO%
+############################################################################################################
+--&gt;

@@ -1,0 +1,39 @@
+---+ Wednesday Exercise 6.1: Seeing differences in the OSG
+
+The goal of this exercise is to submit jobs and see the differences between locally running jobs and jobs running out in the OSG.
+
+---++ Submitting Jobs to the Local Cluster
+
+For the first part of this exercise, you will continue to use the submit host that we were using yesterday, =osg-ss-submit.chtc.wisc.edu=. You will create a flat DAG that submits the same job with varying memory requirements. 
+
+   1. Create a simple submit file that executes the command =/bin/sleep 60= ten times
+   1. Create a DAG that will use the submit file for each node and will submit sets of jobs with memory requests of 2, 4, 6, and 8 GB. To request memory in a job, you will need to include the following:\
+&lt;pre class=&quot;file&quot;&gt;
+RequestMemory = &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&amp;lt;requested memory in GB&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;
+   1. Submit your DAG!
+
+No need to wait for results, you can move onto the next section of the exercise from here.
+
+---++ Submitting Jobs to the OSG
+
+For this exercise, you will need to =ssh= into =osg-ss-glidein-submit.chtc.wisc.edu= with the same username and password that you have used with =osg-ss-submit.chtc.wisc.edu=. This new machine has been configured to skip over the local cluster and send jobs out to the OSG. If you have trouble getting =ssh= access, ask the instructors right away!
+
+   1. Create a new directory on =osg-ss-glidein-submit.chtc.wisc.edu= to hold your DAG and submit files
+   1. Log into =osg-ss-submit.chtc.wisc.edu= and copy over the files you created in the first section of this exercise onto the new submit machine. You can do this with the =scp= command, like so:\
+&lt;pre class=screen&gt;
+%UCL_PROMPT% scp &lt;span style=&quot;background-color: #D1CAF2;&quot;&gt;&amp;lt;list of files to copy&amp;gt;&lt;/span&gt; osg-ss-glidein-submit.chtc.wisc.edu:&lt;span style=&quot;background-color: #D1CAF2;&quot;&gt;&amp;lt;new directory&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;\
+For example, if you wanted to copy files =foo=, =bar=, =baz= to the folder =wed-6.1= to your home directory on =osg-glidein-submit.chtc.wisc.edu=, it would look something like this:\
+&lt;pre class=screen&gt;
+%UCL_PROMPT% scp foo bar baz osg-ss-glidein-submit.chtc.wisc.edu:wed-6.1
+&lt;/pre&gt;
+   1. For each submit file, you will need to add the following line above your =queue= statment for your jobs to match in the OSG:\
+&lt;pre class=&quot;file&quot;&gt;
++WantGlidein=True
+&lt;/pre&gt;
+   1. Submit your DAG!
+
+---++ Let&#39;s Play the Waiting Game
+
+Not really (that game stinks), move onto the next exercise and we will revisit the results later.

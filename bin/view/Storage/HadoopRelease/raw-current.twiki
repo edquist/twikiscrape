@@ -1,0 +1,107 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+
+---+++ Hadoop 0.20 Release
+
+The Hadoop-0.20 OSG release involves a giant overhaul of how we package.  The highlights are:
+   1 Switching to the CDH3 distribution.
+   1 Switching to source RPMs from EPEL for all Globus components.
+   1 Upgrade to bestman2 (which is the remaining non-source RPM).
+   1 Using Koji to handle release engineering and mash to auto-create repos.
+   1 Adding xrootd as a major component.
+
+---+++ RPMs for Hadoop 0.20
+Here are the SRPMs we are using for Hadoop 0.20:
+   * GratiaReporting
+   * bestman2
+   * globus-gridmap-callout-error
+   * gratia-probe
+   * hadoop-0.20
+   * hadoop-0.20-osg
+   * lcas
+   * lcas-plugins-basic
+   * lcmaps
+   * lcmaps-plugins-basic
+   * lcmaps-plugins-scas-client
+   * lcmaps-plugins-verify-proxy
+   * saml2-xacml2-c-lib
+   * xrootd
+   * xrootd-cmstfc
+   * xrootd-hdfs
+   * xrootd-lcmaps
+   * globus-mappings-osg
+
+---+++ Setting up your build environment
+
+   * Email Michael Thomas or Brian Bockelman your certificate&#39;s DN.
+   * Install koji on your RHEL5 machine from EPEL.
+   * Install your certificate into ~/.koji/koji.cert.  Copy the PEM formatted certificate and key into this file.
+   * Copy the attached koji.conf to /etc/koji.conf.
+   * Copy the DOEGrids and ESNet CA certs into =/etc/pki/tls/certs/ca-bundle.crt=.  Again, copy/paste the CA certs into the file.  You will need to copy the following two files into the bottom of ca-bundle.crt:
+      * =/etc/grid-security/certificates/d1b603c3.0=
+      * =/etc/grid-security/certificates/1c3f2ca8.0=
+   * The build target we use is dist-el5-hadoop20.
+   * Edit your rpmmacros file:
+      &lt;verbatim&gt;echo &gt; ~/.rpmmacros &lt;&lt; EOF
+%_topdir $HOME/rpmbuild
+%_smp_mflags -j3
+EOF
+&lt;/verbatim&gt;
+This sets make to run three parallel build processes at a time; adjust -j3 to fit the capabilities of your computer.
+   * Create the necessary directories:
+      &lt;verbatim&gt;
+mkdir -p ~/rpmbuild/{BUILD,INSTALL,RPMS,SOURCES,SPECS,SRPMS}
+&lt;/verbatim&gt;
+
+---+++ Building an RPM
+
+Given a SRPM called =foo.srpm=:
+   * =rpm -Uhv foo.srpm=  Installs the sources locally
+   * =rpmbuild -bs ~/rpmbuild/SPECS/foo.spec=  Recreates the SRPM, verifying everything is self-consistent.
+   * If the RPM is not in the repo already, =koji add-pkg --owner &quot;&amp;lt;your certificate CN&amp;gt;&quot; &amp;lt;tag&amp;gt; &amp;lt;pkgname&amp;gt;=  Be sure to leave the version and release off of the package name.
+      * Do this *ONLY* the first time you build an RPM.
+      * The tag name is the repository you build to.  It&#39;s something like =dist-el5-hadoop20=.  Ask if you don&#39;t know the appropriate tag.
+   * For practice builds, do the following: &lt;verbatim&gt;koji build --scratch &amp;lt;tag&amp;gt; ~/rpmbuild/SRPMS/foo.src.rpm&lt;/verbatim&gt;  The output of a so-called &quot;scratch&quot; build is thrown away by Koji, but it&#39;s valuable for debugging the build process itself for a new RPM
+   * Once you have the RPM ready to go into a repo, do: &lt;verbatim&gt;koji build &amp;lt;tag&amp;gt; ~/rpmbuild/SRPMS/foo.src.rpm&lt;/verbatim&gt;
+      * Do this every time for each new released version.
+      * The tag should be the same as above.
+
+---++++ Building an appliance.
+Given a kickstart configuration, =kickstart.cfg=:
+&lt;verbatim&gt;koji spin-appliance dist-el5 x86_64 ~kickstart.cfg&lt;/verbatim&gt;
+
+---+++ Hadoop-0.20 RPM Notes
+   * Anytime you update to the latest Cloudera sources, you *must* do a =diff= of the .spec file.  We make the following modifications:
+      * Build fixes for forrest on Java 1.6.
+      * Install FUSE into =/usr/lib64= on x86_64 and =/usr/lib= on i386.
+      * We additionally Obsolete the old =hadoop= RPM from the OSG.
+      * We switch the dependencies from Fedora openjdk to Sun&#39;s JDK.  Hopefully we won&#39;t need this in the RHEL6 timeframe
+      * Remove the Cloudera init scripts to prevent confusion.
+      * Fix ownership of conf.empty directories.
+      * Perhaps something else I&#39;ve left out of my notes.  Please do check with =diff= or ask Brian for help.
+   * It seems impossible to build Hadoop on Koji due to the lack of network access.  We build by hand on a build machine and then upload the results to Koji.  Hoping to fix this soon.
+      * Install the hadoop-0.20 RPM: =rpm -Uhv path/to/hadoop-0.20-foo.src.rpm=
+         * Make modifications to it as required.
+      * Build the RPM on =x86_64= and =noarch=: &lt;verbatim&gt;rpmbuild -ba ~/rpmbuild/SPECS/hadoop.spec&lt;/verbatim&gt; &lt;verbatim&gt; rpmbuild -ba --target noarch ~/rpmbuild/SPECS/hadoop.spec &lt;/verbatim&gt;
+      * Upload the resulting build: &lt;verbatim&gt;koji import dist-el5-hadoop20 --create-build ~/rpmbuild/RPMS/noarch/hadoop-0.20{-,-docs-,-source-}foo.noarch.rpm ~/rpmbuild/RPMS/x86_64/hadoop-0.20-{fuse,libhdfs,native,debuginfo}-foo.x86_64.rpm &lt;/verbatim&gt;
+      * Tag the package: &lt;verbatim&gt;koji tag-pkg dist-el5-hadoop20 hadoop-0.20-foo&lt;/verbatim&gt;
+
+For example, if you are building 0.20.2+320-4, you would do the following line for importing the Koji build:
+
+&lt;verbatim&gt;
+koji import --create-build ~/rpmbuild/RPMS/noarch/hadoop-0.20-0.20.2+320-4.noarch.rpm ~/rpmbuild/RPMS/noarch/hadoop-0.20-docs-0.20.2+320-4.noarch.rpm ~/rpmbuild/RPMS/noarch/hadoop-0.20-source-0.20.2+320-4.noarch.rpm ~/rpmbuild/RPMS/x86_64/hadoop-0.20-fuse-0.20.2+320-4.x86_64.rpm ~/rpmbuild/RPMS/x86_64/hadoop-0.20-libhdfs-0.20.2+320-4.x86_64.rpm ~/rpmbuild/RPMS/x86_64/hadoop-0.20-debuginfo-0.20.2+320-4.x86_64.rpm ~/rpmbuild/RPMS/x86_64/hadoop-0.20-native-0.20.2+320-4.x86_64.rpm
+&lt;/verbatim&gt;
+
+
+
+---+++ Hadoop: Code Repository Locations
+
+
+| *Product* | *VCS* | *Bugs* |
+| [[https://sdm.lbl.gov/bestman/][bestman2]] | [[https://codeforge.lbl.gov/scm/?group_id=54][SVN]] | [[https://codeforge.lbl.gov/tracker/?atid=291&amp;group_id=53&amp;func=browse][Codeforge]] |
+| [[http://www.globus.org/][gridftp]] | [[http://www.globus.org/toolkit/docs/development/remote-cvs.html][CVS]] | [[http://dev.globus.org/wiki/Bugzilla][Bugzilla]] |
+| gridftp-hdfs | svn://t2.unl.edu/brian/gridftp_hdfs | osg-hadoop@opensciencegrid.org |
+| [[http://hadoop.apache.org/][Hadoop]] | [[http://wiki.apache.org/hadoop/HowToContribute][SVN]] | [[http://wiki.apache.org/hadoop/Jira][JIRA]] |
+| [[http://xrootd.slac.stanford.edu/][Xrootd]] | [[http://xrootd.slac.stanford.edu/dload.html][Git]] | [[https://savannah.cern.ch/bugs/?group=xrootd][Savannah]] |
+| Xrootd-hdfs | svn://t2.unl.edu/brian/XrdHdfs | osg-hadoop@opensciencegrid.org |
+

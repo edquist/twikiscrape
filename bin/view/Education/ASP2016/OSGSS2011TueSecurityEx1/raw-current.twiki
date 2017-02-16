@@ -1,0 +1,108 @@
+---+ Security Exercises - Understand your certificate
+
+This exercise will give you some understanding of your x.509 certificate
+
+%TOC%
+
+---++ Environment
+
+We will use the usual node:&lt;br&gt;
+=vdt-itb.cs.wisc.edu=
+
+---++ Exercise 1 - !OpenSSL
+
+You should have your DOEGrids-issues certificate in:&lt;br&gt;
+=~/.globus/=.
+
+You have two files:
+   * =usercert.pem= - This is the public part of the certificate. It contains the description of the certificate, including the public key, but does not contain not the private key.
+   * =userkey.pem= -  This file contains the private key of the certificate. *Keep it secret!*
+
+You can peek at the content of the certificate, using [[http://www.openssl.org/docs/apps/x509.html][openssl]]. It is installed on most Linux systems by default.
+
+Try it out. 
+
+The most complete output is obtained using the =-text= flag, but others are useful as well.
+
+What do you see?
+
+%TWISTY{
+showlink=&quot;Next step&quot;
+hidelink=&quot;Hide&quot;
+start=&quot;hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+One of the things you should have seen, is that the cert was issued by DOEGrids CA.
+
+The CA public certificates are pre-installed in =/etc/grid-security/certificates/=.&lt;br&gt;
+Each CA has a set of files, with *.0 being the certificate.
+
+The files are encoded using a SSL-internal scheme. You can find the right name under the your certificate &quot;CRL Distribution&quot; section.
+
+Run openssl against the DOEGrids certificate.&lt;br&gt;
+What do you see?
+%ENDTWISTY% 
+
+
+---++ Exercise 2 - Creating a proxy
+
+To create a proxy, you have to use the globus tools that are part of the [[https://twiki.grid.iu.edu/bin/view/ReleaseDocumentation/UserCESimpleTest#Authentication_using_a_Grid_Prox][OSG client installation]].
+
+For starters, try out =grid-proxy-init=. This will create a proxy for for you.
+
+To check the status of the proxy, use =grid-proxy-info=.
+
+Try it. &lt;br&gt;
+What do you see?
+
+%TWISTY{
+showlink=&quot;Show tips&quot;
+hidelink=&quot;Hide&quot;
+start=&quot;hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+One obvious thing to change is the proxy lifetime. Try the =-valid= option.
+
+You can also change the location of the proxy, by either using the =-out= option, or by setting X509_USER_PROXY.
+%ENDTWISTY% 
+
+---++ Exercise 3 - Creating a VOMS-extended proxy
+
+As explained during the lecture, OSG requires VOMS attributes to authorize you at Grid sites.
+
+To create a proxy, you have to use the VOMS tools that are part of the 
+[[https://twiki.grid.iu.edu/bin/view/ReleaseDocumentation/UserCESimpleTest#Authentication_using_a_VOMS_Prox][OSG client installation]].
+
+The tool to use is =voms-proxy-init=. It works very similarly to =grid-proxy-init=, you just need to add the VOMS attribute you want to get.
+In our case we will use:&lt;br&gt;
+=-voms osgedu:/osgedu/2011OSGSummerSchool=
+
+To check the status of the proxy, use =voms-proxy-info=.
+
+Try it. &lt;br&gt;
+What do you see?
+
+As usual, the two commands have plenty of options. Try them out.
+
+%TWISTY{
+showlink=&quot;Show tips&quot;
+hidelink=&quot;Hide&quot;
+start=&quot;hide&quot;
+mode=&quot;div&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+There are two interesting options of =voms-proxy-info=:
+   * =-all= - You have to specify this to see the VOMS attributes. Without, it works pretty much just =grid-proxy-info=.
+   * =-chain= - Shows you all the chain up to the originating CA.
+
+Try them out.
+%ENDTWISTY% 
+
+You may have noticed you used voms-proxy-init for the exercises this morning. Well... now you know what it was used for.

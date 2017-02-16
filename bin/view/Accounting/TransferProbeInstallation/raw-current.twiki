@@ -1,0 +1,54 @@
+---++ Gratia dcache-transfer Probe
+
+Extract from http://vdt.cs.wisc.edu/extras/InstallingDcacheForOSG.README.html
+
+_(Experimental instructions can be found at: http://t2.unl.edu/documentation/gratia/dcache-transfer-probe-installation )_
+
+The dCache transfer Probe is installed as part of the dCache distribution and can be enable via the dCache configure script.
+
+During the configure of dCache, after the configuration of the pool location and size, you will be asked about the gratia probes:
+
+_Next, gratia probes are configured (gratia probes collect various statistics about file transfer, space allocation by VOs  and pool utilization). The data collected by the probes will be sent to a central collector. You will be ask to provide the following information:_
+   * URL of central collector [ Use gratia.opensciencegrid.org:8886 for a production server (OSG) and gratia.opensciencegrid.org:8881 for an integration test server (ITB); or the address of your local Gratia collector if any ]
+   * The username, password and port number of dCache admin interface
+   * Name of your SE
+   * Name of the Grid to which the SE belongs (OSG-ITB, OSG, LOCAL)  
+   * Gratia can notify you if Gratia server went down so you will be asked questions related to email settings
+
+If you are relying on /etc/init.d, also make sure to say &#39;y&#39; in the next section of the configuration for the script /etc/init.d/gratia-dcache-transfer start
+
+
+---++ Gratia gridftp-transfer Probe
+
+Extract from https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationGratiaTransferProbe:
+
+If you are using !GridFTP server that is installed during the !BeStMan installation you will need just to enable Gratia grdiftp-transfer probe:
+&lt;pre class=&quot;screen&quot;&gt;
+cd $VDT_LOCATION
+vdt-control -enable  gratia-gridftp-transfer
+&lt;/pre&gt;
+
+If you are running !GridFTP server on a different node, on each node you will need to install Gratia grdiftp-transfer probe. In order to do so you will need to
+change directory to !GridFTP installation directory
+&lt;pre class=&quot;screen&quot;&gt;
+cd  &amp;lt;VDT_LOCATION&amp;gt;
+. setup.sh
+pacman -get http://vdt.cs.wisc.edu/vdt_XXX_cache:Gratia-GridFTP-Transfer-Probe 
+&lt;/pre&gt; 
+
+After Gratia grdiftp-transfer probe is installed or enabled you will need to configure it:
+&lt;pre class=&quot;screen&quot;&gt;
+$VDT_LOCATION/vdt/setup/configure_gratia  \
+ --probe gridftp-transfer \
+ --report-to &amp;lt;gratia_host:gratia_port&amp;gt; \
+ --probe-cron --site-name &amp;lt;SiteName&amp;gt;
+&lt;/pre&gt;
+
+Where _gratia_host_ is FQDN of Gratia collector, _gratia_port_ is Gratia Collector port and  _SiteName_ is your site name.
+
+If you want to do additional changes in configuration, eg change location of gridftp logs or name of the Grid (default is OSG) you can edit _ProbConfig_file  located in
+_$VDT_LOCATION/gratia/probe/gridftp-transfer_ directory
+
+
+
+-- Main.PhilippeCanal - 13 Jan 2009

@@ -1,0 +1,350 @@
+&lt;!--
+These are general in nature and should be changed in the this template if the location changes:
+
+These are specific to a release and require changing:
+   * Set RELEASE_DATE = 2010/07/14
+   * Set CURRENT_RELEASE = v1.06.17
+   * Set RELEASE_TAG = v1-06-17
+   * Set NEXT_DEVEL_VERSION = v1.07
+
+--&gt;
+
+---+!! Gratia Release %CURRENT_RELEASE% (%RELEASE_DATE%)%BR% 
+
+
+%TOC%
+
+%STARTINCLUDE%
+---+ Overview
+
+---++Main Features:
+   * Maintenance release.
+   * See previous patch release [[GratiaReleaseV1dot06dot14][v1.06.14]] for changes since v1.04.
+
+   * Implement cutoff date.
+   * Speed up housekeeping deletion (and remove use of temporary table).
+   * Additional housekeeping logging.
+   * Fix occasional problem with inter-service communication caused by premature garbage collection.
+
+---++ Probe Improvements:
+
+   * Add summarization capability to the dCache probe.
+   * Separate the !JobUsageRecord support from the main library which is now !GratiaCore.py
+
+---+++ Details
+
+   * Tweak !ProbeConfig extra items for dCache-transfer probe.
+   * Reorganize !GridFtpLogDir config item insertion.
+   * Sleep and configurable DB name for dCache-transfer probe.
+   * Core updates for HTTP timeout waiting for acknowledgement from collector.
+   * Improve connection timeout mesage to avoid confusion.
+   * Improvements to xrootd probe.
+   * Fix for =staticmethod= (make it work in 2.3).
+   * Fix mechanism intended to avoid corruption caused by reading in-progress log.
+   * Robustness fix to !GetNodeData function in Gratia.py.
+   * Fix for exception in debug statements in Gratia.py.
+   * Increase default !BundleSize to 100 in !ProbeConfigTemplate and Gratia.py.
+   * Remove unecessary dependencies from dCache-storage probe.
+   * !EGEE-provided probe is now version-controlled instead of unpackaged and patched from source.
+   * Unused !GridftpTransfer.sh script removed prior to final packaging.
+   * Condor probe security fixes from Wisconsin.
+   * Add gratia-probe-services as a dependency to the xrootd-storage probe
+   * Fix to cron scripts for !WorkingFolder discovery in dCache-storage and gridftp-transfer cron scripts.
+   * Remove erroneous ITB tag for services API package.
+   * Better use of lock files in *_cron.sh.
+   * Fixes and updates to dCache-storage probe, including addition of !README file to package.
+   * Added redesigned xrootd-transfer probe
+   * Minor updates for the xrootd-storage probe found in testing.
+   * Fix to condor probe for standalone (non-VDT) operation.
+
+
+---++ Collector Improvements:
+
+   * Add a publicly available summary of the replication 
+
+   * In addition to the expiration date, when there is a limited retention of the records,
+we also reject the records that are in the future.  For now, the rejection is set to
+the same duration as the expiration.  For example if the service.lifetime.JobUsageRecord is
+set to 3 months, we reject all !JobUsageRecord that are either set more than 3 months in
+the past or more than 3 months in the future.
+
+   * Increase the default batch size for row deletion from 200 to 1000.
+   * Change the default fault batch size for _Xml row deletion to 100000.
+
+   * Introduce the 2 customizable parameters:
+
+      * service.lifetimeManagement.BatchSize and service.lifetimeManagement.XmlBatchSize
+
+   * Add an index to quickly find empty !ExtraXml
+
+   * Rework the row deletion from !RecordType_Xml.
+
+      a. We no longer keep the row when the !EndTime is greater than the !ServerDate (and !EndTime was greater than the cutoff date).
+      a. We no longer use a temporary table.
+      a. Improve the &#39;limited&#39; delete query by using a dbid range to restrict the searches.
+         1. We find the maximum plausible dbid by searching in !RecordType_Meta for the dbid clause to or equal to the limit date
+         1. We find the minimum plausible dbid by searching in !RecordType_Xml for the first dbid with !ExtraXml==&quot;&quot;
+         1.  the delete query where clause is:
+   !ExtraXml = &quot;&quot; and !ServerDate &lt; :dateLimit and :mindbid &lt;= X.dbid and X.dbid &lt; :maxdbid
+
+   * On gr8x0 the current (typical rate) are (for a Transfer record database):
+      * !JobUsageRecord_Xml 10000 rows per second (so for a typical transaction time of 10s).
+      * !JobUsageRecord_Meta  120 rows per second (so for a typical transaction time of  9s).
+      * The other deletion are more than 1000 rows per seconds such that the total time is completely dominated by _Meta.
+
+   * Add index !ComputeElement(!UniqueID, !Timestamp)
+
+   * Fix lifetime of RMI proxy object used for inter-service communication.
+
+---+++ Pending explicit request from Stakeholders.
+   * Improve response time of Status page.
+   * Automatic table optimization (schedulable, abortable, triggerable) [Insert will be disabled during optimization]
+   * Automatic sync of !VONameCorrection table and info OIM.
+
+---+++ Notices
+
+   * Web Services *must* be improved to pass the cert info along to the Gratia Accounting Probes.
+
+---+ Anticipated downtime
+It is expected that this release will require the Gratia services and reporting to be unavailable beginning at:
+   * Start: %RELEASE_DATE%  09:00 CDT (14:00 UTC)
+   * Available: %RELEASE_DATE% TBA
+
+The changes affecting downtime for this release are:
+   1. Installation and validation on each collector / reporter.
+   1. Upgrade of each schema to add an index to !JobUsageRecord_Xml.
+
+During this upgrade, the legacy redirectors dealing with probes sending to old addresses / ports will be decommissioned.
+
+---+ Upgrade procedure
+
+[ Note: all times are CDT ]
+
+&lt;ol&gt;
+&lt;li&gt;Pre-load kernels on all VMs and dom0s.
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%08:40%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;&lt;tt&gt;yum upgrade&lt;/tt&gt; in progress.&lt;/dd&gt;
+&lt;dt&gt;%ORANGE%08:50%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Check grub configurations.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%08:56%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Deactivate, disable, shut down and remove configs from /etc/xen/auto gr12x2 and gr13x2, the HA legacy redirector VMs.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%09:00%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Remove &lt;tt&gt;gratia12:/etc/xen/auto/gr12x2&lt;/tt&gt; and &lt;tt&gt;gratia13:/etc/xen/auto/gr13x2&lt;/tt&gt;.&lt;/dd&gt;
+&lt;dt&gt;%RED%09:12%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Shutdown and remove LVS on gr12x2 and gr13x2.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%09:15%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Shutdown gr12x2 and gr13x2.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Fail the reporting-DB IP over to the collector DB.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%09:17%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute &lt;tt&gt;/usr/share/heartbeat/hb_takeover&lt;/tt&gt; on gr10x5 and gr12x5.&lt;/dd&gt;
+&lt;dt&gt;%ORANGE%09:18%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Verify IPs have switched and connections have gone on gr11x5 and gr13x5.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%09:21%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Stop slave on reporting DB. Check no open temporary tables. Stop reporting DB.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%09:22%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute &lt;tt&gt;slave stop;&lt;/tt&gt; on gr11x5 and gr13x5.&lt;/dd&gt;
+&lt;dt&gt;%ORANGE%09:22%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Verify no temporary tables open with &lt;tt&gt;SHOW STATUS LIKE &#39;%slave_open_temp_tables%&#39;;&lt;/tt&gt;.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%09:24%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Shut down DBs on gr11x5 and gr13x5.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Institute IPtables rules on collector IPs to ignore SYNs on port 80/443.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%09:30%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute &lt;tt&gt;iptables -I INPUT 1 -p tcp --syn --destination-port 80 -j DROP; iptables -I INPUT 2 -p tcp --syn --destination-port 443 -j DROP&lt;/tt&gt; on all collectors.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%09:32%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Wait 15 minutes or until there are no remaining connections to 80/443.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%GREEN%09:35%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Verified no established connections on collectors.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Fail the reporting services over to the collector VMs (collector services will restart, reporting services will stop).&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%09:36%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute &lt;tt&gt;/usr/share/heartbeat/hb_takeover&lt;/tt&gt; on all collectors.&lt;/dd&gt;
+&lt;dt&gt;%RED%09:40%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Restart failed heartbeat on gr12x1, gr12x3. Shoot recalcitrant gr13x1 collector inna head.&lt;/dd&gt;
+&lt;dt&gt;%ORANGE%09:55%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Verify correct transfer of operations.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%09:57%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Temporarily remove SYN-blocking.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%GREEN%10:02%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute &lt;tt&gt;iptables -D INPUT 2; iptables -D INPUT 1&lt;/tt&gt; on collectors.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Verify reporting URLs work as expected.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%GREEN%10:05%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Reboot reporting dom0, ensuring heartbeat does not cause trouble as it comes back.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%10:05%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute reboot.&lt;/dd&gt;
+&lt;dt&gt;%ORANGE%10:25%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Verify all reporting dom0, VMs have restarted. gr11x5 (Fermi reporting DB) doing disk check.&lt;br/&gt;
+    Fermi collector heartbeats failed back to reporting VMs. Possibility of stuck probes, maybe. Will need to check after upgrade is complete.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;dt&gt;%GREEN%11:05%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;gr11x5 returned.&lt;/dd&gt;
+&lt;li&gt;Re-institute SYN-blocking on collector IPs 80/443.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%GREEN%10:40%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Executed &lt;tt&gt;iptables -I INPUT 1 -p tcp --syn --destination-port 80 -j DROP; iptables -I INPUT 2 -p tcp --syn --destination-port 443 -j DROP&lt;/tt&gt; on all collectors.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Fail reporting-DB IP back to reporting DB.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%10:45%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute takeover on gr13x5 ONLY (OSG); gr11x5 is still checking disk.&lt;/dd&gt;
+&lt;dt&gt;%ORANGE%10:46%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Verified gr13x5 took over operations properly.&lt;/dd&gt;
+&lt;dt&gt;%RED%11:10%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute takeover on gr11x5.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%11:14%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Verified gr11x5 took over operations properly.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Stop slave on reporting DB. This will remain off until collector service is restored.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%GREEN%10:50%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Slave stopped and verified no temporary tables open on gr13x5.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%11:13%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Slave stopped and verified no temporary tables open on gr11x5.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Upgrade reporting services *without* restarting.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%10:50%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute &lt;tt&gt;gratia-ops/upgrade-osg-reporting v1.06.17&lt;/tt&gt; (execution machine irrelevant).&lt;/dd&gt;
+&lt;dt&gt;%GREEN%10:55%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Upgrades complete on gr13xN (OSG).&lt;/dd&gt;
+&lt;dt&gt;%RED%11:15%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Fail reporting on gr11xN back to gr10xN (special step because heartbeat screwed up earlier).&lt;/dd&gt;
+&lt;dt&gt;%ORANGE%11:20%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete.&lt;/dd&gt;
+&lt;dt&gt;%RED%11:25%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute &lt;tt&gt;gratia-ops/upgrade-fermi-reporting v1.06.17&lt;/tt&gt; (execution machine irrelevant).&lt;/dd&gt;
+&lt;dt&gt;%GREEN%11:29%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Wait 15 minutes or until there are no remaining connections to 80/443.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%GREEN%11:00%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Verified no established connections on collectors.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Fail reporting services back to the reporting VMs, ensuring new reporting services start correctly.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%11:05%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute takeover on gr13xN (OSG).&lt;/dd&gt;
+&lt;dt&gt;%GREEN%11:15%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Takeover on gr13xN complete.&lt;/li&gt;
+&lt;dt&gt;%RED%11:30%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute takeover on gr11xN (Fermi).&lt;/dd&gt;
+&lt;dt&gt;%GREEN%11:40%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Takeover on gr11xN complete.&lt;/li&gt;
+&lt;/dl&gt;
+&lt;li&gt;Shut down collectors on collector VMs and upgrade *without* restarting.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%11:46%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute &lt;tt&gt;gratia-ops/upgrade-fermi-collectors v1.06.17&lt;/tt&gt; (execution machine irrelevant).&lt;/dd&gt;
+&lt;dt&gt;%RED%11:54%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Execute &lt;tt&gt;gratia-ops/upgrade-osg-collectors v1.06.17&lt;/tt&gt; (execution machine irrelevant).&lt;/dd&gt;
+&lt;dt&gt;%GREEN%11:58%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Upgrade complete on OSG collectors.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%12:04%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Upgrade complete on Fermi collectors.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Temporarily remove collectors from rcN.d until after reboot.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%GREEN%11:58%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Executed =chkconfig tomcat-gratia off= on gr12xN.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%12:04%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Executed =chkconfig tomcat-gratia off= on gr10xN.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Manually stop mysqld on collector DBs (may take a while).&lt;/li&gt;
+&lt;dl&gt;
+&lt;dt&gt;%GREEN%12:01%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete on gr12x5.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%12:06%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete on gr10x5.&lt;/dd&gt;
+&lt;li&gt;Reboot collector dom0, ensuring heartbeat does not cause problems.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%12:02%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Reboot initiated on gratia12 (OSG).&lt;/dd&gt;
+&lt;dt&gt;%RED%12:06%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Reboot initiated on gratia10 (OSG).&lt;/dd&gt;
+&lt;dt&gt;%GREEN%12:12%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete for gratia12 and VMs.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%12:14%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete for gratia10 and VMs.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Ensure collectors are configured to come back in collector-only mode.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%GREEN%12:20%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Heartbeat and collector status verified as correct for all collectors and reporters. Heartbeat had to be chkconfigged on and restarted on gr12x1 and gr12x3.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Re-enable rcN.d scripts on collector VMs.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%GREEN%12:25%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Complete.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;Start collectors.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%RED%12:23%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Start &lt;tt&gt;osg-daily&lt;/tt&gt; collector first as a mine canary.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%12:23%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Collector &lt;tt&gt;osg-daily&lt;/tt&gt; ready for data.&lt;/dd&gt;
+&lt;dt&gt;%RED%12:26%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Start all other collectors on gr10xN and gr12xN.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%12:28%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Collector &lt;tt&gt;fermi-itb&lt;/tt&gt; ready for data.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%12:28%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Collector &lt;tt&gt;fermi-qcd&lt;/tt&gt; ready for data.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%12:38%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Collector &lt;tt&gt;fermi-psacct&lt;/tt&gt; ready for data.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%12:44%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Collector &lt;tt&gt;osg-itb&lt;/tt&gt; ready for data.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%13:36%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Collector &lt;tt&gt;fermi-osg&lt;/tt&gt; ready for data.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%15:12%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Collector &lt;tt&gt;fermi-transfer&lt;/tt&gt; ready for data.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%18:24%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Collector &lt;tt&gt;osg-prod&lt;/tt&gt; ready for data.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%21:51%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;Collector &lt;tt&gt;osg-transfer&lt;/tt&gt; ready for data. Collector had to be restarted after index completion due to a probable timed-out connection.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;When most collectors are responding to incoming data, fail reporting-DB IP over to collector DB and start DB replication.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%GREEN%15:30%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;All Fermi schemata finished: Fermi reporting DB IP failed over and slave started.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%19:08%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;All OSG schemata finished except &lt;tt&gt;osg-transfer&lt;/tt&gt;: OSG reporting DB IP failed over and slave started.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;li&gt;When seconds_behind_master -&gt; 0 fail reporting-DB IP back to reporting DB.&lt;/li&gt;
+&lt;dl compact&gt;
+&lt;dt&gt;%GREEN%19:27%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;gr11x5 DB has caught up; reporting IP failed back and backups rescheduled.&lt;/dd&gt;
+&lt;dt&gt;%GREEN%10:13%ENDCOLOR%&lt;/dt&gt;
+&lt;dd&gt;gr13x5 DB has caught up; reporting IP failed back and backups rescheduled.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/ol&gt;
+
+
+%STOPINCLUDE%
+
+&lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+---++!! Major updates
+&lt;!--Future editors should add their signatures beneath yours!--&gt;
+

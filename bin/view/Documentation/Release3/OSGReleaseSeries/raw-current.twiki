@@ -1,0 +1,153 @@
+---+!! *OSG Release Series*
+%DOC_STATUS_TABLE%
+%TOC%
+
+---+ About This Document
+
+This document introduces the different OSG release series and how to update from one to a newer one.
+
+---+ Introduction to OSG Series
+
+An OSG release series is what it sounds like! That is, each series is a sequence of OSG software releases. For example, the 3.2 release series contains OSG software 3.2.0, 3.2.1, &amp;hellip;, 3.2.26, etc. Further, a release series corresponds to a set of Yum software repositories, including ones for development, testing, and production use. The Yum repositories for one release series are completely distinct from the repositories for a different release series, even though they may share some packages in common. A particular release within a series is really just a snapshot of packages and their exact versions at one point in time. Generally, when you install software from a release series, say 3.2, you get the most current versions of software packages within that series, regardless of the current release version.
+
+When a new OSG Series is released, it is an opportunity for the OSG Technology area to add major new software packages, make substantial updates to existing packages, and remove obsolete packages. When a new series is initially released, most packages are identical to the previous release, but two adjacent series will diverge over time.
+
+---+ OSG Release Series
+
+Since the start of the RPM-based OSG software stack, we have offered the following release series:
+
+   * *OSG 3.1* started in April 2012, and was end-of-lifed in April 2015. \
+     While the files have not been removed, it is strongly recommended that it not be installed anymore. \
+     Historically, there were 3.0.x releases as well, but there was no separate release series for 3.0 and 3.1; we simply went from 3.0.10 to 3.1.0 in the same repositories.
+
+   * *OSG 3.2* started in November 2013, and is still available today. The main differences between it and 3.1 were the introduction of glideinWMS 3.2, HTCondor 8.0, and Hadoop/HDFS 2.0; also the !gLite CE Monitor system was dropped in favor of osg-info-services.
+
+   * *OSG 3.3* will start in August 2015. \
+     The main differences between it and 3.2 are the dropping of EL5 support, the addition of EL7 support.
+
+---+ OSG Upcoming
+
+There is one more OSG Series called &quot;upcoming&quot; which contains major updates planned for a future release series.  The yum repositories for upcoming (eg, osg-upcoming, osg-upcoming-testing) are available from all OSG 3.x series, and individual packages can be installed from Upcoming without needing to update entirely to a new series.
+Note, however, that packages in the &quot;upcoming&quot; repositories are tested against the most recent OSG series.
+
+---+ Installing an OSG Release Series
+
+See YumRepositories (under &quot;Install OSG Repositories&quot;) for instructions on installing the OSG repositories.
+
+#UpdatingOsgRelease
+---+ Updating from OSG 3.1 or 3.2 to 3.2 or 3.3
+
+&lt;ol&gt;
+   &lt;li&gt;
+      &lt;p&gt;If you have an existing installation based on OSG 3.1 or 3.2 (which will be referred to as the _old series_), and want to upgrade to 3.2 or 3.3 (the _new series_), we recommend the following procedure:&lt;/p&gt;
+      &lt;p&gt;First, remove the old series yum repositories:&lt;/p&gt; \
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% rpm -e osg-release&lt;/pre&gt;
+      &lt;p&gt;This step ensures that any local modifications to =*.repo= files will not prevent installing the new series repos.
+         Any modified =*.repo= files should appear under =/etc/yum.repos.d/= with the =*.rpmsave= extension.
+         After installing the new OSG repositories (the next step) you may want to apply any changes made in the =*.rpmsave= files to the new =*.repo= files.&lt;/p&gt;
+   &lt;/li&gt;
+   &lt;li&gt;
+      &lt;p&gt;Install the OSG repositories:&lt;/p&gt;\
+      &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% rpm -Uvh %RED%URL%ENDCOLOR%&lt;/pre&gt;\
+      &lt;p&gt;Where =%RED%URL%ENDCOLOR%= is one of the following:&lt;/p&gt;
+| *Series* | *EL5 URL (for RHEL5, !CentOS5, or SL5)* | *EL6 URL (for RHEL6, !CentOS6, or SL6)* | *EL7 URL (for RHEL7, !CentOS7, or SL7)* |
+| *OSG 3.1* (unsupported) | =http://repo.grid.iu.edu/osg/3.1/osg-3.1-el5-release-latest.rpm= | =http://repo.grid.iu.edu/osg/3.1/osg-3.1-el6-release-latest.rpm= | N/A |
+| *OSG 3.2* | =http://repo.grid.iu.edu/osg/3.2/osg-3.2-el5-release-latest.rpm= | =http://repo.grid.iu.edu/osg/3.2/osg-3.2-el6-release-latest.rpm= | N/A |
+| *OSG 3.3* | N/A | =http://repo.grid.iu.edu/osg/3.3/osg-3.3-el6-release-latest.rpm= | =http://repo.grid.iu.edu/osg/3.3/osg-3.3-el7-release-latest.rpm= |
+%STARTSECTION{&quot;Update&quot;}%
+    &lt;li&gt;
+      &lt;p&gt;Clean yum cache:&lt;/p&gt;
+      &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% yum clean all --enablerepo=*&lt;/pre&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+      &lt;p&gt;Update software:&lt;/p&gt;
+      &lt;pre class=&quot;rootscreen&quot;&gt;%UCL_PROMPT_ROOT% yum update&lt;/pre&gt;
+      &lt;p&gt;This command will update *all* packages on your system.&lt;/p&gt;
+    &lt;/li&gt;
+%ENDSECTION{&quot;Update&quot;}%
+  &lt;/ol&gt;
+
+*Troubleshooting* If you are not having the expected result or having problems with Yum please see [[YumRpmBasics#Troubleshooting][Yum Troubleshooting]]
+
+---++ Migrating from CEMon to OSG Info Services on the Compute Element
+
+The program CEMon (found in the package =glite-ce-monitor=) is no longer available starting in OSG 3.2. OSG Info Services (package =osg-info-services=) now provides the same functionality. To migrate CEMon configuration to OSG Info Services, perform the following procedure (after following the above update instructions):
+   1. Ensure =osg-info-services= and =osg-configure-infoservices= are installed:\
+      &lt;pre class=&quot;rootscreen&quot;&gt;[root@ce ~]# rpm -q osg-info-services osg-configure-infoservices&lt;/pre&gt;
+   1. &lt;p&gt;If there is a CEMon configuration file at =/etc/osg/config.d/30-cemon.ini=, copy its settings to the OSG Info Services configuration file at &lt;code&gt;/etc/osg/config.d/30-infoservices.ini&lt;/code&gt;&lt;/p&gt;
+   1. Run osg-configure to configure OSG Info Services:\
+      &lt;pre class=&quot;rootscreen&quot;&gt;[root@ce ~]# osg-configure -c -m infoservices&lt;/pre&gt;
+   1. Enable and start the osg-info-services service:&lt;pre class=&quot;rootscreen&quot;&gt;
+[root@ce ~]# chkconfig osg-info-services on
+[root@ce ~]# service osg-info-services start&lt;/pre&gt;
+   1. Remove CEMon and related packages:&lt;pre class=&quot;rootscreen&quot;&gt;
+[root@ce ~]# yum erase glite-ce-monitor glite-ce-osg-ce-plugin osg-configure-cemon&lt;/pre&gt;\
+     %NOTE% In the output from this command, yum should *not* list other packages than those three. If it lists other packages, cancel the erase operation, make sure the other packages are updated to their OSG 3.2 (or 3.3) versions (they should have &quot;.osg32&quot; or &quot;.osg33&quot; in their versions), and try again.
+
+---+ References
+   * [[YumRepositories][YUM Repositories]]
+   * [[YumRpmBasics][Basic use of Yum]]
+   * [[InstallBestPractices][Best practices in using Yum]]
+
+---+ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = CarlEdquist
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = General
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Installation
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %NO%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+DOCUMENT REVIEWER
+======================
+
+   Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = 
+  
+   Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %IN_PROGRESS%
+
+
+DOCUMENT TESTER
+====================
+
+   Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = 
+  
+   Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+
+
+############################################################################################################
+--&gt;
+

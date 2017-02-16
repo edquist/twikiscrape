@@ -1,0 +1,236 @@
+%LINKCSS%
+
+---+!! %SPACEOUT{ &quot;%TOPIC%&quot; }%
+%DOC_STATUS_TABLE%
+%TOC%
+
+%STARTINCLUDE%
+
+---++What is HTPC and why is it important?
+
+High Throughput Parallel Computing (HTPC) is a computational paradigm for an emerging class of applications where large ensembles (hundreds to thousands) of modestly parallel (4- to ~64- way) jobs are used to solve scientific problems ranging from chemistry, biophysics, weather and flood modeling, to general relativity. Effectively supporting this paradigm requires focus in at least three areas:
+   * Solving the parallel job portability problem to enable parallel jobs to easily run on heterogeneous resources
+   * Optimizing parallel jobs to effectively utilize modern multi-core technologies
+   * Effectively distributing HTPC jobs across suitable distributed resources
+
+[[http://www.opensciencegrid.org/OSG_Newsletter_October_2009][Press Release: Bringing High Throughput Capabilities to Ensembles of Parallel Applications]]
+&lt;br&gt;
+[[http://www.cs.wisc.edu/condor/CondorWeek2010/condor-presentations/thain-fraser-hptc.pdf][HTPC presentation at Condor Week April 2010]]
+
+Parallel jobs, in general, are not very portable, and as a result are difficult to run across multiple heterogeneous sites.  In the Open Science Grid (OSG) framework we are currently working on minimizing these barriers for an important class of modestly parallel (4- to ~64- way) jobs where the parallelism can be executed on a single multi-core machine. Currently, eight-way multicore machines are prevalent in the OSG.  Most local schedulers have mechanisms, exposed via RSL, to schedule a single job to run exclusively on one multi-core machine.  By using shared memory on a single machine as an MPI interconnect, and bringing along with the job all the software infrastructure required to run this &quot;local&quot; parallel job, a user can easily create a portable parallel job that can run on many different OSG sites. Another important benefit is that this strategy helps to optimize multi-core machine utilization while simplifying the build and submit process thereby making HTPC accessible to a wider class of scientific users. 
+
+---++ Early adopter HTPC sites
+
+   * Oklahoma-Sooner (Henry Neeman, Horst Severini, the OU team) was the first external site to begin running HTPC Jobs. [[http://gratia-osg-prod.opensciencegrid.org/gratia-reporting/frameset?__report=%2Fdata%2Ftomcat-gratia%2Fwebapps%2Fgratia-reports%2Freports%2FUsageByUser.rptdesign&amp;__format=html&amp;EndDate=2012-12-31&amp;ReportTitle=Usage+by+Site+-+drill-through&amp;ReportSubtitle=&amp;Sites=OU_OSCER_ATLAS&amp;StartDate=2009-11-09&amp;DisplayMetric=WallDuration&amp;__overwrite=true&amp;__locale=en_US&amp;__timezone=GMT&amp;__svg=false&amp;__designer=false&amp;__pageoverflow=0&amp;__masterpage=true&amp;VOs=dosar][Gratia Reports for OU HTPC jobs]].
+   * Purdue-Lepton (Preston Smith, Fengping Hu)
+   * Clemson (Sam Hoover)
+   * Nebraska-Firefly (Brian Bockelman)
+   * UC San Diego (Frank Wurthwein, Terrence Martin, Igor Sfiligoi)
+   * UW GLOW (Dan Bradley)
+
+&lt;!--
+[[https://submit.chtc.wisc.edu:8443/gratia-reporting/][Gratia reports of HTPC jobs]]
+--&gt;
+
+---++Setting up an HTPC job on the OSG
+
+Currently we are testing HTPC jobs with MPI parallelism so the directions below are primarily directed at MPI users. However, since the parallel libraries are packaged together with the application, it is straightforward to use other libraries such as OpenMP, Linda, or others. 
+
+---+++Compiling an HTPC job
+
+The main advantage of HTPC is that most any MPI implementation that supports shared memory can be used.  MPICH2 and OpenMPI have both been tested.  To compile an HTPC job, simply compile as usual on any accessible machine.  This need not be a head node, or even an OSG resource.  However, this machine does need to be an OS and architecture compatible with the OSG sites where the job will run.  Currently, Scientific Linux 4 or a 32 or 64 bit machine is a good universal donor system, using OpenMPI for the MPI implementation.  Another significant benefit is that it is easy to test these jobs locally, without waiting for scheduling delays.  Statically linking the binary can ensure that it doesn&#39;t depend on any shared libraries unavailable on the target system.
+
+---+++Submitting an HTPC job
+
+There are two main tricks to submitting an HTPC job.  The first is transfering the mpiexec command along with the job itself.  As the job will be transfered as a &quot;data&quot; file, the main executable in the condor-g file will need to be a wrapper script, which simply sets the executable bit on the MPI job proper, and calls mpiexec.
+
+For example, a wrapper script to run an 8-way HTPC job might look like
+
+&lt;verbatim&gt;
+#!/bin/sh
+
+chmod 0755 ./mdrun ./mpiexec
+
+./mpiexec -np 8 ./mdrun some_input_file
+&lt;/verbatim&gt;
+
+The second trick is requesting that the local scheduler allocate all the cores on a single machine for your job.  In PBS, the way to do this is with the RSL in a Condor-G submit file:
+
+&lt;verbatim&gt;
+GlobusRSL = (xcount=8)
+&lt;/verbatim&gt;
+
+---+++ Batch Scheduler Setup
+
+Enabling multi-core jobs requires some site-specific configuration of the local batch system.
+
+---++++ PBS
+
+PBS should work out of the box by using the &quot;xcount&quot; option supported by the PBS jobmanager.
+
+---++++ Condor
+
+Condor requires whole machines to be configured.  [[https://condor-wiki.cs.wisc.edu/index.cgi/wiki?p=WholeMachineSlots][Click here for directions]]
+
+---++++ LSF
+
+LSF requires some changes to the job manager to allow the -x option to be passed to the LSF bsub command.  Add the following lines to the LSF job manager, in the section where options are being parsed:
+
+&lt;verbatim&gt;
+	if(defined($description-&gt;exclusive())) 
+	{
+	print JOB &quot;#BSUB -x\n&quot;;
+	}
+&lt;/verbatim&gt;
+
+---++ HTPC Schema Attributes
+
+The following attributes will be added to the Glue schema as a CECapability: 
+
+| *Attribute Name* | *Attribute Type* | *Description* |
+| !GlueCECapability | string | htpc |
+| HTPCrsl | string |extra rsl needed to enable HTPC jobs|
+| !HTPCAccessControlBaseRule | string | ACBR format to specify one or more of &lt;literal&gt;  VO:&lt;VO Name&gt; or  VOMS:&lt;FQAN&gt; &lt;/literal&gt; |
+
+Another useful variable for HTPC is the &quot;number of cores per machine&quot; but this can be calculated from:
+   * number of cores per machine = !GlueHostArchitectureSMPSize * (!LogicalCPUs / !PhysicalCPUs).
+
+The following attributes need to be included in the CE section of the &quot;config.ini&quot; file. 
+&lt;verbatim&gt;
+htpc = enabled
+htpc_queues = queue1, queue2, queue3 # can also take &quot;*&quot;
+htpc_blacklist_queues =
+htpc_rsl = (foo=bar) # this is the default for HTPC queues
+htpc_rsl_queue1 = (zork=quux) # this is a specialized rsl for queue1 only
+&lt;/verbatim&gt;
+In the future if we need to extend this to support an alternative CE such as CREAM, we can add new lines similar to the last two with CREAM syntax.
+
+---++ Running Amber9 PMEMD
+
+RENCI&#39;s Trash/Engagement team is running Amber9&#39;s PMEMD, a molecular dynamics tool, in the HTPC model. 
+
+[[http://osglog.wordpress.com/2010/11/04/high-throughput-parallel-molecular-dynamics/][This site]] provides details of the goals, approach and status of the work.
+
+[[http://www.renci.org/~scox/htpc-how-to-v0.3.pdf][HTPC Getting Started Guide]]
+
+---++ Initial Testing and Debugging 
+
+While you can certainly submit a real production parallel job to test any given site, it is often best to submit a small shell script to validate that any particular site is working correctly.  There are two common failure modes with HTPC:
+   1 Jobs simply do not run and remain permanently idle. It can sometimes be difficult to differentiate between a failure of this type and a site that is simply busy.  If all of your jobs are still idle after 24 hours, it is useful to contact the site administrator to see what the story is.
+   1 A second kind of problem is somewhat more tricky.  It has happened that a site is configured to accept HTPC jobs, but due to a configuration error, does not allocate a whole machine for your HTPC job.  Rather, it allocates one slot or core, in the usual way.  If you job tries to take advantage of multiple cores, or the whole memory on the machine, it may run correctly, but very very slowly.  Because of certain assumptions in many MPI stacks, an 8 way MPI jobs running on a single core will usually run much than 1/8th the expected speed.  To detect this, it is useful to run the following simple shell script as a test job for each site you&#39;d like to run on. This script utilizes several different tests to help diagnose possible failure modes. 
+
+&lt;verbatim&gt;
+#!/bin/sh
+
+echo &quot;----------------------------------------------------------------&quot;
+
+sleep 60
+
+/bin/hostname
+
+/usr/bin/uptime
+
+/bin/uname -a
+
+cat /proc/cpuinfo
+
+ps auxwwr
+echo &quot;----------------------------------------------------------------&quot;
+
+exit 0
+
+&lt;/verbatim&gt;
+
+Once the script runs, examine the output as follows:
+   1 The first thing this script does is to just sleep for a minute to let the load average stabilize.  Then it runs the &quot;uptime&quot; command.  Ideally, the result of the short-term &quot;uptime&quot; should be close to 0.  If the short-term &quot;uptime&quot; result is closer to the number of cores, that is a strong indication that HTPC is not correctly configured, and this HTPC job is really running like a serial job.  
+   1 The number of cores on this machine is encoded in the output of /proc/cpuinfo. This should show the number of cores that is expected.
+   1   Finally, the &quot;r&quot; option to the &quot;ps&quot; command shows all Unix processes in the runnable state, another clue to whether HTPC is enabled.  Ideally, only this &quot;ps&quot; command line should appear in the output.  If the output of &quot;ps&quot; shows other user jobs in the Runnable state, that&#39;s a sure sign that HTPC is not properly enabled on this machine.
+
+In order to test submissions to OSG sites that and verify htpc support, you can download and use this [[%ATTACHURL%/condor_test_htpc_grid.submit]condor-g submit file]].  You&#39;ll need to change the location and name of the htpc test script and the resource name as well as the output files to match your parameters.
+
+---++ HTPC and Glide-ins
+
+To submit jobs via Glide-ins changes must be incorporated into the Submit Host as well as into the Glide-in Factory.
+
+   * For the frontend:
+      * [[Documentation/GlideinWMSGroups][GlideinWMS VO Frontend Groups]]: Description of groups in the VO Frontend.  A specific example is HCC&#39;s HTPC configuration.
+ 
+   * Changes required to the pilot (or Glide-in) factory for htpc:
+      * For each htpc-site the RS&quot; line in the glideinWMS.xml file must be edited to look like:
+         * entry name=&quot;clemson-htpc&quot; enabled=&quot;True&quot; gatekeeper=&quot;osg-gw.clemson.edu/jobmanager-condor&quot; gridtype=&quot;gt2&quot; rsl=&quot;(condorsubmit=(&#39;+RequiresWholeMachine&#39; TRUE))&quot; schedd_name=&quot;submit.chtc.wisc.edu&quot; verbosity=&quot;std&quot; work_dir=&quot;.&quot;
+         * This ensures that pilot jobs are started on the whole machine.
+
+Glide-in site configurations:
+| *Gatekeeper* | *Site Name* | *RSL* |
+| osg-gw.clemson.edu/jobmanager-condor | clemson-htpc | rsl=&quot;(condorsubmit=(&#39;+RequiresWholeMachine&#39; TRUE)(&#39;Requirements&#39; &#39;CAN_RUN_WHOLE_MACHINE=?=TRUE&#39;))&quot; |
+| red.unl.edu/jobmanager-condor | nebraska-red-htpc | rsl=&quot;(condorsubmit=(&#39;+RequiresWholeMachine&#39; TRUE)(&#39;Requirements&#39; &#39;CAN_RUN_WHOLE_MACHINE=?=TRUE&#39;))&quot; |
+| lepton.rcac.purdue.edu/jobmanager-pbs | purdue-htpc | rsl=&quot;(jobtype=single)(queue=tg_workq)(xcount=8)(host_xcount=1)(maxWallTime=2800)&quot; |
+| osg-gw-2.t2.ucsd.edu/jobmanager-condor | ucsd-htpc | rsl = &quot;(condorsubmit=(&#39;+RequiresWholeMachine&#39; TRUE))&quot; |
+| grid1.oscer.ou.edu/jobmanager-lsf | ou-htpc | rsl = &quot;(jobtype=single)(exclusive=1)(maxWallTime=2800)&quot; |
+| pf-grid.unl.edu/jobmanager-condor | nebraska-prairiefire-htpc | rsl = &quot;(condorsubmit=(&#39;+RequiresWholeMachine&#39; TRUE)(&#39;Requirements&#39; &#39;CAN_RUN_WHOLE_MACHINE=?=TRUE &amp;&amp; Cpus &gt;= 8&#39;))&quot; |
+|smufarm.physics.smu.edu/jobmanager-condor | smu_phy-htpc | rsl = &quot;(condorsubmit=(&#39;+RequiresWholeMachine&#39; TRUE)(&#39;Requirements&#39; &#39;CAN_RUN_WHOLE_MACHINE=?=TRUE&#39;))&quot;|
+|brgw1.renci.org/jobmanager-pbs | renci-htpc | rsl=&quot;(jobtype=single)(xcount=2)(host_xcount=1)(maxWallTime=2800)&quot; |
+
+GPU Queues - Glide-in site configurations:
+| *Gatekeeper* | *Site Name* | *RSL* |
+|brgw1.renci.org/jobmanager-pbs | renci-htpc | rsl=&quot;(jobtype=single)(xcount=2)(host_xcount=1)(queue=gpgpu)(maxWallTime=2800)&quot; |
+
+
+---++ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = DanFraser
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = User
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = Scientist
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = Training
+
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = DanFraser
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = BrianBockelman
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %YES%
+############################################################################################################
+--&gt;
+

@@ -1,0 +1,132 @@
+
+%DOC_STATUS_TABLE%
+
+-- Main.KarthikArun - 23 Mar 2010
+
+%TOC%
+
+---++Pledged Installed Capacity Reporting script
+This document explains how to install and run the &lt;b&gt;Pledged installed capacity reporting &lt;/b&gt; script.
+
+---+++ Purpose of the script
+The purpose of the script is to generate and email the pledged installed capacity report for sites in federations supported by USATLAS and USCMS VOs. The script is written in python and it uses python xpath libraries to parse the xml data published by MyOSG. Then it makes a dictionary from which the data could be summarized and a report generated and emailed if needed. 
+
+---+++ How to install the script?
+You can directly check out the script from the svn repository as shown below: &lt;br&gt;
+cd to the directory of your choice. This will be the installation directory. From here execute the following command
+&lt;pre&gt;
+cd /directory/of/your/choice
+svn co  https://osgbdiifilter.svn.sourceforge.net/svnroot/osgbdiifilter/pledgedCapacity/tags/beta-release-1 .
+&lt;/pre&gt;
+
+---+++ How to run the script  ?
+Here are the instructions to run the script. These instructions are the same for running the script manually from the command line and as a cronjob. &lt;p&gt;
+&lt;ol&gt;
+&lt;li&gt;The 1st step is to configure the script with proper parameters. For this edit the etc/config.ini file. The file provided is a template file with the following contents. The parameters to be filled in are pretty much self-explanatory. Note the default &quot;config.ini&quot; file could be overridden by another configuration file of your choice. To do this use the &quot;--config &lt;alternative_config_file&gt;&quot; option while running the script. 
+
+&lt;pre&gt;
+[emailCommon]
+from = fromEmail
+smtpServer = smtp server&#39;s FQDN
+
+[emailReport]
+to = comma separated emails of whoever wants to receive the report (mandatory if --email option is used while running the report)
+
+[emailError]
+to = comma separated emails of whoever wants to receive error messages from running the script, if any (mandatory)
+
+&lt;/pre&gt;
+&lt;li&gt; The script could be ran in two modes namely either to email the report or to print the report to stdout. To email the report (to the list of emails configured in config.ini under [emailReport], run the report as shown in the following command. INSTALL_DIR is the directory to which you checked out the code. 
+&lt;pre&gt;
+export INSTALL_DIR=&quot;/installation/directory&quot;; $INSTALL_DIR/bin/report.py --email
+&lt;/pre&gt;
+
+Instead of emailing, if you want to print the report to stdout, do the following:
+&lt;pre&gt;
+export INSTALL_DIR=&quot;/installation/directory&quot;; $INSTALL_DIR/bin/report.py
+&lt;/pre&gt;
+
+&lt;li&gt; The script uses &quot;config.ini&quot; as the default configuration file. But if you want to use another configuration file of your choice say &quot;alternative.ini&quot;, you can specify the alternative configuration file as shown below (use an alternative configuration file and email the report to the emails specified in that file):
+&lt;pre&gt;
+export INSTALL_DIR=&quot;/installation/directory&quot;; $INSTALL_DIR/bin/report.py --config alternative.ini --email
+&lt;/pre&gt;
+&lt;/ol&gt;
+
+---+++ Logging and Debugging information
+The script logs important messages (reports and errors) to log files under var/log directory. In addition the script will also email the errors to the receipients specified in the [emailError] section of the config.ini file. 
+
+---+++ Wish list
+- Add more choices for the command line options &lt;br&gt;
+- Make [emailError] optional (currently it is mandatory)&lt;br&gt;
+- Other enhancements based on feedback and feature and change requests&lt;br&gt;
+
+---+++ Feedback
+If you have any questions/comments/suggestions, please feel free to drop me an email
+
+
+---+ GOC Specific Information
+   * We are going to use a custom emailing script instead of using the =sendEmail.py= script provided with this script
+   * We have modified report.py slightly to remove its dependencies on =sendEmail.*= and the =../etc/config.init=. 
+      * We will look into working with Karthik to check in the updated script if he wishes to do that - perhaps in a separate branch. Or we could take over ownership of the scripts.
+   * As of 2010-03-31, I am close to being able to install this on a production server; but till it&#39;s done, we will run and send these reports out of dev.grid -agopu
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+   DEAR DOCUMENT OWNER
+   ===================
+
+   Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER          = RobQ
+
+   Please define the document area, choose one of the defined areas from the next line
+   DOC_AREA = (ComputeElement|General|Trash/Integration|Monitoring|Operations|Security|Storage|Trash/Tier3|User|VO)
+   * Local DOC_AREA       =  Operations
+
+   define the primary role the document serves, choose one of the defined roles from the next line
+   DOC_ROLE = (Developer|Documenter|Scientist|Student|SysAdmin|VOManager)
+   * Local DOC_ROLE       =  SysAdmin
+
+   Please define the document type, choose one of the defined types from the next line
+   DOC_TYPE = (HowTo|Installation|Knowledge|Navigation|Planning|Training|Troubleshooting)
+   * Local DOC_TYPE       = HowTo
+   
+   Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+   Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+   change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+   change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+   change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+   DEAR DOCUMENT REVIEWER
+   ======================
+
+   Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = ElizabethChism
+  
+   Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %IN_PROGRESS%
+
+
+   DEAR DOCUMENT TESTER
+   ====================
+
+   Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = ElizabethChism
+  
+   Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+############################################################################################################
+--&gt;
+
+---+++ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+
+

@@ -1,0 +1,68 @@
+%TMPL:INCLUDE{&quot;WebCreateNewTopic&quot;}%
+
+%TMPL:DEF{&quot;script:topictemplate&quot;}%&lt;script type=&quot;text/javascript&quot; src=&quot;%PUBURL%/%SYSTEMWEB%/TWikiJavascripts/twikiString.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;%PUBURLPATH%/%SYSTEMWEB%/TWikiJavascripts/unicode_chars.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+//&lt;![CDATA[
+function openTemplateWindow () {
+	var window = twiki.Window.openPopup(
+		&quot;%SCRIPTURL{view}%/&quot;,
+			{
+    			topic:&quot;WebTemplateTopics&quot;,
+    			web:&quot;%SYSTEMWEB%&quot;,
+    			template:&quot;viewplain&quot;,
+    			attributes:&quot;resizable=1,scrollbars=1,status=1,toolbar=1&quot;,
+    			urlparams:&quot;web=%BASEWEB%&quot;
+    		}
+    	);
+	return false;
+}
+function getQueryUrl() {
+	return &quot;%SCRIPTURLPATH{view}%/%BASEWEB%/%BASETOPIC%?%QUERYSTRING%;pickparent=1&quot;
+}
+/* Localized texts */
+var TEXT_FEEDBACK_HEADER = &quot;%MAKETEXT{&quot;Topic will be named: &quot;}%&quot;;
+/* Url params */
+var URL_PICK_PARENT = &quot;%URLPARAM{&quot;pickparent&quot;}%&quot;;
+var URL_TEMPLATE = &quot;%URLPARAM{&quot;template&quot;}%&quot;;
+//]]&gt;
+&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;%PUBURLPATH%/%SYSTEMWEB%/PatternSkin/webtopiccreator.js&quot;&gt;&lt;/script&gt;%TMPL:END%
+
+%TMPL:DEF{&quot;formstartstep&quot;}%%TMPL:P{&quot;formstart&quot;}%
+&lt;div class=&quot;twikiFormSteps&quot;&gt;%TMPL:END%
+
+%TMPL:DEF{&quot;formendstep&quot;}%&lt;/div&gt;&lt;!--/twikiFormSteps--&gt;
+%TMPL:P{&quot;formend&quot;}%%TMPL:END%
+
+%TMPL:DEF{&quot;titlestep&quot;}%&lt;div class=&quot;twikiFormStep&quot;&gt;
+---++ %MAKETEXT{&quot;Create New Topic in [_1] Web&quot; args=&quot;&lt;nop&gt;%BASEWEB%&quot;}%
+&lt;/div&gt;&lt;!--/twikiFormStep--&gt;%TMPL:END%
+
+%TMPL:DEF{&quot;topicnamestep&quot;}%&lt;div class=&quot;twikiFormStep&quot;&gt;
+---+++ %MAKETEXT{&quot;Topic name:&quot;}%
+&lt;p&gt;
+%TMPL:P{&quot;topicname&quot;}% &lt;span id=&quot;webTopicCreatorFeedback&quot; class=&quot;twikiGrayText&quot;&gt;&lt;!--generated name will be put here--&gt;&lt;/span&gt;
+&lt;/p&gt;%TMPL:P{&quot;nonwikiword&quot;}%
+&lt;/div&gt;&lt;!--/twikiFormStep--&gt;%TMPL:END%
+
+%TMPL:DEF{&quot;topicparentstep&quot;}%&lt;div class=&quot;twikiFormStep&quot;&gt;
+---+++ %MAKETEXT{&quot;Topic parent:&quot;}%
+&lt;p&gt;
+%TMPL:P{&quot;topicparent&quot;}%
+&lt;/p&gt;
+&lt;/div&gt;&lt;!--/twikiFormStep--&gt;%TMPL:END%
+
+%TMPL:DEF{&quot;topictemplatestep&quot;}%&lt;div class=&quot;twikiFormStep&quot;&gt;
+---+++ %MAKETEXT{&quot;Use template:&quot;}%
+&lt;p&gt;
+%TMPL:P{&quot;topictemplate&quot;}%
+&lt;/p&gt;
+&lt;/div&gt;&lt;!--/twikiFormStep--&gt;%TMPL:END%
+
+%TMPL:DEF{&quot;submitstep&quot;}%&lt;div class=&quot;twikiFormStep&quot;&gt;
+&lt;p&gt;
+%TMPL:P{&quot;submit&quot;}%
+&lt;/p&gt;
+&lt;/div&gt;&lt;!--/twikiFormStep--&gt;%TMPL:END%
+

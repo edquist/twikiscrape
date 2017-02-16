@@ -1,0 +1,287 @@
+---+ Package =TWiki::UserMapping=
+
+This is a virtual base class (a.k.a an interface) for all user mappers. It is
+*not* useable as a mapping in TWiki - use the BaseUserMapping for default
+behaviour.
+
+User mapping is the process by which TWiki maps from a username (a login name)
+to a display name and back. It is also where groups are maintained.
+
+See TWiki::Users::BaseUserMapping and TWiki::Users::TWikiUserMapping for
+the default implementations of this interface.
+
+If you want to write a user mapper, you will need to implement the methods
+described in this class.
+
+User mappings work by mapping both login names and display names to a
+_canonical user id_. This user id is composed from a prefix that defines
+the mapper in use (something like &#39;BaseUserMapping_&#39; or &#39;LdapUserMapping_&#39;)
+and a unique user id that the mapper uses to identify the user.
+
+The null prefix is reserver for the TWikiUserMapping for compatibility
+with old TWiki releases.
+
+__Note:__ in all the following documentation, =$user= refers to a
+*canonical user id*.
+
+
+%TOC%
+
+---++ PROTECTED ClassMethod new ($session, $mapping_id)
+
+Construct a user mapping object, using the given mapping id.
+
+
+---++ ObjectMethod *finish* &lt;tt&gt;()&lt;/tt&gt;
+Break circular references.
+
+
+
+---++ ObjectMethod *loginTemplateName* &lt;tt&gt;() -&gt; $templateFile&lt;/tt&gt;
+
+Allows UserMappings to come with customised login screens - that should
+preferably only over-ride the UI function
+
+Default is &quot;login&quot;
+
+
+
+---++ ObjectMethod *supportsRegistration* &lt;tt&gt;() -&gt; $boolean&lt;/tt&gt;
+
+Return true if the UserMapper supports registration (ie can create new users)
+
+Default is *false*
+
+
+
+---++ ObjectMethod *handlesUser* &lt;tt&gt;($cUID,$login,$wikiname) -&gt; $boolean&lt;/tt&gt;
+
+Called by the TWiki::Users object to determine which loaded mapping
+to use for a given user (must be fast).
+
+Default is *false*
+
+
+
+---++ ObjectMethod *getCanonicalUserID* &lt;tt&gt;($login,$dontcheck) -&gt; cUID&lt;/tt&gt;
+
+Convert a login name to the corresponding canonical user name. The
+canonical name can be any string of 7-bit alphanumeric and underscore
+characters, and must correspond 1:1 to the login name.
+(undef on failure)
+
+(if dontcheck is true, return a cUID for a nonexistant user too - used for registration)
+
+Subclasses *must* implement this method.
+
+
+
+
+---++ ObjectMethod *getLoginName* &lt;tt&gt;($cUID) -&gt; login&lt;/tt&gt;
+
+Converts an internal cUID to that user&#39;s login
+(undef on failure)
+
+Subclasses *must* implement this method.
+
+
+
+---++ ObjectMethod *addUser* &lt;tt&gt;($login,$wikiname,$password,$emails) -&gt; cUID&lt;/tt&gt;
+
+Add a user to the persistant mapping that maps from usernames to wikinames
+and vice-versa, via a *canonical user id* (cUID).
+
+$login and $wikiname must be acceptable to $TWiki::cfg{NameFilter}.
+$login must *always* be specified. $wikiname may be undef, in which case
+the user mapper should make one up.
+
+This function must return a canonical user id that it uses to uniquely
+identify the user. This can be the login name, or the wikiname if they
+are all guaranteed unigue, or some other string consisting only of 7-bit
+alphanumerics and underscores.
+
+If you fail to create a new user (for eg your Mapper has read only access),
+&lt;pre&gt;
+    throw Error::Simple(&#39;Failed to add user: &#39;.$error);
+&lt;/pre&gt;
+where $error is a descriptive string.
+
+Throws an Error::Simple if user adding is not supported (the default).
+
+
+
+---++ ObjectMethod *removeUser* &lt;tt&gt;($user) -&gt; $boolean&lt;/tt&gt;
+
+Delete the users entry from this mapper. Throws an Error::Simple if
+user removal is not supported (the default).
+
+
+
+---++ ObjectMethod *getWikiName* &lt;tt&gt;($cUID) -&gt; wikiname&lt;/tt&gt;
+
+Map a canonical user name to a wikiname.
+
+Returns the $cUID by default.
+
+
+
+---++ ObjectMethod *userExists* &lt;tt&gt;($cUID) -&gt; $boolean&lt;/tt&gt;
+
+Determine if the user already exists or not. Whether a user exists
+or not is determined by the password manager.
+
+Subclasses *must* implement this method.
+
+
+
+---++ ObjectMethod *eachUser* &lt;tt&gt;() -&gt; listIteratorofcUIDs&lt;/tt&gt;
+
+Called from TWiki::Users. See the documentation of the corresponding
+method in that module for details.
+
+Subclasses *must* implement this method.
+
+
+
+---++ ObjectMethod *eachGroupMember* &lt;tt&gt;($group) -&gt; TWiki::ListIteratorofcUIDs&lt;/tt&gt;
+
+Called from TWiki::Users. See the documentation of the corresponding
+method in that module for details.
+
+Subclasses *must* implement this method.
+
+
+
+---++ ObjectMethod *isGroup* &lt;tt&gt;($user) -&gt; boolean&lt;/tt&gt;
+
+Called from TWiki::Users. See the documentation of the corresponding
+method in that module for details.
+
+Subclasses *must* implement this method.
+
+
+
+---++ ObjectMethod *eachGroup* &lt;tt&gt;() -&gt; ListIteratorofgroupnames&lt;/tt&gt;
+
+Called from TWiki::Users. See the documentation of the corresponding
+method in that module for details.
+
+Subclasses *must* implement this method.
+
+
+
+---++ ObjectMethod *eachMembership* &lt;tt&gt;($cUID) -&gt; ListIteratorofgroupsthisuserisin&lt;/tt&gt;
+
+Called from TWiki::Users. See the documentation of the corresponding
+method in that module for details.
+
+Subclasses *must* implement this method.
+
+
+
+---++ ObjectMethod *isAdmin* &lt;tt&gt;($user) -&gt; $boolean&lt;/tt&gt;
+
+True if the user is an administrator. Default is *false*
+
+
+
+---++ ObjectMethod *isInGroup* &lt;tt&gt;($user,$group,$scanning) -&gt; bool&lt;/tt&gt;
+
+Called from TWiki::Users. See the documentation of the corresponding
+method in that module for details.
+
+Default is *false*
+
+
+
+---++ ObjectMethod *findUserByEmail* &lt;tt&gt;($email) -&gt; \@users&lt;/tt&gt;
+   * =$email= - email address to look up
+Return a list of canonical user names for the users that have this email
+registered with the password manager or the user mapping manager.
+
+Returns an empty list by default.
+
+
+
+---++ ObjectMethod *getEmails* &lt;tt&gt;($user) -&gt; @emailAddress&lt;/tt&gt;
+
+If this is a user, return their email addresses. If it is a group,
+return the addresses of everyone in the group.
+
+Duplicates should be removed from the list.
+
+By default, returns the empty list.
+
+
+
+---++ ObjectMethod *setEmails* &lt;tt&gt;($user,@emails)&lt;/tt&gt;
+
+Set the email address(es) for the given user. Does nothing by default.
+
+
+
+---++ ObjectMethod *findUserByWikiName* &lt;tt&gt;($wikiname) -&gt; listofcUIDsassociatedwiththatwikiname&lt;/tt&gt;
+
+Called from TWiki::Users. See the documentation of the corresponding
+method in that module for details.
+
+Subclasses *must* implement this method.
+
+
+
+---++ ObjectMethod *checkPassword* &lt;tt&gt;($userName,$passwordU) -&gt; $boolean&lt;/tt&gt;
+
+Finds if the password is valid for the given user.
+
+Returns 1 on success, undef on failure.
+
+Default behaviour is to return 1.
+
+
+
+---++ ObjectMethod *setPassword* &lt;tt&gt;($user,$newPassU,$oldPassU) -&gt; $boolean&lt;/tt&gt;
+
+If the $oldPassU matches matches the user&#39;s password, then it will
+replace it with $newPassU.
+
+If $oldPassU is not correct and not 1, will return 0.
+
+If $oldPassU is 1, will force the change irrespective of
+the existing password, adding the user if necessary.
+
+Otherwise returns 1 on success, undef on failure.
+
+Default behaviour is to fail.
+
+
+
+---++ ObjectMethod *passwordError* &lt;tt&gt;() -&gt; $string&lt;/tt&gt;
+
+Returns a string indicating the error that happened in the password handlers
+TODO: these delayed errors should be replaced with Exceptions.
+
+returns undef if no error 9the default)
+
+
+
+---++ ObjectMethod *ASSERT_IS_CANONICAL_USER_ID* &lt;tt&gt;($user_id) -&gt; $boolean&lt;/tt&gt;
+
+Used for debugging to ensure we are actually passing a canonical_id
+
+
+
+---++ ObjectMethod *ASSERT_IS_USER_LOGIN_ID* &lt;tt&gt;($user_login) -&gt; $boolean&lt;/tt&gt;
+
+Used for debugging to ensure we are actually passing a user login
+
+
+
+---++ ObjectMethod *ASSERT_IS_USER_DISPLAY_NAME* &lt;tt&gt;($user_display) -&gt; $boolean&lt;/tt&gt;
+
+Used for debugging to ensure we are actually passing a user display_name
+(commonly a WikiWord Name)
+
+Returns true by default.
+
+
+

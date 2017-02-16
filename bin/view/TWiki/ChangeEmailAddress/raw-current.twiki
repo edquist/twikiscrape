@@ -1,0 +1,41 @@
+---+ Change E-mail Address
+%STARTINCLUDE%
+
+%MAKETEXT{&quot;This form is used to change your registered e-mail addresses. Your registered e-mails are used by TWiki for sending you e-mails, include notifications of password changes. The addresses you register via this form are kept secret and will *not* be published anywhere on this site.&quot;}%
+
+%X% __Security Note__: %MAKETEXT{&quot;You really ought to register a valid e-mail address. If TWiki can&#39;t find a registered e-mail for you in the secret database, it will look in your user topic for a line like this:&quot;}%
+&lt;verbatim&gt;
+   * Set Email = user@example.com
+&lt;/verbatim&gt;
+%MAKETEXT{&quot;If your user topic is not protected from changes by other people, and you don&#39;t register an e-mail address using this form, then your user account could be hijacked by someone else.&quot;}%
+
+%MAKETEXT{&quot;If your old e-mail addresses are all invalid (you can&#39;t receive mail there any more) and you have forgotten your password, please contact [_1] for help.&quot; args=&quot;%WIKIWEBMASTER%&quot;}%
+
+Registered e-mail addresses for currently logged in user (=%USERINFO{format=&quot;$wikiname&quot;}%=): %USERINFO{format=&quot;$emails&quot;}% 
+
+%MAKETEXT{&quot;[_1] has a list of other TWiki users.&quot; args=&quot;%MAINWEB%.%WIKIUSERSTOPIC%&quot;}%
+
+&lt;form name=&quot;passwd&quot; action=&quot;%SCRIPTURLPATH{&quot;passwd&quot;}%/%WEB%/%TOPIC%&quot; method=&quot;post&quot;&gt;
+&lt;div class=&quot;twikiFormSteps&quot;&gt;
+&lt;div class=&quot;twikiFormStep twikiLast&quot;&gt;
+%TABLE{databg=&quot;&quot;}%
+|  %MAKETEXT{&quot;Your [_1].LoginName&quot; args=&quot;%TWIKIWEB%&quot;}%: | &lt;input type=&quot;text&quot; name=&quot;username&quot; value=&quot;%URLPARAM{&quot;username&quot; default=&quot;%USERNAME%&quot;}%&quot; size=&quot;40&quot; /&gt; =&lt;font color=&quot;red&quot;&gt;**&lt;/font&gt;= |
+|  %MAKETEXT{&quot;Password&quot;}%: | &lt;input type=&quot;password&quot; name=&quot;oldpassword&quot; value=&quot;%URLPARAM{oldpassword}%&quot; size=&quot;40&quot; /&gt; =&lt;font color=&quot;red&quot;&gt;**&lt;/font&gt;= |
+|  %MAKETEXT{&quot;New e-mails (space-separated list)&quot;}%: | &lt;input type=&quot;text&quot; name=&quot;email&quot; size=&quot;40&quot; /&gt; =&lt;font color=&quot;red&quot;&gt;**&lt;/font&gt;= |
+|  &amp;nbsp;&lt;input type=&quot;hidden&quot; name=&quot;TopicName&quot; value=&quot;%TOPIC%&quot; /&gt;&lt;input type=&quot;hidden&quot; name=&quot;action&quot; value=&quot;changePassword&quot; /&gt; | &lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;Change e-mail address&quot; /&gt; &amp;nbsp;&amp;nbsp; (%MAKETEXT{&quot;Fields marked [_1] are required&quot; args=&quot;=&lt;font color=&#39;red&#39;&gt;**&lt;/font&gt;=&quot;}%) |
+&lt;/div&gt;&lt;!-- /twikiFormStep--&gt;
+&lt;/div&gt;&lt;!-- /twikiFormSteps--&gt;
+&lt;/form&gt;
+
+%MAKETEXT{&quot;After submitting this form your e-mail will be changed, and you will be returned to this form.&quot;}%
+
+%MAKETEXT{&quot;If you have any questions, please contact [_1].&quot; args=&quot;%WIKIWEBMASTER%&quot;}%
+
+__%MAKETEXT{&quot;Related topics:&quot;}%__ ChangePassword, ResetPassword, UserToolsCategory, AdminToolsCategory
+
+%STOPINCLUDE%
+
+&lt;table bgcolor=&quot;yellow&quot;&gt;&lt;tr&gt;&lt;td&gt;
+__Note to administrator:__ This form applies only if TWiki uses  a {PasswordManager} that supports storing e-mails (e.g. TWiki::Users::HtPasswdUser). Otherwise replace this topic with a note describing how to change registered e-mail in your organization).
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+

@@ -1,0 +1,336 @@
+&lt;!--
+These are general in nature and should be changed in the this template if the location changes:
+   * Set CURRENT_TOMCAT = ==gratia09==
+   * Set CURRENT_MYSQL = __gratia06__
+   * Set NEW_TOMCAT = ==gratia07==
+   * Set NEW_MYSQL = __ gratia07__
+   * Set TOMCAT_ALIAS = ==gratia.opensciencegrid.org==
+   * Set MYSQL_ALIAS = ==gratia-db01.fnal.gov==
+   * Set RELEASE_TAR_REPOSITORY = /afs/fnal.gov/files/expwww/gratia/html/Files
+
+These are specific to a release and require changing:
+   * Set RELEASE_DATE = 3/31/2008
+   * Set CURRENT_RELEASE = v0.32.1c
+   * Set RELEASE_TAG = v0-32-1c
+   * Set NEXT_DEVEL_VERSION = v0.33
+   * Set BUILD_DIRECTORY = /home/weigand/cdcvs/gratia-%CURRENT_RELEASE%
+--&gt;
+
+
+---+!! Gratia Release %CURRENT_RELEASE% (%RELEASE_DATE% - 4/1/2008)%BR% 
+
+
+%TOC%
+
+%STARTINCLUDE%
+---+ Overview
+This release (%CURRENT_RELEASE%) is a maintenance release.
+
+---++ Main New Features:
+NONE. 
+   
+---++ Additional Features:
+NONE.
+
+---++ Technical changes affecting some of the listed features
+   * 
+
+&lt;!--   -------------------------------------------- --&gt;
+---+ Anticipated downtime
+It is expected that this release will require the Gratia services and reporting to be unavailable for a very brief (10 minute) period at the most.
+   * Start: %RELEASE_DATE%  
+   * Available: %RELEASE_DATE% 
+   * %GREEN%&lt;b&gt;Actual: Start -  End -   &lt;/b&gt;%ENDCOLOR%
+
+The changes affecting downtime  for this release are:
+   1 Length of time it takes to install the new software
+
+
+
+&lt;!--   -------------------------------------------- --&gt;
+---+ Collectors and Databases Affected
+
+The following Gratia collectors and databases will be converted with this release:
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Schema*|*URL*|*Description*|&quot; format=&quot;| text, 20 | text, 20 | text, 35 | text, 15 | text, 7 | text, 12 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Schema*|*&lt;nop&gt;MySql port*|*Collector URL*|*Collector host*|*Size (bytes)*|*Size (rows)*|
+| fermi_itb | __gratia06__.fnal.gov:3320 | gratia-fermi.fnal.gov:8881 | gratia08.fnal.gov: |  208M |       29,295 |
+| fermi_osg | __gratia06__.fnal.gov:3320 | gratia-fermi.fnal.gov:8880 | gratia08.fnal.gov |  19G |     7,904,799 |
+| gratia_itb | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8881 | gratia09.fnal.gov |  18G |    7,789,474 |
+| gratia_osg_integration | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8885 | gratia09.fnal.gov |  6.8G |    1,367,063 |
+| gratia_qcd  | __gratia06__.fnal.gov:3320 | gratia-fermi.fnal.gov:8883 | gratia08.fnal.gov |  3.7G |      1,037,382 |
+
+%BR%
+
+The following Gratia collectors and databases will &lt;b&gt;NOT&lt;/b&gt; be converted with this release.  The _gratia_ collector will be upgraded to the new software as part of the conversion to &lt;nop&gt;InnoDB. %BR%
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Schema*|*URL*|*Description*|&quot; format=&quot;| text, 20 | text, 20 | text, 35 | text, 15 | text, 7 | text, 12 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Schema*|*&lt;nop&gt;MySql port*|*Collector URL*|*Collector host*|*Size (bytes)*|*Size (rows)*|
+| gratia | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8880 | gratia09.fnal.gov |     73G  |   58,252,407 |
+
+
+%BR%
+The following Gratia collectors and databases will __NOT__  be converted with this release.  These repositories contained specialized reports that have not as yet been upgraded to the new Birt V2.2 software. They will not be affected by this upgrade.%BR%
+
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Schema*|*URL*|*Description*|&quot; format=&quot;| text, 20 | text, 20 | text, 35 | text, 15 | text, 7 |  text, 12 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Schema*|*&lt;nop&gt;MySql port*|*Collector URL*|*Collector host*|*Size (bytes)*|*Size (rows)*|
+| gratia_psacct | __gratia06__.fnal.gov:3320 | gratia-fermi.fnal.gov:8882 | gratia08.fnal.gov: |  11G |    6,356,555 |
+| gratia_osg_daily | __gratia06__.fnal.gov:3320 | gratia.opensciencegrid.org:8884 | gratia09.fnal.gov |   .8G |       83,383      |
+
+
+
+&lt;!-- BUILD DISTRIBUTION -------------------- --&gt;
+---+ Build the %CURRENT_RELEASE% for distribution
+&lt;ol&gt;
+&lt;li&gt;Make sure your build area contains all _committed_ changes.
+&lt;ul&gt;&lt;li&gt;cvs update&lt;/li&gt;&lt;/ul&gt;
+&lt;/li&gt;
+
+&lt;li&gt;In _gratia/build-scripts/Makefile_ , change the _version_default_ to:
+&lt;ul&gt;&lt;li&gt;version_default = %NEXT_DEVEL_VERSION%&lt;/li&gt;
+       &lt;li&gt;commit the change&lt;/li&gt;
+&lt;/ul&gt;
+
+The reason for using a version number 1 more than the current release is so that all development that occurs after this release will have the odd numbered development release (%NEXT_DEVEL_VERSION%).
+
+The current release (%CURRENT_RELEASE%) __will__ get assigned  properly when the _cvs export_ is performed after the tagging occurs.
+&lt;/li&gt;
+
+&lt;li&gt;Tag the release:
+&lt;ul&gt;&lt;li&gt;cvs tag -R %RELEASE_TAG% gratia&lt;/li&gt;&lt;/ul&gt;
+       This tags everything that is in your build directory and presumably tested.
+&lt;/li&gt;
+
+&lt;li&gt; _Into a *new* area_, export the tagged release:
+&lt;ul&gt;&lt;li&gt;cvs export -d gratia-%CURRENT_RELEASE% -r %RELEASE_TAG% gratia&lt;/li&gt;&lt;/ul&gt;
+&lt;/li&gt;
+
+&lt;li&gt;Build it for the release (this insures that tar files are produced for VDT):
+&lt;ul&gt;&lt;li&gt;cd gratia-%CURRENT_RELEASE%/build-scripts&lt;/li&gt;
+&lt;li&gt;source setup-jdk15.sh&lt;/li&gt;
+&lt;li&gt;make release&lt;/li&gt;&lt;/ul&gt;
+&lt;/li&gt;
+
+&lt;li&gt;Copy the built tar files to the release area:
+&lt;ul&gt;&lt;li&gt;scp ../target/*_%CURRENT_RELEASE%.tar   flxi07.fnal.gov:%RELEASE_TAR_REPOSITORY%/&lt;/li&gt;&lt;/ul&gt; 
+%RED%&lt;b&gt;This step is NOT being done for this point release&lt;/b&gt;%ENDCOLOR%
+&lt;/li&gt;
+
+&lt;li&gt;Update the version number on the [[InstallationGuideVDT][services release TWiki page]]:&lt;/li&gt;
+&lt;ul&gt;&lt;li&gt;Edit and update the TWiki variable _&lt;nop&gt;ReleaseVersion_.&lt;/li&gt;&lt;/ul&gt;
+%RED%&lt;b&gt;This step is NOT being done for this point release&lt;/b&gt;%ENDCOLOR%
+&lt;/ol&gt;
+
+%GREEN%&lt;b&gt;Done: 3/31/08 11:45 CDT &lt;/b&gt;%ENDCOLOR%
+
+
+&lt;!-- ----------------- UPGRADE AND IMPLEMENTATION ------------- --&gt;
+---+ Upgrade and implementation
+The __upgrades should be single-threaded__ , that is, performed for each database schema one at a time.  
+
+We will perform these upgrades based on the size of the individual database schema, in ascending order.
+
+&lt;!-- 
+   * Set TC_NODE1      = &lt;b&gt;gratia08&lt;/b&gt;
+   * Set TC_INSTANCE1 = &lt;b&gt;fermi_itb&lt;/b&gt;
+--&gt;
+---++ For %TC_INSTANCE1% on %TC_NODE1%:
+  &lt;ol type=&quot;a&quot;&gt;
+   &lt;li&gt; Stop the tomcat init.d service for the Gratia collector:
+   * service tomcat-%TC_INSTANCE1%  stop
+  &lt;/li&gt;
+
+  &lt;li&gt;Save off the logs under each tomcat instance and empty the _log_ directory.  
+   * date=`date &#39;+&lt;nop&gt;%Y&lt;nop&gt;%m&lt;nop&gt;%d&#39;`
+   * cd        /data/tomcat-%TC_INSTANCE1%/logs/
+   * tar zcf /data/gratia_tomcat_logs_backups/tomcat-%TC_INSTANCE1%.$date.tgz   *
+   * rm -f *
+
+  &lt;li&gt;Install the new software on the Gratia tomcat instance:
+%BR% pswd=xxx
+%BR% source=%BUILD_DIRECTORY%
+%BR% pgm=%BUILD_DIRECTORY%/common/configuration/update-gratia-local 
+%BR% $pgm  -d $pswd -S $source  %TC_INSTANCE1%
+  &lt;/li&gt;
+
+   &lt;li&gt; Start  the tomcat init.d service for the Gratia collector:
+   * service tomcat-%TC_INSTANCE1%  start
+   * When the tomcat service initializes, it will detect any schema changes have been effected and a conversion process will begin. 
+   * _tail_ the  _catalina.out_ log. When the conversion process completes the log will show the following message:%BR%
+       &quot;INFO: Server startup in _xxx_ms&quot;
+  &lt;/ol&gt;
+  %GREEN%&lt;b&gt;Start: 3/31/08 16:09  End: 3/31/08 16:12  &lt;/b&gt;%ENDCOLOR%
+&lt;/li&gt;
+
+
+
+&lt;!-- 
+   * Set TC_NODE2       = &lt;b&gt;gratia08&lt;/b&gt;
+   * Set TC_INSTANCE2 = &lt;b&gt;fermi_osg&lt;/b&gt;
+--&gt;
+---++ For %TC_INSTANCE2% on %TC_NODE2%:
+  &lt;ol type=&quot;a&quot;&gt;
+   &lt;li&gt; Stop the tomcat init.d service for the Gratia collector:
+   * service tomcat-%TC_INSTANCE2%  stop
+  &lt;/li&gt;
+
+  &lt;li&gt;Save off the logs under each tomcat instance and empty the _log_ directory.  
+   * date=`date &#39;+&lt;nop&gt;%Y&lt;nop&gt;%m&lt;nop&gt;%d&#39;`
+   * cd        /data/tomcat-%TC_INSTANCE2%/logs/
+   * tar zcf /data/gratia_tomcat_logs_backups/tomcat-%TC_INSTANCE2%.$date.tgz   *
+   * rm -f *
+
+  &lt;li&gt;Install the new software on the Gratia tomcat instance:
+%BR% pswd=xxx
+%BR% source=%BUILD_DIRECTORY%
+%BR% pgm=%BUILD_DIRECTORY%/common/configuration/update-gratia-local 
+%BR% $pgm  -d $pswd -S $source  %TC_INSTANCE2%
+  &lt;/li&gt;
+
+   &lt;li&gt; Start  the tomcat init.d service for the Gratia collector:
+   * service tomcat-%TC_INSTANCE2%  start
+   * When the tomcat service initializes, it will detect any schema changes have been effected and a conversion process will begin. 
+   * _tail_ the  _catalina.out_ log. When the conversion process completes the log will show the following message:%BR%
+       &quot;INFO: Server startup in _xxx_ms&quot;
+  &lt;/ol&gt;
+  %GREEN%&lt;b&gt;Start: 3/31/08 16:16     End: 3/31/08 16:18   &lt;/b&gt;%ENDCOLOR%
+&lt;/li&gt;
+
+
+
+&lt;!-- 
+   * Set TC_NODE3      = &lt;b&gt;gratia08&lt;/b&gt;
+   * Set TC_INSTANCE3 = &lt;b&gt;qcd&lt;/b&gt;
+--&gt;
+---++ For %TC_INSTANCE3% on %TC_NODE3%:
+  &lt;ol type=&quot;a&quot;&gt;
+   &lt;li&gt; Stop the tomcat init.d service for the Gratia collector:
+   * service tomcat-%TC_INSTANCE3%  stop
+  &lt;/li&gt;
+
+  &lt;li&gt;Save off the logs under each tomcat instance and empty the _log_ directory.  
+   * date=`date &#39;+&lt;nop&gt;%Y&lt;nop&gt;%m&lt;nop&gt;%d&#39;`
+   * cd        /data/tomcat-%TC_INSTANCE3%/logs/
+   * tar zcf /data/gratia_tomcat_logs_backups/tomcat-%TC_INSTANCE3%.$date.tgz   *
+   * rm -f *
+
+  &lt;li&gt;Install the new software on the Gratia tomcat instance:
+%BR% pswd=xxx
+%BR% source=%BUILD_DIRECTORY%
+%BR% pgm=%BUILD_DIRECTORY%/common/configuration/update-gratia-local 
+%BR% $pgm  -d $pswd -S $source  %TC_INSTANCE3%
+  &lt;/li&gt;
+
+   &lt;li&gt; Start  the tomcat init.d service for the Gratia collector:
+   * service tomcat-%TC_INSTANCE3%  start
+   * When the tomcat service initializes, it will detect any schema changes have been effected and a conversion process will begin. 
+   * _tail_ the  _catalina.out_ log. When the conversion process completes the log will show the following message:%BR%
+       &quot;INFO: Server startup in _xxx_ms&quot;
+  &lt;/ol&gt;
+  %GREEN%&lt;b&gt;Start: 4/1/08 07:38      End: 4/1/08 07:40   &lt;/b&gt;%ENDCOLOR%
+&lt;/li&gt;
+
+
+
+
+&lt;!-- 
+   * Set TC_NODE4       = &lt;b&gt;gratia09&lt;/b&gt;
+   * Set TC_INSTANCE4 = &lt;b&gt;itb&lt;/b&gt;
+--&gt;
+---++ For %TC_INSTANCE4% on %TC_NODE4%:
+  &lt;ol type=&quot;a&quot;&gt;
+   &lt;li&gt; Stop the tomcat init.d service for the Gratia collector:
+   * service tomcat-%TC_INSTANCE4%  stop
+  &lt;/li&gt;
+
+  &lt;li&gt;Save off the logs under each tomcat instance and empty the _log_ directory.  
+   * date=`date &#39;+&lt;nop&gt;%Y&lt;nop&gt;%m&lt;nop&gt;%d&#39;`
+   * cd        /data/tomcat-%TC_INSTANCE4%/logs/
+   * tar zcf /data/gratia_tomcat_logs_backups/tomcat-%TC_INSTANCE4%.$date.tgz   *
+   * rm -f *
+
+  &lt;li&gt;Install the new software on the Gratia tomcat instance:
+%BR% pswd=xxx
+%BR% source=%BUILD_DIRECTORY%
+%BR% pgm=%BUILD_DIRECTORY%/common/configuration/update-gratia-local 
+%BR% $pgm  -d $pswd -S $source  %TC_INSTANCE4%
+  &lt;/li&gt;
+
+   &lt;li&gt; Start  the tomcat init.d service for the Gratia collector:
+   * service tomcat-%TC_INSTANCE4%  start
+   * When the tomcat service initializes, it will detect any schema changes have been effected and a conversion process will begin. 
+   * _tail_ the  _catalina.out_ log. When the conversion process completes the log will show the following message:%BR%
+       &quot;INFO: Server startup in _xxx_ms&quot;
+  &lt;/ol&gt;
+  %GREEN%&lt;b&gt;Start: 4/1/08 07:42     End: 4/1/08 07:44   &lt;/b&gt;%ENDCOLOR%
+&lt;/li&gt;
+
+
+
+
+&lt;!-- 
+   * Set TC_NODE5       = &lt;b&gt;gratia09&lt;/b&gt;
+   * Set TC_INSTANCE5 = &lt;b&gt;osg_integration&lt;/b&gt;
+--&gt;
+---++ For %TC_INSTANCE5% on %TC_NODE5%:
+  &lt;ol type=&quot;a&quot;&gt;
+   &lt;li&gt; Stop the tomcat init.d service for the Gratia collector:
+   * service tomcat-%TC_INSTANCE5%  stop
+  &lt;/li&gt;
+
+  &lt;li&gt;Save off the logs under each tomcat instance and empty the _log_ directory.  
+   * date=`date &#39;+&lt;nop&gt;%Y&lt;nop&gt;%m&lt;nop&gt;%d&#39;`
+   * cd        /data/tomcat-%TC_INSTANCE5%/logs/
+   * tar zcf /data/gratia_tomcat_logs_backups/tomcat-%TC_INSTANCE5%.$date.tgz   *
+   * rm -f *
+
+  &lt;li&gt;Install the new software on the Gratia tomcat instance:
+%BR% pswd=xxx
+%BR% source=%BUILD_DIRECTORY%
+%BR% pgm=%BUILD_DIRECTORY%/common/configuration/update-gratia-local 
+%BR% $pgm  -d $pswd -S $source  %TC_INSTANCE5%
+  &lt;/li&gt;
+
+   &lt;li&gt; Start  the tomcat init.d service for the Gratia collector:
+   * service tomcat-%TC_INSTANCE5%  start
+   * When the tomcat service initializes, it will detect any schema changes have been effected and a conversion process will begin. 
+   * _tail_ the  _catalina.out_ log. When the conversion process completes the log will show the following message:%BR%
+       &quot;INFO: Server startup in _xxx_ms&quot;
+  &lt;/ol&gt;
+  %GREEN%&lt;b&gt;Start: 4/1/08 07:47     End: 4/1/08 07:49   &lt;/b&gt;%ENDCOLOR%
+
+
+&lt;!-- ----------------- POST MORTEM  ------------- --&gt;
+---+ Post-mortem
+At this time, this will appear to be random notes.  After the conversion, they may be organized.
+
+&lt;ol&gt;
+&lt;li&gt;osg_integration instance problems with replicated data.
+
+The osg_integration instance (http://gratia.opensciencegrid.org:8885/gratia-reporting/) is experiencing problems with the v0.32.1c conversion.  All the other databases appear ok.
+
+We had turned back on, late last week, the replication of specific gratia_itb probes to osg_integration and all was doing well.  Now it appears that this instance is getting into strange state when processing the replicated data.
+
+Symptoms:
+   * the http://gratia.opensciencegrid.org:8885/gratia-administration page would never render... it would just spin
+   * the hibernate log shows many many  many of these errors which can be viewed in /data/gratia_tomcat_logs_backups/osg_integration, which are the logs I saved this morning
+&lt;pre&gt;
+2008-04-02 01:13:41,003 org.hibernate.util.JDBCExceptionReporter [WARN]: SQL Error: 1062, SQLState: 23000
+2008-04-02 01:13:41,003 org.hibernate.util.JDBCExceptionReporter [ERROR]: Duplicate entry &#39;F8F4C00A065268D4C189E6F440A33B54&#39; for key 2
+&lt;/pre&gt;
+I turned off ALL replication from gratia_itb to osg_integration this morning around 4/2 09:35. 
+
+I am not certain this is related to the 0.32.1c version or is specific with replication or maybe a combination.
+&lt;/li&gt;
+
+&lt;/ol&gt;
+
+%STOPINCLUDE%
+
+&lt;!-- MAJOR UPDATES
+For significant updates to the topic, consider adding your &#39;signature&#39; (beneath this editing box) !--&gt;
+---++!! Major updates
+&lt;!--Future editors should add their signatures beneath yours!--&gt;
+-- Main.JohnWeigand - 31 Mar 2008%BR%
+

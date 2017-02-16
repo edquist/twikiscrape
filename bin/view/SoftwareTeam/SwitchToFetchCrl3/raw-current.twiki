@@ -1,0 +1,51 @@
+---+!! Project 18: Switch to Fetch CRL 3 on EL 5 Systems
+
+---++ Description
+
+---+++ Background
+
+On Enterprise Linux 5 (el5) systems, the standard version of Fetch CRL is the =fetch-crl-2.8.5= package. It is very old and has some defects that are unlikely to be fixed. Most notable is the issue that blank CRL files are generated occasionally, causing Fetch CRL to issue warnings and never update those CRLs. This issue affects only el5 systems, because el6 systems ship only version 3 of Fetch CRL. Further, el5 systems *do* have access to a standard Fetch CRL v3 package, named =fetch-crl3=.
+
+---+++ Goal
+
+Switch from Fetch CRL version 2 to version 3 on EL 5 systems, providing good support for sites to convert.
+
+We do not ship Fetch CRL packages, so our effort is focused on changing Fetch CRL dependency declarations in our packages and on supporting the transition, especially through documentation. In particular, the Fetch CRL configuration format and semantics changed from version 2 to 3, requiring manual changes. Fortunately, the Fetch CRL RPMs have different names and non-overlapping file lists, so it is possible (and recommended) to install them side-by-side, make configuration changes, then disable and remove Fetch CRL v2.
+
+---+++ Links
+
+   * [[https://jira.opensciencegrid.org/browse/SOFTWARE-689][SOFTWARE-689]]: (Bug) fetch-crl fails on zero-sized CRLs
+   * [[https://jira.opensciencegrid.org/browse/SOFTWARE-933][SOFTWARE-933]]: Finish Fetch-CRL v3 upgrade documentation
+   * [[https://jira.opensciencegrid.org/browse/SOFTWARE-934][SOFTWARE-934]]: Upgrade to Fetch-CRL v3 on el5 systems
+   * [[https://jira.opensciencegrid.org/browse/SOFTWARE-950][SOFTWARE-950]]: Make packages conditionally depend on right fetch-crl version
+   * [[https://jira.opensciencegrid.org/browse/SOFTWARE-951][SOFTWARE-951]]: Update osg-configure to conditionally use correct fetch-crl version
+   * [[https://jira.opensciencegrid.org/browse/SOFTWARE-952][SOFTWARE-952]]: Update osg-ca-scripts to conditionally use correct fetch-crl version
+   * [[https://jira.opensciencegrid.org/browse/SOFTWARE-952][SOFTWARE-984]]: Update the documentation
+   * [[Documentation.UpgradeFetchCrl2to3_draft][Documentation: Upgrade instructions - DRAFT]]
+   * [[Documentation/Release3.UpgradeFetchCrl2to3][Documentation: Upgrade instructions ]]
+   * [[SwitchToFetchCrl3Details][Technical details]]
+
+---++ Tasks
+
+Because we do not ship Fetch CRL in the OSG Software stack, the main technical tasks are fairly simple; instead, the focus is on providing active support for site administrators making the change.
+
+   * Change about a dozen packages to depend on =fetch-crl3= instead of =fetch-crl=, only on el5 systems (el6 dependencies remain the same)
+   * Change a couple of OSG Software tools to work flexibly with either =fetch-crl3= or =fetch-crl=
+   * Publish a new TWiki page that documents the upgrade process
+   * Update 15–20 TWiki documentation pages to change references to the Fetch CRL package name for el5
+   * Help Operations draft adequate pre-announcements and a post-release announcement about the change
+   * Help Operations handle post-implementation support questions
+
+The [[SwitchToFetchCrl3Details][technical details]] are documented separately.
+
+---++ Schedule
+
+| *Milestone* | *Key People* | *Due Date* | *Status* |
+| 1. Document high-level and technical plans for OSG review | Mat, Tim | 15 February 2013 | %GREEN%Done%ENDCOLOR% |
+| 2. Change all package dependencies and promote to testing | !BrianL | 22 February 2013 | %GREEN%Done%ENDCOLOR% |
+| 3. Change scripts that use =fetch-crl= and promote to testing | Suchandra, Tim | 22 February 2013 | %GREEN%Done%ENDCOLOR% |
+| 4. Test changes in ITB | Suchandra | 1 March 2013 | %GREEN%Done%ENDCOLOR% |
+| 5. Update documentation references | Marco | 1 March 2013 | %GREEN%Done%ENDCOLOR% |
+
+---++ Notes
+

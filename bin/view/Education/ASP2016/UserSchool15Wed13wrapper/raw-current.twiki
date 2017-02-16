@@ -1,0 +1,217 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+---+ Wednesday Exercise 1.3: Wrapper scripts for in-job installation
+
+In this exercise, you will write a wrapper script to install and run a molecular dynamics simulation package (GROMACS).  It should take 40-45 minutes.  
+
+---++ Background 
+
+Our last exercise for this session is the most important.  Some software cannot be compiled into a 
+single executable - either the language or its libraries don&#39;t allow for static compilation.  
+In this case, it is necessary to create a &quot;wrapper&quot; script (usually in bash or 
+perl) that is able to install the software from the source code on a per job basis.  Not only 
+does this portability technique work with almost any kind of software that can be 
+locally installed, it also allows for a great deal of control and flexibility 
+for what happens within your job.  Once you can write a script to handle your software 
+(and often your data as well), you can submit a large variety of workflows to a distributed computing 
+system like the Open Science Grid.  
+
+---++ Our Software Example
+
+For this exercise, we will be using the molecular dynamic simulation software package GROMACS.  GROMACS is a good example of 
+software that is not easily compiled to a single executable: a researcher may want to run multiple GROMACS commands in order to 
+complete a full simulation.  
+
+   1. Do an internet search to find the GROMACS software downloads page.  
+   1. Create a directory for this exercise on the CHTC submit server =osg-ss-submit.chtc.wisc.edu= (*not* =osg-ss-glidein-submit.chtc.wisc.edu=), and download GROMACS version 4.6.5 into that directory.  
+
+---++ Where to Prepare
+
+Our goal is to write a script that will install GROMACS for us, then run a simulation.  We could write the installation piece of the script by reading the documentation, but 
+it would be better to do a test install to make sure the process works.  
+
+   1. Where can we run this test installation?  Based on the end of the lecture, what are our options and which would be most appropriate?  Make a guess before moving on.  
+   1. Because we&#39;re on the CHTC-based submit node (=osg-ss-submit.chtc.wisc=), we have the option of using an interactive job to test drive the GROMACS installation.  This is a good option because the submit server is already busy with lots of users and the GROMACS install will be longer than a minute or two.  To submit an interactive job do the following: 
+      1. Copy the following lines into a file named =build.submit= \
+&lt;pre class=&quot;file&quot;&gt;
+universe = vanilla
+
+output = build.out
+error = build.err
+log = build.log
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files = 
+
+request_disk = 1GB
+
+queue
+&lt;/pre&gt;
+      1. Note the lack of executable.  Condor doesn&#39;t need an executable for this job because it will be interactive, meaning _you_ are running the commands instead of Condor.  
+      1. In order to test the installation, we will need the source code to come with us.  The =transfer_input_files= line is blank - fill it in with the name of our GROMACS source tarball.  
+      1. To request an interactive job, we will add a =-i= flag to the =condor_submit= command.  The whole command you enter should look like this: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;condor_submit -i build.submit&lt;/strong&gt; 
+&lt;/pre&gt;
+
+---++ Read Through Installation Documentation
+
+While you&#39;re waiting for the interactive job to start, you can start reading the GROMACS installation documentation online. 
+
+   1. Find the installation documentation for GROMACS, by clicking through the link to installation instructions on the [[http://www.gromacs.org/Downloads][downloads page]].  We&#39;re using GROMACS 4.6.5.  
+   1. [[http://www.gromacs.org/Documentation/Installation_Instructions_4.6][There&#39;s a lot of information about installation]]!  Which section of the documentation will likely have a quick overview of the installation process?  Guess which section, then move to the next item.  
+   1. A short installation overview will be likely be available in the section on [[http://www.gromacs.org/Documentation/Installation_Instructions_4.6#2._Quick_and_dirty_installation][&quot;Quick and Dirty Installation&quot;]].  \
+Sure enough, that section provides the following information: \
+&lt;pre class=&quot;file&quot;&gt;
+1. Get the latest version of your compiler.
+2. Check you have CMake version 2.8.x or later.
+3. Unpack the GROMACS tarball.
+4. Make a separate build directory and change to it.
+5. Run CMake with the path to the source as an argument
+6. Run make and make install
+
+Or, as a sequence of commands to execute:
+
+$ tar xfz gromacs-4.6.5.tar.gz
+$ cd gromacs-4.6.5
+$ mkdir build
+$ cd build
+$ cmake .. -DGMX_BUILD_OWN_FFTW=ON
+$ make
+$ sudo make install
+&lt;/pre&gt;\
+\
+This is helpful because it gives a sense of \
+what steps are necessary to install GROMACS, and what the main lines of our wrapper script \
+are going to be.  \
+
+   1. What is the problem with the final line of installation instructions: \
+&lt;pre&gt;
+sudo make install
+&lt;/pre&gt;
+   1. =sudo= indicates the need for administrative privileges, which are not available \
+to you within a job.  This means that we will have to change \
+at least one step in the install procedure to make sure that we&#39;re \
+installing to the job&#39;s working directory (where we have the ability to install software) instead of a \
+protected system location (where we don&#39;t have the ability to install software).  \
+Often, software&#39;s installation location can be set by using a &quot;prefix&quot; argument, typically during a configuration step \
+of the installation.  Try to find which section of the documentation talks about this.  
+   1. Reading through more of the documentation for GROMACS installation, we find that: 
+      * the =make install= step will install the software to a location provided to the =cmake= installation step.  \
+(see: [[http://www.gromacs.org/Documentation/Installation_Instructions_4.6#4.10._Installing_GROMACS][Section 4.10]])
+      * looking at the instructions for the =cmake= installation step, there is an example showing how to change the installation directory prefix.  (see: [[http://www.gromacs.org/Documentation/Installation_Instructions_4.6#4.2._Using_CMake_command-line_options][Section 4.2]])
+   1. So we will have to set the installation prefix to our job&#39;s working directory, using the &lt;pre&gt;-DCMAKE_INSTALL_PREFIX=/path/to/install/location&lt;/pre&gt; \
+argument to =cmake=.  
+
+---++ Installation
+
+Your interactive job should have started by now and we&#39;ve learned about installing our program.  Let&#39;s test it out.  Note that some of these steps may take a long time to complete.  
+
+   1. Run the commands to unpack the source code and make directories: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;tar xfz gromacs-4.6.5.tar.gz&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cd gromacs-4.6.5&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;mkdir build&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cd build&lt;/strong&gt;
+&lt;/pre&gt;\
+
+   1. The next step is using =cmake= with the =-DCMAKE_INSTALL_PREFIX= install option.  The job working directory is created uniquely for each job, so we won&#39;t be able to &quot;hard-code&quot; a specific path name into the argument like =/home/username= or =scratch/username=.  Luckily, we can use a special unix variable, =$(pwd)= to indicate the working directory.  =$(pwd)= gives an absolute path to the current working directory, and from there, you can add on a relative path to the location of your choice.  First, let&#39;s check our current location: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;echo $(pwd)&lt;/strong&gt; 
+/var/lib/condor/execute/slot1/dir_30435/gromacs-4.6.5/build
+&lt;/pre&gt; \
+If we want to install to the working directory (=/var/lib/condor/execute/slot1/dir_30435=), we will want to set the installation prefix as =$(pwd)/../..=.  So our =cmake= command will be this: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cmake .. -DCMAKE_INSTALL_PREFIX=$(pwd)/../../&lt;/strong&gt;
+&lt;/pre&gt;\
+Run this command to move to the next step.  \
+
+   1. Finish the installation:  \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;make&lt;/strong&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;make install&lt;/strong&gt;
+&lt;/pre&gt;\
+
+Don&#39;t leave the interactive job!  
+
+---++ Wrapper Script
+
+Our installation should have completed successfully, so we now know the commands we need for our wrapper script.  
+
+   1. We can view a list of those our installation commands using the =history= command: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;history&lt;/strong&gt;
+&lt;/pre&gt;
+   1. *In the job&#39;s working directory* (not in the =Gromacs= or =build= directory), create a file called =run_gromacs.sh= and enter the commands we used for the installation above.  
+   1. Add a line at the start of your script: \
+&lt;pre class=&quot;file&quot;&gt;
+export PATH
+&lt;/pre&gt;
+   1. Check your script against the example below: \
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash
+
+export PATH
+
+tar xfz gromacs-4.6.5.tar.gz
+cd gromacs-4.6.5
+mkdir build
+cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=$(pwd)/../../
+make
+make install
+cd ../../
+&lt;/pre&gt;\
+
+   1. If you have plenty of time before the break, try removing your first installation and running your new script to see if it works.  If you don&#39;t have a lot of time, skip to the next step.  \
+
+   1. Once you&#39;re satisfied with your script, type =exit= to leave the interactive job.  Make sure that your script is in the main working directory - then it will be transferred back to the submit server automatically.  \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;exit&lt;/strong&gt;
+&lt;/pre&gt;
+
+---++ Run a GROMACS job
+
+We now have a wrapper script that will install GROMACS.  We need three more pieces to run a GROMACS job.  
+
+   1. Copy input files to your directory on the submit server.  \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;cp /home/ckoch5/OSGdata/3HTB_clean.pdb /home/ckoch5/OSGdata/JZ4.pdb /home/ckoch5/OSGdata/minim.mdp ./&lt;/strong&gt;
+&lt;/pre&gt;
+   1. The wrapper script needs to not only install GROMACS, but actually run the GROMACS commands.  Add the following lines to your =run_gromacs.sh= wrapper script.  \
+&lt;pre class=&quot;file&quot;&gt;
+bin/pdb2gmx -f 3HTB_clean.pdb -o 3HTB_processed.gro -water spc -ff gromos43a1
+bin/grompp -v -f minim.mdp -c 3HTB_processed.gro -p topol.top -o results.tpr
+bin/mdrun -v -deffnm results -c 3HTB_processed.gro 
+&lt;/pre&gt;\
+
+   1. Make sure the wrapper script has executable permissions: \
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;chmod +x run_gromacs.sh&lt;/strong&gt;
+&lt;/pre&gt;
+   1. Our last step is to create a submit file for our GROMACS job.  Think about which lines this submit file will need.  Make a copy of a previous submit file (you could use the =build.submit= file from the interactive job as a base) and modify it as you think necessary.  
+   1. The two most important lines to modify for this job are listed below; check them against your own submit file: \
+&lt;pre class=&quot;file&quot;&gt;
+executable = run_gromacs.sh
+transfer_input_files = gromacs-4.6.5.tar.gz,3HTB_clean.pdb,JZ4.pdb,minim.mdp
+&lt;/pre&gt; \
+A wrapper script will always be a job&#39;s =executable=.  When using a wrapper script, you must also always remember to transfer the software/source code using =transfer_input_files=.  
+   1. Submit the job with =condor_submit=.
+   1. Once the job completes, it should produce a =results.log= file, along with various other intermediate files.  
+
+---++ Food for thought
+
+If you have completed all three exercises before the break, think about the following questions and try out an implementation of your answers.  
+
+   1. Right now, our =run_gromacs.sh= script installs GROMACS to the working directory, placing the various GROMACS
+   directories (=bin=, =lib=, =include= and so on) 
+   in the working directory of the job.  How would you change the script so that it: 
+      1. creates a directory called =gromacs= inside the job&#39;s working directory
+      1. installs GROMACS to this location
+      1. runs the same GROMACS commands from this installation?
+   1. In addition, there were a lot of intermediate files (=.gro=, =.top=) that came back with our actual results.  What commands \
+could you add to the wrapper script to delete these files before the job exits?  

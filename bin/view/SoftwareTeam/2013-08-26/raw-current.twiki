@@ -1,0 +1,99 @@
+---+ OSG Software and Release Teams Meeting, 26 August 2013
+
+*Attending:* !BrianB, !BrianL, Carl, Mat, Neha, !TimC, !TimT, Xin
+&lt;!-- !BrianB, !BrianL, Carl, Igor, !JohnW, Mat, Neha, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+
+---+++ Triage Duty
+   * Carl this week
+   * Neha next week
+   * &lt;span style=&quot;color: red;&quot;&gt;17 (–7) open tickets&lt;/span&gt;
+
+---+++ JIRA
+   * Open: 150 (+1)
+   * In Progress: 32 (–2)
+   * Ready for Testing: 5 (+4)
+   * Ready for Release: 0 (+0)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+|  *Version*  |  *Testing*  |  *Freeze*  |  *Release*  | *Notes* |
+| 3.1.23 | 2013-08-26 | 2013-09-03 &lt;span style=&quot;color: red; font-weight: bold;&quot;&gt;*&lt;/span&gt; | 2013-09-10 | Java 7 builds in 3.1 |
+| 3.1.24 | 2013-09-23 | 2013-09-30 | 2013-10-08 | |
+| 3.1.25 | 2013-10-28 | 2013-11-04 | 2013-11-12 | |
+
+*Notes:* Additional “emergency” releases may be scheduled for the 4th Tuesday of each month. The *Testing* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+&lt;span style=&quot;color: red; font-weight: bold;&quot;&gt;*&lt;/span&gt; Due to the Labor Day federal holiday, the freeze date for 3.1.23 is delayed by one day.
+
+
+---++ OSG Software Team
+
+---+++ Accomplishments
+
+   * Packaged osg-control 1.0 for its initial release ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1156][SW-1156]])
+   * Wrote, reviewed, and tested a tool to update OASIS with CA certificates and CRLs ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1144][SW-1144]])
+   * Packaged osg-configure 1.0.37 with many fixes ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1146][SW-1146]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1159][SW-1159]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1160][SW-1160]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1168][SW-1168]])
+   * Added Squid to the OSG CE ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1173][SW-1173]])
+   * Added support for HTCondor-CE to RSV ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1048][SW-1048]])
+   * Tweaked the HTCondor-CE packaging a bit ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1148][SW-1148]])
+   * Tested the psacct Gratia probe for Tanya ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1150][SW-1150]])
+   * Tweaked the Subversion directory structure a bit for OSG Next
+   * Wrapped up development work for HTCondor unified RPM and did some further testing
+   * Added ability to read osg-test options from a configuration file ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1136][SW-1136]])
+   * Ran several osg-test jobs in VM universe, now fairly reliably
+   * Figured out most of the technical steps to create a CA certificate and generate host certificates from it
+   * Support!
+
+---+++ OSG Projects
+
+Work with !TimC to make sure work is reflected in JIRA and that tickets are correct state. &lt;span style=&quot;color: #F60;&quot;&gt;Be sure to mark active work as _In Progress_.&lt;/span&gt;
+
+   * OSG Software 3.2 project: prepare changes for tarball client hosting (Mat); finish osg-build changes? (Carl, Mat); test koji instance? (Mat)
+   * HTCondor-CE: finish up RSV probe changes (Mat)
+   * Prepare osg-control for initial release: solicit one last round of feedback and tweak as necessary (Carl)
+   * SLURM support: Gratia probe configuration via osg-configure (Suchandra)
+   * Deprecate CEMon in favor of osg-info-services (Mat)
+   * osg-test improvements: get GUMS tests to work, lots of other small improvements (!BrianL)
+   * Running osg-test in VM universe in CHTC: test self-made CA and host certs (!TimC)
+
+---+++ HTCondor Projects
+
+   * Unification of HTCondor RPMs: complete final tasks (Carl)
+   * Take on HTCondor Debian packaging: submit 8.0.1 build to Debian (!BrianL) (may need to wait for Michael H. to return from vacation, 26 Aug)
+
+---+++ Coming Soon
+
+   * Big round of Globus Toolkit updates (waiting for 5.2.5 to be released, then we will submit patches upstream, then wait again for subsequent release)
+
+---+++ Notes
+
+*OSG Next:* Mat will start working on tarball client hosting layout, with the goal to get it into the ITB release of 3 September. Mat and Carl need to figure out what changes need to be done for osg-build / osg-promote in preparation for Koji. !BrianB, Mat, and !TimC will meet at 2 p.m. today to discuss deployment issue; technical changes are understood and fairly easy, so the trick will be to make a deployment schedule that works for everyone.
+
+*osg-info-services:* Mat to lead this project. !BrianB suggested that we do not need much effort on !ReSS support since it is going away in December. Still need to check client-side validation. What Java packages will remain on a CE after CEMon is gone?
+
+*HTCondor RPM:* Carl’s development work is essentially complete, and so the next main step is to transition the work to !TimT and the FW team.
+
+*HTCondor Debian:* !BrianL fixed several Lintian warnings. He will contact Michael Hanke about upload process to see what else we can do. This work also needs to transition to !TimT and the FW team.
+
+*HTCondor in OSG:* We will upgrade to HTCondor 8.0.2 in Upcoming for the 3.1.23 release. SOAP support is still broken in 8.0, but only in the UW build. When should we move HTCondor 8.0 out of Upcoming? We settled on a plan of leaving HTCondor 8.0 in Upcoming until OSG 3.2, and then once it has been released there, adding HTCondor 8.1 into Upcoming. This will be the first time that OSG Software includes a developer series of HTCondor.
+
+
+---++ OSG Release Team
+
+Today is the &quot;testing&quot; freeze for 3.1.23.  Anything intended for 3.1.23 must have a 3.1.23 by the end of the day.
+
+---+++ Accomplishments
+
+
+---+++ Projects
+
+   * Working on 3.1.23 (20 tickets labeled, 4 Ready for Testing, 0 Ready for Release)
+   * Working on Documentation
+
+---+++ Notes
+
+*HTCondor-CE:* New component needs thorough testing.  Xin is testing HTCondor-CE submitting to HTCondor, Suchandra should test HTCondor-CE submitting to PBS.
+
+*Testing for 3.1.23:* As tickets become ready for testing, pick them up as appropriate.

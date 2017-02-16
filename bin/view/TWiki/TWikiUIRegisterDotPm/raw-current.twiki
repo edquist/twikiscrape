@@ -1,0 +1,103 @@
+---+ Package =TWiki::UI::Register=
+
+User registration handling.
+
+
+%TOC%
+
+---++ StaticMethod *register_cgi* &lt;tt&gt;($session)&lt;/tt&gt;
+=register= command handler.
+This method is designed to be
+invoked via the =TWiki::UI::run= method.
+
+
+
+---++ StaticMethod *passwd_cgi* &lt;tt&gt;($session)&lt;/tt&gt;
+=passwd= command handler.
+This method is designed to be
+invoked via the =TWiki::UI::run= method.
+
+
+
+---++ StaticMethod *bulkRegister* &lt;tt&gt;($session)&lt;/tt&gt;
+
+  Called by ManageCgiScript::bulkRegister (requires authentication) with topic = the page with the entries on it.
+   1 Makes sure you are an admin user ;)
+   2 Calls TWiki::Data::DelimitedFile (delimiter =&gt; &#39;|&#39;, content =&gt;textReadFromTopic)
+   3 ensures requiredFieldsPresent()
+   4 starts a log file
+   5 calls registerSingleBulkUser() for each row 
+   6 writes output to log file, sets [[TWiki.TOPICPARENT]] back to page with entries on it.
+   7 redirects to log file
+
+
+
+---++ StaticMethod *registerAndNext* &lt;tt&gt;($session,$tempUserDir)&lt;/tt&gt;
+
+This is called when action = register or action = &quot;&quot;
+
+It calls register and either Verify or Finish.
+
+Hopefully we will get workflow integrated and rewrite this to be table driven
+
+
+
+---++ StaticMethod *register* &lt;tt&gt;($session)&lt;/tt&gt;
+
+This is called through: Trash.SandboxTWikiRegistration -&gt; RegisterCgiScript -&gt; here
+
+   1 gets rows and fields from the query
+   2 calls _validateRegistration() to ensure required fields correct, else OopsException 
+
+
+
+---++ StaticMethod *resetPassword* &lt;tt&gt;($session)&lt;/tt&gt;
+
+Generates a password. Mails it to them and asks them to change it. Entry
+point intended to be called from TWiki::UI::run
+
+
+
+---++ StaticMethod *changePassword* &lt;tt&gt;($session)&lt;/tt&gt;
+
+Change the user&#39;s password and/or email. Details of the user and password
+are passed in CGI parameters.
+
+   1 Checks required fields have values
+   2 get wikiName and userName from getUserByEitherLoginOrWikiName(username)
+   3 check passwords match each other, and that the password is correct, otherwise &#39;wrongpassword&#39;
+   4 TWiki::User::updateUserPassword
+   5 &#39;oopschangepasswd&#39;
+
+The NoPasswdUser case is not handled.
+
+An admin user can change other user&#39;s passwords.
+
+
+
+---++ StaticMethod *verifyEmailAddress* &lt;tt&gt;($session,$tempUserDir)&lt;/tt&gt;
+
+This is called: on receipt of the activation password -&gt; RegisterCgiScript -&gt; here
+   1 calls _reloadUserContext(activation password)
+   2 throws oops if appropriate
+   3 calls emailRegistrationConfirmations
+   4 still calls &#39;oopssendmailerr&#39; if a problem, but this is not done uniformly
+
+
+
+---++ StaticMethod *finish* &lt;tt&gt;&lt;/tt&gt;
+
+Presently this is called in RegisterCgiScript directly after a call to verify. The separation is intended for the RegistrationApprovals functionality
+   1 calls _reloadUserContext (throws oops if appropriate)
+   3 calls createUserTopic()
+   4 if using the htpasswdFormatFamily, calls _addUserToPasswordSystem
+   5 calls the misnamed RegistrationHandler to set cookies
+   6 calls addUserToMapping
+   7 writes the logEntry (if wanted :/)
+   8 redirects browser to &#39;oopsregthanks&#39;
+
+reloads the context by code
+these two are separate in here to ease the implementation of administrator approval 
+
+
+

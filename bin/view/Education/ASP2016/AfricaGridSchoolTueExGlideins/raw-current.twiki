@@ -1,0 +1,188 @@
+---+ Tue Morning Exercise - Using the glideinWMS
+
+&lt;!-- ASP 2012 Defaults
+   * Local UCL_HOST = %URLPARAM{&quot;INPUT_HOST&quot; encode=&quot;quote&quot; default=&quot;osg-ss-glidein&quot;}%
+   * Local UCL_USER = %URLPARAM{&quot;INPUT_USER&quot; encode=&quot;quote&quot; default=&quot;user&quot;}%
+   * Local UCL_DOMAIN = %URLPARAM{&quot;INPUT_DOMAIN&quot; encode=&quot;quote&quot; default=&quot;chtc.wisc.edu&quot;}%
+   * Local UCL_CWD= %URLPARAM{&quot;INPUT_CWD&quot; encode=&quot;quote&quot; default=&quot;~/osg_school/glidein1&quot;}%
+   * Local UCL_JOB= %URLPARAM{&quot;INPUT_JOB&quot; encode=&quot;quote&quot; default=&quot;555.0&quot;}%
+--&gt;
+
+---++ Introduction
+In this session you will try to run some compute jobs with glideinWMS.
+
+---++ Prerequisite 
+
+Learn how to use our [[https://twiki.grid.iu.edu/bin/view/Education/AfricaGridSchoolTueGlideinSetup?INPUT_USER=%UCL_USER%][glideinWMS installation]].
+
+---++ Run a simple job
+
+Create a simple test script and submit it as you have done yesterday.
+
+Feel free to create your own test scripts, just make sure they run for at least a minutes (but not more than 5).&lt;br&gt;
+If you feel lazy:
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;click here to show an example script.&quot;
+hidelink=&quot;Hide test script.&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+#!/bin/bash
+
+uname -a
+id
+date
+echo &#39;==============&#39;
+env
+echo &#39;==============&#39;
+let a=$RANDOM%60+45
+sleep $a
+&lt;/pre&gt;
+%ENDTWISTY%
+
+&lt;br&gt;
+Write a vanilla Condor submit file, like you did yesterday, and submit a cluster of 5 jobs.&lt;br&gt;
+Again, if you feel lazy:
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;click here to show an example script.&quot;
+hidelink=&quot;Hide test script.&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+Universe   = vanilla
+Executable = myscript.sh
+Log        = mytest.log
+Output     = mytest.out.$(Cluster).$(Process)
+Error      = mytest.error.$(Cluster).$(Process)
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+Queue 5
+&lt;/pre&gt;
+
+&lt;pre class=&quot;screen&quot;&gt;
+condor_submit mytest.condor
+&lt;/pre&gt;
+
+%ENDTWISTY%
+&lt;br&gt;
+Now monitor your jobs using the usual Condor commands:
+&lt;pre class=&quot;screen&quot;&gt;
+condor_q %UCL_USER%
+&lt;/pre&gt;
+
+Also check what resources are available:
+&lt;pre class=&quot;screen&quot;&gt;
+condor_status
+&lt;/pre&gt;
+
+For a glidein-friendly view, try out:
+&lt;pre class=&quot;screen&quot;&gt;
+/opt/glideinWMS/tools/glidein_status.py
+&lt;/pre&gt;
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Advanced&quot;
+hidelink=&quot;Hide Advanced.&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+A similar result can be obtained with:
+&lt;pre class=&quot;screen&quot;&gt;
+condor_status -format &#39;%-49s &#39; Name -format &#39;%-10s &#39; GLIDEIN_Site -format &#39;%-10s &#39; State -format &#39;%s\n&#39; Activity -constraint &#39;IS_MONITOR_VM=!=True&#39;
+&lt;/pre&gt;
+%ENDTWISTY%
+
+&lt;br&gt;
+
+---++ Inspect the results
+
+Once the jobs are done, can you tell me where they ran?
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show hint 1.&quot;
+hidelink=&quot;Hide hint 1.&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+Look in your output file(s).&lt;br&gt;
+If you used the example script, it contains the environment of the node your job executed.
+
+&lt;pre class=&quot;screen&quot;&gt;
+less mytest.out.%UCL_JOB%
+&lt;/pre&gt;
+%ENDTWISTY%
+
+&lt;br&gt;
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show hint 2.&quot;
+hidelink=&quot;Hide hint 2.&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+Look in the classad of your terminated job.&lt;br&gt;
+There are attributes which tell you where the job ran.
+
+&lt;pre class=&quot;screen&quot;&gt;
+condor_history -l %UCL_JOB% |grep MATCH_EXP_JOB
+&lt;/pre&gt;
+
+Extra credit: Format nicely the relevant output using &lt;pre class=&quot;screen&quot;&gt;
+condor_history -format ...
+&lt;/pre&gt;
+%ENDTWISTY%
+&lt;br&gt;
+
+---++ Run a BLAST example
+
+Try re-running one of your BLAST jobs, possibly on the yeast database,
+as [[https://twiki.grid.iu.edu/bin/view/Education/AfricaGridSchool12CondorBLAST][explained yesterday by Scot]].&lt;br&gt;
+*Reminder:* Submit from osg-ss-glidein !
+
+Check and discuss the results.
+
+---++ Customize this Document
+
+%ICON{&quot;warning&quot;}% %RED% Please change your user name and click on the Customize button!%ENDCOLOR%
+&lt;form action=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%WEB%/%TOPIC%&quot;&gt;
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Login Name
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_USER&quot; value=&quot;%UCL_USER%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      Job number
+    &lt;/td&gt;
+    &lt;td&gt;
+      &lt;input size=100 type=&quot;text&quot; name=&quot;INPUT_JOB&quot; value=&quot;%UCL_JOB%&quot;/&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+     &amp;nbsp;
+     &lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;Customize&quot; /&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/form&gt;
+
+
+
+
+-- Main.IgorSfiligoi - 20 Jun 2012
+
+
+
+-- Main.RobQ - 27 Jul 2012

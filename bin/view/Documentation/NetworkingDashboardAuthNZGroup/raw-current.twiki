@@ -1,0 +1,354 @@
+%LINKCSS%
+
+&lt;!-- This is the default OSG documentation template. Please modify it in --&gt;
+&lt;!-- the sections indicated to create your topic.                        --&gt; 
+
+&lt;!-- By default the title is the WikiWord used to create this topic. If  --&gt;
+&lt;!-- you want to modify it to something more meaningful, just replace    --&gt;
+&lt;!-- %TOPIC% below with i.e &quot;My Topic&quot;.                                  --&gt;
+
+---+!! %SPACEOUT{ &quot;Networking Dashboard AuthN/Z Working Group&quot; }%
+%TOC%
+
+%STARTINCLUDE%
+
+---++ Charge
+
+This group discuss how to provide authentication (identifying users) and authorization (defining what users are allowed to do) for the networking dashboard.
+
+The initial goal of the group is to understand the infrastructure for authentication (!AuthN) and authorization (!AuthZ) that is most adequate for the Networking Dashboard. 
+
+For !AuthN, the typical approach on the Grid is based on a public key infrastructure implemented with X509 proxies and end-entity certificates. Membership to groups is authenticated using x509 /extended/ certificates, whereby authoritative membership services (e.g. VOMS) include a signed membership assertion pertaining to the user /within/ the user&#39;s certificate (e.g. voms certificate).
+The group will investigate if this is an adequate standard for the dashboard.
+
+For !AuthZ, various alternatives are being considered:
+   1. the [[http://www.fnal.gov/docs/products/voprivilege/][AuthZ infrastructure of OSG]]
+   1. a dedicate software module for the Dashboard
+   1. integrating systems to help with the !AuthZ function, such as [[http://www.internet2.edu/grouper/][Internet2 Grouper]].
+
+Questions to be addressed by the group include
+   * How should the dashboard API be changed to accomodate the best way forward? 
+   * How is the Dashboard dealing with user &quot;groups&quot;?
+
+---++ Meeting coordinates
+Conference call: 866-740-1260 / ID = 8406470#
+
+---++ Overview of the options on Authorization
+This group is considering a few main alternatives to manage fine-grained authorization to access privileges.
+
+---+++ The OSG Authorization Mechanism in a Nutshell 
+
+The OSG Authorization infrastructure assumes an authentication scheme based on x509 extended proxies. All users have digital identities in the form of x509 credentials. All users also belong to communities (Virtual Organizations - VO - in OSG). The organizational structure of a community is a hierarchy of groups; members of a group can optionally have roles (non hierarchical entitites). This structure is maintained in membership services (VOMS servers) where the registration of users in groups and roles is managed by VO and group administrators. Before accessing any Grid resource, a user interacts with a membership service presenting its credentials and claiming membership to a group and role; the server verifies the claim and digitally signs and embeds a membership assertion within the user certificate itself.
+
+On the OSG, access to resources is granted on the bases of the user membership to a group and role, rather than on the identity of the user. In other words, users presents the extended credentials to resources to obtain the access privileges associated with the group and role membership. The resource gateway (Globus gatekeeper, GridFTP, SRM, etc.) first authenticated the user&#39;s extended credentials using cryptographic techniques. Then the gateway determines the level of privileges associated with that user membership through the authorization function. For fine-grained authorization, the gateway calls-out to site-based policy decision points (e.g. SAZ and GUMS) passing all relevant attributes of the user identity, the resource, the intended action, and the environment. The policy decision point maps these attributes to local privileges (e.g. local user account). It is the responsibility of the gateway to grant the user access to the resources adhering to the policy decision point&#39;s obligations. 
+
+In the case of the Dashboard, this group has to understand 
+   * if an externally maintained structure of groups and roles (i.e. using VOMS) captures an adequate organizational model for its use cases. 
+   * if the administrative properties of VOMS (user-initiated registration, approcal delegation, AUP signing, etc.) are adequate or an overkill for the dashboard
+   * if embedding membership infromation in the user&#39;s credential is significant for the dashboard use cases (e.g. for identity propagation and delegation)
+   * if delegating access rights to an external policy decision point (such as GUMS) is an advantage for our use cases or a complication
+   * if the simple model of associating privileges to local user identities (GUMS) is sufficient for the Dashboard or if more complicated obligations (such as local user and group information) are needed, instead
+   * if it is worth to base the authentication infrastructure on x509 in order to reuse the OSG authorization infrastructure
+
+---+++ A Dedicated Authorization Software Module in the Dashboard
+As an alternative to using the OSG authorization infrastructure, the dashboard could implement its own module to maintain privileges associated with user identities, membership information, and other relevant attributes.
+
+This group has to understand
+   * if this module won&#39;t end up replicating most of the functionalities already available via other systems (VOMS, GUMS, Grouper, etc.)
+   * if membership and privilege management will need to be delegated to external administrators in the future (complexity of the administrative interfaces)
+   * if a simple authentication infrastructure (e.g. user name and password) is sufficient or worth implementing
+
+---+++ Integrating External Systems to Help with the !AuthZ Function
+The organization of users in groups is at the basis of most fine-graned privilege infrastructures. Such systems enable the development of access authorization based on user membership. We have discussed VOMS as an example of such as system, based on x509 authentication.
+
+Internet2 has developed Grouper to address the needs of managing user&#39;s membership. The advantage of Grouper with respect to VOMS is that it does not assume an authentication based on x509. For an insfrastructure based on x509, though, the disadvantage is that it is not as well integrated with x509 as VOMS.
+
+Other alternatives include the integration of the Dashboard with identity federation systems, such as !InCommon, or othe mechanisms to convey identity information, such as Shibboleth, OpenId, etc.
+
+This group has to understand
+   * if systems such as Grouper offer a middle-way between a fully home-grown authorization system and a fully x509-based authorization infrastructure as for OSG.
+   * is it worth attempting an integration with identity federations ?
+   * what other mechanisms to assert identity is it worth considering (Shibboleth, OpenId, etc.) ?
+
+---++ Group meeting - Oct 9, 2012
+
+Present: Shawn, Soichi, Gabriele, Tom, Shawn&lt;br&gt;
+Date: Oct 9, 2012
+
+---+++ Action Items
+   * Gabriele will get more info on Grouper: can we map the authz layer in the Dashboard to Grouper and OIM?
+      * Grouper provides an administrative Web Services interface: https://spaces.internet2.edu/display/Grouper/Grouper+Web+Services
+      * Grouper is a generic tool and does not come out of the box configured for x509 AuthN/Z
+      * Instead of using Grouper, one should consider to use VOMS to hold the groups and roles relevant to the Dashboard access control. The dashboard can then access these using the Web Services interfaceof VOMS. In this case, users would NOT present the dashboard with an extended x509 certificate; rather they&#39;d present their standard certificate and the dashboard would find out their affiliation by interacting with VOMS.
+
+   * Soichi will provide information about OIM authN/Z
+      * OIM documentation at: https://confluence.grid.iu.edu/pages/viewpage.action?pageId=4980895
+      * Ideally Soichi would like to see a structure similar to this for !AuthZ plugin
+&lt;pre&gt;
+
+class OIMAuthorization implements PerfsonarAuthorizationPlugin {
+@Override
+public boolean canUpdateVO(UserContext user, String voname) {
+    //TODO -- access OIM-DB and see if the current user is listed as contact in VO contact list
+}
+@Override
+public boolean canAdmin(UserContext user) {
+    //TODO -- access OIM-DB and see if the current user is given access to &quot;admin_perfsonar&quot; action.
+}
+
+}
+
+&lt;/pre&gt;
+
+---+++ Tentative next meeting date
+In a couple of weeks / last week of Oct
+
+---+++ Minutes
+We want to focus on the use cases for AuthN/Z of the Dashboard and understand if those requirements can be addressed by existing infrastructure. 
+
+With the current implementation, a user with a certificate in the browser, can register with the system. This way the admin can define read/write access. DOEGrids certs are trusted.&lt;br&gt;
+AuthZ can be done in front of the servlet in the servlet filters. This way, it can be decided who has access to a given screen.&lt;br&gt;
+The API goes through a web request. Can be invoked through curl. Attributes are passed on the URL and a JSON object is returned. Web pages display this object.&lt;br&gt;
+
+Soichi: GOC services are defined via the OIM database. Identities and privileges are also defined in OIM.&lt;br&gt;
+I would like for the OSG Dashboard to be connected to the OIM authZ system&lt;br&gt;
+Tom: we could connect to OIM from the servlet filters.&lt;br&gt;
+Soichi: if there is a simple class e.g. Implementing can read / can write, I can rewrite the class to interface the Dashboard to OIM&lt;br&gt;
+
+*Q: How can we provide a plug in module to tight the access control layer of the Dashboard to OIM?*&lt;br&gt;
+*Q: How rich and fine grained is authZ in the OIM system? Will this give us info on how to design the dashboard.&quot;
+
+*TODO: Soichi will provide information about OIM authN/Z*
+
+Going over VOMS and GUMS / SAZ
+
+OIM does not use VOMS. In OIM users define resources and are put in a contact list; if you are in the contact list, you can edit the resources. We wanted to make a distinction between distributed reousrces and central resource.
+
+Gabriele: How many dashboard instances are there? If many, then GUMS makes sense.&lt;br&gt;
+Shawn: not many instances. In a single dashboard instance there are multiple functions. Some information are specific to VOs e.g. US Atlas: they&#39;ll want to control how the sites are going to do tests with each others, etc. Who is allowed to define the list of people in US Atlas, change the tests, display the information, etc. Certain people are allowed to add sites, create new metrics, change site names, etc. We need something that provides that functionality in the dashboard.&lt;br&gt;
+Depending on what VO the user belongs to, she may want to see certain information instead of others e.g. The metrics of the sites belonging to that VO. We want to allow VOs to manage their own setup.&lt;br&gt; 
+Gabriele:  If it is central you do not need GUMS. You may want to use VOMS-extended certificate to convey membership attributes.&lt;br&gt;
+
+Discussing VOMS vs. internal authorization&lt;br&gt;
+Soichi: we decided to use OIM and a central AuthZ model because not everybody in OSG uses VOMS.&lt;br&gt;
+OIM only deal with IGTF X509 certificates. No username and password.&lt;br&gt;
+Tom: In the BNL dashboard, we use the trustmanagers library and we trust the Cas that are packaged with that.&lt;br&gt;
+
+Discussing synchronization of attributes in a central Dashboard AuthZ DB with VOMS.  For example, all people in CMS may be known to the Dashboard (updated every hour).&lt;br&gt;
+Shawn: This may be an overkill: in practice there aren&#39;t that many people or roles that will need to access the dashboard.&lt;br&gt;
+
+Tom: the AuthN/Z mechanism needs to be easy to install out-of-the-box for the dashboard installations beyond OSG.&lt;br&gt;
+
+Discussing Grouper.&lt;br&gt; 
+Comparing OIM and Grouper. OIM is already integrated with x509. Grouper must have the option. &lt;br&gt;
+Grouper could be the default, then we could develop an interface for OIM.&lt;br&gt;
+
+OIM is a good source of names for sites, resources, VO names, etc. The names for the dashboard should come from OIM.
+
+When a site deploys a PerfSONAR instance, it does it on behalf of a VO. The VOs should have recommendations e.g. for mash configurations. There is a central URL that has the info about all the participants in the mash (say US Atlas) and the tests that should be done. PerfSONAR points to all the mash URL and when the central configuration changes, then the perfSONAR instances changes for that VO.
+
+The Dashboard could watch those URL and reconfigure based on that info e.g. If sites are added, then the dashboard can display a larger metrics table.
+
+Should the mash url configuration be validated against the OIM data?&lt;br&gt;
+One can have a mash configuration for that site e.g. a null configuration. A manager can add a test at that URL to create tests on demand.&lt;br&gt;
+
+Who is authorized to write to the URLs? There is a list of people e.g. for CMS it is on a twiki, so access is controlled via twiki.&lt;br&gt; 
+In principle, today the URL could be spoofed, so that a user one can pass malicious configurations. Today it is done via http i.e. There is no authentication of the source of information.&lt;br&gt;
+
+In PerfSONAR there are 3 levels of authorization, but there is no strong authentication.&lt;br&gt;
+Users define tests against your perfSONAR instance. Tests can be&lt;br&gt;
+   * unprivileged: e.g. duration of a bandwidth test should be limited to e.g. 30 sec
+   * privileged: perfSONAR admins put the subnet or IP on a list: the parameters for the tests are more permissive e.g. full UPD bandwidth tests allowed for 1 minute
+   * banned: no tests allowed.
+
+*TODO: get more info on Grouper: can we map the authz layer in the Dashboard to Grouper and OIM?*
+
+*Tentative meeting date: in a coupld of weeks / last week of Oct*
+
+---++ Group meeting - Oct 31, 2012
+
+Present: Soichi, Gabriele, Parag, Tom, Shawn&lt;br&gt;
+Date: Oct 31, 2012
+
+---+++ Action Items
+   * Tom will provide use cases of interaction from the Dashboard to OIM
+   * Soichi will evaluate if the use cases can be address by OIM as it or not
+   * All can try grouper and VOMS and see what is possible
+
+---+++ Short term plan
+   * Tom will provide use cases of interaction from the Dashboard to OIM
+   * Soichi will evaluate if the use cases can be address by OIM as it or not
+   * The group willi agree on new functionality for OIM
+   * Soichi will prototype the new functionality in OIM.
+
+---+++ Next meeting
+Fri Nov 16 at 2 pm CDT / 3 pm EDT
+ 
+---+++ Minutes
+Deliverable of the group: document with a set of recommendations
+
+&lt;b&gt;OIM !AuthN: going over the documentation&lt;/b&gt;&lt;br&gt;
+https://confluence.grid.iu.edu/pages/viewpage.action?pageId=4980895
+
+Can you limit yourself to 1 role? You can be authorized to take an action because you belong to multiple roles.&lt;br&gt;
+You can have multiple DNs mapped to different roles. This is how developers would check new authorization schemes per role.
+
+We would integrate OSG Dash with OIM for the OSG instance
+
+Tom: can we use OIM from Struts?&lt;br&gt;
+Soichi: yes, OIM is framework independent.
+
+&lt;b&gt;grouper vs voms pros and cons&lt;/b&gt;
+
+Gabriele installed grouper and voms to prototype the dashboard !AuthN API against real membership registration services.
+
+Installation:&lt;br&gt;
+grouper: straight forward after setting up java&lt;br&gt;
+voms: x509 service certificate needed&lt;br&gt;
+
+Trash/Trash/Integration with x509&lt;br&gt;
+grouper: probably possible, no easily accessible docs on the web: need to contact the developers&lt;br&gt;
+voms: supports x509 out of the box&lt;br&gt;
+
+Do we want to support !AuthN beyond x509?&lt;br&gt;
+Possibly. Potential communities interested in the dashboard are a FrenchCloud and a UK cloud group.&lt;br&gt;
+Do they have x509?&lt;br&gt;
+If these groups have ties with the Grid, they may prefer VOMS.&lt;br&gt;
+
+Strategy: we integrate OIM, then we have probably an API that can support both.
+
+We need to discuss what the dashboard use cases actually are. How do you organize the data for the sites and resources? This will influence how to configure OIM at the !MyOSG.&lt;br&gt;
+If data belongs to a set of resources, it is a good fit for !MyOSG&lt;br&gt;
+!MyOSG provides limited views in other systems, such as Gratia. It may provide a subset of the functionality of the Dashboard.&lt;br&gt;
+
+
+---++ Group meeting - Dec 6, 2012
+Present: Soichi, Gabriele, Tom, Parag, Shawn&lt;br&gt;
+Date: Dec 6, 2012
+
+---+++ Action Items
+   * Tom: Setting up the software in github &lt;br&gt;
+   * Soichi: start prototype implementations for these use cases&lt;br&gt;
+
+---+++ Next meeting
+Thu Jan 10 at 11 am CDT / 12 pm EDT
+ 
+---+++ Minutes
+Discussion on old action items
+
+---++++ Use cases
+   * Tom will provide use cases of interaction from the Dashboard to OIM
+   * Soichi will evaluate if the use cases can be address by OIM as it or not
+
+Tom: 3 types of components
+   1. central data store: real authN needed here
+   1. the collector to run the probe
+   1. client
+
+2 types of authN:
+   1. collector: register number of IP from where request can come to run tests
+   1. client: with user id and password or x509
+
+Soichi: we should be able to support these use cases
+
+For the client we have 2 options:
+   1. Client take client credentials and pass them to the data store; data store pass them to a policy decision point that returns yes/no. !AuthN happens at this time every time.
+   1. Client talks to data store and data store gives a token, then later on it does not need !AuthN anymore. Probably more complicated.
+
+Soichi: generally implementing single-sign on as in (2). Typical for OIM.&lt;br&gt;
+Tom: it may be harder for external developers to implement.&lt;br&gt;
+Gabriele: we may be able to hide the complexity encapsulating it in an API for the client developers.&lt;br&gt;
+
+Gabriele: For (1), we could use XACML call-out libraries as used in OSG.&lt;br&gt;
+
+Soichi: Investigating issues with software licensing for version control system for data store and collector software. &lt;br&gt;
+Shawn: OSG has accepted to put the code in github. Now interacting with github. &lt;br&gt;
+Setting up all the pieces in github will be a challenge. &lt;br&gt;
+Discussing organization of binary dependencies &lt;br&gt;
+
+ACTION ITEM: Tom: Setting up the software in github. Probably 1 week.&lt;br&gt;
+
+ACTION ITEM: Soichi: start prototype implementations for these use cases. Work on this in Dec.&lt;br&gt;
+
+Parag: we use git with glidein WMS. Useful to maintain multiple branches. I&#39;m willing to answer questions about git.
+
+---++++ Group software
+All can try grouper and VOMS and see what is possible
+
+Need to wait until we have something more concrete available.
+
+---++ Group meeting - Jan 10, 2013
+Present: Soichi, Gabriele, Tom, Rob Quick, Shawn&lt;br&gt;
+Date: Jan 10, 2013
+
+---+++ Action Items
+   * Tom will provide Soichi documentation on how to interact with the Data Store through the GUI.
+   * Soichi: prototype authN/Z module
+ 
+---+++ Next meeting
+Thu Feb 7 at 11 am CDT / 12 pm EDT
+ 
+---+++ Minutes
+
+&lt;i&gt;Tom: Setting up the software in github&lt;/i&gt;&lt;br&gt;
+github is ready. Uploaded code. Still need to put collector and GUI code: soon.&lt;br&gt;
+Soichi has installed the code and it is working.
+
+Tom will provide Soichi documentation on how to interact with the Data Store through the GUI.
+
+&lt;i&gt;Soichi: start prototype implementations for these use cases&lt;/i&gt;&lt;br&gt;
+Created 2 new instances on the ITB. Learning the system. Experimenting with the REST API of the Data Store.&lt;br&gt;
+Next will work on the Collector and the UI.
+
+Tom / Shawn: may need a 3rd machine for the GUI to separate it from the Data Store to keep the roles clean. This will be a source of the network information for the users. OSG will be a large installation, so we should think about scaling. It is also a test of our design&lt;br&gt;
+Soichi: we can do that.&lt;br&gt;
+
+We may have multiple UI implementations. Data Store needs to be protected using the !AuthN/Z module, irrespectively of the UI used. &lt;br&gt;
+We should NOT do !AuthZ/N in the UI. It can be done as a filter in the Data Store. The UI sends the credentials to the Data Store and the Data Store interacts with the !AuthN/Z module to define privileges. This way users can interact with the UI or directly with the Data Store.&lt;br&gt;
+Soichi: it may be difficult to forward the credentials. The plan was for the UI to use its own password to access the store and UI to do the !AuthN of the users. UI talks to OIM.&lt;br&gt;
+Tom: The data store should be able to do !AuthN/Z by its own, irrespectively of the UI.&lt;br&gt;
+Soichi: OSG should not write data to the Data Store.&lt;br&gt;
+Shwan: The collector should write to the Data Store, initially.&lt;br&gt;
+&lt;b&gt;All: Data Store can have simple PASS/FAIL !AuthZ. UI can do finer grain !AuthZ&lt;/b&gt;&lt;br&gt;
+Tom: worry is DoD from complex queries&lt;br&gt;
+Soichi: we prefer an open system. We do not have a problem with Gratia.&lt;br&gt;
+
+&lt;b&gt;Tom: we need to be able to !AuthN/Z of the collectors&lt;/b&gt;&lt;br&gt;
+
+
+---++ Group meeting - Feb 7, 2013
+Present: Soichi, Gabriele, Parag, Tom, Shawn&lt;br&gt;
+Date: Feb 7, 2013
+
+---+++ Action Items
+   * Tom is working on finishing up the datastore (next week?). 
+   * Soichi plans on learning more about the old dashboard and the current status of the existing development code. 
+   * Tom will try to summarize what Lucy&#39;s code is doing and provide details in some new documentation he will add to the existing documentation.
+   * Tom will send out the information when it is ready. 
+   * Soichi will work on the GUI and prototype integration with OIM AuthN/Z
+
+---+++ Next meeting
+At the OSG AHM
+ 
+---+++ Minutes
+After Gabriele andd Parag left we talked about old dashboard and the new development work.  Tom sent out the URL for the old dashboard and one action item is for people to try to access it and then let Tom know via email. Tom can then add people with admin privileges.   The goal is to allow everyone to get a feel for what functionality exists in the old dashboard.  (The underlying code is NOT relevant...just the functionality it provides). 
+URL is https://perfsonar.racf.bnl.gov:8443/exda/
+Create new hosts / services... don&#39;t change the existing configuration. The service is in use for CMS and Atlas.
+
+Part of the discussion was on plans. 
+Tom is working on finishing up the datastore (next week?). 
+Soichi plans on learning more about the old dashboard and the current status of the existing development code. 
+Tom will try to summarize what Lucy&#39;s code is doing and provide details in some new documentation he will add to the existing documentation.
+Tom will send out the information when it is ready. 
+
+We all agreed that one of the primary deficiencies is the GUI.  
+Soichi may have some time in the future to work on GUI things and his intent to add AuthN/AuthZ is coupled to the GUI (since it will interact-with/depend-upon the GUI).    
+Plan is to have everyone play with the old dashboard and perhaps use the OSG Networking discussion time-slot next week to continue the discussion.
+
+
+
+%STOPINCLUDE%
+
+%BOTTOMMATTER%
+
+-- Main.GabrieleGarzoglio - 06 Dec 2012

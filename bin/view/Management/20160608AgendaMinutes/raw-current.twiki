@@ -1,0 +1,240 @@
++ OSG Area Coordinators Meeting
+
+---++ Meeting Phone Coordinates
+
+%TABLE{tablewidth=&quot;550&quot; cellpadding=&quot;6&quot; dataalign=&quot;left&quot; tablerules=&quot;all&quot; tableborder=&quot;1&quot; databg=&quot;#FFFFFF, #FFFFFF&quot;}%
+| Wednesday,  2:00 PM Central Time |
+| Dial-In: (866) 740-1260; meeting ID 840-5618, followed by # |
+| !VoIP: http://www.readytalk.com/?ac=8405618  |
+
+
+
+---++ Attendees
+Chander, Gabriele, Bo, Tim T., Tim C., Rob Q., Bala, Scott
+
+---++ Top of Meeting Business
+
+---+++ New Items for [[https://indico.fnal.gov/categoryDisplay.py?categId=86][OSG Calendar]], 
+---+++ Current plan for [[https://twiki.grid.iu.edu/bin/view/Management/NewsletterArticles][Newsletter Articles]]
+Please note that all newsletter articles are due around the middle of the month before the targeted newsletter.
+
+**We want to get an update on the area goals we had established at the staff retreat; these goals are available at https://osg-docdb.opensciencegrid.org:440/cgi-bin/ShowDocument?docid=1217
+
+Also please remember that the next OSG annual report for each area will explicitly state the goals and the results.
+
+
+
+---++ Tim Cartwright - Software
+
+Since 6 April 2016.
+
+---+++ Enterprise Linux 7
+
+Good news, finally!
+
+   * We shipped !BeStMan for EL&amp;nbsp;7
+   * We plan to ship GUMS for EL&amp;nbsp;7 next Tuesday (14 June)
+
+Because we do not plan to fix VOMS Admin for EL&amp;nbsp;7 for general use, there is very little Java/EL&amp;nbsp;7 work remaining.
+
+---+++ SELinux
+
+No updates since April; comments from then are repeated below.
+
+With the move to EL&amp;nbsp;7, we will need to provide support for SELinux, which is a new feature for the OSG software stack&amp;nbsp;&amp;mdash; we have long advised sites to disable SELinux on OSG hosts. The Software team is just getting its head around this task, but it turns out that Patrick Calhoun at Oklahoma is an SELinux guru and created many of the necessary rules for OSG software at their site. He is sharing his results and configuration, and they will provide an excellent start toward official OSG support. Also, the HTCondor developers are working on SELinux support. I expect this to be a significant project in Q4 and perhaps beyond.
+
+---+++ HTCondor-CE
+
+HTCondor-CE continues to take a fairly low and steady amount of Software effort, as appropriate for its age and increasingly widespread deployment. Most development is driven by specific site needs.
+
+   * Added native SLURM support (which does not scale well yet)
+   * Fixed bugs in PBS Pro and PBS-SLURM interfaces
+   * Fixed critical bugs in HTCondor-CE-View
+   * Worked on merging OSG and HTCondor developer versions of BLAHP patches
+   * Added integration tests via Travis-CI
+
+---+++ Releases
+
+Reminder: OSG 3.2 has been deprecated since February and hence receives only critical updates (plus all CA certificate and VO client data updates). The End-Of-Life date for OSG 3.2 and support for EL&amp;nbsp;5 is August 2016.
+
+---+++ Other software updates
+
+For users:
+   * Dropped GRAM packages from OSG-CE metapackages
+   * Shipped first release of HTCondor-CE-Bosco&amp;nbsp;&amp;mdash; still a little experimental
+   * Added support in RSV for CREAM and !NorduGrid
+   * Made several small improvements to !BeStMan
+   * Made small improvements to OSG PKI tools
+   * Made small improvements to OSG Configure
+   * Miscellaneous: CVMFS (2.2 &amp; 2.3), Gratia HTCondor probe, HTCondor (8.4, 8.5), LCMAPS (plugin), Pegasus 4.6, VO client data and CA certificates as needed
+
+Internal:
+   * Prepared our automated tests and VM images for SELinux testing
+   * Reduced spurious failures in automated tests by improving Tomcat service starts
+   * Added option for CILogon-like certificates to automated tests
+   * Added Travis-CI integration for some packages
+
+---+++ Documentation
+
+Our documentation continues to receive light effort, but almost all of it is proactive and not reactive&amp;nbsp;&amp;mdash; in other words, we do not get a lot of complaints.
+
+Also, we are active in the GOC project to update our documentation platform and processes.
+
+---+++ Support
+
+The Software team is averaging about 5 active site support issues every week, in additional to other random GOC tickets that come our way. Since the last report, we have helped:
+
+   * AGLT2
+   * BNL (RSV issues, SLURM walltime unit conversions)
+   * BU
+   * Clemson (PBS Pro and multicore jobs)
+   * FIU (local issues, then increased pilots from 128 to 256)
+   * Florida
+   * Harvard (job router configuration)
+   * MIT (configuration, GUMS configuration error)
+   * OU (SYSTEM_PERIODIC_REMOVE troubles)
+   * Syracuse
+   * Texas Tech (CE configuration)
+   * UC Riverside
+   * UNESP (jobs were not returning output or logs)
+   * Utah (lots of CE help, then they decided to go to HTCondor-CE-Bosco; then main admin quit)
+
+---+++ Concerns
+
+   * Long-term sustainability of our big Java software components:
+      * !BeStMan: Need a roadmap for dropping it in OSG&amp;nbsp;3.4.
+      * VOMS Admin: We are trying to shift VOMS (and hence VOMS Admin) to hosted installations instead of site- or VO-operated installations. Waiting for dust to settle on CA transition, I think.
+      * GUMS: We are going to live with this one for now. The new EL&amp;nbsp;7 build uses updated security libraries, which helps. And we may be able to shift to newer, externally maintained ones down the road.
+
+   * There is still no policy or procedure for using the GOC Yum software repository
+
+---+++ Software Goals for Year 5
+
+&lt;!--
+   * Set SWNO = &lt;span style=&quot;color: white; background-color: #00D; padding-left: 3px; padding-right: 3px;&quot;&gt;abandoned&lt;/span&gt;
+   * Set SWIP = &lt;span style=&quot;color: white; background-color: #F90; padding-left: 3px; padding-right: 3px;&quot;&gt;in&amp;nbsp;progress&lt;/span&gt;
+   * Set SWDN = &lt;span style=&quot;color: white; background-color: #0A0; padding-left: 3px; padding-right: 3px;&quot;&gt;done&lt;/span&gt;
+   * Set SWNS = &lt;span style=&quot;color: white; background-color: #D00; padding-left: 3px; padding-right: 3px;&quot;&gt;not started&lt;/span&gt;
+--&gt;
+
+   1. Ongoing
+      a. Routine updates to software packages
+      a. Bug fixes to software and packaging
+      a. Routine documentation updates
+      a. Support installation and configuration of new OSG sites and HTCondor CE transitions
+      a. Support ongoing use of OSG Software
+   1. HTCondor-CE and Friends
+      a. Unify BLAHP code and switch to HTCondor build [2016-09]&amp;nbsp;&amp;mdash; %SWIP%
+      a. Help with monitoring improvements, especially that affect HTCondor-CE&amp;nbsp;&amp;mdash; %SWNS%
+   1. Support SELinux
+      a. Define initial project plan [2016-09, !TimC]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Identify all OSG software stack components that need SELinux rules&amp;nbsp;&amp;mdash; %SWNS%
+      a. Ship initial SELinux rules for all such packages (from upstream or us)&amp;nbsp;&amp;mdash; %SWNS%
+      a. Work with upstream developers to provide SELinux rules upstream&amp;nbsp;&amp;mdash; %SWNS%
+   1. Ship OSG 3.4
+      a. Drop Globus GRAM packages [2017-06]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Remove GRAM code from OSG software (e.g., OSG Configure) [2017-09]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Update to Hadoop Distributed File System (HDFS) 3.x [2017-06]&amp;nbsp;&amp;mdash; %SWNS%
+      a. Drop GIP and OSG Info Services&amp;nbsp;&amp;mdash; %SWNS%
+      a. Drop !BeStMan&amp;nbsp;&amp;mdash; %SWNS%
+   1. ITB Improvements
+      a. Add the capability to install and test pre-release HTCondor in an OSG-like environment&amp;nbsp;&amp;mdash; %SWNS%
+      a. Create a tool to maintain steady job pressure on our ITB system&amp;nbsp;&amp;mdash; %SWNS%
+      a. Add newer OSG technologies to ITB: !StashCache, HTCondor-CE-Bosco, etc.&amp;nbsp;&amp;mdash; %SWNS%
+   1. Documentation Renovations
+      a. Complete initial version of new, user-centered Release3 home page [2016-12, !BrianL]&amp;nbsp;&amp;mdash; %SWIP%
+      a. Update documents in priority order [all year]&amp;nbsp;&amp;mdash; %SWIP%
+      a. Review and document !GlideinWMS architecture to better understand it [TimC]&amp;nbsp;&amp;mdash; %SWIP%
+   1. Year 5 Projects
+      a. Finish remaining EL&amp;nbsp;7 builds [2016-08, Mat]&amp;nbsp;&amp;mdash; %SWIP%
+      a. Support GR&amp;Aring;CC project as needed&amp;nbsp;&amp;mdash; %SWNS%
+      a. Automate some pieces of tracking OSG CEs&amp;nbsp;&amp;mdash; %SWIP%
+      a. Consolidate software repositories to a single GOC host&amp;nbsp;&amp;mdash; %SWIP%
+      a. Help OSG move from BDII to CE-Collector (and other things?) on demand&amp;nbsp;&amp;mdash; %SWIP%
+      a. Help incorporate a generic HTCondor pilot job executable into the HTCondor source code&amp;nbsp;&amp;mdash; %SWNS% need help from HTCondor developers
+      a. Migrate OSG software from Java 7 to Java 8&amp;nbsp;&amp;mdash; %SWIP% (at least, our planning)
+      a. Manage new stakeholder and internal projects that involve the OSG Software team [TimC]
+   1. Year 5 Internal Maintenance
+      a. Update Koji build system to latest version [Mat]&amp;nbsp;&amp;mdash; %SWNS%
+   1. Automated Testing
+      a. Expand coverage of components and test cases&amp;nbsp;&amp;mdash; %SWIP%
+      a. Improve expressiveness of test infrastructure&amp;nbsp;&amp;mdash; %SWIP%
+      a. Investigate automated testing across multiple hosts in CHTC&amp;nbsp;&amp;mdash; %SWNS%
+
+---+++ Metrics
+
+JIRA tickets for Software (orange) and Software+Release (grey):
+
+%ATTACHURL%/jira-software-2016-06-08.png
+
+
+
+---++ Tim Theisen - Release Management
+
+---+++ Goals
+   * Ongoing
+      * Test and Release Software
+      * Collect metrics on effectiveness
+      * Collect new testing recipes
+   * Madison ITB
+      * Current Goals
+         * Start Beta Testing HTCondor Releases in ITB environment
+         * Get more staff involved with ITB site
+
+---+++ Recent Accomplishments
+
+   * *Releases*
+      * Since April 6th
+         * April Release
+            * [[Documentation.Release3.Release3237][3.2.37]] VO Package v65, IGTF 1.73
+            * [[Documentation.Release3.Release3311][3.3.11]] VO Package v65, IGTF 1.73, !XRootD 4.3.0, HDFS 2.0.0+1612, !GlideinWMS 3.2.13, HTCondor CE 2.0.4, BLAHP 1.18.18, osg-pki-tools 1.2.15, HTCondor 8.4.5, Upcoming: HTCondor 8.5.3
+         * May Release
+            * [[Documentation.Release3.Release3238][3.2.38]] VO Package v66
+            * [[Documentation.Release3.Release3312][3.3.12]] VO Package v66, !BeStMan 2.3.0 on EL7, CVMFS 2.2.2, Pegasus 4.6.1, HTCondor 8.4.6, HTCondor CE 2.0.5, HTCondor CE BOSCO Support, osg-configure 1.4.0, blahp 1.18.19, Dropped GRAM packages from OSG CE, Upcoming: HTCondor 8.5.4
+
+   * Special Releases: None
+
+   * Defects found in testing
+      * 1 of 19 tickets in April
+         * Accept subjec DNs in extattr_table.txt
+      * 1 of 50 tickets in May
+         * Fix timeouts to osg-pki-tools
+         * Follow on ticket: add a missing timeout
+
+   * Continue Beta Testing HTCondor Releases
+
+---+++ Key Initiatives
+
+   * ITB instance in Madison
+      * Work with Software Team to start testing HTCondor Release Candidates in ITB
+
+   * Collecting effectiveness metrics
+
+   * Policy and Procedure for releasing software to GOC repository
+
+---+++ Top Concerns
+
+   * Need to make progress on GOC repository policy and procedure document
+
+---++ Stakeholder Request Management - Gabriele Garzoglio
+
+https://jira.opensciencegrid.org/secure/Dashboard.jspa?selectPageId=10030
+
+---++ Minutes
+
+Key Initiatives
+   1. Steady HTCondor-CE improvements: better support for SLURM, bug fixed, better testing
+   2. OSG 3.2 and EL5 end-of-life is Aug 2016.
+   3. Start testing HTCondor in the Madison ITB
+
+Top Issues / Concerns
+   1. Sustainability of Java-based compoents.
+   2. Need release policy and use case justification for the Yum software repo dedicated to GOC.
+
+Key Accomplishments
+   1. EL7 support done; porting of Java code converged (BeStMan and GUMS ported; VOMS Admin will not be ported).
+   2. 4 releases from Apr 6, as expected. No special releases. Found 2 defects out of 69 changes in the software.
+
+
+-- Main.GabrieleGarzoglio - 24 May 2016
+

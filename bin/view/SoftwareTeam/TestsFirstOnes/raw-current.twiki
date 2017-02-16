@@ -1,0 +1,44 @@
+---+ Automated Trash/Trash/Integration Testing: First Tests
+
+Components and tests within components are listed in order by priority and then perhaps in logical sequence.
+
+%TABLE{sort=&quot;off&quot;}%
+|  *Filename*  |  *Component*  |  *Test*  |  *Use?*  |
+| =test_12_gridftp.py= | Globus / !GridFTP | Start the !GridFTP server | %GREEN%0.0.4%ENDCOLOR% |
+||| Use =globus-url-copy= to copy a file from local to server | %GREEN%0.0.4%ENDCOLOR% |
+||| Use =globus-url-copy= to copy a file from server to local | %GREEN%0.0.4%ENDCOLOR% |
+||| Check logging in the =gridftp.log= | later |
+||| Check logging in the =gridftp-auth.log= | later |
+||| Make sure the copied file did not change | no |
+| =test_10_jobs.py= | Globus GRAM | Check if =grid-proxy-init= works | DONE |
+||| Start the Globus gatekeeper | %GREEN%0.0.5%ENDCOLOR% |
+||| Start Condor | %GREEN%0.0.5%ENDCOLOR% |
+||| Use =globus-job-run= to run a fork job | %GREEN%0.0.5%ENDCOLOR% |
+||| Use =globus-job-run= to run a Condor (vanilla) job with NFS lite enabled | %GREEN%0.0.5%ENDCOLOR% |
+||| Stop Condor | %GREEN%0.0.5%ENDCOLOR% |
+||| Stop the Globus gatekeeper | %GREEN%0.0.5%ENDCOLOR% |
+||| =grid-cert-info= works on a =.0= CA certificate file | no |
+||| Use =globus-job-run= to run a managed fork job | later |
+||| Use =globus-job-run= to run a Condor (vanilla) job with NFS lite disabled | later |
+||| Use =globus-job-run= to run a Condor (standard) job | later |
+| =test_20_voms.py= | VOMS | Configure and start services (8 tests) | %GREEN%0.0.7%ENDCOLOR% |
+||| Create and configure test VO (7 tests) | %GREEN%0.0.7%ENDCOLOR% |
+||| Add the test user to the VO | %GREEN%0.0.7%ENDCOLOR% |
+||| Use =voms-proxy-init= to get a proxy | %GREEN%0.0.7%ENDCOLOR% |
+||| Check a proxy using =voms-proxy-info= | %GREEN%0.0.7%ENDCOLOR% |
+||| Make sure =voms-proxy-init= fails when using an invalid group | %GREEN%0.0.7%ENDCOLOR% |
+||| Recheck the proxy using =voms-proxy-info= | %GREEN%0.0.7%ENDCOLOR% |
+||| Configure =edg-mkgridmap= | %GREEN%0.0.7%ENDCOLOR% |
+||| Run =edg-mkgridmap= wrapper script and verify resulting grid map file | %GREEN%0.0.7%ENDCOLOR% |
+||| Stop services and clean up (10 tests) | %GREEN%0.0.7%ENDCOLOR% |
+| =test_40_glexec.py= | !gLExec | Configure !gLExec to use grid-mapfile | YES |
+||| Use =glexec= to run a simple command (=id=) | YES |
+| =test_14_uberftp.py= | Globus / !UberFTP | Use =uberftp= to copy a file from local to !GridFTP server | YES |
+||| Use =uberftp= to copy a file from !GridFTP server to local | later |
+| =test_10_jobs.py= | Globus / Condor-G | Run a simple fork job using Condor-G | YES |
+| =?= | fetch-crl | _something_ | if possible |
+| =?= | Globus / !GSI-OpenSSH | Check if !GSI-OpenSSH server is running | later |
+||| Use =gsiscp= to copy a file from local to server | later |
+||| Use =gsiscp= to copy a file from server to local | later |
+||| Make sure the copied file did not change | later |
+||| Use =gsissh= to run a simple command | later |

@@ -1,0 +1,125 @@
+---+ OSG Technology Area Meeting, 3 November 2014
+
+*Coordinates:* Conference: 857-216-4999, PIN: 32390; https://www.uberconference.com/osgcat
+
+*Attending:* !BrianL, Carl, Edgar, Jeff, !JohnH, Jose, Mat, Suchandra, !TimT, Xin
+&lt;!-- !BrianB, !BrianL, Carl, Edgar, Jeff, !JohnH, Jose, Marian, Mat, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+
+---+++ Triage Duty
+   * This week: !BrianL
+   * Next week: Carl
+   * 8 (–3) open tickets
+
+---+++ JIRA
+   * Open: 158 (+1)
+   * In Progress: 18 (–6)
+   * Ready for Testing: 24 (+17)
+   * Ready for Release: 4 (+4)
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+| *Name* | *Version* | *Code Freeze* | *Package Freeze* | *Release* | *Notes* |
+| November | 3.2.17 / 3.1.41 | 2014-10-27 | 2014-11-03 | 2014-11-11 | |
+| December | 3.2.18 / 3.1.42 | 2014-11-24 | 2014-12-01 | 2014-12-09 | |
+| January | 3.2.19 / 3.1.43 | 2014-12-29 | 2015-01-05 | 2015-01-13 | |
+
+*Notes:* Additional “urgent” releases may be scheduled for the 4th Tuesday of each month. The *Testing* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+
+---++ OSG Software Team
+
+---+++ Work Completed
+
+   * External
+      * Verified that the OSG patches to HTCondor 8.2 are up-to-date and correct for production use
+      * Took an unreleased HTCondor 8.2.4 bug fix (to allow interoperability with HTCondor 8.0) and made a patch for OSG HTCondor 8.2.3; built, tested, and promoted ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1661][SW-1661]])
+      * Prepared HTCondor 8.2, HTCondor CE, and BLAHP for the move from Upcoming to normal production ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1646][SW-1646]])
+      * Released an HTCondor CE update with some tweaks and fixes ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1649][SW-1649]])
+      * Released an OSG Configure update with extra features for the CE Collector
+      * Tested VOMS Admin with SSLv3 disabled; wrote user procedure for disabling SSLv3 manually ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1644][SW-1644]])
+      * Further improved the HTCondor CE troubleshooting and training documents based on observations at the GOC training sessions
+      * Finished development of RSV robustness improvements; built, tested, and promoted ([[https://jira.opensciencegrid.org/browse/SOFTWARE-806][SW-806]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1648][SW-1648]])
+      * Tested and promoted gratia-reporting-email updates ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1635][SW-1635]])
+      * Debugged HTCondor and HTCondor CE test failures on EL 7
+      * Wrote systemd service files for HTCondor CE on EL 7
+      * Support, notably for Fermilab, Purdue, Texas A&amp;M, and University of Florida
+
+   * Internal
+      * Improved the coverage of Yum repositories – especially for update installations – in automated testing
+      * Improved configuration and infrastructure for HTCondor CE scalability testing
+      * Drafted a set of milestones for the HDFS Healing project
+      * Upgraded the Koji client tools on koji-hub to the version with the TLSv1 patch
+      * Rewrote most of the offsite backup script to reduce disk usage spikes at the GOC (due to rsync not doing this for us)
+      * Promoted patched version of Koji, disabling SSLv3 and enabling TLSv1 ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1637][SW-1637]])
+
+---+++ Work In Progress
+
+   * External
+      * HTCondor CE
+         * HTCondor CE Collector – Phase IIb starting soon (Mat, !BrianB)
+         * Scalability tests, esp. max. number (~10K so far) and ramp-up rate (~60–70/min) of concurrently running pilot jobs (Edgar)
+         * Finish a draft of an HTCondor CE overview document (!BrianL, !TimC)
+         * Monitor and support sites, especially LSF and SGE (!BrianL)
+      * RSV !perfSONAR probe: testing recent changes with Soichi (Edgar)
+      * EL 7: time to evaluate progress to date and plan next milestone(s) (Mat, !TimC, !BrianB)
+      * !XRootD backup of HDFS accesses: scheduling meeting to discuss planning (Jeff, !TimC, !BrianB)
+      * OASIS 2: complete draft packaging; OASIS 2 set up at BNL, still working on HTCondor-CE setup (Jose)
+      * IPv6: Edgar has VMs ready to try out, !BrianL will test instructions and set-up (Edgar)
+      * !PanDA: can we get the server running here and submit one job?; waiting for them on other packages (Carl)
+      * Start documenting the state of our documentation (!TimC)
+
+   * Internal
+      * osg-test: make a build with GFAL additions? (!BrianL, Carl)
+      * Koji using TLS: trying to get people to upgrade (Mat)
+      * Koji upgrade: upgrade to EL6 has been tested and should need minimal downtime; upgrading Koji is harder because of database migration (Mat)
+      * UW ITB site: build machines with Puppet! (all)
+      * Offsite backups: add some monitoring? (Mat)
+      * !HTCondor CE and PBS: setting up about 700 cores with PBS and an !HTCondor CE front-end (Edgar)
+      * Checking local backups with Nagios: waiting for help from Aaron (Mat)
+      * Move OSG software source code (not packaging) to git(hub): discuss plan and timing (Mat, !TimC)
+
+---+++ Work Upcoming
+
+   * Start design for new test scheduling subsystem (!TimC, !BrianL)
+
+---+++ Notes
+
+
+---++ OSG Release Team
+
+---+++ Projects
+
+   * Tim Theisen will handle November Release
+   * Package Freeze this week
+
+%TABLE{sort=&quot;off&quot;}%
+| *3.1.41* | *Both* | *3.2.17* | *Total* | *Status* |
+| 0 (+0) | 1 (+0) | 0 (+0) | 1 (+0) | Open |
+| 0 (+0) | 1 (-3) | 0 (-5) | 1 (-8) | In Progress |
+| 0 (+0) | 11 (+9) | 12 (+7) | 23 (+16) | Ready for Testing |
+| 0 (+0) | 3 (+3) | 1 (+1) | 4 (+4) | Ready for Release |
+| 0 (+0) | 16 (+9) | 13 (+3) | 29 (+12) | Totals |
+
+   * OSG 3.2
+      * HTCondor CE 1.7
+      * HTCondor 8.2.3
+      * !GlideinWMS 3.2.7
+      * !XRootD 4.0.4
+      * GFAL tools from EPEL
+   * OSG 3.2 and 3.1
+      * osg-pki-tools
+      * Important VO Package Update
+      * IGTF 1.60
+      * RSV 3.7.20
+      * various minor bug fixes
+
+---+++ Notes
+
+*HTCondor 8.2.3:* Need to investigate proper !CREAM gahp RPM dependencies
+
+
+---++ OSG Investigations Team
+
+No report this week.

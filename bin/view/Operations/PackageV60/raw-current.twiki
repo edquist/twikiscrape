@@ -1,0 +1,40 @@
+---+ v60
+
+---++ Add LZ to VO Package
+
+[[https://ticket.grid.iu.edu/25802][Ticket 25802]]
+
+---+++ vomses Addition
+
+&lt;verbatim&gt;
+&quot;lz&quot; &quot;voms.hep.wisc.edu&quot; &quot;15001&quot; &quot;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=voms.hep.wisc.edu&quot; &quot;lz&quot; 
+&lt;/verbatim&gt;
+
+---+++ edg-mkgridmap.conf Addition
+
+&lt;verbatim&gt;
+group vomss://voms.hep.wisc.edu:8443/voms/lz lz
+&lt;/verbatim&gt;
+
+---+++ gums.template Addition
+
+&lt;!-- 64 LZ --&gt;
+&lt;groupMapping name=&quot;LZ&quot; accountingVo=&quot;LZ&quot; accountingDesc=&quot;LZ&quot;&gt;
+    &lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; 
+    url=&quot;https://voms.hep.wisc.edu:8443/voms/lz&quot; 
+    persistenceFactory=&quot;mysql&quot; 
+    name=&quot;voms.hep.wisc.edu&quot; 
+    voGroup=&quot;/LZ&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; 
+    matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&quot;true&quot;/&gt;
+    &lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; 
+    groupName=&quot;LZ&quot;/&gt;
+&lt;/groupMapping&gt;
+
+---+++ vomsdir Addition
+
+&lt;verbatim&gt;
+/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=voms.hep.wisc.edu
+/DC=com/DC=DigiCert-Grid/O=DigiCert Grid/CN=DigiCert Grid CA-1
+&lt;/verbatim&gt;
+
+-- Main.VinceNeal - 07 Jul 2015

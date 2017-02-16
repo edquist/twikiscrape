@@ -1,0 +1,52 @@
+%LINKCSS%
+
+&lt;!-- This is the default OSG documentation template. Please modify it in --&gt;
+&lt;!-- the sections indicated to create your topic.                        --&gt; 
+
+&lt;!-- By default the title is the WikiWord used to create this topic. If  --&gt;
+&lt;!-- you want to modify it to something more meaningful, just replace    --&gt;
+&lt;!-- %TOPIC% below with i.e &quot;My Topic&quot;.                                  --&gt;
+
+---+!! Enabling Your Applications for the Open Science Grid
+%TOC%
+
+%STARTINCLUDE%
+%EDITTHIS%
+---++ Introduction
+After you have successfully installed the [[ReleaseDocumentation/ClientInstallationGuide][OSG Client]], you will need to enable your application to work on the Grid. Since the OSG differs substantially from serial-processing computing, this may be somewhat challenging. This information should help.
+
+Many applications have been developed to run on particular platforms. They assume certain software or libraries are available, and at certain releases, or may require certain access to external or internal locations or files. Because the OSG is heterogeneous, you must be able to determine whether a site on which you can run has all the necessary software and permissions.
+
+IBM has two !RedBooks that describe the general issues of enabling your applications for any Grid.
+   * &lt;cite&gt;[[http://www.redbooks.ibm.com/abstracts/sg246895.html][Introduction to Grid Computing with Globus]]&lt;/cite&gt;, in chapter 2, &quot;Application considerations&quot;, describes the issues facing application and data management.
+   * &lt;cite&gt;[[http://www.redbooks.ibm.com/abstracts/sg246936.html][Enabling Applications for Grid Computing with Globus]]&lt;/cite&gt; goes into more detail: of interest to OSG participants is chapter 3, &quot;Application architecture considerations&quot;.
+
+
+---++ OSG-specific Advice
+
+%NOTE% Avoid the pull method.
+
+   1 Determine your application&#39;s dependencies: kernel, perl, libraries, shell, modules, etc.
+   1 Categorize your application
+      * Does it need external access in any way?
+      * Do you need certain libraries on the system or can you take them with you? (Which you may or may not know without trying it first)
+      * How does you application set work in terms of mnultiple stages?
+         * Run one thing, then run another things based on its results, then one or more things based on those results....
+         * Can you put it into a DAG?
+   1 Is your app going to run well on OSG?
+      * MPI not well supported
+      * Lattice QCD people at Fermilab. Have their own MPI farm. 
+      * If you toss your app to OSG, you have to discover which sites support MPI, what version they are running, then rest of the problems getting it to work.
+      * It&#39;s not 100% certain you can get it to work. Consult the [[Trash/Engagement.WebHome][Trash/Engagement activity of OSG]].
+   1 Is it worth it?
+      * What you have now vs. on the Grid, trading off with the costs of running it on the Grid.
+      * If your job needs to accept incoming connections, you will be very restricted on what sites you can use. most sites do not allow incoming connections. So it is probably not worth it.
+      * Big thing is *SYN*. &quot;Syn packet&quot; is the initial packet that gets thrown to a server from a client. The grid site&#39;s firewall may drop syn packets by design. So it&#39;s a site issue, not just server configurations.
+      * Some things a site manager don&#39;t want to fix. Such as worker nodes writing to the =OSG_APP= area. 
+
+
+
+
+%STOPINCLUDE%
+
+-- Main.ForrestChristian - 14 Jun 2007 (created) %BR%

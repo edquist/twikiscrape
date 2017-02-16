@@ -1,0 +1,238 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+
+---++ Adding site specific MPI attributes
+Follow the instructions on the [[ReleaseDocumentation.GenericInformationProviders][Generic Information Providers]] page to add Glue attributes. The following is an example of how to add an MPICH version along with the module information.
+
+In etc/add-attributes.conf:
+&lt;pre class=screen&gt;
+# MPICH Intel
+dn: GlueSoftwareLocalID=MPICH_1.2.7p1_intel, GlueSubClusterUniqueID=lepton.rcac.
+purdue.edu, GlueClusterUniqueID=lepton.rcac.purdue.edu,mds-vo-name=local,o=grid
+objectClass: GlueClusterTop
+objectClass: GlueSoftware
+objectClass: GlueKey
+objectClass: GlueSchemaVersion
+GlueHostApplicationSoftwareRunTimeEnvironment: MPICH_1.2.7p1_intel
+GlueSoftwareLocalID: MPICH_1.2.7p1_intel
+GlueSoftwareName: MPICH
+GlueSoftwareVersion: 1.2.7.p1_intel
+GlueSoftwareInstalledRoot: /apps/steele/mpich-1.2.7p1/64/p4-intel-10.1.015
+GlueSoftwareModuleName: mpich-intel
+GlueSoftwareEnvironmentSetup: module load mpich-intel
+GlueChunkKey: GlueSubClusterUniqueID=lepton.rcac.purdue.edu
+GlueSchemaVersionMajor: 1
+GlueSchemaVersionMinor: 3
+&lt;/pre&gt;
+
+in etc/alter-attributes.conf:
+&lt;pre class=screen&gt;
+GlueHostApplicationSoftwareRunTimeEnvironment: MPICH_1.2.7p1_gcc
+&lt;/pre&gt;
+
+There are a few points to make here. First, the SoftwareInstalledRoot tells the user the location of the binaries and libraries for each MPI version. The SoftwareEnvironmentSetup attribute tells the user what module or softenv command to use in order to utilize the MPI version in their job. Finally, the SoftwareName and SoftwareVersion attributes make the MPI version easier to find using an ldapsearch.
+
+---++ Add JobManager-specific bits
+The hardest part of getting MPI jobs running is setting up the JobManager to deal with different MPI versions. In a general sense, there are only two things that need to be done:
+   * Enable the &quot;handle&quot; attribute in the appropriate .rvf file
+   * Add an MPI section to your JobManager &lt;scheduler&gt;.pm file
+
+
+---++ PBS and Modules (Purdue)
+Purdue uses a combination of the PBS scheduler and the [[http://modules.sourceforge.net/][modules]] environment management software. Most schedulers and environment managers should follow a similar pattern.
+
+---+++ Enable the &quot;handle&quot; attribute
+The first thing to do is to change the appropriate .rvf file in Globus. For PBS, this is in $GLOBUS_LOCATION/share/globus_gram_job_manager/pbs.rvf
+
+Add the following lines to enable the &quot;handle&quot; RSL attribute:
+&lt;pre class=screen&gt;
+Attribute: handle
+Description: &quot;Defines the module that should be loaded&quot;
+ValidWhen: GLOBUS_GRAM_JOB_SUBMIT
+&lt;/pre&gt;
+
+---+++ Make appropriate changes to the Globus JobManager
+Next, the appropriate JobManager file needs to be modified to do something with our new handle attribute. For PBS, this file is located in $GLOBUS_LOCATION/lib/perl/Globus/GRAM/JobManager/pbs.pm
+
+The first change to make is to get the handle name from the job description. To do this, add the following line in the sub submit{} stanza:
+&lt;pre class=screen&gt;
+    my $handle = $description-&gt;handle();
+&lt;/pre&gt;
+
+The next change is the stanza to take care of the PBS job script:
+&lt;pre class=screen&gt;
+        if ($description-&gt;jobtype() eq &quot;mpi&quot;)
+        {
+            my $this_count = ($description-&gt;totalprocesses() &gt; 0) ?
+                $description-&gt;totalprocesses() : $description-&gt;count();
+            my $machinefilearg = ($cluster) ? &#39; -machinefile $PBS_NODEFILE&#39; : &#39;&#39;;
+
+            if ($mpisoftenv)
+            {
+                print JOB &#39;which mpiexec &gt;/dev/null 2&gt;&amp;1&#39; . &quot;\n&quot;;
+                print JOB &#39;if [ $? == 0 ]; then&#39; . &quot;\n&quot;;
+                print JOB &quot;  mpiexec $machinefilearg -n &quot; . $this_count;
+                print JOB &quot; $cmd_script_name &lt; &quot; .  $description-&gt;stdin() . &quot;\n&quot;;
+                print JOB &#39;else&#39; . &quot;\n&quot;;
+                print JOB &#39;  which mpirun &gt;/dev/null 2&gt;&amp;1&#39; . &quot;\n&quot;;
+                print JOB &#39;  if [ $? == 0 ]; then&#39; . &quot;\n&quot;;
+                print JOB &quot;    mpirun -np &quot; . $this_count . $machinefilearg;
+                print JOB &quot; $cmd_script_name &lt; &quot; .  $description-&gt;stdin() . &quot;\n&quot;;
+                print JOB &#39;  else&#39; . &quot;\n&quot;;
+            }
+            else
+            {
+                print JOB &quot;. /etc/profile.d/modules.sh\n&quot;;
+                # ahoward Thu Aug 21 14:05:57 EDT 2008  
+                # Check to see if user specified a module to load...
+                if ($description-&gt;handle() ne &#39;&#39;)
+                {
+                    print JOB &quot;module load $handle\n&quot;;
+                }
+                # ... otherwise load a default module
+                else
+                {
+                    print JOB &quot; module load mpich-1.2.7p1-intel64/9.1.045\n&quot;;
+                }
+        
+                if ($handle =~ m/mpich2/)
+                {
+                    print JOB &quot;$mpirun -np &quot; . $this_count;
+                }
+                else        
+                {
+                    print JOB &quot;$mpirun -np &quot; . $this_count . $machinefilearg;
+                }
+                
+                #print JOB &quot; &quot; .  $description-&gt;executable() . &quot; &lt; &quot; .  $description-&gt;stdin() . &quot;\n&quot;;
+                print JOB &quot; &quot; .  $description-&gt;executable() . &quot; $args &lt; &quot; . $description-&gt;stdin() . &quot;\n&quot;;
+                #print JOB &quot; $cmd_script_name &lt; &quot; .  $description-&gt;stdin() . &quot;\n&quot;;
+
+            }
+            if ($mpisoftenv)
+            {
+                print JOB &#39;  fi&#39; . &quot;\n&quot;;
+                print JOB &#39;fi&#39; . &quot;\n&quot;;
+            }
+
+        }
+&lt;/pre&gt;
+
+---++ PBS and Modules (NERSC)
+---+++ NERSC-Franklin (Cray Environment)
+The interactive login environment on the NERSC-Franklin Cray XT4 CE (based on SLES 10) is fundamentally different from the Worker node environment (Compute Node Linux). The implications of this are:
+   * All MPI codes must be cross compiled so that they can run on the worker nodes
+   * Worker nodes do not have support for dynamically loaded libraries. This means that the MPI job executable must be launched directly, and cannot be contained in a wrapper script
+   * Users do not invoke &quot;modules&quot; in their jobs because of the above constraint.
+   * Because of the complexities of cross-compilation, it is recommended to login directly via ssh and compile any codes directly on the interactive nodes. More details can be found here: http://www.nersc.gov/nusers/systems/franklin/programming/
+
+Once codes have been compiled for the worker node environment, users may launch MPI jobs using grid interfaces, with the caveat that MPI jobs must *not* be wrapped in a shell script. 
+
+---+++ NERSC-Jacquard and NERSC-Davinci (SLES 10 environment)
+MPI Modules are automatically sourced for jobs on the NERSC-Jacquard and NERSC-Davinci systems. To enable this we add the following lines to $VDT_LOCATION/vdt/etc/vdt-local-setup.sh{.csh}
+&lt;pre class=screen&gt;
+# vi $VDT_LOCATION/vdt/etc/vdt-local-setup.sh
+source /etc/profile.d/modules.sh
+module load mvapich path
+
+# vi $VDT_LOCATION/vdt/etc/vdt-local-setup.csh
+source /etc/profile.d/modules.csh
+module load mvapich path
+&lt;/pre&gt;
+
+To source other modules (in this example: module_name) in your job, simply add the following line to your job script:
+&lt;pre class=screen&gt;
+module load module_name
+&lt;/pre&gt;
+
+---+++ Globus Jobmanager Changes
+
+Here is a diff of the NERSC PBS jobmanager from the original PBS jobmanager (for non Cray systems NERSC-Jacquard and NERSC-Davinci)
+
+&lt;pre class=&#39;screen&#39;&gt;
+$ diff pbs.pm pbs.pm.orig 
+24,25c24
+&lt;     # Change CPU per node - SPC, NERSC
+&lt;     $cpu_per_node = 2;
+---
+&gt;     $cpu_per_node = 1;
+72,78d70
+&lt; 
+&lt;         # For non-mpi jobs, change cluster variable to bypass bogus ssh - SPC, NERSC
+&lt;         if($description-&gt;jobtype !~ /^(mpi)$/)
+&lt;         {
+&lt;            $cluster = 0;
+&lt;         }
+&lt; 
+271d262
+&lt;         # Add ppn parameter - SPC, NERSC
+273c264
+&lt;         myceil($description-&gt;count() / $cpu_per_node), &quot;:ppn=$cpu_per_node&quot;, &quot;\n&quot;;
+---
+&gt;         myceil($description-&gt;count() / $cpu_per_node), &quot;\n&quot;;
+512,514c503
+&lt;             # NODEFILE semantics not supported at NERSC - SPC, NERSC
+&lt;             # my $machinefilearg = ($cluster) ? &#39; -machinefile $PBS_NODEFILE&#39; : &#39;&#39;;
+&lt;             my $machinefilearg = &#39;&#39;;
+---
+&gt;             my $machinefilearg = ($cluster) ? &#39; -machinefile $PBS_NODEFILE&#39; : &#39;&#39;;
+&lt;/pre&gt;
+
+The Cray systems have additional MPI changes due to an idiosyncratic job launcher (aprun instead of mpirun), lack of dynamic library support and specialized PBS variables.
+Here is the diff for the NERSC-Franklin Cray XT4 system:
+&lt;pre class=&#39;screen&#39;&gt;
+19,20c19
+&lt;     # Change to aprun - SPC, NERSC
+&lt;     $mpirun = &#39;/usr/bin/aprun&#39;;
+
+---
+&gt;     $mpirun = &#39;no&#39;;
+72,77d70
+&lt; 
+&lt;         # For non-mpi jobs, change cluster variable to bypass bogus ssh - SPC, NERSC
+&lt;         if($description-&gt;jobtype !~ /^(mpi)$/)
+&lt;         {
+&lt;            $cluster = 0;
+&lt;         }
+262,265c255
+&lt; 
+&lt;       # Change -l nodes to -l mppwidth - SPC, NERSC
+&lt;       print JOB &#39;#PBS -l mppwidth=&#39;, $description-&gt;nodes(), &quot;\n&quot;;
+---
+&gt;       print JOB &#39;#PBS -l nodes=&#39;, $description-&gt;nodes(), &quot;\n&quot;;
+269,271c259
+&lt;       # Change -l nodes to -l mppwidth - SPC, NERSC
+&lt;       print JOB &#39;#PBS -l mppwidth=&#39;, $description-&gt;host_count(), &quot;\n&quot;;
+---
+&gt;       print JOB &#39;#PBS -l nodes=&#39;, $description-&gt;host_count(), &quot;\n&quot;;
+275,284c263,264
+&lt;       # Change -l nodes to -l mppwidth - SPC - NERSC
+&lt;       print JOB &#39;#PBS -l mppwidth=&#39;, $description-&gt;count(), &quot;\n&quot;;
+&lt; 
+&lt;       # May want to tweak mppnppn later - SPC - NERSC
+&lt;       # print JOB &#39;#PBS -l mppnppn=&#39;, $cpu_per_node, &quot;\n&quot;;
+&lt;       # myceil($description-&gt;count() / $cpu_per_node), &quot;\n&quot;;
+&lt; 
+&lt; 
+---
+&gt;         print JOB &#39;#PBS -l nodes=&#39;,
+&gt;         myceil($description-&gt;count() / $cpu_per_node), &quot;\n&quot;;
+523,525c503
+&lt;           #  NODEFILE semantics not supported at NERSC - SPC - NERSC
+&lt;           my $machinefilearg = &#39;&#39;;
+---
+&gt;             my $machinefilearg = ($cluster) ? &#39; -machinefile $PBS_NODEFILE&#39; : &#39;&#39;;
+547,551c525,526
+&lt;               # NERSC aprun mods - SPC - NERSC
+&lt;               # directly launch executable on worker node, since scripts are not supported
+&lt;               print JOB &quot;$mpirun -n &quot; . $this_count . $machinefilearg . &quot; &quot;;
+&lt;               print JOB $description-&gt;executable(),&quot; $args &lt; &quot; .  $description-&gt;stdin() . &quot;\n&quot;;
+---
+&gt;               print JOB &quot;$mpirun -np &quot; . $this_count . $machinefilearg;
+&gt;               print JOB &quot; $cmd_script_name &lt; &quot; .  $description-&gt;stdin() . &quot;\n&quot;;
+&lt;/pre&gt;
+
+-- Main.ShreyasCholia - 12 Feb 2009
+
+-- Main.AndrewHoward - 06 Oct 2008
+

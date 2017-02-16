@@ -1,0 +1,67 @@
+&lt;style type=&quot;text/css&quot;&gt;
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+&lt;/style&gt;
+
+---+ Thursday Exercise 1.2: Getting data onto and out of your laptop
+
+
+
+   * The material so far has covered ways to do computation on various resources. This section covers how to get data and results to and from the servers where you are submitting jobs.   
+   * Although there are a variety of ways to do this, we&#39;ll cover three methods (=scp=, =rsync=, and Globus) that should cover most of the situations that&#39;ll you&#39;ll encounter. 
+
+---++ Compressing files
+
+
+Sometimes when you have a lot of input files it makes more sense to compress them before sending them with a job. For this exercise, we want to compress our blast input files and send them to the remote worker node. 
+
+For this part of the exercise, you will need to:
+
+   1. Compress the input files using the =tar= command
+   1. Modify =transfer_input_files= in the file =blast_run.submit= to transfer your compressed file
+   1. Create a wrapper script which will decompress the input files, then run blast
+
+*HINT*: Here&#39;s a pattern for the =tar= command:
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% tar -cvzf [compressed filename] [list of files]
+&lt;/pre&gt;
+
+Replace =-c= with =-x= to decompress.
+
+---++ Transferring files (on steroids)
+
+You&#39;ve now transferred files and directories using =scp=.  However there are a few drawbacks to using =scp=.  First, you need to specify each directory and/or file that you want to transfer.  This can get tedious if you have a lot of files or directories to transfer.  Second, scp will copy every file even if it&#39;s present resulting in more time and bandwidth being used than necessary.  =rsync= is a program that avoids this by checking on the files between the source and destination and then only copying the directories and files that have changed.    We&#39;ll use rsync to sync a directory as follows:
+
+   1. Log in to the CHTC submit node (=learn.chtc.wisc.edu=).  
+   2. Remove the =scp_transfer= directory. \
+   
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT%  &lt;strong&gt;rm -fr scp_transfer&lt;/strong&gt;
+&lt;/pre&gt;
+   3. Now, we&#39;ll use =rsync= to transfer the directory from the OSG Connect login node. \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT%  &lt;strong&gt;rsync -r -t -v -e ssh username@login.osgconnect.net:~/scp_transfer/ .&lt;/strong&gt;
+&lt;/pre&gt;
+   4. Now try running the rsync again.  You&#39;ll notice that it doesn&#39;t copy any files this time. \
+\
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT%  &lt;strong&gt;rsync -r -t -v -e ssh username@login.osgconnect.net:~/scp_transfer/ .&lt;/strong&gt;
+&lt;/pre&gt;
+
+
+---++ Globus (optional)
+The final transfer method uses a cloud-based service called Globus (http://www.globus.org).  Globus allows users to schedule &quot;third-party&quot; data transfers between storage endpoints using a web interface.  After launching a transfer request, Globus manages the transfers and verifies the copied files, re-transferring any files that have been copied incorrectly.  Using [[https://www.globus.org/globus-connect-personal][Globus Connect Personal]], you can set your desktop or laptop hard drive as a storage endpoint, allowing you to transfer data to and from your computer.  Quite a few university campuses and OSG resources have storage endpoints, as do most national-scale HPC centers, making Globus a convenient way of getting data between places.
+
+This part of the exercise go through setting up a Globus Connect personal endpoint on your laptop and transferring some files from OSG Connect to your laptop.
+
+   1. First go to the [[Globus download][https://www.globus.org/globus-connect-personal]] page
+   2. Click on the appropriate download link and install the application
+   3. The download link will have instructions on setting up your endpoint
+   4. Once installed and running, go to globus connect application icon (in your system tray or on toolbar at the top of the screen) and select &#39;Web: Transfer Files&#39;
+   5. Globus Connect will open a web page like this: \
+&lt;img src=&quot;%ATTACHURLPATH%/Screen_Shot_2015-07-23_at_2.11.59_PM.png&quot; alt=&quot;Screen_Shot_2015-07-23_at_2.11.59_PM.png&quot; width=&#39;1049&#39; height=&#39;794&#39; /&gt;    
+   6. Select a file from the osgconnect#stash side and copy it to your using the arrow button.  \
+&lt;img src=&quot;%ATTACHURLPATH%/Screen_Shot_2015-07-23_at_2.58.33_PM.png&quot; alt=&quot;Screen_Shot_2015-07-23_at_2.58.33_PM.png&quot; width=&#39;1049&#39; height=&#39;794&#39; /&gt;    
+   7. Click on the Activity link near the top of the page to track your transfer

@@ -1,0 +1,87 @@
+---+!! *OSG PKI Certificate Renewal*
+
+%TOC{depth=&quot;2&quot;}%
+
+---++ Introduction
+
+This document explains the OSG PKI certificate renewal process.  This will provide a brief overview on how a user will obtain a new certificate for the same DN, but with a new expiration date and key pair. 
+
+---++ Supported Modes of Renewal
+
+   * Users may request renewal of their own user certificate via either a new CLI script or the web (OIM).
+      * RAs may not request renewal of a user&#39;s certificate.
+   * User must have valid certificate and be registered with OIM.
+      * No guest/un-authenticated renewal.
+   * If renewal cannot be accomplished for any reason, the user must re-request and go through the vetting process again.
+   * Renewal can only be done if the vetting is less than 5-years old.
+   * The user&#39;s current email address in OIM must match the email address in their certificate.
+      * To comply with policy on unchanged attributes.
+
+---++ Certificate Lifecycle
+
+   * 0-6 months: Certificate cannot be renewed.
+      * To prevent multiple accidental renewals.
+      * Note that OIM-ITB will not enforce this restriction to allow for testing.
+   * 7-12 months: Certificate can be renewed.
+   * 12-13 months:
+      * Weekly email notifications are sent to certificate owner reminding them of renewal.
+         * Once renewed, notifications will stop.
+      * A single email notification is sent to the original requestor of host certificates.
+   * 13 months: Certificate expires, cannot be renewed.
+
+Note that, by policy, user vetting is required every 5 years and renewal is only possible if user has been vetting in past 5 years.
+
+---++ Notification
+
+   * Starting one month from expiration, weekly reminders are sent to the user.
+      * Or to the requestor of a user certificate.       
+   * On renewal, an email is sent to the user and relevant RAs/GAs notifying them of the renewal and asking them to contact the GOC if the renewal is unauthorized.
+      * Required by policy.
+      * An example of an unauthorized renewal would be a user who has left a VO.
+   * The following is an example of a renewal email notification
+
+    &lt;p&gt; %ATTACHURL%/cert_renew_email.png&lt;/p&gt;
+
+---++ OIM Certificate Renewal Page
+
+   * User can access the certificate renewal page in OIM by clicking on the link provided at the bottom of the email notification.
+   * The user will be taken to the OIM certificate renewal page.  The following is an example of the page.
+
+    &lt;p&gt; %ATTACHURL%/cert_renew_web.png&lt;/p&gt;
+
+   * User will need to select the checkbox next to &#39;I Agree&#39; button and click &#39;Next&#39;
+
+   * The user will need to enter a new password twice before clicking on the green &#39;Renew&#39; button in the &#39;Next Action&#39; section at the bottom.
+
+    &lt;p&gt; %ATTACHURL%/cert_renew_passwd.png&lt;/p&gt;
+
+   * The page will refresh and the user will then now be able to download their new certificate (pkcs12 file).
+
+    &lt;p&gt; %ATTACHURL%/cert_renew_download.png&lt;/p&gt;
+
+   * Last step for the user is to click on the blue &#39;Download Certificate &amp; Private Key (PKCS12)&#39; button and select a location to save the certificate.
+
+---++ Relevant Policies
+
+Policy with regards to renewal follows. In short, a certificate can be automatically renewed if not expired, nothing has changed, it hasn&#39;t been compromised and it has been less than 5 years since manual RA vetting.
+
+Note the last bit, email should be sent to the user on renewal.
+
+Relevant portions of Section 4.6 of the [[https://twiki.grid.iu.edu/twiki/pub/Operations/OSGPKIAgreements/OSG_RPS.pdf][RPS]]:
+
+The OSG Operator may renew a certificate if:
+
+   1.    the associated public key has not reached the end of its validity period,
+   2.    the Subscriber name and attributes are unchanged,
+   3.    the associated private key remains un compromised, and
+   4.    re-verification of the Subscriber’s identity is not required under Section 3.3.1.
+
+Section 3.3.1 says: &quot;OSG certificates have a validity period of 13 months. OSG may rekey/renew certificates prior to their expiration date for additional 13 month periods up to a maximum of five years. OSG or a Trusted Agent revalidates the certificate information at least once every five years.&quot;
+
+No additional verification is required if the certificate subject information has not changed and less than five years have passed since the certificate’s information was verified. A Trusted Agent must represent that the renewal request is authorized.
+
+The OSG Operator shall use contact information provided by the Subscriber to notify the Subscriber of the certificate’s issuance.
+
+
+-- Main.AlainDeximo - 20 Nov 2013
+

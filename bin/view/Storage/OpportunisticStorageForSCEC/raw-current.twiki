@@ -1,0 +1,204 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;%TOPIC%&quot; }%*
+%TOC%
+---++ Purpose
+
+The use of storage in the OSG by the [[http://www.scec.org][Southern California Earthquake Center]] is another step towards fully-automated open storage. Besides actually providing storage and compute resources to SCEC, the goal of this project is to exercise some of the new supporting infrastructure for opportunistic storage, namely, the discovery tools. As such, some managed coordination is needed for the initial production.
+
+---++ The Use Case
+
+Southern California Earthquake Center (SCEC) : SCEC’s goal is to understand the physics of the Southern California fault system and develop a model of key aspects of earthquake behavior. One element of SCEC is the &lt;nop&gt;CyberSHAke project , which generates probabilistic seismic hazard assessments (PSHA). These are effectively sets of simulated seismograms for the response of a point on the earth to a very large set (~600,000) of potential ruptures (earthquakes). For each seismogram, a peak ground motion can be calculated. This can then be used to gener-ate a probabilistic peak ground motion over the set of potential ruptures. A presentation on [[http://globusworld.org/files/2010/02/Data2-Callaghan.ppt_.pdf][SCEC Data Management]] was given at globusWORLD in 2010.
+
+A reciprocity-based approach is used for this work. The analysis has the following steps. 
+
+   * 0. Generate 660,000 earthquake descriptions (at USC).
+
+    For each site:
+   * 1. Run forward wave propagation simulations for a given volume (can be on a different site).
+   * 2. Extract strain green tensor data for the ruptures that affect a given site.
+   * 3. Generate synthetic seismograms for ruptures that affect the given site. 
+   * 4. Generate shaking intensity measures from the synthetic seismograms.
+
+Step 0 is performed once, before any runs, and the data is pre-staged to each to Storage Element. Steps 2 and 3 are done at each OSG site, and are represented as workflows. Steps 1-4 can all be performed at the same OSG site, or they can be split up, with step 1 being performed on 1 site and 2-4 somewhere else.
+
+Maechling, P., Gupta, V., Gupta, N., Field, E. H., Okaya, D., Jordan, T. H., “Grid Computing in the SCEC Com-munity Modeling Environment”, Seismological Research Letters, v. 76, pp. 581-587, 2005. 
+
+---++ Summary
+The SCEC use case is summarized by
+
+   * 660,000 files (~1 Terabyte of data) from step 0 uploaded to each SE once, then read by jobs
+   * The products from step 1 run on a Teragrid site and are uploaded. They are transient. 
+   * On the CE, about 1,000,000 logical jobs in the workflow, grouped to run in serial batches to total about 5000 jobs taking one-half hour each, equals one run.
+   * Data is read in job context by posix IO (size per read varies depending on the job). Need SE with mount point on the worker nodes.
+   * After run, deletion of transient files (not part of the workflow, but will be included in the future)
+   * After run, upload from SE to SCEC test database
+   * Around 200 runs total in the project.
+   * After project, deletion of 660,000 files from SE
+
+---++ Questions and Answers
+
+__Are there too many files for use of a Storage Element?__
+
+The files are in 20 tarred packages. Data placement is done by uploading a tar file to the SE, then unpacking it into the SE by a job running on the computing element. Then consensus from experts is that 660,000 files will not present a problem to Storage Elements, though it is estimated that in a Hadoop installation it will result in an additional memory consumption of 700 MB in the Namenode. We also conclude that dCache would not reliably support posix IO without significant changes to the SCEC codebase; therefore we will not pursue participation by dCache sites for this project.
+
+Thanks to Scott Callaghan for providing the following info.
+
+__How does the number of jobs relate to the number of files?__
+
+Each run requires a subset of the 660,000 files, usually about 410,000.  Two jobs are run for each file, steps 3 and 4.  Step 2 contains about 7,000 jobs, so it all adds up to somewhere around 830,000.
+
+__How long does a job take to run?__
+
+The longest jobs are part of step 1 - they are 400-core MPI jobs which take about 16 hours. Done on Teragrid now, may do on the Compute Element in the future. The shortest jobs are step 4 - they take about 0.1 sec.  To help us handle the short-running jobs, we use Pegasus to bundle them into groups so that Condor sees fewer longer-running jobs.  The shortest jobs Condor sees are about a minute.
+
+__What is the number and size of the files from step 2?__
+
+Step 2 generates about 7,000 files.  They average 100 MB each.
+Step 3 generates about 410,000 files, each 24 KB.
+Step 4 generates about 410,000 files, each 216 bytes.
+
+__Would there be more than one run?__
+
+Yes.  This spring SCEC conducted about 220 runs.
+
+__Would the files from step 2 be deleted after each run?__
+
+They could be. There is not at present an automated process to do this.
+
+__What is the size and number of the products to be uploaded from the SE to the SCEC database?__
+
+The output files from steps 3 and 4 are zipped into 160 files, which are then staged out to SCEC.  The files total about 10 GB.
+
+__Are they moved as whole files?__
+
+Currently each zip file is moved individually, using &lt;nop&gt;GridFTP.
+
+__What is the duration of the project, from the point of view of the SEs?__
+
+The 220 runs done this spring took about 2 months.
+
+__Would there be another project following it?__
+
+SCEC plans to perform more &lt;nop&gt;CyberShake runs with different sites of interest and with alternative velocity models and earthquake descriptions.  Likely, there would be periods of production runs followed by periods of relative downtime while we evaluate results and plan the next set of runs.  If the SEs needed to reclaim space, it could be possible to delete the 660,000 input files from step 0.
+
+
+---++ Initial Participating Sites
+
+These sites have agreed to support SCEC
+
+   * Purdue
+   * Caltech
+   * University of Oklahoma
+   * University of Nebraska at Omaha
+   * University of Florida
+
+The plan is for Purdue to host the proof-of-concept tests and early production, then expansion to production on all the above sites, followed by expansion to other sites in the OSG. The VO to be used is initially the &quot;engage&quot; VO, though at a later point that may be changed to a &quot;scec&quot; VO. The following table shows the status of the project per-site. The table will be maintained by Ted Hesselroth, but site administrators may edit it themselves if they wish.
+
+
+---+++ Key
+
+| *Symbol* | *Meaning* |
+| %ICON{led-box-yellow}%  | Partial |
+| %ICON{led-box-green}% | Complete |
+| %ICON{led-box-red}% | Issue |
+| %ICON{led-box-gray}% | Note |
+
+---+++ Workflow Checklist
+
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+
+
+| *Site*  | *Participation Confirmed* | *SE authz* | *CE authz* | *BDII* | *SRM Copy* | *Space Res* | *First Upload* | *First CE/SE Test* | *Full Upload* | *Full CE/SE Test* | *Site Production*  | *Grid Production* | *VO change* | *Closure* |
+| [[http://tiny.cc/5zqNy][Purdue]] | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; |&lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt;| &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt;| | | | | | | | | | |
+| [[http://tiny.cc/W1A6i][Caltech]] | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | | | | | | | | | | |
+| [[http://tiny.cc/Yzglz][U of Oklahoma]] | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | | | | | | | | | | | | | |
+| [[http://tiny.cc/E7s5m][U of Nebraska-Omaha]] | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt;  | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | &lt;p&gt;NA&lt;/p&gt; | | | | | | | | |
+| [[http://tiny.cc/hgqaq][U of Florida]] | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | | | | | | | | | | | | | |
+
+---++++ Notes on Workflow Checklist Table
+
+   * SE Authz is authorization on the Storage Element for the &quot;engage&quot; VO, by the means provided by the site&#39;s particular SRM implementation. SE authorization for space reservation by &quot;engage&quot; VO is encouraged.
+   * CE Authz is authorization on the Storage Element for the &quot;engage&quot; VO.
+   * Space reservation should be made by &quot;engage&quot; VO unless prohibited by site policy. The cell will be marked &quot;NA&quot; for sites that allow SCEC use without a space reservation.
+   * BDII is the value of &quot;BDII Check&quot; of the BDII Checklist table.
+   * First Upload and First CE Test refer to the proof-of-concept test using a single SCEC tarfile.
+   * Full Upload and Full CE Test refer to realistic jobs using all SCEC tarfiles.
+   * Site Production is an optional intermediate step of production by direct submission to the site
+   * Grid Production is production by jobs submitted to the OSG Resource Selection Service, to be run on any of the sites which host SCEC data.
+   * VO Change is support of a potential &quot;scec&quot; VO, rather than &quot;engage&quot;.
+   * Closure means that no additional steps are needed by the site. A link to a site&#39;s summary or feedback on the project may be placed here.
+
+---+++ BDII Checklist
+
+#BDIIChecklistTable
+%TABLE{ headerbg=&quot;#eeeeee&quot; headercolor=&quot;#000000&quot; databg=&quot;#ffffff&quot; tableborder=&quot;1&quot; columnwidths=&quot;120,&quot; cellpadding=&quot;2&quot; cellspacing=&quot;1&quot; dataalign=&quot;left&quot; valign=&quot;top&quot; sort=&quot;off&quot;}%
+
+
+| *Site*  | *SE FQAN* | *VO Path* | *SRM Endpoint* | *Available Space* | *SE Mount*  | *Space Token* | *BDII Check* |
+| [[http://tiny.cc/5zqNy][Purdue]] | lepton.rcac.purdue.edu |&lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; |&lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | | | | |
+| [[http://tiny.cc/W1A6i][Caltech]] | cit-se2.ultralight.org | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | | | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; |
+| [[http://tiny.cc/Yzglz][U of Oklahoma]] |  | | | | | | |
+| [[http://tiny.cc/E7s5m][U of Nebraska-Omaha]] | ff-srm.unl.edu | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | &lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; |&lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | |&lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; |
+| [[http://tiny.cc/hgqaq][U of Florida]] | srmb.ihepa.ufl.edu |&lt;p&gt;%ICON{led-box-green}% &lt;/p&gt; | |&lt;p&gt;%ICON{led-box-green}% &lt;/p&gt;|  | | |
+
+---++++ Notes on BDII Checklist Table
+
+   * SE FQDN is taken from the service URI on &lt;nop&gt;MyOSG. Click on the site name in the table to view the &lt;nop&gt;MyOSG entry. Needed for checks of BDII info.
+   * The columns for VO Path, SRM Endpoint, SE Mount, Available Space and Space Token refer to entries in the OSG BDII.
+   * VO Path publishes the rootpath under which the &quot;engage&quot; VO is allowed to read and write.
+   * SRM Endpoint is the URI of the storage web service.
+   * Available Space indicates that there is enough space for a 1 TB space reservation to be made.
+   * SE Mount tells whether the SE is accessible from worker nodes via a mount point. Optional until supported by OSG GIP.
+   * Space Token is used by clients to access the reservation. Optional until Space Reservation from Workflow is finished.
+   * BDII check will be done by Ted Hesselroth with the OSG Storage Discovery Tool. The tool will then be used in the steps leading up to production. When BDII check is complete, value is copied to BDII column of Workflow Checklist table.
+
+---++++ BDII Check XPath Expressions
+
+FQDN is defined in the BDII Checklist table.
+
+---+++++ VO Path
+&lt;verbatim&gt;
+//GlueSE[@GlueSEUniqueID=&#39;$FQDN&#39;]/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule=$vo]/@GlueVOInfoPath
+&lt;/verbatim&gt;
+
+where $vo is the name of the VO, i.e., &#39;engage&#39;. The name should be surrounded by single quotes in XPath use.
+
+---+++++ SRM Endpoint
+&lt;verbatim&gt;
+//GlueSE[@GlueSEUniqueID=&#39;$FQDN&#39;]/GlueSEControlProtocol[@GlueSEControlProtocolVersion=&#39;2.2.0&#39;]/@GlueSEControlProtocolEndpoint
+&lt;/verbatim&gt;
+
+---+++++ SRM Service Endpoint
+
+The SRM service endpoint is defined as the above SRM endpoint with &quot;httpg&quot; replaced by &quot;srm&quot;.
+
+---+++++ Available Space
+&lt;verbatim&gt;
+//GlueSE[@GlueSEUniqueID=&#39;$FQDN&#39;]/GlueSA/@GlueSAFreeOnlineSize
+&lt;/verbatim&gt;
+
+---+++++ SE Mount
+&lt;verbatim&gt;
+//GlueCESEBind[@GlueCESEBindSEUniqueID=&#39;$FQDN&#39;]/@GlueCESEBindCEAccesspoint
+or
+//GlueCESEBind[@GlueCESEBindSEUniqueID=&#39;$FQDN&#39;]/@GlueCESEBindMountInfo
+&lt;/verbatim&gt;
+
+and in &lt;nop&gt;GlueSE
+
+&lt;verbatim&gt;
+//GlueSE[@GlueSEUniqueID=&#39;$FQDN&#39;]/GlueSEAccessProtocol[@GlueSEAccessProtocolType=&#39;file&#39;]
+&lt;/verbatim&gt;
+
+---+++++ Space Token
+&lt;verbatim&gt;
+//GlueSE[@GlueSEUniqueID=&#39;$FQDN&#39;]/GlueSA/GlueVOInfo[@GlueVOInfoAccessControlBaseRule=$vo]/@GlueVOInfoTag
+&lt;/verbatim&gt;
+
+
+
+For information on the use of these paths in the discovery tool to be used, see [[https://twiki.grid.iu.edu/bin/view/Trash/ReleaseDocumentationOSGStorageDiscoveryTool][OSG Storage Discovery Tool]].
+
+---++ Related Talks:
+   1. [[http://globusworld.org/files/2010/02/Data2-Callaghan.ppt_.pdf][SCEC Data Management with Globus Toolkit]] - !GlobusWorld March,2 2010
+
+-- Main.TedHesselroth - 08 Jul 2009

@@ -1,0 +1,226 @@
+---+ Our Condor Installation
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; border: 1px solid black; padding: 0.5em;&quot;&gt;
+---+++ Objective of this exercise
+
+This exercise should help you understand the basics of how Condor is installed, what Condor processes (a.k.a. daemons) are running, and what they do.
+&lt;/div&gt;
+
+---++ Login to the Condor submit computer
+Before you start, make sure you are logged into =10.0.0.252=. You should have been given your name and password when you arrived at the school. If you don&#39;t know them, talk to Rob.
+
+---++ Looking at our Condor installation
+
+How do you know what version of Condor you are using? Try =condor_version=: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_version
+$CondorVersion: 8.0.7 Jun 19 2014 $
+$CondorPlatform: X86_64-CentOS_6.5 $
+&lt;/pre&gt;
+
+There are two things you should note:
+
+   1. This reports the &quot;CondorPlatform&quot;, which is the type of computer we built it on, _not_ the computer we&#39;re running on. It was built on CentOS_6.5, but you might notice that we&#39;re running on Scientific Linux 6.5, which is a free clone of Red Hat Enterprise Linux.
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; background-color: #ffff66; border: 1px solid black; padding: 0.5em;&quot;&gt;
+*Extra Tip: The OS version*
+
+%TWISTY{%TWISTY_OPTS_MORE%}%
+Do you know how to find the OS version? You can usually look in /etc/issue to find out:
+
+&lt;pre style=&quot;margin-left:2em&quot; class=&quot;screen&quot;&gt;
+% cat /etc/issue
+Scientific Linux release 6.5 (Carbon)
+Kernel \r on an \m
+&lt;/pre&gt;
+
+Or you can run:
+&lt;pre style=&quot;margin-left:2em&quot; class=&quot;screen&quot;&gt;
+% lsb_release -a
+LSB Version:	:base-4.0-amd64:base-4.0-noarch:core-4.0-amd64:core-4.0-noarch:graphics-4.0-amd64:graphics-4.0-noarch:printing-4.0-amd64:printing-4.0-noarch
+Distributor ID:	Scientific
+Description:	Scientific Linux release 6.5 (Carbon)
+Release:	6.5
+Codename:	Carbon
+&lt;/pre&gt;
+%ENDTWISTY%
+
+&lt;/div&gt;
+
+Where is Condor installed? 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% which condor_q
+/usr/bin/condor_q
+
+%RED%# It was installed using the Condor RPM %ENDCOLOR%
+% rpm -q condor
+condor-8.0.7-1.osg32.el6.x86_64
+
+% rpm -ql condor | head -10
+/etc/condor
+/etc/condor/condor_config
+/etc/condor/condor_ssh_to_job_sshd_config_template
+/etc/condor/config.d
+/etc/condor/config.d/00personal_condor.config
+/etc/rc.d/init.d/condor
+/etc/sysconfig/condor
+/usr/bin/condor_check_userlogs
+/usr/bin/condor_cod
+/usr/bin/condor_config_val
+&lt;/pre&gt;
+
+Condor has some configuration files that it needs to find. They are in the standard location, =/etc/condor=
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% ls /etc/condor
+condor_config  condor_ssh_to_job_sshd_config_template  config.d
+&lt;/pre&gt;
+
+Condor has some directories that it keeps records of jobs in. Remember that each submission computer keeps track of all jobs submitted to it. That&#39;s in the local directory: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_config_val -v LOCAL_DIR
+LOCAL_DIR: /var/lib/condor
+  Defined in &#39;/etc/condor/condor_config&#39;, line 80.
+
+% ls -CF /var/lib/condor
+condor_config.local  condor_credential  execute/  spool/
+&lt;/pre&gt;
+
+The spool directory is where Condor keeps the jobs you submit, while the execute directory is where Condor keeps running jobs. Since this is a submission-only computer, it should be empty.
+
+Check if Condor is running: 
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+%  ps auwx --forest | grep condor_ | grep -v grep
+condor    1739  0.0  0.0  92188  3856 ?        Ss   Aug09   0:10 condor_master -pidfile /var/run/condor/condor_master.pid
+root      1745  0.0  0.0  23432  4600 ?        S    Aug09   1:16  \_ condor_procd -A /var/run/condor/procd_pipe -L /var/log/condor/ProcLog -R 10000000 -S 60 -C 498
+condor    1749  0.0  0.0  93248  5796 ?        Ss   Aug09   3:07  \_ condor_collector -f
+condor    1793  0.0  0.0  90656  5308 ?        Ss   Aug09   5:27  \_ condor_negotiator -f
+condor    1794  0.0  0.0  96528  6460 ?        Ss   Aug09   0:27  \_ condor_schedd -f
+condor    1795  0.0  0.0  93000  5472 ?        Ss   Aug09   0:29  \_ condor_startd -f
+&lt;/pre&gt;
+
+For the version of Condor there are four processes running: the condor_master, the condor_schedd, the condor_procd, and condor_shared_port. In general, you might see many different Condor processes. Here&#39;s a list of the processes:
+
+   * *condor_master*: This program runs constantly and ensures that all other parts of Condor are running. If they hang or crash, it restarts them.
+   * *condor_schedd*: If this program is running, it allows jobs to be submitted from this computer--that is, your computer is a &quot;submit machine&quot;. This will advertise jobs to the central manager so that it knows about them. It will contact a condor_startd on other execute machines for each job that needs to be started.
+   * *condor_procd:* This process helps Condor track process (from jobs) that it creates
+   * *condor_collector:* This program is part of the Condor central manager. It collects information about all computers in the pool as well as which users want to run jobs. It is what normally responds to the condor_status command. At the school, it is running on a different computer, and you can figure out which one: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_config_val COLLECTOR_HOST
+frontal.cci.ucad.sn
+&lt;/pre&gt;
+
+   * *condor_negotiator:* This program is part of the Condor central manager. It decides what jobs should be run where. It is run on the same computer as the collector.
+   * *condor_startd:* If this program is running, it allows jobs to be started up on this computer--that is, your computer is an &quot;execute machine&quot;. This advertises your computer to the central manager so that it knows about this computer. It will start up the jobs that run.
+   * *condor_shadow:* For each job that has been submitted from this computer, there is one condor_shadow running. It will watch over the job as it runs remotely. In some cases it will provide some assistance (see the standard universe later.) You may or may not see any condor_shadow processes running, depending on what is happening on the computer when you try it out. 
+   * *condor_shared_port:* Used to assist Condor with networking by allowing multiple Condor processes to share a single network port. 
+
+
+---++ condor_q
+
+You can find out what jobs have been submitted on your computer with the condor_q command: 
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_q
+-- Submitter: frontal.cci.ucad.sn : &lt;10.0.0.252:9645&gt; : frontal.cci.ucad.sn
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+   1.0   bkasse          8/27 01:40   0+00:00:00 H  0   0.0  pro1              
+   2.0   bkasse          8/27 01:41   0+00:00:00 H  0   0.0  pro1              
+  25.0   kagross         8/18 14:43   0+00:00:01 R  0   0.0  simple 4 10       
+  25.1   kagross         8/18 14:43   0+00:00:01 R  0   0.0  simple 4 11       
+  25.2   kagross         8/18 14:43   0+00:00:01 R  0   0.0  simple 4 12       
+
+5 jobs; 0 completed, 0 removed, 0 idle, 3 running, 2 held, 0 suspended
+&lt;/pre&gt;
+
+The output that you see will be different depending on what jobs are running. Notice what we can see from this:
+
+   * *ID*: We can see each jobs cluster and process number. For the first job, the cluster is 60256 and the process is 0.
+   * *OWNER*: We can see who owns the job.
+   * *SUBMITTED*: We can see when the job was submitted
+   * *RUN_TIME*: We can see how long the job has been running.
+   * *ST*: We can see what the current state of the job is. I is idle, R is running.
+   * *PRI*: We can see the priority of the job.
+   * *SIZE*: We can see the memory consumption of the job.
+   * *CMD*: We can see the program that is being executed. 
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; background-color: #ffff66; border: 1px solid black; padding: 0.5em;&quot;&gt;
+*Extra credit*
+
+%TWISTY{%TWISTY_OPTS_MORE%}%
+What else can you find out with condor_q? Try any one of:
+
+   * man condor_q
+   * condor_q -help
+   * [[http://www.cs.wisc.edu/condor/manual/v8.0/condor_q.html][condor_q from the online manual]]
+
+*Double bonus points*
+
+How do you use the -constraint or -format options to condor_q? When would you want them? When would you use the -l option? This might be an easier exercise to try once you submit some jobs.
+%ENDTWISTY%
+&lt;/div&gt;
+
+---++ condor_status
+
+You can find out what computers are in your Condor pool. (A pool is similar to a cluster, but it doesn&#39;t have the connotation that all computers are dedicated full-time to computation: some may be desktop computers owned by users.) To look, use condor_status:
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% condor_status
+
+Name               OpSys      Arch   State     Activity LoadAv Mem   ActvtyTime
+
+slot1@frontal.cci. LINUX      X86_64 Claimed   Busy      0.000 1909  0+00:00:04
+slot2@frontal.cci. LINUX      X86_64 Claimed   Busy      0.000 1909  0+00:00:05
+slot3@frontal.cci. LINUX      X86_64 Claimed   Busy      0.000 1909  0+00:00:06
+slot4@frontal.cci. LINUX      X86_64 Claimed   Busy      0.180 1909  0+00:00:07
+slot1@node2.cci.uc LINUX      X86_64 Claimed   Busy      0.000  469  0+00:00:04
+slot2@node2.cci.uc LINUX      X86_64 Claimed   Busy      0.000  469  0+00:00:05
+slot3@node2.cci.uc LINUX      X86_64 Claimed   Busy      0.000  469  0+00:00:06
+slot4@node2.cci.uc LINUX      X86_64 Claimed   Busy      0.000  469  0+00:00:07
+                     Machines Owner Claimed Unclaimed Matched Preempting
+
+        X86_64/LINUX        8     0       8         0       0          0
+
+               Total        8     0       8         0       0          0
+
+&lt;/pre&gt;
+
+You will be sharing our local Condor pool at UCAD. In order to ensure good response time for you, we&#39;ve allocated a couple of computers for your exclusive use. You can see them by telling Condor to only show the computers which have a specific attribute in their !ClassAds. (Think back to the lecture!) We were able to define this attribute because Condor lets us add anything we want to the !ClassAd. Try it out:
+
+There may be more computers available during the school, so don&#39;t be worried if the numbers don&#39;t match. 
+
+Note that each computer shows up multiple times, with a slotN at the beginning of the name. This is because we&#39;ve configured Condor to be able to run multiple jobs per computer. Slot refers to &quot;job slot&quot;. We do this because these are multi-core computers and they are fully capable of running more jobs at once.
+
+Let&#39;s look at exactly what you can see:
+
+   * *Name*: The name of the computer. Sometimes this gets chopped off, like above.
+   * *OpSys*: The operating system, though not at the granularity you may wish: It says &quot;Linux&quot; instead of which distribution and version of Linux.
+   * *Arch*: The architecture, such as INTEL or PPC.
+   * *State*: The state is often Claimed (when it is running a Condor job) or Unclaimed (when it is not running a Condor job). It can be in a few other states as well, such as Matched.
+   * *Activity*: This is usually something like Busy or Idle. Sometimes you may see a computer that is Claimed, but no job has yet begun on the computer. Then it is Claimed/Idle. Hopefully this doesn&#39;t last very long.
+   * *LoadAv*: The load average on the computer.
+   * *Mem*: The computers memory in megabytes.
+   * *ActvtyTime*: How long the computer has been doing what it&#39;s been doing. 
+
+&lt;div style=&quot;margin-left: 1em; margin-right: 1em; background-color: #ffff66; border: 1px solid black; padding: 0.5em;&quot;&gt;
+*Extra credit*
+
+%TWISTY{%TWISTY_OPTS_MORE%}%
+What else can you find out with condor_status? Try any one of:
+
+   * man condor_status
+   * condor_status -help
+   * [[http://www.cs.wisc.edu/condor/manual/v8.0/condor_status.html][condor_status from the online manual]]
+
+Note in particular the options like -master and -schedd. When would these be useful? When would the -l option be useful? 
+%ENDTWISTY%
+&lt;/div&gt;
+
+
+
+
+-- Main.KyleGross - 05 Aug 2014

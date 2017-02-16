@@ -1,0 +1,231 @@
+&lt;!--
+   * Set NOT_STARTED = Not Started
+   * Set NOT_RELEASED = Not Released
+   * Set ON_TRACK = &lt;div style=&quot;background-color: #3366FF; color:white&quot;&gt;&amp;nbsp;On Track&amp;nbsp;&lt;/div&gt;
+   * Set BEHIND = &lt;div style=&quot;background-color: #CCFF00;&quot;&gt;&amp;nbsp;Behind&amp;nbsp;&lt;/div&gt;
+   * Set AT_RISK = &lt;div style=&quot;background-color: #CC0000; color:white&quot;&gt;&amp;nbsp;At risk&amp;nbsp;&lt;/div&gt;
+   * Set ACHIEVED = &lt;div style=&quot;background-color: #00FF66;&quot;&gt;&amp;nbsp;Achieved&amp;nbsp;&lt;/div&gt;
+   * Set RELEASED = &lt;div style=&quot;background-color: #00FF66;&quot;&gt;&amp;nbsp;Released&amp;nbsp;&lt;/div&gt;
+   * Set TWISTY_OPTS_DETAILS = mode=&quot;div&quot; showlink=&quot;Details&quot; hidelink=&quot;Hide&quot; showimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif&quot; hideimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif&quot; remember=&quot;on&quot; start=&quot;hide&quot; 
+--&gt;
+
+---+ SHA-2 Software Support
+
+&lt;span style=&quot;color: red; font-weight: bold; font-size: larger;&quot;&gt;Warning:&lt;/span&gt; This document is now a historical artifact of the OSG Software project to verify support for SHA-2 certificates. It is *not* the authoritative source of information about minimum required versions of OSG software to support SHA-2. For that information, please visit [[Documentation.Release3.SHA2Compliance][our SHA-2 compliance page]].
+
+---++ Goals
+
+&lt;blockquote&gt;
+All OSG software components that process X.509 certificates work correctly with certificates (including legacy, draft RFC, and RFC 3820 compliant proxy certificates) that use MD5, SHA-1 and SHA-2 as their signing algorithm.
+&lt;/blockquote&gt;
+
+---++ Project Definition
+
+As of January 2012, all certificates in use in OSG (CA, host, user, and proxy) certificates use SHA-1 or MD5 as their signing algorithm. In the near future (where &quot;near&quot; is being defined), the Certificate Authorities will begin using SHA-2 as their signing algorithm. To ensure we are ready, we need to verify that all software we provide works with MD5, SHA-1 and SHA-2. If any software is not ready, it must be updated. If we are unable to update, we need to find workarounds or delay the transition to SHA-2. 
+
+Some links with extra background:
+   * The OSG Security Team has [[Security.HashAlgorithms][more information on MD5, SHA-1, and SHA-2]] available
+   * Globus has [[http://dev.globus.org/wiki/Security/ProxyCertTypes a nice page about proxy types]]
+   * !FermiGrid is [[http://fermigrid.fnal.gov/fermigrid-service-readiness.html tracking readiness for a variety of components]]
+
+---++ Scope
+
+All OSG software components that we distribute will be tested and/or updated. Software development will be done as needed by the software providers. 
+
+---++ Staff
+
+The project Lead, co-leads and support:
+
+   * Tim Cartwright, OSG Software Coordinator: Project lead
+   * Mine Altunay, OSG Security Officer: Consultant
+
+---++ Deliverables
+
+   * An OSG software stack and deployed infrastructure and services that serve those users, hosts and services with SHA-2, SHA-1, and MD-5 certificates. 
+   * A documented list of software with details of SHA-2 support, including: (SHA2Responses)
+      * Identifying software that has no support for SHA-2 and has no plans for future support. (Orphaned software)
+      * Identifying software that has no support for SHA-2 currently but has future plans to achieve it, accompanied with each components&#39; future plans.
+   * Updates (as necessary) to the OSG Software for SHA-2 support.
+
+---++ What we know 
+
+As of this writing (January 2012) we know:
+
+*Software that uses !OpenSSL*: Earlier indications are that software that uses !OpenSSL will work correctly on Red Hat Enterprise Linux 5 and later. (That is, if there are any sites using RHEL 4, they might have problem.) This software includes Globus GRAM and !GridFTP, glexec, and Condor. !OpenSSL officially supports SHA-2 and Brian Bockelman has done informal but extensive testing with the software stack. While not formal, his testing indicates they are all likely to work. 
+
+*Software based on jGlobus*: !dCache and Bestman use !jGlobus 1.8 and does *not* support with SHA-2. The situation is complicated because while we can update to jGlobus 2.0 (which is in beta testing), and jGlobus supports SHA-1 and SHA-2, jGlobus 2 does not support other things we need:
+   * jGlobus 2.0 only supports RFC 3820 proxy certificates: it does not support legacy or draft RFC 3820 proxies. These are still used in OSG because the defaults produced in OSG 1.2 are:
+      * =grid-proxy-init=: draft RFC 3820 proxies
+      * =voms-proxy-init=: legacy proxies
+   * jGlobus 2 does not support the httpg protocol that jGlobus 1 supported and Bestman and dCache rely on. Instead it supports https. There are no plans for it to support https.
+
+---+++ European Efforts
+
+EMI is facing the same issues. They have [[https://twiki.cern.ch/twiki/bin/view/LCG/RFCproxySHA2support a tracking page]] as well. We should consider working with them on tracking software component status.
+
+---++ What we don&#39;t know
+
+We have not done thorough testing to be sure that all software based on !OpenSSL definitely works with SHA-2. 
+
+---++ Transition timeline for Certificate Authorities
+
+My best understanding for the transition time for the Certificate Authorities is:
+
+&lt;blockquote&gt;
+We&#39;re not likely to have CA&#39;s with SHA-2 before January 2013. However, if people discover that SHA-1 is weaker than we knew or if the risk assessment is worse than expected, the transition could happen any time before 2013. In fact, some CAs may move on their own at any time.
+&lt;/blockquote&gt;
+
+This is based on two sources:
+
+   1. [[https://indico.cern.ch/getFile.py/access?sessionId=4&amp;resId=3&amp;materialId=0&amp;confId=155064][A presentation from Maarten Litmaath to the GDB on January 11, 2012]] suggests the transition may be delayed until 2013. The WLCG delegate Dave Kelsey presented to the EUGridPMA with that suggestion. 
+   2. [[https://www.eugridpma.org/meetings/2012-01/summary.txt][Notes from the EUGridPMA&#39;s meeting where they talked about SHA-2]]. (Included Dave Kelsey&#39;s input) 
+
+%TWISTY{mode=&quot;div&quot; showlink=&quot;EUGridPMA meeting highlights&quot; hidelink=&quot;Hide&quot; showimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif&quot; hideimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif&quot; remember=&quot;on&quot; start=&quot;hide&quot; }%&lt;pre class=&quot;file&quot;&gt;
+  - migrating to SHA2 appears to be non-trivial, since it is convoluted
+    with a move to RFC3820 style proxy certs. There is still a bit of
+    software out these that does not support RFC3820 proxies, and using
+    libraries that support SHA-2 would necessitate the exclusive use of
+    RFC proxies. So there is a deadlock here. 
+    The presentation by DaveK (from Maarten Litmaath) explains the 
+    dependencies and some wLCG considerations on the time line.
+
+    We understand the complications, but at the same time the risk
+    of using SHA-1 is increasing as more cryptanalysis is done.
+    Basically, it would not be beneficial to subscribers or RPs to
+    start using SHA-2 now, knowing that many things will break, and
+    a new risk analysis is needed, taking the deployment risks into 
+    account.
+    But at the same time the RAT and IGTF must develop a &quot;Plan-B&quot; in
+    case SHA-1 is suddenly broken and we need to move to SHA-2 anyway,
+    regardless of other consequences.
+
+  With regards to the introduction of SHA-2 the PMA now proposes to
+  the IGTF the following:
+
+  - the RAT does a risk assessment of staying with SHA-1, in light
+    of current cryptanalytic developments and the deployment issues
+    identified
+  - if SHA-1 is broken, the RAT makes an immediate assessment based on
+    the integrity of the subscriber certs, and will act regardless
+    of RP deployment consequences
+  - we will NOT rpt. NOT recommend CAs to move to SHA-2 for production
+    use until the risk assessment completes - noting that this
+    provision ends in January 2013
+  - individual CAs MAY start issuing SHA-2 based certs on their own
+    accord anyway (e.g. for testing, or to satisfy other needs)
+  - the date by which SHA-2 production certs may be issued will be
+    NO LATER than January 2013
+    (and it is likely we will RECOMMEND CAs to move then, since it will
+    take another 395 days to get rid of SHA-1 in a reasonable way)
+  - additional digest algorithms, in particular the successor to SHA-2
+    which is chosen this year, may ALSO be used in production certs
+    in January 2013, but will NOT be introduced before SHA-2 is
+    recommended for general use
+
+  Note that SHA-2 is a family, so all of SHA256, SHA384 or SHA512 may be
+  encountered in production certs following this date!
+
+* The NIST competition for a new hash algorithm (the successor of the
+  SHA-2 family) is completing in half a year. The new hash family
+  (let&#39;s call it &quot;SHA-3&quot;) will be available in implementations by the
+  end of this year. 
+  RPs may expect the use of SHA-3 based certs early 2013, although
+  not before SHA-2 is released for general use.
+
+  We urge software developers to be flexible in the use of cryptography,
+  rely on upgradable (dynamic) libraries and not tie to a specific
+  hash, key algorithm or key size.
+&lt;/pre&gt;
+%ENDTWISTY%
+
+---++ Plan
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Task* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| Test all software (except Bestman) | %ON_TRACK% | Suchandra | 15-Aug-2012 | 30-Sep-2120 | | [[http://jira.opensciencegrid.org/browse/SOFTWARE-739][SOFTWARE-739]]&lt;br&gt;See table below |
+| Expand plan as needed to fix software problems | | | | | | |
+| Update Bestman2 to work with jGlobus | %ON_TRACK% | Neha | July 2012 | November 2012 | | [[http://jira.opensciencegrid.org/browse/SOFTWARE-726][SOFTWARE-726]] |
+
+Results will be written and available from this page.
+
+---++ Testing
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+%EDITTABLE{ header=&quot;| *Software* | *Version* | *OS* | *Passed?* | *Notes* | &quot; format=&quot;| text, 20 | text, 20 |text, 20 |text, 20 |text, 20 | &quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+| *Software* | *Version* | *OS* | *Passed?* | *Notes* |
+| globus jobmanager condor | 1.0-13.1.osg.el5 | SL5/SL6 | %Y% | |
+| globus jobmanager pbs | 1.1-4.1.osg | SL5/SL6 | %Y% | |
+| gridftp server | 6.5-1.7.osg.el5 | SL5/SL6 | %Y% | |
+| lcmaps | 1.5.4-1.2.osg.el5 | SL5/SL6 | %Y% | |
+| cvmfs | 2.0.13 | SL5/SL6 | %Y% | |
+| rsv | 3.7.6-1.osg.el5 | SL5/SL6 | %Y% | |
+| voms server/client | 2.0.8-1.3.osg.el5 | SL5/SL6 | %Y% | |
+| xrootd-server | 3.2.2-1.osg.el5.xu | SL5/SL6 | %Y% | Works on SL5/GSI not working on Sl6 |
+| bestman2-client/server | 2.2.1-4.osg.el5 | SL5/SL6 | %X% | See Below |
+| glexec | 0.9.6-1.1.osg.el5 | SL5/SL6 | %Y% | |
+| edg-mkgridmap | 4.0.0-4.osg | SL5/SL6 | %Y% | |
+| gums | 1.3.18.009-5.osg.el5 | SL5 | %Y% | Errors due to configuration issue, GUMS appears to be working once config issues were resolved |
+| gratia-server | | SL5 | %Y% | |
+| glideinwms | 2.6.0 | SL5 | %Y% | Tested factory with host certs and VO frontend with personal certs |
+| condor | 7.8.4 | SL5 | %Y% | |
+&lt;nop&gt;
+
+See [[https://jira.opensciencegrid.org/browse/SOFTWARE-740][SOFTWARE-740]] for more details.
+
+---+++ Bestman/JGlobus2 SHA1/SHA2 Interoperability/Compatibility Testing
+&lt;p&gt;
+The number of test scenarios here are numerous since not only we need to make sure that 
+   * currently deployed srmclients work with new SRM servers (for SHA1 and SHA2)
+   * new srmclients (built against JGlobus 2.0) work with new SRM servers (for SHA1 and SHA2)
+but also, that different servers and clients are interoperable, i.e.
+   * new LBNL SRM clients work against new dCache servers
+   * new Fermi SRM clients work against new Bestman servers
+
+LBNL srmclient commands run for each test are 
+&lt;i&gt;srm-ping,srm-mkdir,srm-copy,srm-ls,srm-rm,srm-rmdir &lt;/i&gt;
+
+Fermi srmclient commands run for each test are
+&lt;i&gt;srmping,srmmkdir,srmcopy,srmls,srmrm,srmrmdir &lt;/i&gt;
+
+LBNL SRM Client version - &lt;b&gt;2.2.1.3.19&lt;/b&gt; (Old) &lt;b&gt;2.3.0&lt;/b&gt; (New) &lt;br&gt;
+Fermi SRM Client version - &lt;b&gt;2.1.5-23&lt;/b&gt; (Old) &lt;b&gt;2.5.0&lt;/b&gt; (New) &lt;br&gt;
+Bestman Server version - &lt;b&gt;2.2.2.2.0&lt;/b&gt; (Old) &lt;b&gt;2.3.0&lt;/b&gt; (New) &lt;br&gt;
+dCache Server version - &lt;b&gt;1.9.12-21&lt;/b&gt; (Old) &lt;b&gt;2.5.0&lt;/b&gt; (New) &lt;br&gt;
+
+&lt;/p&gt;
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+%EDITTABLE{ header=&quot;| *SRM Client Type/Version* | *User proxy SHA1/SHA2* | *Server SHA1/SHA2* | *Server Type* | *Server OS Arch* | *GUMS SHA1/SHA2* | *Passed?* | *Notes* | &quot; format=&quot;| text, 20 |text, 20 |text, 20 |text, 20 |text, 20 |text, 20|text, 20|text, 20 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+| *SRM Client Type/Version* | *User proxy SHA1/SHA2* | *Server SHA1/SHA2* | *Server Type* | *Server OS Arch* | *GUMS SHA1/SHA2* | *Passed?* | *Notes* |
+| LBNL/Fermi (Old) | SHA1/SHA2 | SHA1 | Bestman (New) | SL6 64 bit | SHA1/SHA2 | %Y% | fnpcsrv1(client) fermicloud022(server) |
+| LBNL/Fermi (Old) | SHA1/SHA2 | SHA1 | Bestman (New) | SL5 64 bit | SHA1/SHA2 | %Y% | fnpcsrv1(client) fermicloud097(server) |
+| LBNL/Fermi (Old) | SHA1 | SHA2 | Bestman (New) | SL5 64 bit | SHA1/SHA2 | %X% | fnpcsrv1(client) sesha2(server). Not expected to work |
+| LBNL/Fermi (Old) | SHA1 | SHA2 | Bestman (New) | SL5 32 bit | SHA1/SHA2 | %X% | fnpcsrv1(client) sesha2sl532(server). Not expected to work |
+| LBNL/Fermi (Old) | SHA1 | SHA2 | Bestman (New) | SL6 32 bit | SHA1/SHA2 | %X% | fnpcsrv1(client) sesha2sl632(server). Not expected to work |
+| LBNL/Fermi (Old) | SHA1 | SHA2 | Bestman (New) | SL6 64 bit | SHA1/SHA2 | %X% | fnpcsrv1(client) sesha2sl664(server). Not expected to work |
+| LBNL/Fermi (Old) | SHA2 | SHA2 | Bestman (New) | SL5 64 bit | SHA1/SHA2 | %X% | fnpcsrv1(client) sesha2(server). IMO, should not work |
+| LBNL/Fermi (Old) | SHA2 | SHA2 | Bestman (New) | SL5 32 bit | SHA1/SHA2 | %X% | fnpcsrv1(client) sesha2sl532(server).IMO, should not work |
+| LBNL/Fermi (Old) | SHA2 | SHA2 | Bestman (New) | SL6 32 bit | SHA1/SHA2 | %X% | fnpcsrv1(client) sesha2sl632(server).IMO, should not work |
+| LBNL/Fermi (Old) | SHA2 | SHA2 | Bestman (New) | SL6 64 bit | SHA1/SHA2 | %X% | fnpcsrv1(client) sesha2sl664(server).IMO, should not work |
+| LBNL (New) | SHA1/SHA2 | SHA2 | Bestman (New) | SL5 64 bit | SHA1/SHA2 | %Y% | fermicloud100(lbnl client) sesha2(server). SHA1 gums maps my SHA2 credentials to &#39;null&#39; but that is OK/expected |
+| LBNL (New) | SHA1/SHA2 | SHA2 | Bestman (New) | SL5 32 bit | SHA1/SHA2 | %Y% | fermicloud100(lbnl client) sesha2sl532(server) |
+| LBNL (New) | SHA1/SHA2 | SHA2 | Bestman (New) | SL6 32 bit | SHA1/SHA2 | %Y% | fermicloud100(lbnl client) sesha2sl632(server) |
+| LBNL (New) | SHA1/SHA2 | SHA2 | Bestman (New) | SL6 64 bit | SHA1/SHA2 | %Y% | fermicloud100(lbnl client) sesha2sl664(server) |
+| LBNL (New) | SHA1/SHA2 | SHA1 | dCache (New) | SL5 64 bit | SHA1/SHA2 | %Y% | fermicloud100(lbnl client) dmsdca04.fnal.gov(server) |
+| LBNL (New) | SHA1/SHA2 | SHA2 | dCache (New) | SL5 64 bit | SHA1/SHA2 | %Y% | fermicloud100(lbnl client) dmsdca04.fnal.gov(server) |
+| Fermi (New) | SHA1 | SHA1 | Bestman (New) | SL6 64 bit | SHA1/SHA2 | %Y% | fermicloud100 (fermi client) fermicloud022 (server) |
+| Fermi (New) | SHA2 | SHA1 | Bestman (New) | SL6 64 bit | SHA1/SHA2 | %Y% | fermicloud100 (fermi client) fermicloud022 (server) |
+| Fermi (New) | SHA1/SHA2 | SHA2 | Bestman (New) | SL5 32 bit | SHA1/SHA2 | %Y% | fermicloud100(fermi client) sesha2.fnal.gov(server). SHA1 gums maps my SHA2 credentials to &#39;null&#39; but that is OK/expected |
+| Fermi (New) | SHA1/SHA2 | SHA2 | Bestman (New) | SL5 64 bit | SHA1/SHA2 | %Y% | fermicloud100(fermi client) sesha2sl564.fnal.gov(server). SHA1 gums maps my SHA2 credentials to &#39;null&#39; but that is OK/expected |
+| Fermi (New) | SHA1/SHA2 | SHA2 | Bestman (New) | SL6 32 bit | SHA1/SHA2 | %Y% | fermicloud100(fermi client) sesha2sl632.fnal.gov(server). SHA1 gums maps my SHA2 credentials to &#39;null&#39; but that is OK/expected |
+| Fermi (New) | SHA1/SHA2 | SHA2 | Bestman (New) | SL6 64 bit | SHA1/SHA2 | %Y% | fermicloud100(fermi client) sesha2sl664.fnal.gov(server). SHA1 gums maps my SHA2 credentials to &#39;null&#39; but that is OK/expected |
+
+---+++ Risk Trash/Trash/Trash/Assessment of Proxies generated by grid-proxy-init and voms-proxy-init 
+
+On osg 3.x. 
+   * Using grid-proxy-init (version: grid-proxy-utils-5.0) with no parameters,  a sha-1 user cert created a sha-1 proxy and sha-2 user cert created a sha-2 user proxy. grid-proxy-init -old creates the same output. 
+   * voms-proxy-init (version: 2.0.8) with no parameters if you input a sha-2 user cert, it creates a sha-1 proxy.
+On osg 1.2
+   * grid-proxy-init (and voms-proxy-init) creates a md5 proxy. The type of proxy does not change with the input user cert, it always creates the md5. However old osg pacman 1.2.x is supported only until the end of May. 
+
+Furthermore, even with sha1 proxy there is no practical way to exploit the sha-1 collision.
+&lt;nop&gt;

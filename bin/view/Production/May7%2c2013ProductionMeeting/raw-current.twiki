@@ -1,0 +1,130 @@
+---++ Action/Significant Items: 
+
+   * Welcome to Tim Theisen (Release Manager)
+   * Rob, Scott, and Soichi at FNAL May 22nd to May 24th
+   * Scott will have a discussion with Soichi about plans to move to JDK7.
+   * Tim C, Mine, Brian and Rob will work on defining acceptable OSG versions for SHA-2 readiness of middleware components. Afterwards a upgrade campaign can be initiated to make sure sites are at the appropriate versions. 
+
+---++ Attendees:  Tim T, Tim C, Chander, Armen, Scott, Marco, Suchandra, Rob, Brian, Mine
+
+---++ CMS (Tony)
+   * Job statistics for last week
+      * 19,088 jobs/day
+
+   * Transfer statisics for last week
+      * ~284 TB/day
+
+   * Issues
+      * We are upgrading to dCache 2.2. The gratia probes apparently need/use the user DN of the user making a storage request. However, dCache 2.2 no longer logs the user DN for transfers. (https://ticket.grid.iu.edu/goc/14955) 
+
+
+
+---++ Atlas (Armen &amp; Xin)
+
+
+   * General production status.
+      * USATLAS production over the last week was quite stable, at the average level around 20-26K running jobs, mostly simulation type.
+   * Job statistics for last week.      
+      * Gratia report: 1.5M pilot jobs run on USATLAS sites, with CPU/walltime ratio of 89%
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 1.6 M
+   * Data Transfer statistics for last week
+      * Data transfer rate was around ~500TB/day at BNL T1. 
+   * Issues
+      * ATLAS is actively testing the new OSG client tarballs
+         * https://ticket.grid.iu.edu/goc/15061 
+
+
+---++ Grid Operations Center (Scott T.)
+
+---+++ Operations Last Week
+   * [[http://tinyurl.com/ct2mfy6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * 5th Tuesday, no activity.
+   * glidein-int migrated to KVM host.
+   * CERN BDII problem resolved, associated with filesystem problem.
+   * !FermiGrid Ops
+      * Discovered four sites reporting hundreds of millions of cpu-hours per day to Gratia.  (High CPU hours, zero wall time).  Glitch can occur in some versions of PBS to report insanely high wall times.  Fixed Purdue-Carter which is the only one that had APEL/WLCG accounting implications.  Developers thinking about putting sanity check into probes.
+      * Had one site try to report all PBS data since time immemorial after a OSG 3.x update.  Have requested documentation fix.
+      * Kernel reboots as scheduled on May 1 2013.
+   * WMS Glide In Factory
+      * Jeff on vacation through Tuesday May 7.
+      * GlowVO seems like it is experiencing some rundiff issues.  Contacted Dan Bradley about this (still waiting to hear back).
+
+---+++ Operations This Week
+   * ITB Release, note in preparation
+      * banning web-bots on ticket, throwing false alarms
+      * switching to OpenJDK6 on OIM, address timeout proble
+   * Special 24 hour maintenance on OASIS stratum-0
+      * oasis-replica to remain available
+      * Increasing repository size to 6 TB
+      * Long due to need to copy current content.
+      * Roll-back trivial if needed.
+      * Anticipate this will be an annual event.
+   * CAMon - DOEGrids reporting node (unused after PKI transition) will be turned off on 5/14
+   * WMS Glide In Factory
+      * Switching glideins to 64-bit Condor and run the RHEL6 version when possible on UCSD factory.  If all goes well, we will upgrade the GOC factory as well during the next maintenance window.
+
+---++ Campus Infrastructures / HTPC (Dan, Brooklin)
+
+
+---++ Software (Tim)
+   * Release 3.1.17 is out (last week)!
+      * Client tarballs
+      * xrootd-3.3.1, Pegasus, VOMS client (for SHA-2), !GlideinWMS, !GSI-OpenSSH, osg-configure
+
+   * Release 3.1.18: Aim for next Tuesday?
+      * HTCondor 7.8.8 (head of stable series)
+      * Oracle Java 1.6p45
+      * Small updates for client tarballs
+
+   * [[Documentation/Release3.Java6Migration][Java migration from Oracle JDK 6]]
+      * Testing milestone tomorrow: All updated packages into osg-upcoming-testing
+
+   * Other projects
+      * SLURM support (Suchandra)
+      * Hadoop 2.0
+      * HTCondor RPM work
+      * HTCondor-CE
+      * Automated testing system (osg-test)
+
+
+---++ Integration (Suchandra)
+   * SLURM/CE work
+      * After some changes to sandhill cluster, jobs appeared to run correctly
+      * Igor ran some scalability tests and got odd results - after some troubleshooting Brian corrected some things in caching qstat 
+      * Igor will run scalability tests again
+     
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 3.1.17 / 1.2.32
+      *       67 (-7) OSG 3.x (      10 are 3.1.17)
+      *       33 (-1) OSG 1.2.X resources (       1 are 1.2.32)
+
+     &lt;img src=&quot;%ATTACHURLPATH%/Screen_Shot_2013-05-07_at_3.10.43_PM.png&quot; alt=&quot;Screen_Shot_2013-05-07_at_3.10.43_PM.png&quot; width=&#39;540&#39; height=&#39;804&#39; /&gt;    
+
+---++ User Support (Chander, Mats)
+
+---++ Security (Mine)
+   * Vulnerabilities/Incidents
+      * Java rmi vulnerability. Only gratia is effected. Working with Gratia team. The exposure is low since the vulnerable API is used locally and not exposed to network which is how the exploit works. 
+      * gsi-ssh vulnerability is checked with GOC and they are not vulnerable.
+   * Operations
+      * Traceability of end user jobs without certificates. The first draft is completed and circulated to a small team of glideinwms staff members. Our goal is to check for errors and ensure accuracy. Working on v2. Will distribute this to osg and interested sites more broadly. If anyone interested in reading the draft version, I can send a copy. But beware of possible errors and changes. 
+      * SHA-2 testing with DigiCert and a campaign for getting our sites and VOs to upgrade to compatible software. We originally said the testing will start at the beg of April, but we have not yet. Once we do the initial tests, we should think about switching one VO and a few sites in production to do tests in production. 
+      * TAGPMA is going on this week. there are couple developments important for OSG. 1) A new profile for CAs such as CIlogon Basic CA. The profile has less assurance than SLCS or MICS CAs. The assurance level will be between NIST Loa2 and Loa1. 2) Scott Rea is preparing a Registrar Policy document that details Registration Authorities practices and policies. The RAs can get certified by IGTF. As a result, OSG can get its own certification independent of a CA. This means OSG can change CAs later down the road. 
+
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+
+
+
+-- Main.RobQ - 27 Mar 2013
+

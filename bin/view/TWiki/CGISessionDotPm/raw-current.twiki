@@ -1,0 +1,649 @@
+---+ Package ==
+*extends* &lt;tt&gt;CGI::Session::ErrorHandler &lt;/tt&gt;
+
+
+%TOC%
+=head1 NAME
+
+CGI::Session - persistent session data in CGI applications
+
+=head1 SYNOPSIS
+
+    # Object initialization:
+    use CGI::Session;
+    $session = new CGI::Session();
+
+    $CGISESSID = $session-&gt;id();
+
+    # send proper HTTP header with cookies:
+    print $session-&gt;header();
+
+    # storing data in the session
+    $session-&gt;param(&#39;f_name&#39;, &#39;Sherzod&#39;);
+    # or
+    $session-&gt;param(-name=&gt;&#39;l_name&#39;, -value=&gt;&#39;Ruzmetov&#39;);
+
+    # flush the data from memory to the storage driver at least before your
+    # program finishes since auto-flushing can be unreliable
+    $session-&gt;flush();
+
+    # retrieving data
+    my $f_name = $session-&gt;param(&#39;f_name&#39;);
+    # or
+    my $l_name = $session-&gt;param(-name=&gt;&#39;l_name&#39;);
+
+    # clearing a certain session parameter
+    $session-&gt;clear([&quot;l_name&quot;, &quot;f_name&quot;]);
+
+    # expire &#39;_is_logged_in&#39; flag after 10 idle minutes:
+    $session-&gt;expire(&#39;is_logged_in&#39;, &#39;+10m&#39;)
+
+    # expire the session itself after 1 idle hour
+    $session-&gt;expire(&#39;+1h&#39;);
+
+    # delete the session for good
+    $session-&gt;delete();
+
+=head1 DESCRIPTION
+
+CGI-Session is a Perl5 library that provides an easy, reliable and modular session management system across HTTP requests.
+Persistency is a key feature for such applications as shopping carts, login/authentication routines, and application that
+need to carry data across HTTP requests. CGI::Session does that and many more.
+
+=head1 TRANSLATIONS
+
+This document is also available in Japanese.
+
+=over 4
+
+=item o 
+
+Translation based on 4.14: http://digit.que.ne.jp/work/index.cgi?Perldoc/ja
+
+=item o
+
+Translation based on 3.11, including Cookbook and Tutorial: http://perldoc.jp/docs/modules/CGI-Session-3.11/
+
+=back
+
+=head1 TO LEARN MORE
+
+Current manual is optimized to be used as a quick reference. To learn more both about the philosophy and CGI::Session
+programming style, consider the following:
+
+=over 4
+
+=item *
+
+L&lt;CGI::Session::Tutorial|CGI::Session::Tutorial&gt; - extended CGI::Session manual. Also includes library architecture and driver specifications.
+
+=item *
+
+We also provide mailing lists for CGI::Session users. To subscribe to the list or browse the archives visit https://lists.sourceforge.net/lists/listinfo/cgi-session-user
+
+=item *
+
+B&lt;RFC 2965&gt; - &quot;HTTP State Management Mechanism&quot; found at ftp://ftp.isi.edu/in-notes/rfc2965.txt
+
+=item *
+
+L&lt;CGI|CGI&gt; - standard CGI library
+
+=item *
+
+L&lt;Apache::Session|Apache::Session&gt; - another fine alternative to CGI::Session.
+
+=back
+
+=head1 METHODS
+
+Following is the overview of all the available methods accessible via CGI::Session object.
+
+=head2 new()
+
+=head2 new( $sid )
+
+=head2 new( $query )
+
+=head2 new( $dsn, $query||$sid )
+
+=head2 new( $dsn, $query||$sid, \%dsn_args )
+
+Constructor. Returns new session object, or undef on failure. Error message is accessible through L&lt;errstr() - class method|CGI::Session::ErrorHandler/errstr&gt;. If called on an already initialized session will re-initialize the session based on already configured object. This is only useful after a call to L&lt;load()|/&quot;load&quot;&gt;.
+
+Can accept up to three arguments, $dsn - Data Source Name, $query||$sid - query object OR a string representing session id, and finally, \%dsn_args, arguments used by $dsn components.
+
+If called without any arguments, $dsn defaults to I&lt;driver:file;serializer:default;id:md5&gt;, $query||$sid defaults to C&lt;&lt; CGI-&gt;new() &gt;&gt;, and C&lt;\%dsn_args&gt; defaults to I&lt;undef&gt;.
+
+If called with a single argument, it will be treated either as C&lt;$query&gt; object, or C&lt;$sid&gt;, depending on its type. If argument is a string , C&lt;new()&gt; will treat it as session id and will attempt to retrieve the session from data store. If it fails, will create a new session id, which will be accessible through L&lt;id() method|/&quot;id&quot;&gt;. If argument is an object, L&lt;cookie()|CGI/cookie&gt; and L&lt;param()|CGI/param&gt; methods will be called on that object to recover a potential C&lt;$sid&gt; and retrieve it from data store. If it fails, C&lt;new()&gt; will create a new session id, which will be accessible through L&lt;id() method|/&quot;id&quot;&gt;. C&lt;name()&gt; will define the name of the query parameter and/or cookie name to be requested, defaults to I&lt;CGISESSID&gt;.
+
+If called with two arguments first will be treated as $dsn, and second will be treated as $query or $sid or undef, depending on its type. Some examples of this syntax are:
+
+    $s = CGI::Session-&gt;new(&quot;driver:mysql&quot;, undef);
+    $s = CGI::Session-&gt;new(&quot;driver:sqlite&quot;, $sid);
+    $s = CGI::Session-&gt;new(&quot;driver:db_file&quot;, $query);
+    $s = CGI::Session-&gt;new(&quot;serializer:storable;id:incr&quot;, $sid);
+    # etc...
+
+
+Following data source components are supported:
+
+=over 4
+
+=item *
+
+B&lt;driver&gt; - CGI::Session driver. Available drivers are L&lt;file|CGI::Session::Driver::file&gt;, L&lt;db_file|CGI::Session::Driver::db_file&gt;, L&lt;mysql|CGI::Session::Driver::mysql&gt; and L&lt;sqlite|CGI::Session::Driver::sqlite&gt;. Third party drivers are welcome. For driver specs consider L&lt;CGI::Session::Driver|CGI::Session::Driver&gt;
+
+=item *
+
+B&lt;serializer&gt; - serializer to be used to encode the data structure before saving
+in the disk. Available serializers are L&lt;storable|CGI::Session::Serialize::storable&gt;, L&lt;freezethaw|CGI::Session::Serialize::freezethaw&gt; and L&lt;default|CGI::Session::Serialize::default&gt;. Default serializer will use L&lt;Data::Dumper|Data::Dumper&gt;.
+
+=item *
+
+B&lt;id&gt; - ID generator to use when new session is to be created. Available ID generator is L&lt;md5|CGI::Session::ID::md5&gt;
+
+=back
+
+For example, to get CGI::Session store its data using DB_File and serialize data using FreezeThaw:
+
+    $s = new CGI::Session(&quot;driver:DB_File;serializer:FreezeThaw&quot;, undef);
+
+If called with three arguments, first two will be treated as in the previous example, and third argument will be C&lt;\%dsn_args&gt;, which will be passed to C&lt;$dsn&gt; components (namely, driver, serializer and id generators) for initialization purposes. Since all the $dsn components must initialize to some default value, this third argument should not be required for most drivers to operate properly.
+
+undef is acceptable as a valid placeholder to any of the above arguments, which will force default behavior.
+
+=head2 load()
+
+=head2 load($query||$sid)
+
+=head2 load($dsn, $query||$sid)
+
+=head2 load($dsn, $query, \%dsn_args);
+
+Accepts the same arguments as new(), and also returns a new session object, or
+undef on failure.  The difference is, L&lt;new()|/&quot;new&quot;&gt; can create new session if
+it detects expired and non-existing sessions, but C&lt;load()&gt; does not.
+
+C&lt;load()&gt; is useful to detect expired or non-existing sessions without forcing the library to create new sessions. So now you can do something like this:
+
+    $s = CGI::Session-&gt;load() or die CGI::Session-&gt;errstr();
+    if ( $s-&gt;is_expired ) {
+        print $s-&gt;header(),
+            $cgi-&gt;start_html(),
+            $cgi-&gt;p(&quot;Your session timed out! Refresh the screen to start new session!&quot;)
+            $cgi-&gt;end_html();
+        exit(0);
+    }
+
+    if ( $s-&gt;is_empty ) {
+        $s = $s-&gt;new() or die $s-&gt;errstr;
+    }
+
+Notice, all I&lt;expired&gt; sessions are empty, but not all I&lt;empty&gt; sessions are expired!
+
+
+=head2 id()
+
+Returns effective ID for a session. Since effective ID and claimed ID can differ, valid session id should always
+be retrieved using this method.
+
+=head2 param($name)
+
+=head2 param(-name=E&lt;gt&gt;$name)
+
+Used in either of the above syntax returns a session parameter set to $name or undef if it doesn&#39;t exist. If it&#39;s called on a deleted method param() will issue a warning but return value is not defined.
+
+=head2 param($name, $value)
+
+=head2 param(-name=E&lt;gt&gt;$name, -value=E&lt;gt&gt;$value)
+
+Used in either of the above syntax assigns a new value to $name parameter,
+which can later be retrieved with previously introduced param() syntax. C&lt;$value&gt;
+may be a scalar, arrayref or hashref.
+
+Attempts to set parameter names that start with I&lt;_SESSION_&gt; will trigger
+a warning and undef will be returned.
+
+=head2 param_hashref()
+
+B&lt;Deprecated&gt;. Use L&lt;dataref()|/&quot;dataref&quot;&gt; instead.
+
+=head2 dataref()
+
+Returns reference to session&#39;s data table:
+
+    $params = $s-&gt;dataref();
+    $sid = $params-&gt;{_SESSION_ID};
+    $name= $params-&gt;{name};
+    # etc...
+
+Useful for having all session data in a hashref, but too risky to update.
+
+=head2 save_param()
+
+=head2 save_param($query)
+
+=head2 save_param($query, \@list)
+
+Saves query parameters to session object. In other words, it&#39;s the same as calling L&lt;param($name, $value)|/&quot;param&quot;&gt; for every single query parameter returned by C&lt;&lt; $query-&gt;param() &gt;&gt;. The first argument, if present, should be either CGI object or any object which can provide param() method. If it&#39;s undef, defaults to the return value of L&lt;query()|/&quot;query&quot;&gt;, which returns C&lt;&lt; CGI-&gt;new &gt;&gt;. If second argument is present and is a reference to an array, only those query parameters found in the array will be stored in the session. undef is a valid placeholder for any argument to force default behavior.
+
+=head2 load_param()
+
+=head2 load_param($query)
+
+=head2 load_param($query, \@list)
+
+Loads session parameters into a query object. The first argument, if present, should be query object, or any other object which can provide param() method. If second argument is present and is a reference to an array, only parameters found in that array will be loaded to the query object.
+
+=head2 clear()
+
+=head2 clear(&#39;field&#39;)
+
+=head2 clear(\@list)
+
+Clears parameters from the session object.
+
+With no parameters, all fields are cleared. If passed a single parameter or a
+reference to an array, only the named parameters are cleared.
+
+=head2 flush()
+
+Synchronizes data in memory  with the copy serialized by the driver. Call flush() 
+if you need to access the session from outside the current session object. You should
+at least call flush() before your program exits. 
+
+As a last resort, CGI::Session will automatically call flush for you just
+before the program terminates or session object goes out of scope. This automatic
+behavior was the recommended behavior until the 4.x series. Automatic flushing
+has since proven to be unreliable, and in some cases is now required in places
+that worked with 3.x. For further details see:
+
+ http://rt.cpan.org/Ticket/Display.html?id=17541
+ http://rt.cpan.org/Ticket/Display.html?id=17299
+
+=head2 atime()
+
+Read-only method. Returns the last access time of the session in seconds from epoch. This time is used internally while
+auto-expiring sessions and/or session parameters.
+
+=head2 ctime()
+
+Read-only method. Returns the time when the session was first created in seconds from epoch.
+
+=head2 expire()
+
+=head2 expire($time)
+
+=head2 expire($param, $time)
+
+Sets expiration interval relative to L&lt;atime()|/&quot;atime&quot;&gt;.
+
+If used with no arguments, returns the expiration interval if it was ever set. If no expiration was ever set, returns undef. For backwards compatibility, a method named C&lt;etime()&gt; does the same thing.
+
+Second form sets an expiration time. This value is checked when previously stored session is asked to be retrieved, and if its expiration interval has passed, it will be expunged from the disk immediately. Passing 0 cancels expiration.
+
+By using the third syntax you can set the expiration interval for a particular
+session parameter, say I&lt;~logged-in&gt;. This would cause the library call clear()
+on the parameter when its time is up. Note it only makes sense to set this value to 
+something I&lt;earlier&gt; than when the whole session expires.  Passing 0 cancels expiration.
+
+All the time values should be given in the form of seconds. Following keywords are also supported for your convenience:
+
+    +-----------+---------------+
+    |   alias   |   meaning     |
+    +-----------+---------------+
+    |     s     |   Second      |
+    |     m     |   Minute      |
+    |     h     |   Hour        |
+    |     d     |   Day         |
+    |     w     |   Week        |
+    |     M     |   Month       |
+    |     y     |   Year        |
+    +-----------+---------------+
+
+Examples:
+
+    $session-&gt;expire(&quot;2h&quot;);                # expires in two hours
+    $session-&gt;expire(0);                   # cancel expiration
+    $session-&gt;expire(&quot;~logged-in&quot;, &quot;10m&quot;); # expires &#39;~logged-in&#39; parameter after 10 idle minutes
+
+Note: all the expiration times are relative to session&#39;s last access time, not to its creation time. To expire a session immediately, call L&lt;delete()|/&quot;delete&quot;&gt;. To expire a specific session parameter immediately, call L&lt;clear([$name])|/&quot;clear&quot;&gt;.
+
+
+=head2 is_new()
+
+Returns true only for a brand new session.
+
+=head2 is_expired()
+
+Tests whether session initialized using L&lt;load()|/&quot;load&quot;&gt; is to be expired. This method works only on sessions initialized with load():
+
+    $s = CGI::Session-&gt;load() or die CGI::Session-&gt;errstr;
+    if ( $s-&gt;is_expired ) {
+        die &quot;Your session expired. Please refresh&quot;;
+    }
+    if ( $s-&gt;is_empty ) {
+        $s = $s-&gt;new() or die $s-&gt;errstr;
+    }
+
+
+=head2 is_empty()
+
+Returns true for sessions that are empty. It&#39;s preferred way of testing whether requested session was loaded successfully or not:
+
+    $s = CGI::Session-&gt;load($sid);
+    if ( $s-&gt;is_empty ) {
+        $s = $s-&gt;new();
+    }
+
+Actually, the above code is nothing but waste. The same effect could&#39;ve been achieved by saying:
+
+    $s = CGI::Session-&gt;new( $sid );
+
+L&lt;is_empty()|/&quot;is_empty&quot;&gt; is useful only if you wanted to catch requests for expired sessions, and create new session afterwards. See L&lt;is_expired()|/&quot;is_expired&quot;&gt; for an example.
+
+=head2 delete()
+
+Deletes a session from the data store and empties session data from memory, completely, so subsequent read/write requests on the same object will fail. Technically speaking, it will only set object&#39;s status to I&lt;STATUS_DELETED&gt; and will trigger L&lt;flush()|/&quot;flush&quot;&gt;, and flush() will do the actual removal.
+
+=head2 find( \&amp;code )
+
+=head2 find( $dsn, \&amp;code )
+
+=head2 find( $dsn, \&amp;code, \%dsn_args )
+
+Experimental feature. Executes \&amp;code for every session object stored in disk, passing initialized CGI::Session object as the first argument of \&amp;code. Useful for housekeeping purposes, such as for removing expired sessions. Following line, for instance, will remove sessions already expired, but are still in disk:
+
+The following line, for instance, will remove sessions already expired, but which are still on disk:
+
+    CGI::Session-&gt;find( sub {} );
+
+Notice, above \&amp;code didn&#39;t have to do anything, because load(), which is called to initialize sessions inside find(), will automatically remove expired sessions. Following example will remove all the objects that are 10+ days old:
+
+    CGI::Session-&gt;find( \&amp;purge );
+    sub purge {
+        my ($session) = @_;
+        next if $session-&gt;is_empty;    # &lt;-- already expired?!
+        if ( ($session-&gt;ctime + 3600*240) &lt;= time() ) {
+            $session-&gt;delete() or warn &quot;couldn&#39;t remove &quot; . $session-&gt;id . &quot;: &quot; . $session-&gt;errstr;
+        }
+    }
+
+B&lt;Note&gt;: find will not change the modification or access times on the sessions it returns.
+
+Explanation of the 3 parameters to C&lt;find()&gt;:
+
+=over 4
+
+=item $dsn
+
+This is the DSN (Data Source Name) used by CGI::Session to control what type of
+sessions you previously created and what type of sessions you now wish method
+C&lt;find()&gt; to pass to your callback.
+
+The default value is defined above, in the docs for method C&lt;new()&gt;, and is
+&#39;driver:file;serializer:default;id:md5&#39;.
+
+Do not confuse this DSN with the DSN arguments mentioned just below, under \%dsn_args.
+
+=item \&amp;code
+
+This is the callback provided by you (i.e. the caller of method C&lt;find()&gt;)
+which is called by CGI::Session once for each session found by method C&lt;find()&gt;
+which matches the given $dsn.
+
+There is no default value for this coderef.
+
+When your callback is actually called, the only parameter is a session. If you
+want to call a subroutine you already have with more parameters, you can
+achieve this by creating an anonymous subroutine that calls your subroutine
+with the parameters you want. For example:
+
+    CGI::Session-&gt;find($dsn, sub { my_subroutine( @_, &#39;param 1&#39;, &#39;param 2&#39; ) } );
+    CGI::Session-&gt;find($dsn, sub { $coderef-&gt;( @_, $extra_arg ) } );
+    
+Or if you wish, you can define a sub generator as such:
+
+    sub coderef_with_args {
+        my ( $coderef, @params ) = @_;
+        return sub { $coderef-&gt;( @_, @params ) };
+    }
+    
+    CGI::Session-&gt;find($dsn, coderef_with_args( $coderef, &#39;param 1&#39;, &#39;param 2&#39; ) );
+
+=item \%dsn_args
+
+If your $dsn uses file-based storage, then this hashref might contain keys such as:
+
+    {
+        Directory =&gt; Value 1,
+        NoFlock   =&gt; Value 2,
+        UMask     =&gt; Value 3
+    }
+
+If your $dsn uses db-based storage, then this hashref contains (up to) 3 keys, and looks like:
+
+    {
+        DataSource =&gt; Value 1,
+        User       =&gt; Value 2,
+        Password   =&gt; Value 3
+    }
+
+These 3 form the DSN, username and password used by DBI to control access to your database server,
+and hence are only relevant when using db-based sessions.
+
+The default value of this hashref is undef.
+
+=back
+
+B&lt;Note:&gt; find() is meant to be convenient, not necessarily efficient. It&#39;s best suited in cron scripts.
+
+=head1 MISCELLANEOUS METHODS
+
+=head2 remote_addr()
+
+Returns the remote address of the user who created the session for the first time. Returns undef if variable REMOTE_ADDR wasn&#39;t present in the environment when the session was created.
+
+
+=head2 errstr()
+
+Class method. Returns last error message from the library.
+
+=head2 dump()
+
+Returns a dump of the session object. Useful for debugging purposes only.
+
+=head2 header()
+
+Replacement for L&lt;CGI.pm|CGI&gt;&#39;s header() method. Without this method, you usually need to create a CGI::Cookie object and send it as part of the HTTP header:
+
+    $cookie = CGI::Cookie-&gt;new(-name=&gt;$session-&gt;name, -value=&gt;$session-&gt;id);
+    print $cgi-&gt;header(-cookie=&gt;$cookie);
+
+You can minimize the above into:
+
+    print $session-&gt;header();
+
+It will retrieve the name of the session cookie from C&lt;$session-&gt;name()&gt; which defaults to C&lt;$CGI::Session::NAME&gt;. If you want to use a different name for your session cookie, do something like following before creating session object:
+
+    CGI::Session-&gt;name(&quot;MY_SID&quot;);
+    $session = new CGI::Session(undef, $cgi, \%attrs);
+
+Now, $session-&gt;header() uses &quot;MY_SID&quot; as a name for the session cookie.
+
+=head2 query()
+
+Returns query object associated with current session object. Default query object class is L&lt;CGI.pm|CGI&gt;.
+
+=head2 DEPRECATED METHODS
+
+These methods exist solely for for compatibility with CGI::Session 3.x.
+
+=head3 close()
+
+Closes the session. Using flush() is recommended instead, since that&#39;s exactly what a call
+to close() does now.
+
+=head1 DISTRIBUTION
+
+CGI::Session consists of several components such as L&lt;drivers|&quot;DRIVERS&quot;&gt;, L&lt;serializers|&quot;SERIALIZERS&quot;&gt; and L&lt;id generators|&quot;ID GENERATORS&quot;&gt;. This section lists what is available.
+
+=head2 DRIVERS
+
+Following drivers are included in the standard distribution:
+
+=over 4
+
+=item *
+
+L&lt;file|CGI::Session::Driver::file&gt; - default driver for storing session data in plain files. Full name: B&lt;CGI::Session::Driver::file&gt;
+
+=item *
+
+L&lt;db_file|CGI::Session::Driver::db_file&gt; - for storing session data in BerkelyDB. Requires: L&lt;DB_File&gt;.
+Full name: B&lt;CGI::Session::Driver::db_file&gt;
+
+=item *
+
+L&lt;mysql|CGI::Session::Driver::mysql&gt; - for storing session data in MySQL tables. Requires L&lt;DBI|DBI&gt; and L&lt;DBD::mysql|DBD::mysql&gt;.
+Full name: B&lt;CGI::Session::Driver::mysql&gt;
+
+=item *
+
+L&lt;sqlite|CGI::Session::Driver::sqlite&gt; - for storing session data in SQLite. Requires L&lt;DBI|DBI&gt; and L&lt;DBD::SQLite|DBD::SQLite&gt;.
+Full name: B&lt;CGI::Session::Driver::sqlite&gt;
+
+=back
+
+=head2 SERIALIZERS
+
+=over 4
+
+=item *
+
+L&lt;default|CGI::Session::Serialize::default&gt; - default data serializer. Uses standard L&lt;Data::Dumper|Data::Dumper&gt;.
+Full name: B&lt;CGI::Session::Serialize::default&gt;.
+
+=item *
+
+L&lt;storable|CGI::Session::Serialize::storable&gt; - serializes data using L&lt;Storable&gt;. Requires L&lt;Storable&gt;.
+Full name: B&lt;CGI::Session::Serialize::storable&gt;.
+
+=item *
+
+L&lt;freezethaw|CGI::Session::Serialize::freezethaw&gt; - serializes data using L&lt;FreezeThaw&gt;. Requires L&lt;FreezeThaw&gt;.
+Full name: B&lt;CGI::Session::Serialize::freezethaw&gt;
+
+=item *
+
+L&lt;yaml|CGI::Session::Serialize::yaml&gt; - serializes data using YAML. Requires L&lt;YAML&gt; or L&lt;YAML::Syck&gt;.
+Full name: B&lt;CGI::Session::Serialize::yaml&gt;
+
+=item *
+
+L&lt;json|CGI::Session::Serialize::json&gt; - serializes data using JSON. Requires L&lt;JSON::Syck&gt;.
+Full name: B&lt;CGI::Session::Serialize::json&gt;
+
+=back
+
+=head2 ID GENERATORS
+
+Following ID generators are available:
+
+=over 4
+
+=item *
+
+L&lt;md5|CGI::Session::ID::md5&gt; - generates 32 character long hexadecimal string. Requires L&lt;Digest::MD5|Digest::MD5&gt;.
+Full name: B&lt;CGI::Session::ID::md5&gt;.
+
+=item *
+
+L&lt;incr|CGI::Session::ID::incr&gt; - generates incremental session ids.
+
+=item *
+
+L&lt;static|CGI::Session::ID::static&gt; - generates static session ids. B&lt;CGI::Session::ID::static&gt;
+
+=back
+
+
+=head1 CREDITS
+
+CGI::Session evolved to what it is today with the help of following developers. The list doesn&#39;t follow any strict order, but somewhat chronological. Specifics can be found in F&lt;Changes&gt; file
+
+=over 4
+
+=item Andy Lester 
+
+=item Brian King E&lt;lt&gt;mrbbking@mac.comE&lt;gt&gt;
+
+=item Olivier Dragon E&lt;lt&gt;dragon@shadnet.shad.caE&lt;gt&gt;
+
+=item Adam Jacob E&lt;lt&gt;adam@sysadminsith.orgE&lt;gt&gt;
+
+=item Igor Plisco E&lt;lt&gt;igor@plisco.ruE&lt;gt&gt;
+
+=item Mark Stosberg 
+
+=item Matt LeBlanc E&lt;lt&gt;mleblanc@cpan.orgE&lt;gt&gt;
+
+=item Shawn Sorichetti
+
+=back
+
+=head1 COPYRIGHT
+
+Copyright (C) 2001-2005 Sherzod Ruzmetov E&lt;lt&gt;sherzodr@cpan.orgE&lt;gt&gt;. All rights reserved.
+This library is free software. You can modify and or distribute it under the same terms as Perl itself.
+
+=head1 PUBLIC CODE REPOSITORY
+
+You can see what the developers have been up to since the last release by
+checking out the code repository. You can browse the Subversion repository from here:
+
+ http://svn.cromedome.net/
+
+Or check it directly with C&lt;svn&gt; from here:
+
+ svn://svn.cromedome.net/CGI-Session
+
+=head1 SUPPORT
+
+If you need help using CGI::Session consider the mailing list. You can ask the list by sending your questions to
+cgi-session-user@lists.sourceforge.net .
+
+You can subscribe to the mailing list at https://lists.sourceforge.net/lists/listinfo/cgi-session-user .
+
+Bug reports can be submitted at http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CGI-Session
+
+=head1 AUTHOR
+
+Sherzod Ruzmetov E&lt;lt&gt;sherzodr@cpan.orgE&lt;gt&gt;, http://author.handalak.com/
+
+Mark Stosberg became a co-maintainer during the development of 4.0. C&lt;markstos@cpan.org&gt;.
+
+=head1 SEE ALSO
+
+=over 4
+
+=item *
+
+L&lt;CGI::Session::Tutorial|CGI::Session::Tutorial&gt; - extended CGI::Session manual
+
+=item *
+
+B&lt;RFC 2965&gt; - &quot;HTTP State Management Mechanism&quot; found at ftp://ftp.isi.edu/in-notes/rfc2965.txt
+
+=item *
+
+L&lt;CGI|CGI&gt; - standard CGI library
+
+=item *
+
+L&lt;Apache::Session|Apache::Session&gt; - another fine alternative to CGI::Session
+
+=back
+
+

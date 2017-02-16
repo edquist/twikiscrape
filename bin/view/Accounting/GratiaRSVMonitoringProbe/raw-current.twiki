@@ -1,0 +1,38 @@
+---+!! Gratia RSV Monitoring Probe
+
+This is a probe written for RSV that examines the Gratia probes on the system and ascertains whether they are reporting properly and can provide some diagnostics if problems are found.
+
+---++ Probe Operation
+
+Under normal circumstances this probe is packaged with the RSV system and is installed on a CE along with all the other RSV probes. It will be executed regularly and its results posted along with those of other probes. It may also be invoked manually and can give better diagnostics if run as root.
+
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;2&quot; cellspacing=&quot;5&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot; headeralign=&quot;center, center, center, center&quot; dataalign=&quot;left, center, left, center&quot;}% 
+|  *Test Description*  |  *Probe*  |  *Possible results*  |  *Root required?* |
+| Check crontab entry. | ALL | CRITICAL&lt;br/&gt;UNKNOWN (if non-root) | Y |
+| Check =Enabled= attribute in =ProbeConfig=. | ALL | CRITICAL | N |
+| Check for generic =MeterName= in =ProbeConfig=. | ALL | CRITICAL | N |
+| Check permissions on =DataFolder= (should be =04177= for batch probes) | PBS, LSF, Condor, SGE | CRITICAL | N |
+| Check for missing or multiple `:&#39; in =MeterName=. | ALL | WARNING | N |
+| Check for generic =SiteName= in =ProbeConfig=. | ALL | WARNING | N |
+| Verify condor_config has =PER_JOB_HISTORY_DIR= set correctly. | Condor | WARNING&lt;br/&gt;UNKNOWN (can&#39;t run condor_config_val) | N |
+| Can urCollector config module be loaded? | PBS, LSF | CRITICAL | N |
+| Can urCollector configuration file be loaded? | PBS, LSF | CRITICAL | N |
+| Check LRMS type setting in =urCollector.conf= is recognized. | PBS, LSF | CRITICAL | N |
+| Check LRMS type stetting matches probe type. | PBS, LSF | CRITICAL | N |
+| Check PBS log directory exists. | PBS | CRITICAL&lt;br/&gt;WARNING (if no entries for current day) | Y |
+| Check LSF log directory and =lsb.events= file exists. | LSF | CRITICAL&lt;br/&gt;WARNING (if no lsb.events file) | Y |
+| Check files waiting to be sent from =&amp;lt;workdir&amp;gt;/urCollector=. | PBS, LSF | WARNING (if &gt; 2000 files) | Y |
+| Check files waiting to be re-sent from =&amp;lt;workdir&amp;gt;/gratiafiles= after communication problem with collector. | ALL | WARNING (if &gt; 1000 records &lt;br/&gt;including those archived in files; or if at least &lt;br/&gt;1 file is &gt;7d old) | N |
+| Check files in top level =&amp;lt;datadir&amp;gt;=. | ALL | WARNING (if &gt; 10000 files) | N |
+| Check probe has contacted configured collector. | ALL | CRITICAL (never seen, not seen for &gt;24h)&lt;br/&gt;UNKNOWN (can&#39;t contact collector)&lt;br/&gt;WARNING (not seen for &gt;1h) | N |
+| Check collector&#39;s probe -&gt; site name translation matches local configuration. | ALL | WARNING | N |
+
+---+++ Manual invocation
+
+To invoke manually:
+
+&lt;pre&gt;$VDT_LOCATION/osg-rsv/bin/probes/worker-scripts/gratia-config-probe-helper -p &amp;lt;probe&amp;gt; -X&lt;/pre&gt;
+
+The =-X= option produces human-readable output instead of the default XML. Invoke as root for more diagnostics.
+
+-- Main.ChrisGreen - 14 Dec 2009

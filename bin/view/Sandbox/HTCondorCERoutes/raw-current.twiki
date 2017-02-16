@@ -1,0 +1,584 @@
+---+!! Writing Routes for HTCondor CE
+
+%TOC{depth=&quot;4&quot;}%
+
+%STARTSECTION{&quot;RoutePitfalls&quot;}%
+---# Quirks and Pitfalls
+
+   * If a value is set in JOB_ROUTER_DEFAULTS with =eval_set_&amp;lt;variable&amp;gt;= and you want to override it, you will need to use =eval_set_&amp;lt;variable&amp;gt;= in the JOB_ROUTER_ENTRIES.
+   * Make sure to run =condor_ce_reconfig= after changing your routes, otherwise they will not take effect.
+   * Before the last square bracket, make sure all lines end in a line continuation character (backslash). You can inspect the syntax of your routes with =condor_ce_config_val JOB_ROUTER_ENTRIES= to see if HTCondor CE has ingested them properly.
+   * Do *not* set the =JOB_ROUTER_DEFAULTS= configuration variable. This will cause the CE to stop functioning.
+   * Do *not* set the job environment through the !JobRouter. Instead, add any changes to the /etc/osg/config.d/ [Local Settings] section and run osg-configure, as documented [[https://twiki.grid.iu.edu/bin/view/ReleaseDocumentation/ConfigurationFileLocalSettings][here]].
+   * HTCondor batch system only: Local universe jobs are excluded from any routing.
+%ENDSECTION%
+
+---# Generic Routes
+
+---## Writing Multiple Routes
+
+To make the most out of routes, you&#39;ll likely want to write more than one of them for various conditions your site may support. Each route is enclosed by square brackets and unless they&#39;re the last closing bracket, they need to be followed by the line continuation character. The following routes takes incoming jobs that have a =queue= attribute set to =analy= and routes them to the site&#39;s HTCondor batch system. Any other jobs will be sent to that site&#39;s PBS batch system.
+
+%NOTE% The !JobRouter matches jobs to routes in a round-robin fashion. This means that if a job can match to multiple routes, it can be routed by any of them! So when writing job routes, make sure that they are exclusive to each other and that your jobs can only match to a single route.
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;[ \&lt;/b&gt;&lt;/span&gt;
+     TargetUniverse = 5; \
+     name = &quot;Route jobs to HTCondor&quot;; \
+     Requirements = (TARGET.queue =?= &quot;analy&quot;); \
+&lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;] \&lt;/b&gt;&lt;/span&gt;
+&lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;[ \&lt;/b&gt;&lt;/span&gt;
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Route jobs to PBS&quot;; \
+     Requirements = (TARGET.queue =!= &quot;analy&quot;); \
+&lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;]&lt;/b&gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+---## Writing Comments
+
+To write comments you can use C-style comments, text enclosed by =/* */=. If the comment is at the end of a line, it still has to be followed by the line continuation character.
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     TargetUniverse = 5; \
+     name = &quot;C-style comments&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;/* This is a comment */ \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+For =condor_ce_version= 8.2.x or greater, you can also use =#= to comment out single lines:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     TargetUniverse = 5; \
+     name = &quot;Hash comments&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;# BrokenAttribute = &quot;commented out&quot;; \&lt;/b&gt;&lt;/span&gt; 
+] 
+&lt;/pre&gt;
+
+---## Setting Attributes for All Routes
+
+To set an attribute that will be applied to all routes, you will need to =set_= that attribute for each route. 
+
+%NOTE% Do *not* try to do this by setting the =JOB_ROUTER_DEFAULTS= configuration variable, as this will cause the CE to stop functioning. The following routes set the =Periodic_Hold= attribute for both routes:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     TargetUniverse = 5; \
+     name = &quot;Route jobs to HTCondor&quot;; \
+     Requirements = (TARGET.queue =?= &quot;analy&quot;); \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;/* Puts the routed job on hold if the job&#39;s been idle and has been started at least once or if the job has tried to start more than once */ \ &lt;/b&gt;&lt;/span&gt;
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;set_Periodic_Hold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \&lt;/b&gt;&lt;/span&gt;
+] \
+[ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Route jobs to PBS&quot;; \
+     Requirements = (TARGET.queue =!= &quot;analy&quot;); \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;/* Puts the routed job on hold if the job&#39;s been idle and has been started at least once or if the job has tried to start more than once */ \ &lt;/b&gt;&lt;/span&gt;
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;set_Periodic_Hold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+#AppendDefaults
+In the November release of HTCondor-CE (tentatively 1.7), there will be an easier way to set new defaults by appending to =JOB_ROUTER_DEFAULTS=. You will want to edit =/etc/condor-ce/config.d/01-ce-router.conf= and append attributes to the =JOB_ROUTER_DEFAULTS= line. The following example sets the =Periodic_Hold= attribute for all routes:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_DEFAULTS = $(JOB_ROUTER_DEFAULTS_GENERATED) &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;\&lt;/b&gt;&lt;/span&gt;
+                    &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;/* Put jobs on hold if they&#39;re idle and have tried to start at least once or if jobs have tried to start more than once */ \&lt;/b&gt;&lt;/span&gt;
+                    &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;set_PeriodicHold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \&lt;/b&gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+---## Filtering Jobs Based on&amp;hellip;
+
+To filter jobs, use the =Requirements= attribute. Jobs will evaluate against the !ClassAd expression set in the =Requirements= and if the expression evaluates to =TRUE=, the route will match. More information on the syntax of !ClassAd&#39;s can be found in the [[http://research.cs.wisc.edu/htcondor/manual/v8.0/4_1HTCondor_s_ClassAd.html][Condor manual]]. 
+
+#GlideIn
+---### Glidein queue
+
+To filter jobs based on their glidein queue attribute, you will want to look at the incoming job&#39;s =queue= attribute. The following entry routes jobs to the PBS queue if the incoming job (specified by =TARGET=) is an =analy= (Analysis) glidein:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     TargetUniverse = 5; \
+     name = &quot;Filtering by queue&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;Requirements = (TARGET.queue =?= &quot;analy&quot;); \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+---### Job submitter
+
+To filter jobs based on who submitted it, you will want to look at the incoming job&#39;s =Owner= attribute. The following entry routes jobs to the HTCondor batch system iff the submitter is =usatlas2=:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     TargetUniverse = 5; \
+     name = &quot;Filtering by job submitter&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;Requirements = (TARGET.Owner =?= &quot;usatlas2&quot;); \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+Alternatively, you can match based on regular expression. The following entry routes jobs to the PBS batch system iff the submitter&#39;s name begins with =usatlas=:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Filtering by job submitter (regular expression)&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;Requirements = regexp(&quot;^usatlas&quot;, TARGET.Owner); \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+---### VOMS attribute
+
+To filter jobs based on the subject of the job&#39;s proxy, you will want to look at the incoming job&#39;s =x509UserProxyFirstFQAN= attribute. The following entry routes jobs to the PBS batch system if the proxy subject contains =/cms/Role=Pilot=:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Filtering by VOMS attribute (regex)&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;Requirements = regexp(&quot;\/cms\/Role\=pilot&quot;, x509UserProxyFirstFQAN); \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+---## Setting a Default&amp;hellip;
+
+---### Maximum memory
+
+To set a default maximum memory for routed jobs, set the attribute =default_maxMemory=:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Request memory&quot;; \
+     /* Set the requested memory to 1 GB */ \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;default_maxMemory = 1000; \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+---### Number of cores to request
+
+To set a default number of cores for routed jobs, set the attribute =default_xcount=:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Request CPU&quot;; \
+     /* Set the requested cores to 8 */ \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;default_xcount = 8; \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+---### Batch queue for jobs to be sent to
+
+To set a default queue for routed jobs, set the attribute =default_queue=:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Setting batch system queues&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;default_queue = &quot;osg_queue&quot;; \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+---### Maximum Walltime
+
+To set a default queue for routed jobs, set the attribute =default_maxWallTime=:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Setting WallTime&quot;; \
+     /* Set the max walltime to 1 hr */ \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;defeault_maxWallTime = 60; \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+---## Editing Attributes&amp;hellip;
+
+The following functions are operations that affect job attributes and are evaluated in the following order:
+
+   1. copy_*
+   1. delete_*
+   1. set_*
+   1. eval_set_*
+
+To get the !JobRouter ad, the !JobRouter combines each route from =JOB_ROUTER_ENTRIES= with the =JOB_ROUTER_DEFAULTS= and then performs the aforementioned operations on the the !JobRouter ad of each route. So if an attribute is set using =eval_set_= in the =JOB_ROUTER_DEFAULTS=, you&#39;ll be unable to delete it in your routes since =delete_= is evaluated before =eval_set_= and the attribute will get set after it gets deleted. To get around this, we can take advantage of the fact that operations defined in =JOB_ROUTER_DEFAULTS= get overriden by the same operation in =JOB_ROUTER_ENTRIES=. So if we want to =delete_foo= but =foo= is defined with =eval_set_foo= in the =JOB_ROUTER_DEFAULTS=, we can &#39;delete&#39; it with =eval_set_foo = &quot;&quot;=.
+
+More documentation can be found in the [[http://research.cs.wisc.edu/htcondor/manual/v8.0/5_4HTCondor_Job.html][Condor manual]].
+
+---### Copying attributes
+
+To copy the value of an attribute of the incoming job to an attribute of the routed job, use =copy_=. The following route copies the =environment= attribute of the incoming job and sets the attribute =Original_Environment= on the routed job to the same value:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Copying attributes&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;copy_environment = &quot;Original_Environment&quot;; \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+---### Removing attributes
+
+To remove an attribute of the incoming job from the routed job, use =delete_=. The following route removes the =environment= attribute from the routed job:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Copying attributes&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;delete_environment = True; \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+---### Setting attributes
+
+To set an attribute on the routed job, use =set_=. The following route sets the Job&#39;s =Rank= attribute to 5:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Setting an attribute&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;set_Rank = 5; \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+If you omit =set_=, the attribute will be available for !ClassAd evaluation but the routed job will not have the attribute. For example, if you have =foo = &quot;bar&quot;; eval_set_baz = $(foo);= in your route, the routed job will contain =baz = &quot;bar&quot;= but will be missing the =foo= attribute.
+
+---### Setting attributes with !ClassAd expressions
+
+To set an attribute to a !ClassAd expression that you want evaluated, use =set_eval=. The following route sets the =Experiment= attribute to =atlas.osguser= if the Owner of the incoming job is =osguser=:
+
+%NOTE% If a value is set in JOB_ROUTER_DEFAULTS with =eval_set_&amp;lt;variable&amp;gt;= and you want to override it, you will need to use =eval_set_&amp;lt;variable&amp;gt;= in the JOB_ROUTER_ENTRIES.
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Setting an attribute with a !ClassAd expression&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;eval_set_Experiment = strcat(&quot;atlas.&quot;, Owner); \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+%STARTSECTION{&quot;DebugRoutes&quot;}%
+---## Debugging Routes
+
+To help debug expressions in your routes, you can use the =debug()= function. First, set the debug mode for the !JobRouter by editing a file in =/etc/condor-ce/config.d/= to read
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_DEBUG = D_FULLDEBUG
+&lt;/pre&gt;
+
+Then wrap the problematic attribute in =debug()=:
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Debugging a difficult !ClassAd expression&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;eval_set_Experiment = debug(strcat(&quot;atlas&quot;, Name)); \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+%ENDSECTION%
+
+---# HTCondor Batch System Specific Routes
+
+---## Setting Periodic Hold, Release or Remove
+
+To release, remove or put a job on hold if it meets certain criteria, you will want to use the =PERIODIC_*= family of attributes. By default, periodic expressions are evaluated once every 300 seconds but this can be changed by setting PERIODIC_EXPR_INTERVAL in your CE&#39;s configuration. 
+
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = [ \
+     TargetUniverse = 5; \
+     name = &quot;Setting periodic statements&quot;; \
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;/* Puts the routed job on hold if the job&#39;s been idle and has been started at least once or if the job has tried to start more than once */ \&lt;/b&gt;&lt;/span&gt;
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;set_Periodic_Hold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \&lt;/b&gt;&lt;/span&gt;
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;/* Remove routed jobs if their walltime is longer than 3 days and 5 minutes */ \&lt;/b&gt;&lt;/span&gt;
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;set_Periodic_Remove = ( RemoteWallClockTime &gt; (3*24*60*60 + 5*60); \&lt;/b&gt;&lt;/span&gt;
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;/* Release routed jobs if the condor_starter couldn&#39;t start the executable and &#39;VMGAHP_ERR_INTERNAL&#39; is in the HoldReason */ \&lt;/b&gt;&lt;/span&gt;
+     &lt;span style=&quot;background-color: #FFCCFF;&quot;&gt;&lt;b&gt;set_Periodic_Release = HoldReasonCode == 6 &amp;&amp; regexp(&quot;VMGAHP_ERR_INTERNAL&quot;, HoldReason); \&lt;/b&gt;&lt;/span&gt;
+] 
+&lt;/pre&gt;
+
+---# Example Configurations
+
+---## AGLT2&#39;s Job Routes
+
+Atlas AGLT2 is using an HTCondor batch system. Here are some things to note about their routes.
+
+   * Setting various HTCondor-specific attributes like =Rank=, =AccountingGroup=, =JobPrio= and =Periodic_Remove= (see the [[http://research.cs.wisc.edu/htcondor/manual/v8.0/12_Appendix_A.html][Condor manual]] for more). Some of these are site-specific like =LastandFrac=, =IdleMP8Pressure=, =localQue=, =IsAnalyJob= and =JobMemoryLimit=.
+ Some of these are site-specific like =IdleMP8Pressure=, =LastandFrac= and =localQue=.
+   * Many of the attributes are the same and can be [[#AppendDefaults][appended]] to the =JOB_ROUTER_DEFAULTS= with the November release of HTCondor-CE (tentatively 1.7).
+   * There is a difference between =Requirements= and =set_requirements=. The =Requirements= attribute matches jobs to specific routes while the =set_requirements= sets the =Requirements= attribute on the _routed_ job, which confines which machines that the routed job can land on.
+
+Source: https://www.aglt2.org/wiki/bin/view/AGLT2/CondorCE#The_JobRouter_configuration_file_content
+
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Click to expand full job route&amp;hellip;&quot;}%
+&lt;pre class=&quot;file&quot;&gt;
+JOB_ROUTER_ENTRIES = \
+/* Still to do on all routes, get job requirements and add them here */ \
+/* ***** Route no 1 ***** */ \
+/* ***** Analysis queue ***** */ \
+  [ \
+    GridResource = &quot;condor localhost localhost&quot;; \
+    eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot; $(JOB_ROUTER_SCHEDD2_POOL)&quot;); \
+    Requirements = target.queue==&quot;analy&quot;; \
+    Name = &quot;Analysis Queue&quot;; \
+    TargetUniverse = 5; \
+    eval_set_IdleMP8Pressure = $(IdleMP8Pressure); \
+    eval_set_LastAndFrac = $(LastAndFrac); \
+    set_requirements = ( ( TARGET.TotalDisk =?= undefined ) || ( TARGET.TotalDisk &gt;= 21000000 ) ) &amp;&amp; ( TARGET.Arch == &quot;X86_64&quot; ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ) &amp;&amp; (IfThenElse((Owner == &quot;atlasconnect&quot; || Owner == &quot;muoncal&quot;),IfThenElse(IdleMP8Pressure,(TARGET.PARTITIONED =!= TRUE),True),IfThenElse(LastAndFrac,(TARGET.PARTITIONED =!= TRUE),True))); \
+    eval_set_AccountingGroup = strcat(&quot;group_gatekpr.prod.analy.&quot;,Owner); \
+    set_localQue = &quot;Analysis&quot;; \
+    set_IsAnalyJob = True; \
+    set_JobPrio = 5; \
+    set_Rank = (SlotID + (64-TARGET.DETECTED_CORES))*1.0; \
+    set_JobMemoryLimit = 4194000; \
+    set_Periodic_Remove = ( ( RemoteWallClockTime &gt; (3*24*60*60 + 5*60) ) || (ImageSize &gt; JobMemoryLimit) ); \
+  ] \
+/* ***** Route no 2 ***** */ \
+/* ***** splitterNT queue ***** */ \
+  [ \
+    GridResource = &quot;condor localhost localhost&quot;; \
+    eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot; $(JOB_ROUTER_SCHEDD2_POOL)&quot;); \
+    Requirements = target.queue == &quot;splitterNT&quot;; \
+    Name = &quot;Splitter ntuple queue&quot;; \
+    TargetUniverse = 5; \
+    set_requirements = ( ( TARGET.TotalDisk =?= undefined ) || ( TARGET.TotalDisk &gt;= 21000000 ) ) &amp;&amp; ( TARGET.Arch == &quot;X86_64&quot; ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+    eval_set_AccountingGroup = &quot;group_calibrate.muoncal&quot;; \
+    set_localQue = &quot;Splitter&quot;; \
+    set_IsAnalyJob = False; \
+    set_JobPrio = 10; \
+    set_Rank = (SlotID + (64-TARGET.DETECTED_CORES))*1.0; \
+    set_JobMemoryLimit = 4194000; \
+    set_Periodic_Remove = ( ( RemoteWallClockTime &gt; (3*24*60*60 + 5*60) ) || (ImageSize &gt; JobMemoryLimit) ); \
+  ] \
+/* ***** Route no 3 ***** */ \
+/* ***** splitter queue ***** */ \
+  [ \
+    GridResource = &quot;condor localhost localhost&quot;; \
+    eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot; $(JOB_ROUTER_SCHEDD2_POOL)&quot;); \
+    Requirements = target.queue == &quot;splitter&quot;; \
+    Name = &quot;Splitter queue&quot;; \
+    TargetUniverse = 5; \
+    set_requirements = ( ( TARGET.TotalDisk =?= undefined ) || ( TARGET.TotalDisk &gt;= 21000000 ) ) &amp;&amp; ( TARGET.Arch == &quot;X86_64&quot; ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+    eval_set_AccountingGroup = &quot;group_calibrate.muoncal&quot;; \
+    set_localQue = &quot;Splitter&quot;; \
+    set_IsAnalyJob = False; \
+    set_JobPrio = 15; \
+    set_Rank = (SlotID + (64-TARGET.DETECTED_CORES))*1.0; \
+    set_JobMemoryLimit = 4194000; \
+    set_Periodic_Remove = ( ( RemoteWallClockTime &gt; (3*24*60*60 + 5*60) ) || (ImageSize &gt; JobMemoryLimit) ); \
+  ] \
+/* ***** Route no 4 ***** */ \
+/* ***** xrootd queue ***** */ \
+  [ \
+    GridResource = &quot;condor localhost localhost&quot;; \
+    eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot; $(JOB_ROUTER_SCHEDD2_POOL)&quot;); \
+    Requirements = target.queue == &quot;xrootd&quot;; \
+    Name = &quot;Xrootd queue&quot;; \
+    TargetUniverse = 5; \
+    set_requirements = ( ( TARGET.TotalDisk =?= undefined ) || ( TARGET.TotalDisk &gt;= 21000000 ) ) &amp;&amp; ( TARGET.Arch == &quot;X86_64&quot; ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+    eval_set_AccountingGroup = strcat(&quot;group_gatekpr.prod.analy.&quot;,Owner); \
+    set_localQue = &quot;Analysis&quot;; \
+    set_IsAnalyJob = True; \
+    set_JobPrio = 35; \
+    set_Rank = (SlotID + (64-TARGET.DETECTED_CORES))*1.0; \
+    set_JobMemoryLimit = 4194000; \
+    set_Periodic_Remove = ( ( RemoteWallClockTime &gt; (3*24*60*60 + 5*60) ) || (ImageSize &gt; JobMemoryLimit) ); \
+  ] \
+/* ***** Route no 5 ***** */ \
+/* ***** Tier3Test queue ***** */ \
+  [ \
+    GridResource = &quot;condor localhost localhost&quot;; \
+    eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot; $(JOB_ROUTER_SCHEDD2_POOL)&quot;); \
+    Requirements = target.queue == &quot;Tier3Test&quot;; \
+    Name = &quot;Tier3 Test Queue&quot;; \
+    TargetUniverse = 5; \
+    set_requirements = ( ( TARGET.TotalDisk =?= undefined ) || ( TARGET.TotalDisk &gt;= 21000000 ) ) &amp;&amp; ( TARGET.Arch == &quot;X86_64&quot; ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ) &amp;&amp; ( IS_TIER3_TEST_QUEUE =?= True ); \
+    eval_set_AccountingGroup = strcat(&quot;group_gatekpr.prod.analy.&quot;,Owner); \
+    set_localQue = &quot;Tier3Test&quot;; \
+    set_IsTier3TestJob = True; \
+    set_IsAnalyJob = True; \
+    set_JobPrio = 20; \
+    set_Rank = (SlotID + (64-TARGET.DETECTED_CORES))*1.0; \
+    set_JobMemoryLimit = 4194000; \
+    set_Periodic_Remove = ( ( RemoteWallClockTime &gt; (3*24*60*60 + 5*60) ) || (ImageSize &gt; JobMemoryLimit) ); \
+  ] \
+/* ***** Route no 6 ***** */ \
+/* ***** mp8 queue ***** */ \
+  [ \
+    GridResource = &quot;condor localhost localhost&quot;; \
+    eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot; $(JOB_ROUTER_SCHEDD2_POOL)&quot;); \
+    Requirements = target.queue==&quot;mp8&quot;; \
+    Name = &quot;MCORE Queue&quot;; \
+    TargetUniverse = 5; \
+    set_requirements = ( ( TARGET.TotalDisk =?= undefined ) || ( TARGET.TotalDisk &gt;= 21000000 ) ) &amp;&amp; ( TARGET.Arch == &quot;X86_64&quot; ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ) &amp;&amp; (( TARGET.Cpus == 8 &amp;&amp; TARGET.CPU_TYPE =?= &quot;mp8&quot; ) || TARGET.PARTITIONED =?= True ); \
+    eval_set_AccountingGroup = strcat(&quot;group_gatekpr.prod.mcore.&quot;,Owner); \
+    set_localQue = &quot;MP8&quot;; \
+    set_IsAnalyJob = False; \
+    set_JobPrio = 25; \
+    set_Rank = 0.0; \
+    eval_set_RequestCpus = 8; \
+    set_JobMemoryLimit = 33552000; \
+    set_Slot_Type = &quot;mp8&quot;; \
+    set_Periodic_Remove = ( ( RemoteWallClockTime &gt; (3*24*60*60 + 5*60) ) || (ImageSize &gt; JobMemoryLimit) ); \
+  ] \
+/* ***** Route no 7 ***** */ \
+/* ***** Installation queue, triggered by usatlas2 user ***** */ \
+  [ \
+    GridResource = &quot;condor localhost localhost&quot;; \
+    eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot; $(JOB_ROUTER_SCHEDD2_POOL)&quot;); \
+    Requirements = target.queue is undefined &amp;&amp; target.Owner == &quot;usatlas2&quot;; \
+    Name = &quot;Install Queue&quot;; \
+    TargetUniverse = 5; \
+    set_requirements = ( ( TARGET.TotalDisk =?= undefined ) || ( TARGET.TotalDisk &gt;= 21000000 ) ) &amp;&amp; ( TARGET.Arch == &quot;X86_64&quot; ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ) &amp;&amp; ( TARGET.IS_INSTALL_QUE =?= True ) &amp;&amp; (TARGET.AGLT2_SITE == &quot;UM&quot; ); \
+    eval_set_AccountingGroup = strcat(&quot;group_gatekpr.other.&quot;,Owner); \
+    set_localQue = &quot;Default&quot;; \
+    set_IsAnalyJob = False; \
+    set_IsInstallJob = True; \
+    set_JobPrio = 15; \
+    set_Rank = (SlotID + (64-TARGET.DETECTED_CORES))*1.0; \
+    set_JobMemoryLimit = 4194000; \
+    set_Periodic_Remove = ( ( RemoteWallClockTime &gt; (3*24*60*60 + 5*60) ) || (ImageSize &gt; JobMemoryLimit) ); \
+  ] \
+/* ***** Route no 8 ***** */ \
+/* ***** Default queue for usatlas1 user ***** */ \
+  [ \
+    GridResource = &quot;condor localhost localhost&quot;; \
+    eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot; $(JOB_ROUTER_SCHEDD2_POOL)&quot;); \
+    Requirements = target.queue is undefined &amp;&amp; regexp(&quot;usatlas1&quot;,target.Owner); \
+    Name = &quot;ATLAS Production Queue&quot;; \
+    TargetUniverse = 5; \
+    set_requirements = ( ( TARGET.TotalDisk =?= undefined ) || ( TARGET.TotalDisk &gt;= 21000000 ) ) &amp;&amp; ( TARGET.Arch == &quot;X86_64&quot; ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+    eval_set_AccountingGroup = strcat(&quot;group_gatekpr.prod.prod.&quot;,Owner); \
+    set_localQue = &quot;Default&quot;; \
+    set_IsAnalyJob = False; \
+    set_Rank = (SlotID + (64-TARGET.DETECTED_CORES))*1.0; \
+    set_JobMemoryLimit = 4194000; \
+    set_Periodic_Remove = ( ( RemoteWallClockTime &gt; (3*24*60*60 + 5*60) ) || (ImageSize &gt; JobMemoryLimit) ); \
+  ] \
+/* ***** Route no 9 ***** */ \
+/* ***** Default queue for any other usatlas account ***** */ \
+  [ \
+    GridResource = &quot;condor localhost localhost&quot;; \
+    eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot; $(JOB_ROUTER_SCHEDD2_POOL)&quot;); \
+    Requirements = target.queue is undefined &amp;&amp; (regexp(&quot;usatlas2&quot;,target.Owner) || regexp(&quot;usatlas3&quot;,target.Owner)); \
+    Name = &quot;Other ATLAS Production&quot;; \
+    TargetUniverse = 5; \
+    set_requirements = ( ( TARGET.TotalDisk =?= undefined ) || ( TARGET.TotalDisk &gt;= 21000000 ) ) &amp;&amp; ( TARGET.Arch == &quot;X86_64&quot; ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+    eval_set_AccountingGroup = strcat(&quot;group_gatekpr.other.&quot;,Owner); \
+    set_localQue = &quot;Default&quot;; \
+    set_IsAnalyJob = False; \
+    set_Rank = (SlotID + (64-TARGET.DETECTED_CORES))*1.0; \
+    set_JobMemoryLimit = 4194000; \
+    set_Periodic_Remove = ( ( RemoteWallClockTime &gt; (3*24*60*60 + 5*60) ) || (ImageSize &gt; JobMemoryLimit) ); \
+  ] \
+/* ***** Route no 10 ***** */ \
+/* ***** Anything else. Set queue as Default and assign to other VOs  ***** */ \
+  [ \
+    GridResource = &quot;condor localhost localhost&quot;; \
+    eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot; $(JOB_ROUTER_SCHEDD2_POOL)&quot;); \
+    Requirements = target.queue is undefined &amp;&amp; ifThenElse(regexp(&quot;usatlas&quot;,target.Owner),false,true); \
+    Name = &quot;Other Jobs&quot;; \
+    TargetUniverse = 5; \
+    set_requirements = ( ( TARGET.TotalDisk =?= undefined ) || ( TARGET.TotalDisk &gt;= 21000000 ) ) &amp;&amp; ( TARGET.Arch == &quot;X86_64&quot; ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+    eval_set_AccountingGroup = strcat(&quot;group_VOgener.&quot;,Owner); \
+    set_localQue = &quot;Default&quot;; \
+    set_IsAnalyJob = False; \
+    set_Rank = (SlotID + (64-TARGET.DETECTED_CORES))*1.0; \
+    set_JobMemoryLimit = 4194000; \
+    set_Periodic_Remove = ( ( RemoteWallClockTime &gt; (3*24*60*60 + 5*60) ) || (ImageSize &gt; JobMemoryLimit) ); \
+  ]
+&lt;/pre&gt;
+%ENDTWISTY%
+
+---## BNL&#39;s Job Routes
+
+Atlas BNL T1, they are using an HTCondor batch system. Here are some things to note about their routes:
+
+   * Setting various HTCondor-specific attributes like =JobLeaseDuration=, =Requirements= and =Periodic_Hold= (see the [[http://research.cs.wisc.edu/htcondor/manual/v8.0/12_Appendix_A.html][Condor manual]] for more). Some of these are site-specific like =RACF_Group=, =Experiment=, =Job_Type= and =VO=.
+   * Jobs are split into different routes based on the [[#GlideIn][GlideIn]] queue that they&#39;re in.
+   * Many of the attributes are the same and can be [[#AppendDefaults][appended]] to the =JOB_ROUTER_DEFAULTS= with the November release of HTCondor-CE (tentatively 1.7).
+   * There is a difference between =Requirements= and =set_requirements=. The =Requirements= attribute matches _incoming_ jobs to specific routes while the =set_requirements= sets the =Requirements= attribute on the _routed_ job, which confines which machines that the routed job can land on.
+
+Source: http://www.usatlas.bnl.gov/twiki/bin/view/Admins/HTCondorCE.html
+
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;Click to expand full job route&amp;hellip;&quot;}%
+&lt;pre class=&quot;file&quot;&gt;
+###############################################################################
+#
+# HTCondor-CE HTCondor batch system configuration file.
+#
+###############################################################################
+
+# Submit the job to the site Condor
+
+JOB_ROUTER_ENTRIES = \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot;$(FULL_HOSTNAME)&quot;); \
+     TargetUniverse = 5; \
+     name = &quot;BNL_Condor_Pool_long&quot;; \
+     Requirements = target.queue==&quot;analysis.long&quot;; \
+     eval_set_RACF_Group = &quot;long&quot;; \
+     set_Experiment = &quot;atlas&quot;; \
+     set_requirements = ( ( Arch == &quot;INTEL&quot; || Arch == &quot;X86_64&quot; ) &amp;&amp; ( CPU_Experiment == &quot;atlas&quot; ) ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+     set_Job_Type = &quot;cas&quot;; \
+     set_JobLeaseDuration = 3600; \
+     set_Periodic_Hold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \
+     eval_set_VO = x509UserProxyVOName; \
+   ] \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot;$(FULL_HOSTNAME)&quot;); \
+     TargetUniverse = 5; \
+     name = &quot;BNL_Condor_Pool_short&quot;; \
+     Requirements = target.queue==&quot;analysis.short&quot;; \
+     eval_set_RACF_Group = &quot;short&quot;; \
+     set_Experiment = &quot;atlas&quot;; \
+     set_requirements = ( ( Arch == &quot;INTEL&quot; || Arch == &quot;X86_64&quot; ) &amp;&amp; ( CPU_Experiment == &quot;atlas&quot; ) ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+     set_Job_Type = &quot;cas&quot;; \
+     set_JobLeaseDuration = 3600; \
+     set_Periodic_Hold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \
+     eval_set_VO = x509UserProxyVOName; \
+   ] \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot;$(FULL_HOSTNAME)&quot;); \
+     TargetUniverse = 5; \
+     name = &quot;BNL_Condor_Pool_grid&quot;; \
+     Requirements = target.queue==&quot;grid&quot;; \
+     eval_set_RACF_Group = &quot;grid&quot;; \
+     set_Experiment = &quot;atlas&quot;; \
+     set_requirements = ( ( Arch == &quot;INTEL&quot; || Arch == &quot;X86_64&quot; ) &amp;&amp; ( CPU_Experiment == &quot;atlas&quot; ) ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+     set_Job_Type = &quot;cas&quot;; \
+     set_JobLeaseDuration = 3600; \
+     set_Periodic_Hold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \
+     eval_set_VO = x509UserProxyVOName; \
+   ] \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot;$(FULL_HOSTNAME)&quot;); \
+     TargetUniverse = 5; \
+     name = &quot;BNL_Condor_Pool&quot;; \
+     Requirements = target.queue is undefined; \
+     eval_set_RACF_Group = &quot;grid&quot;; \
+     set_requirements = ( ( Arch == &quot;INTEL&quot; || Arch == &quot;X86_64&quot; ) &amp;&amp; ( CPU_Experiment == &quot;rcf&quot; ) ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+     set_Experiment = &quot;atlas&quot;; \
+     set_Job_Type = &quot;cas&quot;; \
+     set_JobLeaseDuration = 3600; \
+     set_Periodic_Hold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \
+     eval_set_VO = x509UserProxyVOName; \
+   ]
+&lt;/pre&gt;
+%ENDTWISTY%

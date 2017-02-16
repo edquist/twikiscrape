@@ -1,0 +1,58 @@
+---+ v49
+
+---++ Add additional VOMS to OSG VO
+[[https://ticket.grid.iu.edu/goc/17756][Ticket]]
+
+---+++ vomses file addition
+&lt;verbatim&gt;
+&quot;osg&quot; &quot;voms.grid.iu.edu&quot; &quot;15027&quot; &quot;/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=http/voms.grid.iu.edu&quot; &quot;osg&quot;
+&lt;/verbatim&gt;
+
+---+++ edg-mkgridmap file addition
+&lt;verbatim&gt;
+group vomss://voms.grid.iu.edu:8443/voms/osg osg
+&lt;/verbatim&gt;
+
+---+++ GUMS template addition
+&lt;verbatim&gt;
+&lt;groupMapping name=&#39;osg-goc&#39; accountingVo=&#39;osg&#39; accountingDesc=&#39;OSG&#39;&gt;
+     &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+     url=&#39;https://voms.grid.iu.edu:8443/voms/osg/services/VOMSAdmin&#39;
+     persistenceFactory=&#39;mysql&#39; 
+     name=&#39;osg-goc&#39; 
+     voGroup=&quot;/osg&quot;
+     sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;
+     sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39; 
+     matchFQAN=&quot;vo&quot; acceptProxyWithoutFQAN=&#39;true&#39; /&gt;
+     &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39; 
+     groupName=&#39;osg&#39; /&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Add hostGroup className osg-goc
+
+---++ !OSGCrossCE Configuration Change
+[[https://ticket.grid.iu.edu/goc/17377][Ticket]]
+
+---+++ GUMS template change
+&lt;verbatim&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;osgcrossce&quot;/&gt;
+&lt;/verbatim&gt;
+to
+&lt;verbatim&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.AccountPoolMapper&quot; groupName=&quot;osgcrossce&quot;/&gt;
+&lt;/verbatim&gt;
+
+---+ VO Package Files Location
+
+   * For ITB VO Files see:
+
+https://osg-svn.rtinfo.indiana.edu/pacman/vo-package/tags/release-49/
+
+   * For Production VO Files see:
+
+http://software.grid.iu.edu/pacman/tarballs/vo-package/
+
+
+
+-- Main.RobQ - 01 Nov 2013

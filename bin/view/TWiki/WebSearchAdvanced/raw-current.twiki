@@ -1,0 +1,87 @@
+---+ %MAKETEXT{&quot;Advanced Search&quot;}%
+
+%IF{&quot;defined search&quot; then=&#39;%ICON{feed}% &lt;a href=&quot;%SCRIPTURL{&quot;view&quot;}%/%BASEWEB%/WebRss?search=%URLPARAM{&quot;search&quot; encode=&quot;url&quot;}%;type=%IF{&quot;&#39;%URLPARAM{&quot;regex&quot; encode=&quot;url&quot;}%&#39;=&#39;on&#39; OR &#39;%URLPARAM{&quot;type&quot; encode=&quot;url&quot;}%&#39;=&#39;regex&#39;&quot; then=&quot;regex&quot; else=&quot;word&quot;}%;excludetopic=%BASETOPIC%,WebHome,WebStatistics;web=%URLPARAM{&quot;web&quot; encode=&quot;url&quot; default=&quot;%BASEWEB%&quot;}%;limit=%URLPARAM{&quot;limit&quot; encode=&quot;url&quot; default=&quot;all&quot;}%;scope=%URLPARAM{&quot;scope&quot; encode=&quot;url&quot; default=&quot;text&quot;}%;casesensitive=%URLPARAM{&quot;casesensitive&quot; encode=&quot;url&quot; default=&quot;off&quot;}%&quot;&gt;%MAKETEXT{&quot;Get notified on changes on this search&quot;}%&lt;/a&gt;&#39;}%
+
+%SEARCH{
+&quot;%URLPARAM{&quot;search&quot; encode=&quot;quote&quot;}%&quot;
+type=&quot;%IF{&quot; &#39;%URLPARAM{&quot;regex&quot; encode=&quot;entity&quot;}%&#39; = &#39;on&#39; or &#39;%URLPARAM{&quot;type&quot; encode=&quot;entity&quot;}%&#39; = &#39;regex&#39;&quot; then=&quot;regex&quot; else=&quot;word&quot;}%&quot;
+scope=&quot;%URLPARAM{&quot;scope&quot; encode=&quot;quote&quot;}%&quot;
+web=&quot;%URLPARAM{&quot;web&quot; encode=&quot;quote&quot;}%&quot;
+nosearch=&quot;%URLPARAM{&quot;nosearch&quot; encode=&quot;quote&quot;}%&quot;
+casesensitive=&quot;%URLPARAM{&quot;casesensitive&quot; encode=&quot;quote&quot;}%&quot;
+bookview=&quot;%URLPARAM{&quot;bookview&quot; encode=&quot;quote&quot;}%&quot;
+nosummary=&quot;%URLPARAM{&quot;nosummary&quot; encode=&quot;quote&quot;}%&quot;
+nototal=&quot;%URLPARAM{&quot;nototal&quot; encode=&quot;quote&quot;}%&quot;
+order=&quot;%URLPARAM{&quot;order&quot; encode=&quot;quote&quot;}%&quot;
+reverse=&quot;%URLPARAM{&quot;reverse&quot; encode=&quot;quote&quot;}%&quot;
+limit=&quot;%URLPARAM{&quot;limit&quot; encode=&quot;quote&quot;}%&quot;
+zeroresults=&quot;%IF{ &quot;defined search&quot; then=&quot;on&quot; else=&quot;off&quot; }%&quot;
+}%
+
+&lt;a name=&quot;twikiSearchForm&quot;&gt;&lt;/a&gt;
+&lt;noautolink&gt;
+&lt;div class=&quot;twikiPageForm&quot;&gt;
+&lt;form id=&quot;twikiWebSearchForm&quot; action=&quot;%SCRIPTURLPATH{view}%/%INCLUDINGWEB%/%INCLUDINGTOPIC%&quot;&gt;
+&lt;table id=&quot;twikiSearchTable&quot; border=&quot;0&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot;&gt;
+&lt;tr&gt;
+&lt;td colspan=&quot;2&quot; class=&quot;twikiFirstRow&quot;&gt;
+  &lt;input class=&quot;twikiInputField&quot; type=&quot;text&quot; name=&quot;search&quot; value=&quot;%URLPARAM{ &quot;search&quot; encode=&quot;entity&quot; }%&quot; size=&quot;40&quot; /&gt; 
+  &lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&#39;%MAKETEXT{&quot;Search&quot;}%&#39; /&gt;&lt;span class=&quot;twikiSmall&quot;&gt;&amp;nbsp;&amp;nbsp;&lt;a href=&#39;%SCRIPTURL{view}%/%INCLUDINGWEB%/WebSearch?search=%URLPARAM{&quot;search&quot; encode=&quot;url&quot;}%;type=%URLPARAM{&quot;type&quot; encode=&quot;url&quot; default=&quot;word&quot;}%;scope=%URLPARAM{&quot;scope&quot; encode=&quot;url&quot;}%;web=%URLPARAM{&quot;web&quot; encode=&quot;url&quot;}%;nosearch=%URLPARAM{&quot;nosearch&quot; encode=&quot;url&quot;}%&#39;&gt;%MAKETEXT{&quot;Simple search&quot;}%&lt;/a&gt; | [[%SYSTEMWEB%.SearchHelp][%MAKETEXT{&quot;Help&quot;}%]]&lt;/span&gt;
+&lt;div class=&quot;twikiSmall&quot; style=&quot;padding:1em 0 0 0;&quot;&gt;%MAKETEXT{&quot;TIP: to search for all topics that contain =\&quot;SOAP\&quot;=, =\&quot;WSDL\&quot;=, a literal =\&quot;web service\&quot;=, but not =\&quot;shampoo\&quot;=, write:&quot;}% &lt;code&gt;soap wsdl &quot;web service&quot; -shampoo&lt;/code&gt;&lt;/div&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;%MAKETEXT{&quot;Search where:&quot;}%&lt;/th&gt;
+&lt;td&gt;
+&lt;input type=&quot;radio&quot; class=&quot;twikiRadioButton&quot; id=&quot;textbody&quot; name=&quot;scope&quot; value=&quot;text&quot; %IF{&quot; &#39;%URLPARAM{&quot;scope&quot; encode=&quot;entity&quot;}%&#39; = &#39;text&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;textbody&quot;&gt; %MAKETEXT{&quot;Text body&quot;}%&lt;/label&gt;&lt;br /&gt;
+&lt;input type=&quot;radio&quot; class=&quot;twikiRadioButton&quot; id=&quot;topictitle&quot; name=&quot;scope&quot; value=&quot;topic&quot; %IF{&quot; &#39;%URLPARAM{&quot;scope&quot; encode=&quot;entity&quot; default=&quot;all&quot;}%&#39; = &#39;topic&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;topictitle&quot;&gt; %MAKETEXT{&quot;Topic title&quot;}%&lt;/label&gt;&lt;br /&gt;
+&lt;input type=&quot;radio&quot; class=&quot;twikiRadioButton&quot; id=&quot;both&quot; name=&quot;scope&quot; value=&quot;all&quot; %IF{&quot; &#39;%URLPARAM{&quot;scope&quot; encode=&quot;entity&quot; default=&quot;all&quot;}%&#39; = &#39;all&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;both&quot;&gt; %MAKETEXT{&quot;Both body and title&quot;}%&lt;/label&gt;
+&lt;hr /&gt;
+&lt;input type=&quot;checkbox&quot; class=&quot;twikiCheckbox&quot; id=&quot;web&quot; name=&quot;web&quot; value=&quot;all&quot; %IF{&quot; &#39;%URLPARAM{&quot;web&quot; encode=&quot;entity&quot;}%&#39; = &#39;all&#39;&quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;web&quot;&gt; %MAKETEXT{&quot;All public webs&quot;}%&lt;/label&gt; &lt;span class=&quot;twikiSmall&quot;&gt;%MAKETEXT{&quot;(otherwise search [_1] Web only)&quot; args=&quot;&lt;nop&gt;%INCLUDINGWEB%&quot;}%&lt;/span&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;%MAKETEXT{&quot;Sort results by:&quot;}%&lt;/th&gt;
+&lt;td&gt;
+&lt;input type=&quot;radio&quot; class=&quot;twikiRadioButton&quot; id=&quot;topic&quot; name=&quot;order&quot; value=&quot;topic&quot; %IF{&quot; &#39;%URLPARAM{&quot;order&quot; encode=&quot;entity&quot; default=&quot;topic&quot;}%&#39; = &#39;topic&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;topic&quot;&gt; %MAKETEXT{&quot;Topic name&quot;}%&lt;/label&gt;&lt;br /&gt;
+&lt;input type=&quot;radio&quot; class=&quot;twikiRadioButton&quot; id=&quot;modified&quot; name=&quot;order&quot; value=&quot;modified&quot; %IF{&quot; &#39;%URLPARAM{&quot;order&quot; encode=&quot;entity&quot;}%&#39; = &#39;modified&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;modified&quot;&gt; %MAKETEXT{&quot;Last modified time&quot;}%&lt;/label&gt;&lt;br /&gt;
+&lt;input type=&quot;radio&quot; class=&quot;twikiRadioButton&quot; id=&quot;editby&quot; name=&quot;order&quot; value=&quot;editby&quot; %IF{&quot; &#39;%URLPARAM{&quot;order&quot; encode=&quot;entity&quot;}%&#39; = &#39;editby&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;editby&quot;&gt; %MAKETEXT{&quot;Last editor&quot;}%&lt;/label&gt;
+&lt;hr /&gt;
+&lt;input type=&quot;checkbox&quot; class=&quot;twikiCheckbox&quot; name=&quot;reverse&quot; id=&quot;reverse&quot; %IF{&quot; &#39;%URLPARAM{&quot;reverse&quot; encode=&quot;entity&quot;}%&#39; = &#39;on&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;reverse&quot;&gt; %MAKETEXT{&quot;In reversed order&quot;}%&lt;/label&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;%MAKETEXT{&quot;Make search:&quot;}%&lt;/th&gt;
+&lt;td&gt;&lt;input type=&quot;checkbox&quot; class=&quot;twikiCheckbox&quot; id=&quot;casesensitive&quot; name=&quot;casesensitive&quot; %IF{&quot; &#39;%URLPARAM{&quot;casesensitive&quot; encode=&quot;entity&quot;}%&#39; = &#39;on&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;casesensitive&quot;&gt; %MAKETEXT{&quot;Case sensitive&quot;}%&lt;/label&gt;&lt;br /&gt;
+&lt;input type=&quot;checkbox&quot; class=&quot;twikiCheckbox&quot; id=&quot;regex&quot; name=&quot;regex&quot; %IF{&quot; &#39;%URLPARAM{&quot;regex&quot; encode=&quot;entity&quot;}%&#39; = &#39;on&#39; or &#39;%URLPARAM{&quot;type&quot; encode=&quot;entity&quot;}%&#39; = &#39;regex&#39;&quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;regex&quot;&gt; %MAKETEXT{&quot;Regular expression search&quot;}%&lt;/label&gt; &lt;span class=&quot;twikiSmall&quot;&gt;%MAKETEXT{&quot;(semicolon =;= for and)&quot;}% [[%SYSTEMWEB%.RegularExpression][%MAKETEXT{&quot;about regular expression search&quot;}%]]&lt;/span&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;b&gt;%MAKETEXT{&quot;Don&#39;t show:&quot;}%&lt;/b&gt;&lt;/th&gt;
+&lt;td&gt;&lt;input type=&quot;checkbox&quot; class=&quot;twikiCheckbox&quot; id=&quot;nosearch&quot; name=&quot;nosearch&quot; %IF{&quot; &#39;%URLPARAM{&quot;nosearch&quot; encode=&quot;entity&quot;}%&#39; = &#39;on&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;nosearch&quot;&gt; %MAKETEXT{&quot;Search string&quot;}%&lt;/label&gt;&lt;br /&gt;
+&lt;input type=&quot;checkbox&quot; class=&quot;twikiCheckbox&quot; id=&quot;nosummary&quot; name=&quot;nosummary&quot; %IF{&quot; &#39;%URLPARAM{&quot;nosummary&quot; encode=&quot;entity&quot;}%&#39; = &#39;on&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;nosummary&quot;&gt; %MAKETEXT{&quot;Summaries&quot;}%&lt;/label&gt;&lt;br /&gt;
+&lt;input type=&quot;checkbox&quot; class=&quot;twikiCheckbox&quot; id=&quot;nototal&quot; name=&quot;nototal&quot; %IF{&quot; &#39;%URLPARAM{&quot;nototal&quot; encode=&quot;entity&quot;}%&#39; = &#39;on&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;nototal&quot;&gt; %MAKETEXT{&quot;Total matches&quot;}%&lt;/label&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;%MAKETEXT{&quot;Do show:&quot;}%&lt;/th&gt;
+&lt;td&gt;&lt;input type=&quot;checkbox&quot; class=&quot;twikiCheckbox&quot; id=&quot;bookview&quot; name=&quot;bookview&quot; %IF{&quot; &#39;%URLPARAM{&quot;bookview&quot; encode=&quot;entity&quot;}%&#39; = &#39;on&#39; &quot; then=&quot;checked=\&quot;checked\&quot;&quot; else=&quot;&quot;}% /&gt;&lt;label for=&quot;bookview&quot;&gt; !BookView&lt;/label&gt; &lt;span class=&quot;twikiSmall&quot;&gt;[[%SYSTEMWEB%.BookView][%MAKETEXT{&quot;about !BookView&quot;}%]]&lt;/span&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th class=&quot;twikiLast&quot;&gt;%MAKETEXT{&quot;Limit results to:&quot;}%&lt;/th&gt;
+&lt;td class=&quot;twikiLast&quot;&gt;&lt;input type=&quot;text&quot; class=&quot;twikiInputField&quot; id=&quot;limit&quot; name=&quot;limit&quot; size=&quot;3&quot; value=&quot;%IF{&quot; &#39;%URLPARAM{&quot;limit&quot; encode=&quot;entity&quot; default=&quot;all&quot;}%&#39; = &#39;all&#39; &quot; then=&quot;all&quot; else=&quot;%URLPARAM{&quot;limit&quot; encode=&quot;entity&quot;}%&quot;}%&quot; /&gt;&lt;label for=&quot;limit&quot;&gt; %MAKETEXT{&quot;Topics per web&quot;}% &lt;/label&gt;&lt;span class=&quot;twikiSmall&quot;&gt;%MAKETEXT{&quot;(=all= to show all topics)&quot;}%&lt;/span&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/form&gt;
+&lt;/div&gt;
+&lt;/noautolink&gt;
+
+&lt;div class=&quot;twikiHelp&quot;&gt;
+*%MAKETEXT{&quot;Other search options:&quot;}%*
+   * %MAKETEXT{&quot;If you already know the name of the topic, enter the name of the topic into the ~[~[[_1]~]~[Jump box~]~] at the top&quot; args=&quot;%SYSTEMWEB%.GoBox&quot;}%
+   * &lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;regex=on&amp;search=\.*&quot;&gt;%MAKETEXT{&quot;List all topics in the [_1] web in alphabetical order&quot; args=&quot;&lt;nop&gt;%INCLUDINGWEB%&quot;}%&lt;/a&gt;
+   * %MAKETEXT{&quot;List topics that start with the letter:&quot;}% &lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ea&quot;&gt;A&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Eb&quot;&gt;B&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ec&quot;&gt;C&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ed&quot;&gt;D&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ee&quot;&gt;E&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ef&quot;&gt;F&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Eg&quot;&gt;G&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Eh&quot;&gt;H&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ei&quot;&gt;I&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ej&quot;&gt;J&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ek&quot;&gt;K&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5El&quot;&gt;L&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Em&quot;&gt;M&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5En&quot;&gt;N&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Eo&quot;&gt;O&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ep&quot;&gt;P&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Eq&quot;&gt;Q&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Er&quot;&gt;R&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Es&quot;&gt;S&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Et&quot;&gt;T&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Eu&quot;&gt;U&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ev&quot;&gt;V&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ew&quot;&gt;W&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ex&quot;&gt;X&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ey&quot;&gt;Y&lt;/a&gt;&lt;span class=&quot;twikiSeparator&quot;&gt; | &lt;/span&gt;&lt;a href=&quot;%SCRIPTURLPATH{&quot;search&quot;}%/%INCLUDINGWEB%/?scope=topic&amp;amp;regex=on&amp;amp;search=%5Ez&quot;&gt;Z&lt;/a&gt;
+   * [[%INCLUDINGWEB%.WebChanges][%MAKETEXT{&quot;Recently changed topics&quot;}%]]
+&lt;/div&gt;

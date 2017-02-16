@@ -1,0 +1,60 @@
+---+ DHTC Exercises - Using many resource pools
+
+This exercise will give you some experience using multiple resources pools
+
+%TOC%
+
+---++ Environment
+
+We will use the usual Condor submit host:&lt;br&gt;
+=vdt-itb.cs.wisc.edu=
+
+There may be no shared file system between the submit and the execute hosts, so you will should plan on transferring all the needed files with you.
+
+---++ Exercise 1 - Mandelbrot
+
+We will re-run the Mandelbrot examples Alain [[OSGSS2011CondorComplexDAG][explained you yesterday]], just splitting the problem in 81 tiles, and merging together at two levels. &lt;br&gt;
+&lt;img src=&quot;%ATTACHURLPATH%/OSGSS2011Tue81.png&quot; alt=&quot;OSGSS2011Tue81.png&quot; width=&#39;212&#39; height=&#39;159&#39; /&gt;    
+
+We will create a DAG and run it across the local Condor pool, the UCSD Condor pool, UNL Grid pool and Chicago Grid pool. (See [[OSGSS2011TueDHTCEx1][previous exercise]] for details , but don&#39;t forget the local Condor pool).
+
+Given that we now have 4 resources, we need to partition the jobs between them.&lt;br&gt;
+How are we going to do this?&lt;br&gt;
+Students, please provide suggestions.
+
+We will select 3 proposals, and form (multiples of) 3 groups.
+Each group will prepare the appropriate submit files (with the correct partitioning) and then we will submit all jobs at the same time, one per group.
+
+Let&#39;s see which one finishes first!
+
+In case of errors, recover the DAG, make any changes as needed, and resubmit.
+
+Discuss the experience.
+
+---++ Exercise 2 - Many users
+
+Now that you have had the chance to try out the system, let&#39;s see how good are you at doing your own partition.
+
+Let&#39;s do a very simple job... a simple 1 minute sleep:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+#!/bin/bash
+date
+uname -a
+id
+sleep 60
+date
+&lt;/pre&gt;
+
+Your goal is to get 50 of them finished as soon as possible.
+
+Create your submit files, *keeping your partitioning policy hidden from the others*. In real life, you will have to compete with many other users who you do not even know they exist, so making sure you do not exchange information during this phase is very important.
+
+Once everybody is ready, you will all submit at the same time.
+
+Let&#39;s see who is the first to finish.&lt;br&gt;
+And how late will the last one be.
+
+Discuss the experience.
+
+
+

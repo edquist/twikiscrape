@@ -1,0 +1,75 @@
+---+ Gratia Service Operation Guide
+
+---++ List of Services Operated by !FermiGrid.
+
+[[http://fermigrid.fnal.gov/gratia-production-organization.html][List of services operated by !FermiGrid]].
+
+---++ Operational Architecture Overview.
+
+As seen in the [[http://fermigrid.fnal.gov/gratia-production-organization.html][production machine deployment description]], the OSG and FNAL-local Gratia  services each consist of a pair of machines each with 6 VMs, the &quot;collector&quot; machine and the &quot;reporter&quot; machine. The collector VMs use the collector DB and the reporter VMs the reporter DB, which is slaved from the collector DB using !MySQL replication. The Gratia services on the reporting VMs consist of the reporting services *only*: no data collection services are installed on these nodes. Similarly, under normal conditions the collector VMs do not have any reporting services. Any requests for reports directed at the collector services are redirected by tomcat to the correct reporting service.
+
+---+++ HA operation.
+
+The IP by which the reporting services access the reporting DB is handled by heartbeat and may be failed over to the collector DB if necessary; the converse is *not* true. Similarly, heartbeat can be used to fail an individual reporting service over to be managed by the corresponding collector service: the collector service is restarted by hibernate in a mode that serves the reports directly rather than redirecting them to the reporting VM. Again, the converse is *not* true.
+
+---++ Installation / upgrade guide.
+
+[[InstallationGuideFNAL][Installation Guide (FNAL Specific)]].
+
+---++ Log file description.
+
+%INCLUDE{&quot;GratiaServiceLogs&quot;  section=&quot;LogFiles&quot;}%
+
+---++ Monitoring Gratia.
+
+[[Monitoring][Guide to monitoring a collector]].
+
+---++ Incident Reporting
+
+%INCLUDE{&quot;GratiaServiceLogs&quot;  section=&quot;Debugging&quot;}%
+
+---++ Some service-related activities (common or otherwise).
+
+%TOC{&quot;Operation&quot; depth=&quot;2&quot;}%
+
+---++ Information on backups.
+
+Backups are made of several different aspects of the Gratia system:
+
+   * Daily backups of XML files from =gratia/data/= via rsync (=~gratia/gratia-ops/backup/ddback/ddback.cron=). This is required on collector machines *only*.
+      * Installation is from RPM (=~gratia/gratia-ops/backup/ddback/RPMS=): version &amp;gt;=1.0.2 is required.
+      * [[http://sourceforge.net/projects/ddback/][ddback project home page]] is on [[http://sourceforge.net/][SourceForge]].
+      * To configure, run =~gratia/gratia-ops/backup/update-ddback-xml= on the target collector machine.=
+   * Monthly backups of XML files to Enstore via encp (=~gratia/gratia-ops/backup/gratia-archive.sh=). Again, required on collector machines only.  Machine should have access to a UPS installation of =encp= and have enstore write permissions. Invocation of the =gratia-archive.sh= file should be in root&#39;s =crontab=.
+   * [[InnodbBackup][Daily backups of the DB schemata]] via ZRM (=~gratia/gratia-ops/backup/gratia_backup.cron.sh=).
+   * XML files are sent to =splunk= hourly (=~gratia/gratia-ops/splunk/*=). See Neha for installation details.
+   * Gratia Sourceforge code base is backed up nightly to =gr6x3:/data/svn-backup= (=~gratia/gratia-ops/backup/svn-backup=), installed in gratia user&#39;s =crontab= on =gr6x3=.
+
+Note that the =~gratia/gratia-ops= area is a checked-out copy of =:ext:cvsuser@cdcvs.fnal.gov:/cvs/cd/fermigrid/gratia-ops=.
+
+---++ Schema optimization.
+
+Each database should be optimized regularly to maintain query and insert efficiency in the face of serious churn due to housekeeping activities. The configuration file for each DB instance is to be found as =~gratia/gratia-ops/gratia-optimize-db/XXXXXX_optimize_commands=. Create a new one as necessary using an existing one as template.
+
+An example line:&lt;verbatim&gt;07 11 * 1-12/3 6 ~gratia/gratia-ops/gratia-optimize-db -v ~gratia/gratia-ops/XXXXXX_optimize_commands &gt; /var/log/gratia_optimize.log 2&gt;&amp;1&lt;/verbatim&gt;
+
+Note that with the above line, the script is run every Saturday of the first month of each quota. Whether the optimization actually occurs on any given invocation may be further limited by shell code in the configuration file, for example:&lt;verbatim&gt;MAILTO=&quot;gratia-operation@fnal.gov&quot;
+(( day_of_week = `date +%w` ))
+(( month = `date +%_m` ))
+(( day_of_month = `date +%_d` ))
+# Only optimize on the 3rd Saturday of the month.
+if (( month % 3 == 1 )) &amp;&amp; \
+   (( day_of_week == 6 )) &amp;&amp; \
+   (( day_of_month / 7 == 2 )); then
+  run_db_optimize gratia gratia-osg-prod.opensciencegrid.org 443
+  run_db_optimize gratia_osg_daily gratia-osg-daily.opensciencegrid.org 443
+  run_db_optimize gratia_osg_transfer gratia-osg-transfer.opensciencegrid.org 443
+  run_db_optimize gratia_itb gratia-osg-itb.opensciencegrid.org 443
+fi
+&lt;/verbatim&gt;
+
+---++ Additional Information.
+
+See also the general installation [[https://twiki.grid.iu.edu/bin/view/Accounting/WebHome#Collector_and_Reporting][notes]]
+
+-- Main.ChrisGreen - 11 Jul 2008

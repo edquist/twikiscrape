@@ -1,0 +1,91 @@
+---+!! Probe build and release-cutting procedure
+
+---++ Prepare for the build
+
+For new probes only:
+&lt;ul&gt;
+&lt;li&gt;Add the subdirectory name to the invocation of =build/package-probe= in =gratia/build/build_all=.&lt;/li&gt;
+&lt;/ul&gt;
+
+Update the =gratia/probe/build/gratia-probe.spec= file:
+
+&lt;ol&gt;
+&lt;li&gt;Update the =Version= and =Release= attributes as appropriate.&lt;/li&gt;
+&lt;li&gt;Update =%files= clause as appropriate for updated probes.&lt;/li&gt;
+&lt;li&gt;Check the =%post= clause for updated probes, including the !ProbeConfig changes if appropriate.&lt;/li&gt;
+&lt;li&gt;Update =%changelog=.&lt;/li&gt;
+&lt;li&gt;For new probes:
+&lt;ul&gt;
+&lt;li&gt;Add required =Source= lines as appropriate.&lt;/li&gt;
+&lt;li&gt;Add required =%setup= line to =%prep= section.&lt;/li&gt;
+&lt;li&gt;In the install section, update the correct side of the =%ifarch noarch= clause for the !ProbeConfig copy and any required init script for daemon-type probes.&lt;/li&gt;
+&lt;li&gt;Put correct =%package=, =%description=, =%files=, =%post= and =%preun= sections: use glexec (noarch non-daemon), xrootd-transfer (noarch daemon), pbs-lsf (arch non-daemon) or dCache-transfer (arch daemon) probes as templates.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+[This needs to be done only once] Setup for the rpm build to succeed by creating the directory $HOME/rpmbuild/SOURCES
+and setting up the rpm macro:
+&lt;verbatim&gt;echo %_topdir $HOME/rpmbuild &gt;&gt; $HOME/.rpmmacros
+mkdir -p $HOME/rpmbuild/SOURCES $HOME/rpmbuild/BUILD $HOME/rpmbuild/SRPMS $HOME/rpmbuild/RPMS $HOME/rpmbuild/SPECS&lt;/verbatim&gt;
+
+Note: the build is expected to be done as a regular user.
+
+---++ Build
+
+&lt;verbatim&gt;
+cd gratia/probe
+build/build_all
+&lt;/verbatim&gt;
+
+The resulting rpm files will be located in $HOME/rpmbuild/RPMS and $HOME/rpmbuild/SRPMS.
+
+---++ Test
+
+   * Test as appropriate on any one of the CEs mentioned on the [[http://fermigrid.fnal.gov/gratia-development-organization.html][development machine allocation]] page.
+   * Some probes can be be tested to a large extent on pre-packaged log data. Examples of this are the pbs-lsf, SGE and glexec probes.
+
+%INCLUDE{&quot;CollectorBuildRelease&quot; section=&quot;CommitAndPort&quot;}%
+
+---++ Cut a tag
+
+For example, if cutting from the trunk.
+&lt;verbatim&gt;
+RELEASE=v1.06.18b-1
+svn copy https://gratia.svn.sourceforge.net/svnroot/gratia/{trunk,tags/${RELEASE//./-}}
+&lt;/verbatim&gt;
+or if cutting from the patch branch:
+&lt;verbatim&gt;
+RELEASE=v1.06.18b-1
+svn copy https://gratia.svn.sourceforge.net/svnroot/gratia/{branches/v1-06,tags/${RELEASE//./-}}
+&lt;/verbatim&gt;
+
+Note that the entire repository is tagged, not just the =probe= tree.
+
+---++ Export for a final tagged build
+
+&lt;verbatim&gt;
+RELEASE=v1.06.18b-1
+svn export http://gratia.svn.sourceforge.net/svnroot/gratia/tags/${RELEASE//./-}/probe gratia-probe-${RELEASE}
+&lt;/verbatim&gt;
+
+---++ Build and ship RPMs
+
+&lt;verbatim&gt;
+cd gratia-probe-${RELEASE}
+build/build_all -PY
+&lt;/verbatim&gt;
+
+The =-P= option ships the RPMs to FNALU. See the [[CollectorBuildRelease#Release_to_VDT][release transfer]] section of the collector build and release instructions for required permissions. The =-Y= option will update the repository headers for yum installs.
+
+The RPMs are sent to =/afs/fnal.gov/files/expwww/gratia/html/Files/probe/{S,}RPMS=.
+
+---++ Update the Probe release page.
+
+Bring the [[ProbeInstallation][probe installation]] page up to date, including but not necessarily limited to the !TWiki variable =ProbeVersion=.
+
+%INCLUDE{&quot;CollectorBuildRelease&quot; section=&quot;Trash.ReleaseDocumentationReleaseNotes&quot;}%
+
+%INCLUDE{&quot;CollectorBuildRelease&quot; section=&quot;VDTRelease&quot;}%
+
+
+-- Main.ChrisGreen - 28 Jul 2010

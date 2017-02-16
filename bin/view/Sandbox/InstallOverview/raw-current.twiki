@@ -1,0 +1,116 @@
+---+ OSG Software Installation Overview
+
+%TOC{depth=&quot;2&quot;}%
+
+This document outlines the overall installation process for an OSG site and provides many links into detailed installation, configuration, troubleshooting, and similar pages. If you do not see software-related technical documentation listed here, check [[WebHome][the full list of software documentation pages]].
+
+
+---+# Plan the Site
+
+If you have not done so already, [[SitePlanning][plan the overall architecture of your OSG site]]. It is recommended that your plan be sufficiently detailed to include the OSG hosts that are needed and the main software components for each host. Be sure to consider [[SupportedOperatingSystems][the operating systems that OSG supports]]. A simple way to organize this information is in a table; for example, a basic site might include:
+
+%TABLE{sort=&quot;off&quot;}%
+| *Purpose* | *Host* | *Major Software* |
+| Compute Element (CE) | =osg-ce.example.edu= | OSG CE, HTCondor Central Manager, etc. (=osg-ce-condor=) |
+| Worker Nodes | &lt;code&gt;w&lt;em&gt;NNN&lt;/em&gt;.cluster.example.edu&lt;/code&gt; | OSG worker node client (=osg-wn-client=) |
+
+
+---+# Prepare the Batch System
+
+The assumption is that you have an existing batch system at your site. Currently, we support [[http://research.cs.wisc.edu/htcondor/][HTCondor]], [[http://www-03.ibm.com/systems/platformcomputing/products/lsf/][LSF]], [[http://www.pbsworks.com][PBS]] and [[http://www.adaptivecomputing.com/products/open-source/torque/][TORQUE]], [[http://en.wikipedia.org/wiki/Oracle_Grid_Engine][SGE]], and [[http://slurm.schedmd.com][SLURM]] batch systems.
+
+The easiest way to add a site to OSG is to install the OSG Compute Element (CE) on the central host of your batch system. In any case, before proceeding be sure that you can submit and successfully run a job from your OSG CE host into your batch system.
+
+
+---+# Add OSG Software
+
+If necessary, provision all OSG hosts that are in your site plan and that do not exist yet.
+
+%NOTE% For sites with more than a trivial number of hosts, it is recommended to use some sort of configuration management tool to install, configure, and maintain your site. While beyond the scope of OSG’s documentation to explain how to select and use such a system, some popular configuration management tools are [[http://puppetlabs.com][Puppet]], [[https://www.chef.io][Chef]], and [[http://cfengine.com][CFEngine]].
+
+---+## General Installation Instructions
+
+   * [[SignedRPMS][Security information for OSG signed RPMs]]
+   * [[YumRpmBasics][Using Yum and RPM]]
+   * [[YumRepositories][Install the OSG repositories]]
+   * [[OSGReleaseSeries][OSG Software release series]] (look here to upgrade from OSG 3.1 to OSG 3.2)
+   * [[InstallBestPractices][Installation best practices]]
+
+---+## Installing and Managing Certificates for Site Security
+
+   * [[InstallCertAuth][Installing the grid certificate authorities (CAs)]]
+   * [[Trash.ReleaseDocumentationGetHostServiceCertificates][How do I get PKI host and service X.509 certificates?]]
+   * [[OsgCaCertsUpdater][Automatically updating the grid certificate authorities (CAs)]]
+   * [[SHA2Compliance][SHA-2 certificates and minimum required OSG software versions]]
+
+---+## Adding OSG Software to Worker Nodes
+
+   * Install the worker node (WN) client software on every worker node – pick a method:
+      * [[InstallWNClient][Using RPMs]]
+      * [[InstallWNClientTarball][Using a tarball]] – does not require root access or installation into system-wide locations
+   * (optional) [[InstallCvmfs][Install the CernVM-FS client]] to make it easy for user jobs to install needed software from OSG’s OASIS repositories
+   * (optional, advanced) [[InstallGlexec][Install !gLExec on the OSG worker node]], if you know you need it
+
+---+## Installing and Configuring the Compute Element
+
+   * [[Trash.ReleaseDocumentationPreparingComputeElement][Preparing to install the compute element]]
+   * Install the compute element (pick one):
+      * HTCondor CE (preferred)
+         * [[HTCondorCEOverview][Overview and Architecture]]
+         * [[InstallHTCondorCE][Install HTCondor CE]]
+         * [[JobRouterRecipes][Job Router Recipes]]
+         * [[TroubleshootingHTCondorCE][Troubleshooting HTCondor CE installations]]
+         * [[SubmittingHTCondorCE][Submitting Jobs to HTCondor CE]]
+      * Globus GRAM CE
+         * [[InstallComputeElement][Install Globus GRAM CE]]
+         * [[RelocatingGlobusDirs][Relocating GRAM directories outside of $HOME]]
+   * [[Trash.Documentation_Release3UpdateComputeElement][Update the Compute Element]] (if you have an OSG 1.2 installation)
+   * [[UnderstandingComputeElement][Understanding your compute element]] &lt;!-- Blend of old Trash.ReleaseDocumentationComputeElementPostInstall &amp; shutting down --&gt;
+   * [[FirewallInformation][Firewalls the complete guide]]
+   * [[Trash.ReleaseDocumentationValidatingComputeElement][Validating the compute element]]
+   * [[Trash.ReleaseDocumentationTroubleshootingComputeElement][Troubleshooting your compute element]]
+   * [[TroubleshootingOsgConfigure][Troubleshooting osg-configure]]
+   * [[AddingSupportedVOs][Adding support for a VO]]
+
+---+## Installing and Configuring Other Nodes
+
+All of these node types and their services are optional, although OSG recommends adding RSV and, for most sites, the Frontier Squid caching service.
+
+   * RSV monitoring to monitor and report to OSG on the health of your site
+      * [[RsvOverview][RSV Overview]]
+      * [[InstallRSV][Install RSV]]
+      * [[TroubleshootRsv][Troubleshooting RSV]]
+   * [[InstallFrontierSquid][Install Frontier Squid, the HTTP caching proxy service]]
+   * [[InstallGlideinWMSFrontend][Install the GlideinWMS VO Frontend]] if …
+   * Storage element (pick one):
+      * BeStMan
+         * [[BestmanOverview][BeStMan Overview]]: Bestman-related information, planning, and guides
+         * [[InstallOSGBestmanSE][Install Bestman SE]]: !BeStMan2 SRM server + !GridFTP server
+         * [[InstallHadoop200SE][Install Bestman Gateway Hadoop]]: !BeStMan2 SRM server + !GridFTP server + Hadoop
+      * Hadoop Distributed File System (HDFS)
+         * [[HadoopOverview][Hadoop Overview]]: HDFS information, planning, and guides
+      * XRootD
+         * [[XrootdOverview][XRootd Overview]]: !XRootD information, planning, and guides
+         * [[InstallXrootd][Install Xrootd Server]]: !XRootD redirector installation
+         * [[InstallBestmanXrootdSE][Install BeStMan-Gateway !XRootD]]: !BeStMan2 SRM server + !GridFTP server + !XRootD fuse
+      * GridFTP
+         * [[InstallOSGGridFTP][Install standalone OSG GridFTP]]: !GridFTP server
+
+
+---+# Test OSG Software
+
+At very least, it is vital to test _manual_ submission of jobs from inside and outside of your site through your CE to your batch system. If this process does not work manually, it will probably not work for the glideinWMS pilot factory either.
+
+   * [[TroubleshootingGuide][OSG Troubleshooting guide]]
+   * [[AutomatedTests][Run the OSG automated test suite (=osg-test=)]]
+   * [[Documentation.RPMTestingInfrastructureNotes][Infrastructure notes for automated testing of RPMs]]
+   * [[ValidateSupportedVos][Validating Supported VOs]]
+   * [[UsingWorkerNodeClient][Using Worker Node Client]] 
+
+---+# Start !GlideinWMS Pilot Submissions
+
+---+# Test OSG Pilots and Jobs at Limited Scale
+
+---+# Verify Reporting and Monitoring
+
+---+# Scale Up Site to Full Production

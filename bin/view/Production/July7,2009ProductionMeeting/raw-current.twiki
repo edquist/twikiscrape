@@ -1,0 +1,142 @@
+-- Main.DanFraser - 06 Jul 2009
+---++ Action/Significant Items
+   * Gratia is currently hitting the limits on its collectors with ~1M transfers per day. Plans are in place to try some simple fixes (e.g. upgrade hardware, reduce extraneous load). Even if these work and improvement is an anticipated factor of ~3, this will only buy us a year or two. Comfort zone would require an order of magnitude speed up. Need to consider strategies for moving forward such as pre-summarizing results or exploring whether recording every nth transfer is a viable option. Brian watching closely.
+   * Engage hitting head-node limitations with ~1hr compile jobs (see below under Engage). Mats to explore further and make a recommendation as to workaround or fix. 
+   * Rob E. met with Condor team in Madison. Starting work to switch LIGO job submission interface to Condor-G. Plan to be complete in Q3.
+   * STEP09 post-mortem results should be available from Atlas and CMS soon. Bottlenecks will need to be explored.
+   * Follow up on extension of security RSV probe to compare VO accessibility with GIP data and flag errors (Mine/STG).
+   * IceCube follow-up needed on opportunistic storage (Abhishek)
+---++ Attendees (to be updated after meeting):
+   * Xin, Armen, Britta, Mats, Brian, Suchandra, Burt, Marco, Abhishek, Rob Q., Chander, Dan
+---++ CMS (Burt)
+   * We ran about 215 khours/day last week.  We have been running &quot;skim jobs&quot; at the Tier 1 -- these are heavy I/O jobs with big inputs and small outputs.  Our CPU/wallclock was 64% last week, but if we exclude skims, it rises to 75%.
+   * Step09 Postmortem:still being written (maybe end of this week)...
+   * Storage: I&#39;ll try to start giving numbers next week.  Current metrics are off (Tier 1 gratia data is still catching up from a long outage).
+
+---++ Atlas (Armen &amp; Xin)
+
+   * Last week the production was stable at the level of 6-7k running simulation jobs. Cosmic data taking at CERN has been finished. Preparation of the fast reprocessing of that data. Staging is done, reprocessing will start tomorrow. Smooth operation of USATLAS sites during Step09, post mortem review.
+
+   * job statistics for last week. 
+      * Gratia report: USATLAS ran 726M jobs, with CPU/Walltime ratio of 88%
+      * PanDA world-wide production report (real jobs):
+         * completed successfully 555K managed MC production, validation and reprocessing jobs
+         * average  ~79K jobs per day
+         * failed 50K jobs
+         * average efficiency: 92% for jobs and 94% for walltime
+
+---++ LIGO (Britta)
+
+ * ITB validation: 
+   * LBNL_DSD_ITB, CIT_ITB_1  have not updated VORS
+   * FNAL_FERMIGRID_ITB : data transfer fail (LIGO side issue? - ts in progress): 
+   * can&#39;t authenticate at CIT_ITB_1
+
+ * Gratia Reports:
+   * Current week&#39;s total usage: 3 users utilized 17 sites;
+      * 8282 jobs total (7582 / 700 = 91.5% success);
+      * 39502.6 wall clock hours total (35494.3 / 4008.3 = 89.9% success);
+   * Previous week&#39;s total usage: 4 users utilized 18 sites;
+         * 15749 jobs total (14609 / 1140 = 92.8% success);
+         * 39014.2 wall clock hours total (36927.7 / 2086.5 = 94.7% success);
+   *  E@H statistics: 
+      * Recent Average Credit (RAC): 152,378.43727, last week: 143,541.10125
+      * E@H rank based on RAC: 6 (+2)
+      * E@H rank based on accumulated Credits: 25 (+0)
+
+   * GEO600-1.3.x code
+      * Fully migrated to new code
+      * Running at 14 sites
+
+   * Details 
+      * Remaining problems at:
+         * gpn-husker ? jobs pending, no gratia reports
+         * red GOC ticket open
+         * MIT_CMS, GOC ticket open
+         * SBGrid-Harvard-Exp: (Condor) Error in submit file
+         * UTA_DPCC deployment fail: svn
+         * Purdue_Caesar
+         * UCLA_Saxon_Tier3 
+         * UCSDT2 (?) app does not start
+         * TTU_ANTAEUS globus error
+      * Fixed: 
+         * STAR_BNL  
+
+
+
+---++ Integration (Suchandra)
+   * Currently undergoing VO validation and component validation
+   * Reviewing documentation
+   * About a week behind schedule
+
+
+---++ Site Coordination (Marco)
+OSG Site Administrator Workshop in August:
+   * 24 registered attendees so far
+   * finalizing program and requirements
+   * planning meeting earlier today
+   * sending reminder to specify requirements
+   * planning twiki: SiteCoordination.SiteAdminsWorkshopAug2009
+Site Administrators telecom on Thursday 7/23 (ITB slot):
+   * Adobe Connect test
+   * brief on OSG 1.2
+   * presentation of sessions and requirements for OSG Site Administrator Workshop
+Site update status (from !MyOSG):
+   * Label differ &quot;OSG-x.y&quot; &lt; 1.0.1, &quot;OSG x.y&quot; after
+   * Most recent version is OSG 1.0.4
+   * 1 OSG 1.1.4 resource
+   * 30 OSG 1.0.X resources (16 are 1.0.4)                                                                                                                                                                  
+   * 53 OSG 1.0.0
+   * 5 OSG 0.8.0
+   * 0 OSG 0.6
+
+---++ Engagement (Mats)
+
+9 users utilized 27 sites;
+
+6143 jobs total (5831 / 312 = 94.9% success);
+
+51599.0 wall clock hours total (51543.4 / 55.6 = 99.9% success);
+
+
+ReSS server move problem: Mostly resolved. Just a couple of sites left which have not restarted Tomcat - we will send friendly reminders. We have installed ITB, and made sure the Tomcat fix is in there. We have also verified the fix by changing the ress server address in /etc/hosts and making sure CEMon picked up the change. The change was picked up, so I think this issue has finally been resolved.
+
+
+New production problem: we have had several complaints that we are sending hour-long compile jobs to jobmanager-fork. The argument has been that they use so much resources so that should go to a compute node instead. The catch-22 here is that the storage description recommends $OSG_APP to only be writable on the head nodes and mounted read only on the compute nodes. Another question is if sites provide a build environment on their compute nodes. One solution would be to use the lrm jobmanager, and install the software into $OSG_DATA instead of $OSG_APP.
+
+
+
+---++ Metrics (Brian)
+
+   * We recovered a bit of hours compared to last week when Dan noted total hours were down (http://t2.unl.edu/gratia/)
+      * Most of the hours came from CMS, which had a large production round on T2s.
+   * Fixed a long-standing issue at BNL which prevented the transfer records from being sent in.  The issue was traced to the way their postgres database optimized the query compared to other sites.
+      * Potential issue: with both T1s running, it&#39;s possible that we have gone past the collector&#39;s capabilities.
+   * This week we&#39;ll be working on the Measurements part of the Internal Metrics program.
+
+---++ Virtual Organizations Group (Abhishek)
+
+   * OSG 1.2 pre-release validation by VOs -- Need: to decide on the closure date i.e., deadline as being targeted by Trash/Trash/Integration and STG. Inviting VOs with an active production status, including the 3 key stakeholders. ALICE, ATLAS, CDF, CMS, DES, D0, DOSAR, Engage, Fermilab-VO, LIGO, nanoHUB, NYSGrid, SBGrid, and STAR. D0, LIGO, Engage, DOSAR have started. D0 and LIGO have indicated a few site issues. URL: https://twiki.grid.iu.edu/bin/view/Trash/Trash/Trash/Trash/Integration/OSG12Validation#VO_validation
+
+   * GPN -- Greg is participating in weekly VO forums. GPN has undergone a shift in management. Need: to discuss VO removal request with GOC. 
+
+   * CALICE -- A new community, possibly already part of EGEE. Introduced by !FermiGrid team. Need: to discuss new VO registration request with GOC, and to get formal approval from EB.
+
+---++ Grid Operations Center (Rob Q.)
+
+   * OIM Updated to allow SMS address collection
+      * This addresses a WLCG request for Alarms to the OSG Tier 1 Resources 
+   * New VO Package Released today (removal of GUGrid VO and minor updates to CDF and JDEM) [[http://osggoc.blogspot.com/2009/07/new-vo-package-gugrid-vo-removed-cdf.html][Link]]
+   * Release of IGTF Distribution 1.30 [[http://osggoc.blogspot.com/2009/07/correction-new-release-18-of-ca.html][Link]]
+   * Upcoming Machine Room Move
+      * Last week maintenance in prep of machine room move went well [[http://osggoc.blogspot.com/2009/06/june-30-maintenance-on-oim-rsv-twiki_30.html][Link]]
+      * There is one more maintenance window set for tomorrow (!MyOSG and Bloomington BDII) [[http://osggoc.blogspot.com/2009/07/july-8-maintenance-on-myosg-and.html][Link]]
+*Registrations*
+   * New VO Calice Registered (Located at FNAL)
+   * Request to remove the GPN VO has been received  
+   * OSG Tickets past 6 months: &lt;br /&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/six_months_resolution_rates.jpg&quot; alt=&quot;six_months_resolution_rates.jpg&quot; width=&#39;1204&#39; height=&#39;826&#39; /&gt;    
+
+---++ Security (Mine)
+
+

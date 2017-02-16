@@ -1,0 +1,154 @@
+---+ DHTC Exercises - Remote submission
+
+This exercise will show you how to submit to a remote resource.
+
+%TOC%
+
+Work in groups of (possibly) 4 people.&lt;br&gt;
+Each member of the group takes one exercise and does the actual steps.&lt;br&gt;
+All members of the group monitor the progress of all 4 exercises in parallel.
+
+---++ Environment
+
+We will use the usual Condor submit host:&lt;br&gt;
+=vdt-itb.cs.wisc.edu=
+
+There will be no shared file system between the submit and the execute hosts, so you will have to transfer all the needed files with you.
+
+---++ Exercise 1 - Condor-C
+
+For this first exercise, we will submit jobs to a UCSD Condor pool, using Condor-C.
+
+Condor-C allows a user to submit to a remote Condor submit node, without logging into it first.&lt;br&gt;
+More details about Condor-C can be found in the [[http://www.cs.wisc.edu/condor/manual/v7.6/5_3Grid_Universe.html#SECTION00631000000000000000][Condor manual]].
+
+To submit to the remote Condor pool, use this submit file:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+# this tells it to use Condor-C to submit to the UCSD Condor pool
+Universe   = grid
+grid_resource = condor devg-2.t2.ucsd.edu devg-2.t2.ucsd.edu
+
+# this tells the remote condor to use the vanilla Universe
++remote_jobuniverse = 5
++remote_requirements = True
++remote_ShouldTransferFiles = &quot;YES&quot;
++remote_WhenToTransferOutput = &quot;ON_EXIT&quot;
+
+# this is standard Condor part
+Executable = &amp;lt;your executable here&amp;gt;
+Arguments  = &amp;lt;your arguments here&amp;gt;
+transfer_input_files = &amp;lt;list any additional files you need here&amp;gt;
+Log        = simple.log
+Output     = simple.out.$(Cluster).$(Process)
+Error      = simple.error.$(Cluster).$(Process)
+
+Queue &amp;lt;as many as you need&amp;gt;
+&lt;/pre&gt;
+
+You can try any of the programs you used yesterday.
+
+Or you may just run a simple test script to see where you land:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+#!/bin/bash
+date
+uname -a
+id
+# then sleep a bit to allow monitoring
+sleep 300
+&lt;/pre&gt;
+
+Run at least 20 jobs.
+
+Since this is your first exercise, I allow you to cheat a bit, and log into the remote UCSD Condor pool (=osgedu@devg-2.t2.ucsd.edu=)
+to monitor it locally there (please do not submit there).&lt;br&gt;
+In real life, you may not have this privilege.
+
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+ssh osgedu@devg-2.t2.ucsd.edu
+$ condor_q
+$ condor_status
+&lt;/pre&gt;
+
+What do you see?&lt;br&gt;
+Was it any different than running locally?
+
+---++ Exercise 2 - Condor-G
+
+For this second exercise, we will submit jobs to a local Grid Gatekeeper, using Condor-G.
+
+Condor-G allows a user to submit to a remote Grid gatekeeper, without logging into it first.&lt;br&gt;
+More details about Condor-G can be found in the [[http://www.cs.wisc.edu/condor/manual/v7.6/5_3Grid_Universe.html#SECTION00632200000000000000][Condor manual]].
+
+To submit to the remote Condor pool, use this submit file:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+# this tells it to use Condor-G to submit to the School Grid Gatekeeper
+Universe   = grid
+grid_resource = gt2 osg-edu.cs.wisc.edu/jobmanager-condor
+
+# this is standard Condor part
+Executable = &amp;lt;your executable here&amp;gt;
+Arguments  = &amp;lt;your arguments here&amp;gt;
+transfer_input_files = &amp;lt;list any additional files you need here&amp;gt;
+Log        = simple.log
+Output     = simple.out.$(Cluster).$(Process)
+Error      = simple.error.$(Cluster).$(Process)
+
+# This is required for Condor-G
+transfer_output_files = &amp;lt;list your files here&amp;gt;
+
+Queue &amp;lt;as many as you need&amp;gt;
+&lt;/pre&gt;
+
+Please notice the =transfer_output_files= line. Yes, *you need to explicitly list all the files you want back*! &lt;br&gt;
+Unlike regular Condor, Condor-G does not auto-discover files to be transfered back.&lt;br&gt;
+For more details, see the [[http://www.cs.wisc.edu/condor/manual/v7.6/condor_submit.html#73558][Condor Manual]].
+
+You will also need a Grid proxy for this; we will go into details as of why later.&lt;br&gt;
+For now, before submitting the jobs, just run:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+% voms-proxy-init -voms osgedu:/osgedu/2011OSGSummerSchool
+Enter GRID pass phrase:
+Your identity: /DC=org/DC=doegrids/OU=People/CN=Alain Roy 424511
+Creating temporary proxy ........................................... Done
+Contacting  voms.grid.iu.edu:15003 [/DC=org/DC=doegrids/OU=Services/CN=http/voms.grid.iu.edu] &quot;osgedu&quot; Done
+Creating proxy ............................ Done
+Your proxy is valid until Mon Jun 20 21:00:33 2011
+&lt;/pre&gt;
+
+Run the same jobs as before.
+
+Again, since this is your first experince with Condor-G, we will cheat a bit.
+You can log into =osg-edu.cs.wisc.edu= and monitor what is going on there (it is still a Condor pool).
+
+What do you see?&lt;br&gt;
+Was it any different than running locally?
+
+---++ Exercise 3 - True Condor-G
+
+For this third exercise, we will submit jobs to a Nebraska Grid pool, using Condor-G.
+
+The only change to Exercise 2 is that you need to change a line in the submit file:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+grid_resource = gt2 red.unl.edu/jobmanager-condor
+&lt;/pre&gt;
+
+Submit the same (kind of) jobs as before.
+
+Please notice that you cannot log into this Grid gatekeeper, so you will have to observe the status of the jobs only from the local queue.
+
+How was the experience?
+
+---++ Exercise 4 - True Condor-G #2
+
+This is very similar to Exercise 3, just with a different Grid site.
+
+The only change to Exercise 2 is that you need to change a line in the submit file:
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;
+grid_resource = gt2 itbv-ce-pbs.uchicago.edu/jobmanager-pbs
+&lt;/pre&gt;
+
+Submit the same (kind of) jobs as before.
+
+Please notice that you cannot log into this Grid gatekeeper, so you will have to observe the status of the jobs only from the local queue.
+
+How was the experience?

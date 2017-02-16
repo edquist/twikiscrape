@@ -1,0 +1,150 @@
+&lt;!--
+   * Set PURPOSE = *Purpose:* %BR%
+   * Set NOTES = *Notes:* %BR%
+   * Set DEFICIENCIES= *Deficiencies:* %BR%
+   * Set DOCUMENTATION= *Documentation:* %BR%
+   * Set ASSUMPTIONS = *Assumptions:* %BR%
+   * Set ACTION_ITEMS= *Action items:* %BR%
+--&gt;
+
+---+!!&lt;nop&gt;Site Access Validation for ITB 0.9.0
+%TOC%
+%STARTINCLUDE%
+
+---++ Overview
+The intent is  to enhance GUMS with a new interface. This will create a gridmap-file equivalent that will show VO/fqan vs. account name (e.g. group name OR pool name + range of available accounts), for a given host. Invoking the interface will NOT change the GUMS db config (no instantiation of DN to account mappings).
+
+It is envisioned that OSG will maintain such a map in the OSG pacman cache, together with the gums.template. This map contains all VOs and FQANs supported by OSG. The map is derived from the template and can be created whenever the gums.template changes.
+
+RSV probes will be written and run on each gatekeepers. The probes download the official OSG map and compare it with the GUMS configuration at the site and  the available accounts at the gatekeeper. 
+   1 Do all account mapped by GUMS exist on the CE? ERROR
+   1 Do all VO in OSG have maps? WARNING
+   1 Is there an FQAN specified by a VO that is NOT mapped in GUMS?
+   1 Are there 2 FQANs mapped to the same username ? WARNING
+      * 2 users from 2 different VOs mapped to the same account: ERROR
+   1 Are there 2 FQANs mapped to the same pool account (i.e. they should have different privileges) ? WARNING
+   1 User group is defined in GUMS, but no members. E.g. There is a typo -&gt; when GUMS tries to contact VOMS it cannot pull anything. OR you just added the group but GUMS is not synch&#39;ed yet OR VOMS has an expired certificate. WARNING.
+
+%TABLE{ tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;}%
+%EDITTABLE{  header=&quot;|*Menu option*|*No login required*|*Login required*|&quot; format=&quot;| textarea, 5x30 | textarea, 10 | textarea, 5x50 |&quot;  changerows=&quot;on&quot; quietsave=&quot;on&quot; editbutton=&quot;Edit table&quot; }%
+|*Condition*|*Severity*|*Comments*|
+|Do all account mapped by GUMS exist on the CE?| ERROR | |
+|Do all VO in OSG have maps?| WARNING | |
+|Is there an FQAN specified by a VO that is NOT mapped in GUMS?| | |
+|Are there 2 FQANs mapped to the same username?| WARNING | |
+|2 users from 2 different VOs mapped to the same account | ERROR | |
+|Are there 2 FQANs mapped to the same pool account (i.e. they should have different privileges)| WARNING | |
+|User group is defined in GUMS, but no members.| WARNING | |
+
+For OSG v1.0.0, we are evaluating if we can provide test 1-3. This should take 1 month FTE (until mid Mar). Other tests can be implemented at a later time in the RSV framework. 
+
+Assumption: only group and pool accounts are used; manual and ldap mappers are more complicated: 
+
+---++ Do all account mapped by GUMS exist on the CE?
+%PURPOSE%
+Verify that all UNIX accounts that can be assigned by GUMS exist on the CE node.  This insures that a grid user who is authorized to use the services will not be rejected because the UNIX account does not exist.
+
+%NOTES%
+These are already identified as a part of the _gums-host-cron_ and _edg-mkgridmap_ cron services.
+
+When these cron processes are run a check is made to verify the UNIX account exists.
+
+These are identified in the _VDT_LOCATION/monitoring/osg-undefined-accounts.txt_ file.
+   * This file is only updated (i.e., the timestamp changed) if there was a change.
+   * To verify when this check was last performed, you can check the timestamp on the _VDT_LOCATION/monitoring/osg-undefined-accounts.txt/last_checked_ file.
+
+The script that performs the check for UNIX accounts is _$VDT_LOCATION/osg-vo-map/sbin/check-vo-map_ . It does a simple _/usr/bin/id_ on the accounts that would/are assigned.
+
+%DEFICIENCIES%
+   1 For pool accounts, only those accounts that have been assigned are used in the 
+ _./gums/scripts/gums-host generateOsgUserMap_ client process used by the the _gums-host-cron_  service.  Therefore, those accounts that have been allocated, but not yet assigned, are not checked.
+   1 The check for the existence of the UNIX account is only done on the CE node.  No check is performed on the worker nodes.
+   1 There is no check that permissions are set correctly for the UNIX account assigned.
+
+%ACTION_ITEMS% 
+
+%DOCUMENTATION%
+Can be found in the [[ReleaseDocumentation/ValidateVoAccess][Validate VO Access]] twiki as a part of [[ReleaseDocumentation/SiteValidationTable][Site Validation]] within OSG.
+
+
+---++ Do all VOs in OSG have maps?
+%PURPOSE%
+To determine if all the OSG VOs are supported on a CE node.
+
+%NOTES%
+Currently, there exists a list of the VOs that a CE will support based on:
+   * GUMS will authorize at least one user to an account that maps to that VO
+   * At least one of the UNIX accounts that GUMS can assign does actually exist on the CE node.
+
+These are already identified as a part of the _gums-host-cron_ and _edg-mkgridmap_ cron services.
+
+These are identified in the _VDT_LOCATION/monitoring/osg-supported-vo-list.txt_ file.
+   * This file is only updated (i.e., the timestamp changed) if there was a change.
+   * To verify when this check was last performed, you can check the timestamp on the _VDT_LOCATION/monitoring/osg-supported-vo-list.txt/last_checked_ file.
+
+The script that performs the check for the _supported vo list_ is _$VDT_LOCATION/osg-vo-map/sbin/check-vo-map_ . 
+   * When the cron processes are run a check is made to verify the UNIX account exists.
+   * The _osg-user-vo-map.txt_ is created for only those GUMS assigned UNIX accounts that exist on the CE node.
+   * Then the _osg-user-vo-map.txt_ file is evaluated to determine the list of _supported vos_ .
+
+%DEFICIENCIES%
+   1 For pool accounts, only those accounts that have been assigned are used in the 
+ _./gums/scripts/gums-host generateOsgUserMap_ client process used by the the _gums-host-cron_  service.  Therefore, those accounts that have been allocated, but not yet assigned, are not checked.
+   1 There is no check that permissions are set correctly for the UNIX account assigned.
+   1 There does not exist a set of official OSG VOs to compare against.
+
+%ACTION_ITEMS%
+   1 Maintain a list of OSG VOs.
+
+%DOCUMENTATION%
+Documentation can be found in the [[ReleaseDocumentation/ValidateVoAccess][Validate VO Access]] twiki as a part of [[ReleaseDocumentation/SiteValidationTable][Site Validation Table]] within OSG.
+
+
+
+---++ Is there an FQAN specified by a VO that is NOT mapped in GUMS?
+%PURPOSE%
+%NOTES%
+%ASSUMPTIONS%
+%DEFICIENCIES%
+%ACTION_ITEMS%
+%DOCUMENTATION%
+
+
+
+
+---++ Are there 2 FQANs mapped to the same username?
+
+---++ Two users from 2 different VOs mapped to the same account
+%PURPOSE%
+%NOTES%
+%ASSUMPTIONS%
+%DEFICIENCIES%
+%ACTION_ITEMS%
+%DOCUMENTATION%
+
+
+
+---++ Are there 2 FQANs mapped to the same pool account?
+%PURPOSE%
+(i.e. they should have different privileges)? WARNING
+
+%NOTES%
+%ASSUMPTIONS%
+%DEFICIENCIES%
+%ACTION_ITEMS%
+%DOCUMENTATION%
+
+
+
+---++ User group is defined in GUMS, but no members. 
+%PURPOSE%
+%NOTES%
+%ASSUMPTIONS%
+%DEFICIENCIES%
+%ACTION_ITEMS%
+%DOCUMENTATION%
+
+
+%STOPINCLUDE%
+
+-- Main.JohnWeigand - 27 Feb 2008

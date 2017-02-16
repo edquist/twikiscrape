@@ -1,0 +1,101 @@
+-- Main.BrittaDaudert - 12 Sep 2011
+---++ Action/Significant Items:
+
+---++ Attendees:
+Apologies: Rob Quick, Scott Teige (EGI Technical Forum)
+ 
+---++ CMS (Burt)
+   * Machine: LHC now at roughly 1/3 design luminosity!  (This adds time to our event reconstruction and memory usage, at least until the next software release..)
+      * Big rereconstruction runs coming when the new CMS software release gets validated
+   * *Still no gratia e-mail report*, but I looked at the plots: about 441 khour/day
+   * Losing BeStMan client support may have consequences -- I&#39;m talking to the sites this week
+   * FNAL Tier 1 downtime on October 15, details to come
+   * VOMRS service outage at CERN -- new registrations were not sending mails.  It&#39;s been fixed.
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status
+      * Overall productive week for LHC, with some record performances, and data taking. Total collected luminosity for ATLAS now is 3.2fb-1.
+      * US ATLAS production during the week was quite stable, at the average level of 12K running jobs, mainly simulation jobs.
+   * Job statistics for last week.      
+      * Gratia report: USATLAS ran 2.8M pilot jobs, with cpu/walltime ratio of 85% 
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 940K 
+   * Data Transfer statistics for last week
+      * Data transfer rate was 300T~400T/day last week, normal. 
+   * Issues
+      * Cancelled downtime still affects site availability calculation
+         * GOC ticket https://ticket.grid.iu.edu/goc/10984
+         * results need to be corrected, so that the monthly report won&#39;t be affected. 
+         * GOC is helping trace it with SAM folks now. 
+
+---++ LIGO (Britta, Robert E.)
+
+---++ Grid Operations Center (Rob Q.)
+---+++ Operations Last Week 
+   * [[http://tinyurl.com/3k3lqjh][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * Production release, [[http://osggoc.blogspot.com/2011/09/goc-service-update-september-13th-at.html][release notes]] are available
+   * OIM moved to Bloomington.
+   * We expect a Middleware Release from VDT containing the Apache DoS patch. 
+   * New VO Package Release with LBNE expected. 
+      * This was not released due to some changes, as I&#39;m traveling this may need to wait a bit longer. 
+   * !GlideIn Factory
+      * Last week on Tuesday we caught a major bug due to a mistake when patching glideinWMS code on the UCSD Factory on Friday (9/9).
+         * A patch initially applied on Thursday 9/8 two hours before SD power outage had a bug that corrupted our glidein match expression
+         * Friday when applying the fix we updated the source but forgot to reconfigure thus leaving the bad patch in place
+         * On Tuesday (9/13) we discovered the match expression was corrupt because glideins were starting user jobs on sites where they shouldn&#39;t run
+         * We were able to fix it immediately on discovery of the problem
+         * Frank will send a formal summary / report to OSG this week and we are investigating ways to monitor this type of error to catch it sooner
+
+---+++ Operations This Week
+   * ITB Servers OS Updates
+      * Will have the Apache DoS vulnerability patch
+      * As well as other updates to kernel and packages
+   * Continuing BDII v5 testing: 3rd week of continuous load testing. Starting to reveal an abnormal CPU usage increase on is-itb1.
+   * Operations would like to Invite CMS and ATLAS to test is5.grid.iu.edu a V5 BDII for accuracy. This is not in the production RR until CMS and ATLAS can validate. 
+   * GOC-TX interface for Fermilab&#39;s new ticketing system &quot;ServiceNow&quot; is taking shape. I am currently waiting for Fermilab to enable notification email so that I can start end-to-end testing.   
+   * !GlideIn Factory
+      * GOC Production factory is up - [[http://osggoc.blogspot.com/2011/09/goc-production-glidein-factory-service.html][Notification]]
+         * VOs can contact us at osg-gfactory-support@physics.ucsd.edu to register their frontends
+         * Uses glideinWMS 2.5.2 and condor 7.6.3
+         * Configuration mirrors UCSD instance, any sites previously available to VOs have carried over into the GOC instance
+         * Announced it is ready this morning on osg-gfactory-announce@physics.ucsd.edu
+
+---++ Engage (Mats, John)
+
+---++ Integration (Suchandra)
+    * Currently testing rpms in ITB
+       * Currently looking at wn-client and ca certs rpms
+       * VOMS and glexec being externally tested
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.2.21
+      *       96 (-3) OSG 1.2.X resources (      10 are 1.2.21)
+      *        2 (0) OSG 1.0.X resources (       0 are 1.0.6)
+      *        2 (0) OSG 1.0.0 resources
+
+---++ Virtual Organizations Group (Chander)
+
+---++ Security (Mine)
+   * Operational Security: 
+      * There are 3 security vulnerabilities with Apache and Tomcat. One is patched and released in RHEL repos. The second one is patched but not released by RedHat. The third has no fix yet. Three osg assets under risk: VDT software, GOC servers and VDT servers. 
+      * VDT already upgraded software and is waiting for patches. the risk with unpatched vulnerabilities are low.  
+      * We have a process for working with GOC personnel. Each Monday a security team member attends the ops meeting and reports on risks to GOC servers. GOC has a regular patching schedule: Patches from RHEL rolled out last Tuesday of each month. Therefore, security team only intervenes in the vulnerabilities where we need an urgent update. For the current vulnerabilities, we had followed up the process. Scott confirmed that a patchroll out will be done on 9/27. This was back when we first heard about the first vulnerability. We met again this Monday and discussed the two newer vulnerabilities. We found out that GOC is not affected by these two. 
+      * We have been working with Alain on vdt servers. They are only affected by first two vulnerabilities. We will work with CSlab staff members to understand their patch schedule. It seems like there is not a written process. 
+      * Kernel.org compromise is spreading. LinuxFoundation is also hacked and taken down. Other linux distros reported break-in attempts as well. Kernel is having trouble confirming the integrity of source code. The developer credentials were compromised. The attack may have been going on quietly for a few months until discovered. 
+      * No more bitcoin attacks.
+   * RSV Probes:
+      * Are there any sites who uses optional security RSV probes: one probe lists the VOs supported on the CE and the other one shows if connection to VOMS server is working out. If no one is interested in the probes, we will stop including them in VDT.
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+
+
+-- Main.RobQ - 20 Sep 2011

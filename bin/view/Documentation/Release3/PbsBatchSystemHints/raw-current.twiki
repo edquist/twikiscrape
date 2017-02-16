@@ -1,0 +1,275 @@
+%SHOW_DOC_STATUS_TABLE%
+
+---+!! Portable Batch System (PBS) Hints
+%TOC{}%
+
+---+ About this Document
+&lt;!-- useful variable definitions
+   * Local UCL_HOST = ce
+--&gt;
+
+%ICON{&quot;hand&quot;}% This document is for System Administrators of a %LINK_GLOSSARY_CE%. It describes all necessary steps to enable the [[http://en.wikipedia.org/wiki/Portable_Batch_System][Portable Batch System]] to work with the !OSG software stack.
+
+---+ Requirements
+
+   1 Working !PBS installation
+   1 [[InstallComputeElement][Compute Element Installation]]
+   1 [[InstallComputeElement#ConfigPBS][Additional Installation Instructions for PBS]]
+
+---+ General Recommendations
+
+   * Do not install the !PBS server and the !OSG %LINK_GLOSSARY_GATEKEEPER% on the same host to avoid problems with the gatekeeper bringing down the batch scheduler.
+   * Export =/var/spool/pbs/server_priv/accounting= and =/var/spool/pbs/server_logs= from your !PBS server to the %LINK_GLOSSARY_GATEKEEPER% in order for Gratia and WS-GRAM to function correctly.
+   * Multiple !OSG gatekeepers can be configured to access a single !PBS server.
+
+---+ !PBS Configuration
+
+!PBS maintains _stdout_ and _stderr_ on the execution node of the job; both are copied back to the !PBS server host upon completion of the job using =pbs_rcp= by default. If user home directories are shared across cluster nodes, you can edit =/var/spool/pbs/mom_priv/config= to manage copy-back by adding:
+
+&lt;pre class=&quot;file&quot;&gt;
+$usecp *.%UCL_HOST_FQDN%:/home /home
+&lt;/pre&gt;
+
+%NOTE% Adjust the regular expression =*.%UCL_HOST_FQDN%= to match the node names and domain of your node network!
+
+---+ Gatekeeper Configuration
+
+The !Perl script =$GLOBUS_LOCATION/globus/lib/perl/Globus/GRAM/JobManager/pbs.pm= translates a Globus !RSL to the !PBS submission script. By _default_ the !Perl script assumes that the _default_ queue will be used. To change the queue name or any other !PBS directive, edit =$GLOBUS_LOCATION/globus/lib/perl/Globus/GRAM/JobManager/pbs.pm=. 
+
+---++ Create a Default Queue
+
+Edit =$GLOBUS_LOCATION/globus/lib/perl/Globus/GRAM/JobManager/pbs.pm= and add =%RED%#PBS -q &amp;lt;queue name&amp;gt;%ENDCOLOR%= to the file:
+
+&lt;pre class=&quot;file&quot;&gt;
+#! /bin/sh
+# PBS batch job script built by Globus job manager
+#
+#PBS -S /bin/sh
+#%RED%PBS -q &amp;lt;queue name&amp;gt;%ENDCOLOR%
+EOF
+&lt;/pre&gt;
+
+%NOTE% Change %RED%&amp;lt;queue name&amp;gt;%ENDCOLOR% with the name of the queue to be used by default. Grid users who specify a queue during job submission will not be affected by this setting. 
+
+---++ Create a Dynamic OSG_WN_TMP Directory
+
+   1 Create a prologue script that creates the temporary directory
+   1 Modify =$GLOBUS_LOCATION/globus/lib/perl/Globus/GRAM/JobManager/pbs.pm=
+
+&lt;pre class=&quot;file&quot;&gt;
+#!/bin/bash
+# Create a /scratch/jobid dir for every job run, and copy a user&#39;s keytab file from the PBS head node.
+#
+# 10/31/2006 - &lt;sether@fnal.gov&gt; added lots and lots of error checking
+# 11/06/2006 - &lt;jallen@fnal.gov&gt; modified script to use a separate scratch filesystem for each job
+# 12/15/2006 - &lt;jallen@fnal.gov&gt; write critical errors to ERROR_FILE to mom health script
+# 05/04/2007 - Steven Timm add output at the end of script
+
+JOBID=$1
+USERNAME=$2
+JOB_EXEC_GRP=$3
+JOB_NAME=$4
+RESOURCE_LIMITS=$5
+QUEUE=$6
+JOB_ACCOUNT=$7
+
+SCRATCH_DIR=&quot;/scratch&quot;
+KRB_DIR=&quot;/var/adm/krb5&quot;
+JOBS_DIR=&quot;/var/spool/pbs/mom_priv/jobs&quot;
+HOME_MNT_POINT=&quot;/RunII/home&quot;
+ERROR_FILE=&quot;/var/spool/pbs/ERROR&quot;
+
+# Sanity checks
+if [ ! ${JOBID} ]; then
+        logger &quot;PBS prologue: JOBID not specified&quot;
+        echo &quot;JOBID not specified&quot;
+        exit 1;
+fi
+
+if [ ! ${USERNAME} ]; then
+        logger &quot;PBS prologue: USERNAME not specified&quot;
+        echo &quot;USERNAME not specified&quot;
+        exit 1;
+fi
+
+
+if [ ! -d ${SCRATCH_DIR} ]; then
+        err=&quot;$SCRATCH_DIR does not exist&quot;
+        logger &quot;PBS prologue: $err&quot;
+        echo $err | tee $ERROR_FILE
+        exit 1;
+fi
+
+
+# Job info
+echo &quot;---------------------------------------------------------&quot;
+echo &quot;Start CAB Prolouge `date`&quot;
+printf &quot;%-15s %s\n&quot; &quot;jobid:&quot; $JOBID
+printf &quot;%-15s %s\n&quot; &quot;username:&quot; $USERNAME
+printf &quot;%-15s %s\n&quot; &quot;job name:&quot; $JOB_NAME
+printf &quot;%-15s %s\n&quot; &quot;limits:&quot; $RESOURCE_LIMITS
+printf &quot;%-15s %s\n&quot; &quot;queue:&quot; $QUEUE
+
+#$SHORT_JOBID=${JOBID%%.*}
+
+# Clean-up scratch
+# Only running jobs should be using space.
+for job_id in $(ls ${SCRATCH_DIR} | egrep &quot;fnal.gov$&quot;); do
+        short_job_id=${job_id%%.*}
+        j_cnt=$(ls $JOBS_DIR | egrep -c &quot;^$short_job_id&quot;)
+        if [ &quot;$j_cnt&quot; -eq  0  -a &quot;$short_job_id&quot; != &quot;&quot; ]; then
+                rm -rf ${SCRATCH_DIR}/${job_id}
+                logger &quot;PBS prologue: Cleaning-up old scratch dir ${SCRATCH_DIR}
+/${job_id}...&quot;
+        fi
+done
+
+# do we have scratch filesystems setup
+sfs_cnt=$(ls ${SCRATCH_DIR} | egrep -c &quot;_fs$&quot;)
+if [ $sfs_cnt -lt 1 ]; then
+
+        if [ -x &quot;/var/spool/pbs/bin/mkscratch_fs.sh&quot; ]; then
+                err=&quot;Creating scratch filesystems. This will take awhile..&quot;
+
+                # Send errors to job output and to error file
+                # so health check script will see it and set
+                # set node offline.
+                echo $err | tee $ERROR_FILE
+
+                logger &quot;PBS prologue: $err&quot;
+                /var/spool/pbs/bin/mkscratch_fs.sh
+                exit 1;
+
+        else
+                err=&quot;Could not create scratch filesytems...&quot;
+                echo $err | tee $ERROR_FILE
+                logger &quot;PBS prologue: $err&quot;
+                exit 1;
+        fi
+fi
+
+# Make sure scratch filesystems are mounted
+i=0
+while [ $i -lt $sfs_cnt ]; do
+        scratch_mnt=${SCRATCH_DIR}/scratch_${i}
+        scratch_mnt_info=$(mount | awk -v mnt=&quot;$scratch_mnt&quot; &#39;{ if ($3 == mnt) p
+rint $0 }&#39;)
+        if [ &quot;$scratch_mnt_info&quot; == &quot;&quot; ]; then
+                mount -oloop ${scratch_mnt}_fs  ${scratch_mnt}
+                if [ $? -ne 0 ]; then
+                        err=&quot;Unable to mount $scratch_mnt. Mount cmd returned co
+de $?.&quot;
+                        echo $err | tee $ERROR_FILE
+                        logger &quot;PBS prologue: $err&quot;
+                        exit 1;
+                fi
+        fi
+        i=$(($i+1))
+done
+
+# Link the job id to a free scratch area
+i=0
+linked=0
+while [ $i -lt $sfs_cnt ]; do
+        ls_out=$(ls -l ${SCRATCH_DIR} | egrep &quot;\-&gt; scratch_${i}&quot;)
+        if [ &quot;$ls_out&quot; == &quot;&quot; ]; then
+                cd $SCRATCH_DIR
+                # clean-up if necessary
+                rm -rf $SCRATCH_DIR/scratch_${i}/*
+                ln -s  scratch_${i} $JOBID
+                linked=1
+                break
+        fi
+        i=$(($i+1))
+done
+
+if [ $linked -ne 1 ]; then
+        err=&quot;Unable to link $JOBID to scratch dir...&quot;
+        logger &quot;PBS prologue: $err&quot;
+        echo $err | tee $ERROR_FILE
+        exit 1;
+fi
+
+
+# Make sure home dirs are mounted
+HOME_MNT_INFO=$(mount | awk -v mnt=$HOME_MNT_POINT &#39;{ if ($3 == mnt) print $0 }&#39;
+)
+if [ &quot;$HOME_MNT_INFO&quot; == &quot;&quot; ]; then
+   echo &quot;Home directories not mounted!!&quot;
+   logger &quot;PBS prologue: Home dirs not mounted. Rebooting.&quot;
+   /sbin/shutdown -r now
+fi
+
+chmod 777 ${SCRATCH_DIR}/${JOBID}
+
+echo &quot;End CAB Prolouge `date`&quot;
+echo -e &quot;---------------------------------------------------------\n&quot;
+
+#   OSG_WN_TMP now set dynamically on this cluster to /scratch/${PBS_JOB_ID}
+print JOB &quot;OSG_WN_TMP_OLD=\${OSG_WN_TMP}\n&quot;;
+print JOB &quot;export OSG_WN_TMP_OLD\n&quot;;
+print JOB &quot;OSG_WN_TMP=/scratch/\${PBS_JOBID}\n&quot;;
+print JOB &quot;export OSG_WN_TMP \n&quot;;
+&lt;/pre&gt;
+
+---+ Troubleshooting
+
+   * A simple grid job submission:&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% globus-job-run %UCL_HOST_FQDN%:2119/jobmanager-pbs /bin/hostname
+&lt;/pre&gt; will fail if the %RED%jobtype%ENDCOLOR% argument is not specified as part of the !RSL. The jobtype can be _single_, _multiple_ and _PBS_. The correct syntax is:&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% globus-job-run %UCL_HOST_FQDN%:2119/jobmanager-pbs -x &#39;(%RED%jobtype%ENDCOLOR%=single)&#39; /bin/hostname
+&lt;/pre&gt;
+
+   * Unless ssh key-pairs have been configured for _all_ users, so that all the parts of the _multiple_ job can be launched with the gatekeeper, the job will fail with following error:&lt;pre class=&quot;screen&quot;&gt;
+Host key verification failed.
+/var/spool/pbs/mom_priv/jobs/302232.gaia.SC: line 87: [: too many arguments
+&lt;/pre&gt;
+   *  If a !PBS job exceeds resource limits (_resources_default.mem_, _resources_default.walltime_) it will get killed unless the job explicitly request higher resource limits using the !RSL.
+   *  If the job gets submitted to a !PBS queue that has reached its queue limit, the submission will fail and the job will be held with =Globus error 17=.
+
+---+ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+
+   DEAR DOCUMENT OWNER
+   ===================
+
+   Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER          = StevenTimm
+
+   Please define the document area, choose one of the defined areas from the next line
+   DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = ComputeElement
+
+   define the primary role the document serves, choose one of the defined roles from the next line
+   DOC_ROLE = (Scientist|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+   Please define the document type, choose one of the defined types from the next line
+   DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = HowTo
+   
+   Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+   Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+   change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+   change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+   DEAR DOCUMENT REVIEWER
+   ======================
+
+   Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = MarcoMambelli
+  
+   Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+ 
+--&gt;

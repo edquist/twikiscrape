@@ -1,0 +1,706 @@
+---+!! *Document Formatting Standards and Tools*
+%DOC_STATUS_TABLE%
+%TOC%
+---++ About This Document
+%ICON{hand}% This document is intended for those people who write, edit, or review documents in the official OSG documentation TWiki.  It describes the formatting standards, methods used to structure composite documents, and formatting tools that automatically format certain types of information.
+
+---++ General TWiki formatting information
+   * A description of the TWiki concepts for controlling formatting, creating lists, creating tables, etc. can be found in TWiki.TextFormattingRules.
+   * All the &quot;rules&quot; that follow should be used in most cases, but always use your best judgment.
+---+++ Rules for topics and section headings
+   * All topics have a *bold heading* at Level 1 (=---+ *&lt;nop&gt;Title*=) and first letters of words are capitalized (eg. Rules For Formatting Documents).
+   * The level one heading is taken as its twiki topic name, separated into words (e.g., !MyTopic becomes My Topic). Choose the twiki name carefully!  If you want to spell out a title whose TWiki name has abbreviations, do that.
+   * All level two sections should be in title case.  Eg: =---++ Details on the Installation=
+   * All sections (level three and below) have the first word capitalized, the rest lower case.  Eg: =---+++ Details on the installation= (except for proper nouns)
+   * To prevent the Table of Contents from becoming too long and confusing, exclude from the TOC detailed sections (typically level three or four) and below.  To accomplish this,  use !%TOC{depth=&quot;2&quot;}% or !%TOC{depth=&quot;3&quot;}% to produce the table of contents.
+
+---++ Documentation Standards
+The following is a list of standards adopted for official documentation:
+| *Item* | *Standard* | *Example* |
+| Document Location | General documents that have no (or almost no) Release dependencies and apply to the current; and, most likely, all future releases should be put in the Documentation Web.  Those that are release dependent belong in the corresponding Release sub Web under the Documentation Web. | !Documentation.StorageOverview, !Documentation.GridUsersGuide, !Documentation/Release3.InstallOSGClient, !Documentation/Release3.LocalStorageConfiguration |
+| Document Name | All documents should use Wiki words as names (2 or more capitalized words, concatenated | !WikiWord |
+| Document Parent | Unless there is a particular hierarchy, documents should use !WebHome as their parent.  Some documents (e.g. technology description documents) may use the appropriate Navigation page as parent | !CertificateGetWeb&#39;s parent is !NavUserJoin or !Trash.ReleaseDocumentationBestmanGateway parent is !Documentation/Release3.BestmanOverview |
+| Document Reference | Documents should always be referenced with !Webname.DocumentName (or simply !DocumentName if in the same web).  If a url is copied, remember to change !Webname/DocumentName to !Webname.DocumentName. | !Trash.ReleaseDocumentationDocHowTo or !Documentation/Release3.ReleaseNotes |
+| Document Includes | Items common to many documents should be done with [[Trash.ReleaseDocumentationDocFormattingRules#About_Includes][includes]]. | Install documents use &lt;verbatim&gt;%INCLUDE{&quot;YumRepositories&quot; section=&quot;OSGRepoBrief&quot;}%&lt;/verbatim&gt; and &lt;verbatim&gt;%INCLUDE{&quot;InstallCertAuth&quot; section=&quot;OSGBriefCaCerts&quot;}%&lt;/verbatim&gt; |
+
+---+++ Install Document Standards (Also see Documentation.Release3.DocInstallTemplate)
+---++++ Requirements Section
+%NOTE% The Requirements are broken into these subsections (at the appropriate level) with the following formatting.
+---+++++ Host and OS
+
+   * A host to install the RSV Service (Can be the CE or a separate, standalone computer)
+   * OS is %SUPPORTED_OS%. 
+   * Root access
+
+---+++++ Users
+
+The RSV installation will create two users unless they are already created.
+
+| *User* | *Comment* |
+| =rsv= | Runs the RSV tests. The RSV certificate (below) will need to be owned by this user. |
+| =cndrcron= | Runs the HTCondor Cron processes to schedule the running of the tests. |
+
+---+++++ Certificates
+
+| *Certificate* | *User that owns certificate* | *Path to certificate* |
+| RSV service certificate | =rsv= | =/etc/grid-security/rsv/rsvcert.pem= &lt;br&gt; =/etc/grid-security/rsv/rsvkey.pem= |
+
+---+++++ Networking
+
+%STARTSECTION{&quot;Firewalls&quot;}%
+The Networking table should is defined in the Documentation.Release3.FirewallInformation document.  To include relevant information in an install document, use:
+&lt;verbatim&gt;
+%INCLUDE{&quot;FirewallInformation&quot; section=&quot;FirewallTable&quot; lines=&quot;comma_separated_list&quot;}%
+All the predefined lines are: 
+gram,portrange,portsource,gridftp,srm,srm2,gsissh,voms,gums,myproxy,condor,rsvin,rsvout,various
+
+You can add custom lines using a backslash &quot;\&quot; after the include and adding your lines (remember the 2 &quot;space&quot; on each side to center the cell), e.g.:
+%INCLUDE{&quot;Documentation/Release3.FirewallInformation&quot; section=&quot;FirewallTable&quot; lines=&quot;gram,portrange&quot;}% \
+| HTTP |  tcp  |  80  |  %ICON{choice-yes}%  | | My custom HTTP server with special explanation |
+&lt;/verbatim&gt;
+will produce an output (table and line) like this:
+
+%INCLUDE{&quot;Documentation/Release3.FirewallInformation&quot; section=&quot;FirewallTable&quot; lines=&quot;gram,portrange&quot;}% \
+| HTTP |  tcp  |  80  |  %ICON{choice-yes}%  | | My custom HTTP server with special explanation |
+
+%ENDSECTION{&quot;Firewalls&quot;}%
+
+---+++++ Additional Requirements
+Can be added if needed
+
+
+---++++ Services Startup/Shutdown
+%NOTE% This is a partial example to show what is included and the formatting.  This goes after the Configuration section of Install documents. See also Documentation/Release3.DocInstallTemplate
+
+---+++++ Services 
+%NOTE% This is a partial example to show what is included and the formatting.  
+Services brief description
+
+---++++++ Starting and Enabling Services
+%STARTSECTION{&quot;StartVOMSServices&quot;}%
+To start VOMS you need to start several services:
+   1. %INCLUDE{&quot;Documentation/Release3.InstallCertAuth&quot; section=&quot;OSGBriefFetchCrlStart&quot;}%
+   1. Start voms server&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service voms start
+&lt;/pre&gt;
+%ENDSECTION{&quot;StartVOMSServices&quot;}%
+
+You should also enable the appropriate services so that they are automatically started when your system is powered on: 
+   * %INCLUDE{&quot;Documentation/Release3.InstallCertAuth&quot; section=&quot;OSGBriefFetchCrlEnable&quot;}%
+   * To enable the other services: &lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /sbin/chkconfig voms on
+&lt;/pre&gt;
+
+---++++++ Stopping and Disabling Services
+%STARTSECTION{&quot;StopVOMSServices&quot;}%
+To stop VOMS you need to stop voms,... , and also the services they use if nothing else is using them:
+   1. Stop voms server&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service voms stop
+&lt;/pre&gt;
+   1. %INCLUDE{&quot;Documentation/Release3.InstallCertAuth&quot; section=&quot;OSGBriefFetchCrlStop&quot;}%
+%ENDSECTION{&quot;StopVOMSServices&quot;}%
+
+In addition, you can disable services by running the following commands.  However, you don&#39;t need to do this normally.
+   * %INCLUDE{&quot;Documentation/Release3.InstallCertAuth&quot; section=&quot;OSGBriefFetchCrlDisable&quot;}%
+   * To disable the other services: &lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% /sbin/chkconfig voms off
+&lt;/pre&gt;
+
+
+---++++ Useful Configuration and Log Files
+In the troubleshooting section of each Install Document, the file locations should be specified as follows:
+| *Service/Process* | *Configuration File* | *Description* |
+| Service1 | /etc/Service1.cfg | Configuration information for this service |
+| Service2 | /etc/Service2.cfg | Configuration information for this service |
+
+| *Service/Process* | *Log File* | *Description* |
+| Service1 | /var/log/service.log | Records all service errors |
+| | /var/log/service1b.log | Records all service updates |
+| Service2 | /var/log/service2.log | Records all service errors |
+
+---+++ Release Variables
+%INCLUDE{&quot;Documentation/Release3.DocReleaseVariables&quot;}%
+---++ Compose Documents using Includes
+
+!Twiki provides the possibility to re-use already written text on several documents. There exist two different ways to mark text on a page to be included on other pages:
+
+   1 by defining _includes_
+   1 by defining _sections_
+
+---+++ About Includes
+
+Includes are less flexible than sections and should be avoided! It is only possible to define one include per page and it is not possible to hand over variables or dynamically shift the table of contents for the included text. To mark written text and make it available to be included elsewhere use:
+
+&lt;pre class=&quot;file&quot;&gt;
+&amp;#37;STARTINCLUDE&amp;#37;
+&amp;lt;your text to be included somewhere else here&amp;gt;
+&amp;#37;STOPINCLUDE&amp;#37;
+&lt;/pre&gt;
+
+To re-use the text elsewhere use:
+
+&lt;pre class=&quot;file&quot;&gt;
+&amp;#37;INCLUDE{&quot;&amp;lt;Web&amp;gt;/&amp;lt;PageName&amp;gt;&quot;}&amp;#37;
+&lt;/pre&gt;
+
+   * Documentation.DocExampleMainTopic for a main topic *not likely* to be used with =STARTINCLUDE/STOPINCLUDE= so as to be included in other topics.
+   * Wherever possible [[https://twiki.grid.iu.edu/twiki/bin/view/TWiki/TextFormattingRules][TWiki editing]] should be used rather than raw HTML.
+   * Here is the !WebTopicEditTemplate (now Trash.ReleaseDocumentationDocInstallTemplate) for newly created pages in this twiki.  Once you create the new page, any other template (or content of your choice) can be pasted into the new page.
+
+---+++ About Sections
+
+Sections provide a greater flexibility than includes. It is possible to define more than one section per page and each section may be handed variables to be used. To mark written text and make it available to be included elsewhere use:
+
+&lt;pre class=&quot;file&quot;&gt;
+&amp;#37;STARTSECTION{&quot;&amp;lt;name of the section&amp;gt;&quot;}&amp;#37;
+&amp;lt;your text to be included somewhere else here&amp;gt;
+&amp;#37;ENDSECTION{&quot;&amp;lt;name of the section&amp;gt;&quot;}&amp;#37;
+&lt;/pre&gt;
+
+To re-use the text elsewhere use:
+
+&lt;pre class=&quot;file&quot;&gt;
+&amp;#37;INCLUDE{&quot;&amp;lt;Web&amp;gt;/&amp;lt;PageName&amp;gt;&quot; section=&quot;&amp;lt;name of the section&amp;gt;&quot;}&amp;#37;
+&lt;/pre&gt;
+
+---+++ Adjusting Heading Level for Sections
+
+Text marked to be included on a page utilizing an _include_ or a _section_ will be displayed just as written. In particular the level of headings remain to be fixed. It is however desirable to _shift_ the included sections according to the current table of contents. This can be achieved using _sections_ in the following way:
+
+&lt;pre class=&quot;file&quot;&gt;
+&amp;#37;STARTSECTION{&quot;&amp;lt;name of the section&amp;gt;&quot;}&amp;#37;
+---&amp;#37;SHIFT&amp;#37;+ My Level 1 Heading in this Section
+&amp;#37;ENDSECTION{&quot;&amp;lt;name of the section&amp;gt;&quot;}&amp;#37;
+&lt;/pre&gt;
+
+To re-use the text elsewhere and _not_ shift the heading use:
+
+&lt;pre class=&quot;file&quot;&gt;
+&amp;#37;INCLUDE{&quot;&amp;lt;Web&amp;gt;/&amp;lt;PageName&amp;gt;&quot; section=&quot;&amp;lt;name of the section&amp;gt;&quot;}&amp;#37;
+&lt;/pre&gt;
+
+To shift the heading by one level use:
+
+&lt;pre class=&quot;file&quot;&gt;
+&amp;#37;INCLUDE{&quot;&amp;lt;Web&amp;gt;/&amp;lt;PageName&amp;gt;&quot; section=&quot;&amp;lt;name of the section&amp;gt;&quot; TOC_SHIFT=&quot;+&quot;}&amp;#37;
+&lt;/pre&gt;
+
+---++ Formatting Tools
+
+The following sections describe tools available to easily format certain information to make it consistently recognizable and useful to the reader.
+
+---+++ Presenting the Unix Command Line
+
+Some technical documents may require the presentation of the Unix command line. A non-complete lists of reasons may be:
+
+   * to show a command and its arguments that the reader can copy-and-paste to his own command line
+   * to show the output of commands executed on the command line
+   * to show a series of steps on the command line as part of a procedure
+
+It is desirable to use a common format for the presentation of the command line on every document so the user easily recognizes the presentation as such. 
+
+---++++ Single Command Line
+
+The following example illustrates the presentation of a _single_ command line that the reader may copy-and-paste to his own command line:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% /bin/date --help&lt;/code&gt;
+&lt;/pre&gt;
+
+Here is the Twiki code used to render the command line:
+
+&lt;verbatim&gt;
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% /bin/date --help&lt;/code&gt;
+&lt;/pre&gt;
+&lt;/verbatim&gt;
+
+---++++ Multiline Command Line
+
+A Unix command and its arguments can grow to considerable size. This makes it difficult to display the entire command line without scrolling. One solution is to break down the command line while maintaining copy-and-paste functionality:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% configure_bestman
+--server y
+--user daemon
+--cert /etc/grid-security/bestman_cert/bestmancert.pem
+--key /etc/grid-security/bestman_cert/bestmankey.pem
+--with-allowed-paths /cache
+--gums-host gums.fnal.gov
+--gums-port 8443
+%RED%--enable-gateway%ENDCOLOR%&lt;/code&gt;
+&lt;/pre&gt;
+
+The example above can be rendered in the following way:
+
+&lt;verbatim&gt;&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% configure_bestman
+--server y
+--user daemon
+--cert /etc/grid-security/bestman_cert/bestmancert.pem
+--key /etc/grid-security/bestman_cert/bestmankey.pem
+--with-allowed-paths /cache
+--gums-host gums.fnal.gov
+--gums-port 8443
+%RED%--enable-gateway%ENDCOLOR%&lt;/code&gt;
+&lt;/pre&gt;
+&lt;/verbatim&gt;
+
+By using the html &amp;lt;&amp;#47;code&amp;gt; tag it is possible to use all text formatting tools while maintaining copy-and-paste functionality.
+
+%WARNING% Please make sure to end lines without additional white spaces after &amp;lt;&amp;#47;br&amp;gt;. Otherwise copy-and-paste will not work!
+
+
+---++++ Command Line and Output
+
+By showing the complete prompt and output of a command line you virtually enable the reader to &#39;look over your shoulder&#39;. By comparing his own results on the command line and the output presented as part of the documentation he will more likely detect errors during the execution of the command. 
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% /bin/date +%s
+1282075042
+&lt;/pre&gt;
+
+Again the Twiki code used to render the command line is simply:
+
+&lt;verbatim&gt;
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% /bin/date +%s
+1282075042
+&lt;/pre&gt;
+&lt;/verbatim&gt;
+
+Notice how the [[http://twiki.org/cgi-bin/view/TWiki/TWikiVariables][Twiki Variable]]  =&amp;#37;UCL_PROMPT&amp;#37;= is used to render a complete prompt such as used by the [[http://en.wikipedia.org/wiki/Bash_%28Unix_shell%29][Bash Shell]].
+
+Output generated by the Unix command line can become quiet long. In order to maintain a good readability of the document long output should be _hidden_, but accessible to the user. For that purpose we will use the [[http://twiki.org/cgi-bin/view/Plugins/TwistyPlugin][Twisty Plugin]]. The Twisty Plugin generates [[http://en.wikipedia.org/wiki/JavaScript][JavaScript]] code that collapses text into clickable links:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% /bin/date --help
+Usage: /bin/date [OPTION]... [+FORMAT]
+  or:  /bin/date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+Display the current time in the given FORMAT, or set the system date.
+&lt;/pre&gt;
+
+%TWISTY{%TWISTY_OPTS_OUTPUT%}%
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% /bin/date --help
+Usage: /bin/date [OPTION]... [+FORMAT]
+  or:  /bin/date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+Display the current time in the given FORMAT, or set the system date.
+
+  -d, --date=STRING         display time described by STRING, not `now&#39;
+  -f, --file=DATEFILE       like --date once for each line of DATEFILE
+  -r, --reference=FILE      display the last modification time of FILE
+  -R, --rfc-2822            output date and time in RFC 2822 format
+      --rfc-3339=TIMESPEC   output date and time in RFC 3339 format.
+                            TIMESPEC=`date&#39;, `seconds&#39;, or `ns&#39; for
+                            date and time to the indicated precision.
+  -s, --set=STRING          set time described by STRING
+  -u, --utc, --universal    print or set Coordinated Universal Time
+      --help     display this help and exit
+      --version  output version information and exit
+
+FORMAT controls the output.  The only valid option for the second form
+specifies Coordinated Universal Time.  Interpreted sequences are:
+
+  %%   a literal %
+  %a   locale&#39;s abbreviated weekday name (e.g., Sun)
+  %A   locale&#39;s full weekday name (e.g., Sunday)
+  %b   locale&#39;s abbreviated month name (e.g., Jan)
+  %B   locale&#39;s full month name (e.g., January)
+  %c   locale&#39;s date and time (e.g., Thu Mar  3 23:05:25 2005)
+  %C   century; like %Y, except omit last two digits (e.g., 21)
+  %d   day of month (e.g, 01)
+  %D   date; same as %m/%d/%y
+  %e   day of month, space padded; same as %_d
+  %F   full date; same as %Y-%m-%d
+  %g   last two digits of year of ISO week number (see %G)
+  %G   year of ISO week number (see %V); normally useful only with %V
+  %h   same as %b
+  %H   hour (00..23)
+  %I   hour (01..12)
+  %j   day of year (001..366)
+  %k   hour ( 0..23)
+  %l   hour ( 1..12)
+  %m   month (01..12)
+  %M   minute (00..59)
+  %n   a newline
+  %N   nanoseconds (000000000..999999999)
+  %p   locale&#39;s equivalent of either AM or PM; blank if not known
+  %P   like %p, but lower case
+  %r   locale&#39;s 12-hour clock time (e.g., 11:11:04 PM)
+  %R   24-hour hour and minute; same as %H:%M
+  %s   seconds since 1970-01-01 00:00:00 UTC
+  %S   second (00..60)
+  %t   a tab
+  %T   time; same as %H:%M:%S
+  %u   day of week (1..7); 1 is Monday
+  %U   week number of year, with Sunday as first day of week (00..53)
+  %V   ISO week number, with Monday as first day of week (01..53)
+  %w   day of week (0..6); 0 is Sunday
+  %W   week number of year, with Monday as first day of week (00..53)
+  %x   locale&#39;s date representation (e.g., 12/31/99)
+  %X   locale&#39;s time representation (e.g., 23:13:48)
+  %y   last two digits of year (00..99)
+  %Y   year
+  %z   +hhmm numeric timezone (e.g., -0400)
+  %:z  +hh:mm numeric timezone (e.g., -04:00)
+  %::z  +hh:mm:ss numeric time zone (e.g., -04:00:00)
+  %:::z  numeric time zone with : to necessary precision (e.g., -04, +05:30)
+  %Z   alphabetic time zone abbreviation (e.g., EDT)
+
+By default, date pads numeric fields with zeroes.
+The following optional flags may follow `%&#39;:
+
+  - (hyphen) do not pad the field
+  _ (underscore) pad with spaces
+  0 (zero) pad with zeros
+  ^ use upper case if possible
+  # use opposite case if possible
+
+After any flags comes an optional field width, as a decimal number;
+then an optional modifier, which is either
+E to use the locale&#39;s alternate representations if available, or
+O to use the locale&#39;s alternate numeric symbols if available.
+
+Report bugs to &lt;bug-coreutils@gnu.org&gt;.
+&lt;/pre&gt;
+%ENDTWISTY%
+
+This is the skeleton of the Twiki code that is used to render the output above:
+
+&lt;verbatim&gt;
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% /bin/date --help
+Usage: /bin/date [OPTION]... [+FORMAT]
+  or:  /bin/date [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]
+Display the current time in the given FORMAT, or set the system date.
+&lt;/pre&gt;
+
+%TWISTY{%TWISTY_OPTS_OUTPUT%}%
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% /bin/date --help
+... all the lines of output rather than just the first 3 lines ...
+&lt;/pre&gt;
+%ENDTWISTY%
+&lt;/verbatim&gt;
+
+%NOTE% Here a couple of *tips about TWISTY*. Note that the result of a TWISTY section may be affected by several elements and may affect the whole page:
+   * If you want a twisty section to be aligned with the item in the list put the twisty header on the same line of the text and the endtwisty on the same line where you end the content &lt;br&gt; %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;click to see how I did&quot;}% 
+ &lt;verbatim&gt;something like here &lt;br&gt; %TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;click to see how I did&quot;}% &lt;pre class=&quot;screen&quot;&gt;
+All your lines
+&lt;/pre&gt; %ENDTWISTY%
+&lt;/verbatim&gt; %ENDTWISTY%
+   * If the whole page layout is confused (menus, doctable, ...), probably you put endtwisty on a new line
+   * If you want the twisty message on the same line of a sentence then leave no empty line before the paragraph (after the title or the items before). &amp;lt;br&gt; tags are OK but empty lines change the layout. This may be browser dependent but is true at least in Chrome and Firefox. E.g. see the following 2 paragraph that share practically the same code
+Paragraph one, no empty line before it and 
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;same line&quot;}% 
+&lt;pre class=&quot;screen&quot;&gt;
+This worked
+&lt;/pre&gt; 
+%ENDTWISTY%
+
+Paragraph two, with empty line before it and 
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;same line&quot;}% 
+&lt;pre class=&quot;screen&quot;&gt;
+Not really - this did not work
+&lt;/pre&gt; 
+%ENDTWISTY%
+
+
+---++++ Highlighting Command Line Options
+
+Color can be used to _highlight_ the command line options that are currently being discussed. It can also be used to _visually tie_ a command line option to its expected output:
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% /bin/date %RED%+%s%ENDCOLOR%
+%RED%1282075042%ENDCOLOR%
+&lt;/pre&gt;
+
+This may not be very useful for =/bin/date= used in the example above. It becomes useful for long outputs where the color can be used to help the reader find the important parts of the output. See [[ReleaseDocumentation/GetGridCertificates][here]]. 
+
+Again the Twiki code used to render the command line is simply:
+
+&lt;verbatim&gt;
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% /bin/date %RED%+%s%ENDCOLOR%
+%RED%1282075042%ENDCOLOR%
+&lt;/pre&gt;
+&lt;/verbatim&gt;
+
+%NOTE% See the complete list of color definitions available [[TWiki/TWikiPreferences#ColorDefinitions][here]].
+
+---++++ Important Twiki Variables
+
+A number of [[http://twiki.org/cgi-bin/view/TWiki/TWikiVariables][Twiki Variables]] are used to control the rendering of the &lt;b&gt;U&lt;/b&gt;nix &lt;b&gt;C&lt;/b&gt;ommand &lt;b&gt;L&lt;/b&gt;ine:
+
+| *Variable*  | *Description*  | *Default Value*  |
+| &amp;#37;UCL_USER&amp;#37;  | username or login displayed by UCL_PROMPT  | %UCL_USER%  |
+| &amp;#37;UCL_CWD&amp;#37;  | current working directory displayed by UCL_PROMPT  | %UCL_CWD%  |
+| &amp;#37;UCL_HOST&amp;#37;  | hostname displayed by UCL_PROMPT  | %UCL_HOST%  |
+| &amp;#37;UCL_DOMAIN&amp;#37;  | domain name  | %UCL_DOMAIN%  |
+| &amp;#37;UCL_HOST_FQDN&amp;#37;  | full hostname |  %UCL_HOST_FQDN%  |
+| &amp;#37;UCL_PROMPT&amp;#37;  | the full prompt to be displayed  | %UCL_PROMPT%  |
+| &amp;#37;UCL_PROMPT_ROOT&amp;#37;  | the full prompt to be displayed for the _root_ user | %UCL_PROMPT_ROOT%  |
+| &amp;#37;UCL_PROMPT_SHORT&amp;#37; | a short prompt to be displayed | %UCL_PROMPT_SHORT%  |
+
+It is possible to change the display of the prompt by locally changing the definition of the variables on the document:
+
+&lt;verbatim&gt;
+&lt;!-- my local variable definitions used on this document only
+    * Local UCL_USER = griduser
+    * Local UCL_HOST = se
+--&gt;
+&lt;/verbatim&gt;
+
+%WARNING% The * has to be preceded by exactly 3 white spaces! Unlike one would expect, it is not possible to define a local variable more than once on a document. Twiki will only use the last definition of the variable on the entire document!
+
+%NOTE% It is often convenient to _copy-and-paste_ the command line output into a text editor first and to _find-and-replace_ pieces of text such as the prompt. Surprisingly this basic functionality is not supported by the online editor currently in use.
+
+---++++ Root Command Line
+
+It is often desirable to highlight that the current command line requires _root privileges_. Using the CSS class =rootscreen= instead of =screen= changes the background of the enclosing box to red which makes it more recognizable. By using the =&amp;#37;UCL_PROMPT_ROOT&amp;#37;= instead of =&amp;#37;UCL_PROMPT&amp;#37;= the prompt will be displayed using the _root_ user rather than the user specified by =&amp;#37;UCL_USER&amp;#37;=
+
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% mount -t xfs /dev/sdb1 /ecache
+&lt;/pre&gt;
+
+Here is the Twiki code used to render the command line:
+
+&lt;verbatim&gt;
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% mount -t xfs /dev/sdb1 /ecache
+&lt;/pre&gt;
+&lt;/verbatim&gt;
+
+
+
+---+++ Presenting File Content
+
+Technical documents frequently refer to files. It may be necessary to display the content of a file as part of the documentation. A non-complete list of reasons may be:
+
+   * to display the content of a configuration file that has to be adjusted
+   * to display parts of a log or output file for illustrative purposes
+
+For this purpose the _file_ class from the CSS definitions of the Twiki can be used:
+
+&lt;pre class=&quot;file&quot;&gt;
+line 1
+line 2
+&lt;/pre&gt;
+
+The Twiki code to render the box above is simply:
+
+&lt;verbatim&gt;
+&lt;pre class=&quot;file&quot;&gt;
+line 1
+line 2
+&lt;/pre&gt;
+&lt;/verbatim&gt;
+
+%NOTE% If the lines in the file contain html or TWiki variables, you will have to use the verbatim tag (enclosed in &lt;&gt;) to prevent them from being interpreted.
+
+---+++ Notes
+
+Notes are asides about the contents of the text that provide specific information that particular, but not all, users may need. Notes are less necessary than *Importants* and unlike *Warnings*, may not cause harm if ignored.
+
+   * Usage&lt;br&gt;
+   To create a note, insert the =&lt;nop&gt;%NOTE&lt;nop&gt;%= variable, followed by a single space and your text:
+   &lt;verbatim&gt; %NOTE% Here is my note text. &lt;/verbatim&gt;
+   * Example
+   %NOTE% Something that I want you to know about and pay some attention to.
+&lt;!-- ======BEGIN THE SECTION FOR INCLUDING ======
+%STARTSECTION{ &quot;Notes&quot; }%
+   $ %H% *%RED% NOTE %ENDCOLOR%*: 
+%ENDSECTION{ &quot;Notes&quot; }%
+====== END SECTION ====== --&gt;
+
+---+++ Importants
+*Importants* are asides from your normal text that you want to highlight so that skimming users will not ignore them. Unlike Warnings, they will not cause grave harm to the system or the person if ignored. The difference between a *Note* and an *Important* is up to the writer.
+   * Usage&lt;br&gt;
+   Importants are included by putting, on a new line, =&lt;nop&gt;%IMPORTANT&lt;nop&gt;%= followed by a single space and your important text:
+   &lt;verbatim&gt; %IMPORTANT% Some text about the important thing. &lt;/verbatim&gt;
+   * Example
+   %IMPORTANT% Don&#39;t forget to include a single space or the *Important* will not work.
+&lt;!-- ====== BEGIN INCLUDE SECTION ======
+%STARTSECTION{ &quot;Importants&quot;}%
+   $ %X% *%GREEN% IMPORTANT %ENDCOLOR%*: 
+%ENDSECTION{ &quot;Importants&quot;}%
+====== END SECTION ====== --&gt;
+
+---+++ Warnings
+*Warnings* are set off from the regular flow of the text to especially warn the reader about an action that could cause harm to the system or to the user. It&#39;s less than something that should be labeled *DANGER* but more harmful than something that you would put into an *Important*. 
+
+If something that you are instructing a user to do could take up the CPU for several minutes, you should put in a *Warning*.
+   * Usage&lt;br&gt;
+   Warnings are added by putting, on a new line, =&lt;nop&gt;%WARNING&lt;nop&gt;%= followed by a single space and your text.
+   &lt;verbatim&gt; %WARNING% Some text here. &lt;/verbatim&gt;
+   * Example
+   %WARNING% If ignore me, you&#39;ll regret it.
+&lt;!-- ====== BEGIN INCLUDE SECTION ======
+%STARTSECTION{ &quot;Warnings&quot;}%
+   $ %X% *%RED% WARNING! %ENDCOLOR%*: 
+%ENDSECTION{ &quot;Warnings&quot;}%
+====== END SECTION ====== --&gt;
+
+---+++ Tips
+Tips might be used to suggest an alternative that would be better under certain circumstances.
+   * Usage&lt;br&gt;
+   Tips are added by putting, on a new line, =&lt;nop&gt;%TIP&lt;nop&gt;%= followed by a single space and your text.
+   &lt;verbatim&gt; %TIP% Some text here. &lt;/verbatim&gt;
+   * Example
+   %TIP% It is really best if you do it this way.
+&lt;!-- ====== BEGIN INCLUDE SECTION ======
+%STARTSECTION{ &quot;Tips&quot;}%
+   $ %H% *%GREEN% TIP %ENDCOLOR%*: 
+%ENDSECTION{ &quot;Tips&quot;}%
+====== END SECTION ====== --&gt;
+
+---+++ Frequently Used Links
+
+For a number of links the %LINK_CMP% created Twiki variables defining the links:
+
+| *Variable*  | *Example*  |
+| &amp;#37;LINK_BESTMAN&amp;#37;  | %LINK_BESTMAN%  |
+| &amp;#37;LINK_BESTMAN_GATEWAY&amp;#37;  | %LINK_BESTMAN_GATEWAY%  |
+| &amp;#37;LINK_CERTS&amp;#37;  | %LINK_CERTS%  |
+| &amp;#37;LINK_CMP&amp;#37;  | %LINK_CMP%  |
+| &amp;#37;LINK_DOC_AREA&amp;#37;  | %LINK_DOC_AREA%  |
+| &amp;#37;LINK_DOC_ROLE&amp;#37;  | %LINK_DOC_ROLE%  |
+| &amp;#37;LINK_DOC_TYPE&amp;#37;  | %LINK_DOC_TYPE%  |
+| &amp;#37;LINK_GLOBUS_TOOLKIT&amp;#37;  | %LINK_GLOBUS_TOOLKIT%  |
+| &amp;#37;LINK_GOC_OPEN_TICKET&amp;#37;  | %LINK_GOC_OPEN_TICKET%  |
+| &amp;#37;LINK_IGTF&amp;#37;  | %LINK_IGTF%  |
+| &amp;#37;LINK_OIM&amp;#37;  | %LINK_OIM%  |
+| &amp;#37;LINK_OSG&amp;#37;  | %LINK_OSG%  |
+| &amp;#37;LINK_VDT&amp;#37;  | %LINK_VDT%  |
+| &amp;#37;LINK_XROOTD&amp;#37;  | %LINK_XROOTD%  |
+
+
+---+++ Quick Links to Glossary Pages
+
+Technical documents use their own vocabulary which may be unfamiliar to some readers making it more difficult for them to understand the content. The %LINK_GLOSSARY% defines the OSG specific vocabulary in a central place from where definitions can be linked into the text where they are used. We recommend to link to a Glossary definition when:
+
+   * a term or acronym is first used on a page
+   * a term or acronym is used on the page and a previous link to its Glossary definition is out of sight to the reader
+
+In order to make this as easy as possible, the content management project provides variable definitions that quickly create links to the definition of terms within the Glossary:
+
+| *Variable*  | *Example*  |
+| &amp;#37;LINK_GLOSSARY&amp;#37;  | %LINK_GLOSSARY%  |
+| &amp;#37;LINK_GLOSSARY_CA&amp;#37;  | %LINK_GLOSSARY_CA%  |
+| &amp;#37;LINK_GLOSSARY_CE&amp;#37;  | %LINK_GLOSSARY_CE%  |
+| &amp;#37;LINK_GLOSSARY_CONDOR&amp;#37;  | %LINK_GLOSSARY_CONDOR%  |
+| &amp;#37;LINK_GLOSSARY_CRL&amp;#37;  | %LINK_GLOSSARY_CRL%  |
+| &amp;#37;LINK_GLOSSARY_DN&amp;#37;  | %LINK_GLOSSARY_DN%  |
+| &amp;#37;LINK_GLOSSARY_FT&amp;#37;  | %LINK_GLOSSARY_FT%  |
+| &amp;#37;LINK_GLOSSARY_GATEKEEPER&amp;#37;  | %LINK_GLOSSARY_GATEKEEPER%  |
+| &amp;#37;LINK_GLOSSARY_GIP&amp;#37;  | %LINK_GLOSSARY_GIP%  |
+| &amp;#37;LINK_GLOSSARY_GRAM&amp;#37;  | %LINK_GLOSSARY_GRAM%  |
+| &amp;#37;LINK_GLOSSARY_GRAM_WS&amp;#37;  | %LINK_GLOSSARY_GRAM_WS%  |
+| &amp;#37;LINK_GLOSSARY_GRIDFTP&amp;#37;  | %LINK_GLOSSARY_GRIDFTP%  |
+| &amp;#37;LINK_GLOSSARY_GRID_PROXY&amp;#37;  | %LINK_GLOSSARY_GRID_PROXY%  |
+| &amp;#37;LINK_GLOSSARY_GUMS&amp;#37;  | %LINK_GLOSSARY_GUMS%  |
+| &amp;#37;LINK_GLOSSARY_HTCONDOR&amp;#37;  | %LINK_GLOSSARY_HTCONDOR%  |
+| &amp;#37;LINK_GLOSSARY_ITB&amp;#37;  | %LINK_GLOSSARY_ITB%  |
+| &amp;#37;LINK_GLOSSARY_JM&amp;#37;  | %LINK_GLOSSARY_JM%  |
+| &amp;#37;LINK_GLOSSARY_SE&amp;#37;  | %LINK_GLOSSARY_SE%  |
+| &amp;#37;LINK_GLOSSARY_SRM&amp;#37;  | %LINK_GLOSSARY_SRM%  |
+| &amp;#37;LINK_GLOSSARY_VDT&amp;#37;  | %LINK_GLOSSARY_VDT%  |
+| &amp;#37;LINK_GLOSSARY_VO&amp;#37;  | %LINK_GLOSSARY_VO%  |
+| &amp;#37;LINK_GLOSSARY_VOMS&amp;#37;  | %LINK_GLOSSARY_VOMS%  |
+| &amp;#37;LINK_GLOSSARY_VOMS_PROXY&amp;#37;  | %LINK_GLOSSARY_VOMS_PROXY%  |
+| &amp;#37;LINK_GLOSSARY_WN&amp;#37;  | %LINK_GLOSSARY_WN%  |
+
+%NOTE% Besides being easier to memorize the quick links above serve another important reason. They enable editors to maintain definitions of OSG vocabulary in one place. Once a definition gets refined in the Glossary it is going to be up-to-date on every page using the term! 
+
+---+++ Quick Man Pages
+
+Documentation on software and procedures often refers to tools being used on the Unix command line. It is desirable to provide a _manual page_ for the tool to the reader within the text without cluttering its description. The Twisty plugin provides this functionality. We have created Twiki variables that can be used for that purpose. To render a man page for =grid-proxy-info= use &amp;#37;HELP_GRID_PROXY_INFO&amp;#37;. Other supported definitions include:
+
+%HELP_GRID_PROXY_INFO%
+
+%HELP_GRID_PROXY_INIT%
+
+%HELP_VOMS_PROXY_INFO%
+
+%HELP_VOMS_PROXY_INIT%
+
+%HELP_GLOBUSRUN%
+
+%HELP_GLOBUSRUN_WS%
+
+%HELP_GLOBUS_JOB_RUN%
+
+%HELP_GLOBUS_URL_COPY%
+
+%WARNING% The quick man pages currently do not render correctly in Safari and Chrome. The use should be avoided till further notice from the Content Management Project.
+
+
+---+++ Comments
+A comment section (like the one below) should be added at the bottom of each page using a code like:
+&lt;pre&gt;
+---++ Comments
+%&lt;nop&gt;COMMENT{type=&quot;tableappend&quot;}%
+&lt;/pre&gt;
+%NOTE% Comments made during document review/testing should be addressed by the owner and removed prior to release.
+---++ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+   DEAR DOCUMENT OWNER
+   ===================
+
+   Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER          = JamesWeichel
+
+   Please define the document area, choose one of the defined areas from the next line
+   DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = General
+
+   define the primary role the document serves, choose one of the defined roles from the next line
+   DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager|Documenter)
+   * Local DOC_ROLE       = Documenter
+
+   Please define the document type, choose one of the defined types from the next line
+   DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = HowTo
+   
+   Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+   Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+   change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+   change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+   change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+   DEAR DOCUMENT REVIEWER
+   ======================
+
+   Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = TedHesselroth
+  
+   Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+   DEAR DOCUMENT TESTER
+   ====================
+
+   Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = 
+  
+   Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+############################################################################################################
+--&gt;
+
+-- Main.JamesWeichel - 27 Jan 2010

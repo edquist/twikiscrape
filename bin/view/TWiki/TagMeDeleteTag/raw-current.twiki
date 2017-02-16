@@ -1,0 +1,53 @@
+---+!! Tag-me: Delete Tag
+
+%STARTINCLUDE%
+&lt;table class=&quot;tagmeNavigation&quot; border=&quot;0&quot; cellpadding=&quot;3&quot; cellspacing=&quot;0&quot;&gt;&lt;tr&gt;
+&lt;td&gt;&amp;nbsp; &amp;nbsp;&lt;/td&gt;
+&lt;td bgcolor=&quot;#F6F4EB&quot;&gt;&amp;nbsp; [[TagMeCreateNewTag][Create New Tag]] &amp;nbsp;&lt;/td&gt;
+&lt;td&gt;&amp;nbsp;&lt;/td&gt;
+&lt;td bgcolor=&quot;#F6F4EB&quot;&gt;&amp;nbsp; [[TagMeRenameTag][Rename Tag]] &amp;nbsp;&lt;/td&gt;
+&lt;td&gt;&amp;nbsp;&lt;/td&gt;
+&lt;td bgcolor=&quot;#EAE9DE&quot;&gt;&amp;nbsp; *Delete Tag* &amp;nbsp;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+&lt;table border=&quot;0&quot; cellpadding=&quot;5&quot; cellspacing=&quot;0&quot; style=&quot;width:100%;&quot;&gt;
+&lt;tr bgcolor=&quot;#EAE9DE&quot;&gt;&lt;td style=&quot;width:100%;&quot;&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+%STARTSECTION{&quot;delete&quot;}%
+&lt;noautolink&gt;&lt;form name=&quot;renametag&quot; action=&quot;%SCRIPTURL{viewauth}%/%BASEWEB%/%BASETOPIC%&quot; method=&quot;post&quot; onsubmit=&quot;return confirmDelete(this.oldtag.value, this.postChangeRequest);&quot;&gt;%TAGME{ tpaction=&quot;%URLPARAM{&quot;deleteaction&quot; default=&quot;deletetaginit&quot;}%&quot; oldtag=&quot;%URLPARAM{oldtag}%&quot; note=&quot;%URLPARAM{renametagnote}%&quot; }%
+
+&lt;div class=&quot;twikiFormSteps&quot;&gt;
+&lt;div class=&quot;twikiFormStep&quot;&gt;
+Tag to delete: %BR%
+&lt;select name=&quot;oldtag&quot;&gt;
+&lt;option&gt;%URLPARAM{deletetag}%&lt;/option&gt;
+%TAGME{ tpaction=&quot;showalltags&quot; format=&quot;&lt;option&gt;$tag&lt;/option&gt;&quot; separator=&quot;$n&quot; }%
+&lt;/select&gt;
+&lt;/div&gt;
+&lt;div class=&quot;twikiFormStep twikiLast&quot;&gt;
+&lt;input type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;%MAKETEXT{&quot;Delete&quot;}%&quot; /&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;deleteaction&quot; value=&quot;deletetag&quot; /&gt;
+&lt;/form&gt;
+&lt;/noautolink&gt;
+%ENDSECTION{&quot;delete&quot;}%
+%STOPINCLUDE%
+
+%BR%
+&lt;span class=&quot;twikiGrayText&quot;&gt;Other tag options: [[TagMeViewAllTags][View all tags]], [[TagMeViewMyTags][View my tags]], [[TagMeSearch][Search tags]]&lt;/span&gt;
+
+%STARTSECTION{&quot;dialogJavascript&quot;}%
+&lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot;&gt;
+&lt;!-- // &lt;pre&gt;-hide
+function confirmDelete(inTagName, inSendsPostRequest) {
+   if (inSendsPostRequest) {
+      return true;
+   }
+   if (confirm(&quot;Are you sure you want to delete tag \&quot;&quot; + inTagName + &quot;\&quot;?&quot;)) {
+      return true;
+   }
+   return false;
+}
+// &lt;/pre&gt;-hide --&gt;
+&lt;/script&gt;
+%ENDSECTION{&quot;dialogJavascript&quot;}%

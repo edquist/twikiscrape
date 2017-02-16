@@ -1,0 +1,201 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Andrew Baranovski
+   * Ted Hesselroth
+   * Neha Sharma
+   * Alex Sim
+   * Tanya Levshina
+---++ Status report
+&lt;!-- DESCRIPTION --&gt;
+
+Abhishek:
+&lt;pre class=&quot;screen&quot;&gt;
+no report
+&lt;/pre&gt;
+
+Andrew:
+&lt;pre class=&quot;screen&quot;&gt;
+no report
+&lt;/pre&gt;
+
+Ted:
+&lt;pre class=&quot;screen&quot;&gt;
+Made outline of front page of Storage web on OSG twiki. Made outlines
+for major subsections End User, Application Developer, Site
+Administrator. Gathered links to other OSG twiki topics that be be
+incorporated in the new Storage documentation.
+&lt;/pre&gt;
+
+Neha:
+&lt;pre class=&quot;screen&quot;&gt;
+built gratia storage probes for versions  1.06.13a-1 , 1.06.13b-1 and 1.06.13c-1
+
+added the check that JAVA_LOCATION points to a java binary (as requested by Dave@UIUC) 
+and committed changes in CVS
+
+upgraded dcache on gridworks to 1.9.5-11 (had to move pool directories on gwdca01 from 
+/usr/local to /scratch as /usr/local is not available anymore) and performed simple transfers 
+to validate it
+
+fixed bug in dcache install script which prevented the creation of new pools
+
+more troubleshooting with Chris on gratia transfer probe on UIUC. there was a logical 
+bug in probe. this is now resolved
+&lt;/pre&gt;
+
+Alex:
+&lt;pre class=&quot;screen&quot;&gt;
+* Support
+  - STAR data replication with bestman accessing NERSC HPSS
+     Test instance deployed for STAR at lbl.gov
+  - NERSC PDSF deployment of bestman for multiple VO requirements
+  - srmping failure to bestman within RSV probe at Vanderbilt.
+    (ticket 7431 - closed now)
+
+* Release
+  - working on bestman2 test and packaging
+&lt;/pre&gt;
+
+Tanya:
+&lt;pre class=&quot;screen&quot;&gt;
+meetings:
+   with Alain to discuss current status
+   with xrootd-developers
+   with Paul Rossman to discuss FTS
+   T3 site coordinators
+   ITB meeting - OSG 1.2.5 release
+
+technical work:
+     Revised  OSG storage WBS , waiting for Alain and Chander approval to 
+update webpage
+     Installed/tested
+        bestman-fullmode/bestman-gateway/xrootd from OSG
+        vdt-dcache 2.4.5 (still some problems with gratia probes)
+        
+     Provided instructions to Rob Snihur on how to install hadoop/fuse on the worker node
+     Found the problem with xrootd/cnsd logs, reported bug to developers 
+     Investigating weird behavior of xrootd when the related daemons are restarted 
+on the data server during ftp transfer
+&lt;/pre&gt;
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+vdt-dcache 2.4.5
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+vdt-dcache 2.4.5 is in testing:
+   * dcache-server 1.9.5-11 (dcache current production release)
+   * gratia probe  1.06.13c-1 
+dcache has passed all the tests but gratia probes are failing, so we will investigate and cut a new release.
+
+The plans for vdt-dcache releases after that one:
+   1. new gratia storage probe (collecting data from Information Provider) - in packaging/testing right now
+   1. inclusion of chimera, migration procedure from pnfs (in about 3 months)
+
+---++ Second Agenda Item
+&lt;!-- DESCRIPTION --&gt;
+
+New storage dcache probe
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+Andrew has discussed all the opened issues with Chris and it looks like the probe is being ready for packaging and testing. Andrew is working on documentation.
+
+---++ Third agenda item
+&lt;!-- DESCRIPTION --&gt;
+Documentation overhaul
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Ted has been working on general layout and reviewing the old documents. The start up page is https://twiki.grid.iu.edu/bin/view/Storage. 
+Most  of the work will be finished in two weeks.
+
+---++ Fourth agenda item
+&lt;!-- DESCRIPTION --&gt;
+Bestman 2
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+The release has been delayed due to problems with packaging bestman under tomcat. The current estimate that it will be available for VDT testing in couple of month.
+
+---++ Fifth  agenda item
+&lt;!-- DESCRIPTION --&gt;
+Scalability test update from Abhishek
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Haifeng&#39;s plan for initial scalability tests:
+   1. single datanode bandwidth test with !Gridftp and !FUSE copy respectively
+   1. cluster bandwidth test with gridftp with small files and large files
+   1. bestman scalability test using lcg-cp and srmls
+   1. data access via FUSE, which should include the benchmark of single node test (1-4 jobs in a single node) and cluster test (no less than 8 jobs per datanode)
+   1. maybe a fast data transfer (FDT) test can be done as well.
+
+
+---++ Sixth  agenda item
+&lt;!-- DESCRIPTION --&gt;
+SCEC and Fly&#39;s Eye status
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+SCEC:
+
+We have the following update from  Ewa Deelman and Gaurang Mehta:
+&lt;pre class=&quot;screen&quot;/&gt;
+Firefly has behaved very well. Though we did not use glideins to use a large number of nodes at one shot which may have not taxed 
+the Panasas filesystem enough. When running the same workflows on ranger using glideins we run 2400 tasks in parallel and 
+that does tax the Lustre filesystem a bit.
+
+I have some new numbers about files and sizes, runtimes etc updated on the wiki.
+&lt;/pre&gt;
+The webpage is https://confluence.pegasus.isi.edu/display/pegasus/CyberShake+on+OSG.
+
+Fly&#39;s Eye:
+
+Chris will start transfer to Omaha and Lincoln. We are still looking for sites that could provide 10 TB (5 &amp; 5) for some period of time (up to 1 year)    
+---++ Seventh  agenda item
+&lt;!-- DESCRIPTION --&gt;
+Tickets
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+++++++++++++++++++++++++
+New tickets
+++++++++++++++++++++++++
+
+Need to follow up:
+
+7953 - OSG Storage: Xrootd: Monitoring issue
+
+Closed:
+
+7954 - OSG Storage: dCache: Chimera: Postgres &quot;duplicate key &quot; errors
+
+Follow up in progress:
+
+7955- OSG Storage: Xrootd: problem starting redirector using vdt-control
+
+7956 - OSG Storage: Xrootd: OSG 1.2.5 xrootd data server log problem
+
+++++++++++++++++++++++++
+Old tickets
+++++++++++++++++++++++++
+
+Closed:
+
+7908 - OSG Storage: dCache: vdt-dcache-2.4.3: gratia-transfer-probe not working properly
+
+Follow up in progress:
+
+7924 - OSG Storage: srmcp rsv probe: not working at se1.accre.vanderbilt.edu
+
+No update:
+
+6971 - dCache - Problem with pnfs register command
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 14 Jan 2010

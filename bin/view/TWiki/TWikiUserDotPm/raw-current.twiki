@@ -1,0 +1,158 @@
+---+ Package =TWiki::User=
+
+A User object is an internal representation of a user in the real world.
+The object knows about users having login names, wiki names, personal
+topics, and email addresses.
+
+
+%TOC%
+
+Groups are also handled here. A group is really a subclass of a user,
+in that it is a user with a set of users within it.
+
+The User package also provides methods for managing the passwords of the
+user.
+
+
+---++ ClassMethod *new* &lt;tt&gt;($session,$loginname,$wikiname)&lt;/tt&gt;
+
+Construct a new user object for the given login name, wiki name.
+
+The wiki name can either be a wiki word or it can be a web-
+qualified wiki word. If the wiki name is not web qualified, the
+user is assumed to have their home topic in the
+$TWiki::cfg{UsersWebName} web.
+
+
+
+---++ ObjectMethod *wikiName* &lt;tt&gt;() -&gt; $wikiName&lt;/tt&gt;
+
+Return the wikiname of the user (without the web!)
+
+
+
+---++ ObjectMethod *webDotWikiName* &lt;tt&gt;() -&gt; $webDotWiki&lt;/tt&gt;
+
+Return the fully qualified wikiname of the user
+
+
+
+---++ ObjectMethod *login* &lt;tt&gt;() -&gt; $loginName&lt;/tt&gt;
+
+Return the login name of the user
+
+
+
+---++ ObjectMethod *web* &lt;tt&gt;() -&gt; $webName&lt;/tt&gt;
+
+Return the registration web of the user
+
+
+
+---++ ObjectMethod *equals* &lt;tt&gt;() -&gt; $boolean&lt;/tt&gt;
+
+Test is this is the same user as another user object
+
+
+
+---++ ObjectMethod *stringify* &lt;tt&gt;() -&gt; $string&lt;/tt&gt;
+
+Generate a string representation of this object, suitable for debugging
+
+
+
+---++ ObjectMethod *passwordExists* &lt;tt&gt;() -&gt; $boolean&lt;/tt&gt;
+
+Checks to see if there is an entry in the password system
+Return &#39;1&#39; if true, &#39;&#39; if not
+
+
+
+---++ ObjectMethod *checkPassword* &lt;tt&gt;($password) -&gt; $boolean&lt;/tt&gt;
+
+used to check the user&#39;s password
+
+=$password= unencrypted password
+
+=$success= &#39;1&#39; if success
+
+TODO: need to improve the error mechanism so TWikiAdmins know what failed
+
+
+
+---++ ObjectMethod *removePassword* &lt;tt&gt;() -&gt; $boolean&lt;/tt&gt;
+
+Used to remove the user and password from the password system.
+Returns true if success
+
+
+
+---++ ObjectMethod *changePassword* &lt;tt&gt;($user,$oldUserPassword,$newUserPassword) -&gt; $boolean&lt;/tt&gt;
+
+used to change the user&#39;s password
+=$oldUserPassword= unencrypted password
+=$newUserPassword= unencrypted password
+undef if success, error message otherwise
+
+
+
+---++ ObjectMethod *addPassword* &lt;tt&gt;($newPassword) -&gt; $boolean&lt;/tt&gt;
+creates a password entry
+=$newUserPassword= unencrypted password
+&#39;1&#39; if success
+TODO: need to improve the error mechanism so TWikiAdmins know what failed
+
+
+
+---++ ObjectMethod *resetPassword* &lt;tt&gt;() -&gt; $newPassword&lt;/tt&gt;
+
+Reset the users password, returning the new generated password.
+
+
+
+---++ ObjectMethod *emails* &lt;tt&gt;() -&gt; @emailAddress&lt;/tt&gt;
+
+If this is a user, return their email addresses. If it is a group,
+return the addresses of everyone in the group.
+
+
+
+---++ ObjectMethod *setEmails* &lt;tt&gt;($user,@emails)&lt;/tt&gt;
+
+Fetch the email address(es) for the given username
+
+
+
+---++ ObjectMethod *isAdmin* &lt;tt&gt;() -&gt; $boolean&lt;/tt&gt;
+
+True if the user is an admin (is a member of the $TWiki::cfg{SuperAdminGroup})
+
+
+
+---++ ObjectMethod *getGroups* &lt;tt&gt;() -&gt; @groups&lt;/tt&gt;
+
+Get a list of user objects for the groups a user is in
+
+
+
+---++ ObjectMethod *isInList* &lt;tt&gt;($list) -&gt; $boolean&lt;/tt&gt;
+
+Return true we are in the list of user objects passed.
+
+$list is a string representation of a user list.
+
+
+
+---++ ObjectMethod *isGroup* &lt;tt&gt;() -&gt; $boolean&lt;/tt&gt;
+
+Test if this is a group user or not
+
+
+
+---++ ObjectMethod *groupMembers* &lt;tt&gt;() -&gt; @members&lt;/tt&gt;
+
+Return a list of  user objects that are members of this group. Should only be
+called on groups.
+
+
+

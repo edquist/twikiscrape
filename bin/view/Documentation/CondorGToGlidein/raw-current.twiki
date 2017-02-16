@@ -1,0 +1,483 @@
+%LINKCSS%
+
+&lt;!-- This is the default OSG documentation template. Please modify it in --&gt;
+&lt;!-- the sections indicated to create your topic.                        --&gt; 
+
+&lt;!-- By default the title is the WikiWord used to create this topic. If  --&gt;
+&lt;!-- you want to modify it to something more meaningful, just replace    --&gt;
+&lt;!-- %TOPIC% below with i.e &quot;My Topic&quot;.                                  --&gt;
+
+---+!! Condor-G to Glidein Workflow Management System porting guide
+%DOC_STATUS_TABLE%
+%TOC%
+
+---++ About This Document
+This document is meant for VO&#39;s transitioning from Condor-G to !GlideinWMS.  It assumes some knowledge of Condor, a working install of !GlideinWMS, as well as access to Condor-G submission files.
+
+This document emphasizes changes the user may experience when moving from Condor-G to !GlideinWMS.  But, some commands have not changed such as submitting jobs is still with =condor_submit &amp;lt;submitfile&gt;=.   !GlideinWMS uses vanilla universe for job execution; anything that can be done in vanilla universe on a local cluster (with file transfer) will work in !GlideinWMS.
+
+---++Submission File
+The differences between the submission file for Condor-G and !GlideinWMS are minimal.
+
+   * Since Condor is no longer submitting directly to the grid, the universe for the job will need to change from grid, to vanilla.
+   &lt;pre class=&quot;file&quot;&gt;
+   universe=grid&lt;/pre&gt;
+   to
+    &lt;pre class=&quot;file&quot;&gt;
+   universe=vanilla&lt;/pre&gt;
+
+   * It is useful to have an error detection/correction statement in the submission file such as:
+   &lt;pre class=&quot;file&quot;&gt;
+   OnExitHold = (ExitStatus =!= 0)
+   OnExitRemove = (ExitStatus == 0)
+   PeriodicRelease = ((CurrentTime - EnteredCurrentStatus) &gt; 60) &amp;&amp; (HoldReasonCode =!= 1) &amp;&amp; (NumJobStarts &lt;= N) &lt;/pre&gt;
+   This statement will hold the job if it exits with a non-zero status.  It will remove the job only if it exited successfully (exit status 0).  And it will release the job if it wasn&#39;t held with &#39;condor_hold&#39; after 60 seconds and the job hasn&#39;t started more than N times.
+%NOTE% It is not necessary to use error detection when using dagman.  Dagman has it&#39;s own retry [[http://www.cs.wisc.edu/condor/manual/v7.4/2_10DAGMan_Applications.html#SECTION003106100000000000000][mechanism]].
+
+
+---+++ File Transfer
+   * Need to specify should_transfer_files:
+     &lt;pre class=&quot;file&quot;&gt;
+     should_transfer_files = YES&lt;/pre&gt;
+
+   * It is still necessary to specify transfer_input_files, but do not need to specify transfer_output_files.  !GlideinWMS will transfer every file that is created back to the submission host.  This often leads to many temporary files being transferred back when a job completes.  It is important to delete temporary files as a part of your job.
+
+
+---+++ User Proxy
+Some sites on the OSG require a user proxy to accompany a !GlideinWMS job.  After running =voms-proxy-init= on your submission host, the proxy will be located in /tmp.  =voms-proxy-init= will output the full pathname of the proxy file.  You can also figure out the name, since the name will be =x509up_u&amp;lt;userid&gt;=, and userid can be obtained with the command:
+&lt;pre class=&quot;screen&quot;&gt;
+$ id -u
+501&lt;/pre&gt;
+
+The full path to the proxy must be explicitly specified on in the Condor submit file:
+
+&lt;pre class=&quot;file&quot;&gt;
+...
+X509UserProxy = /tmp/x509up_u501
+...
+queue &lt;/pre&gt;
+
+---+++ Demotion after failed jobs
+In OSGMM, a typical submission file included the lines:
+&lt;pre class=&quot;file&quot;&gt;
+match_list_length = 4
+Rank              = (TARGET.Rank) - &amp;#92;
+                    ((TARGET.Name =?= LastMatchName0) * 1000) - &amp;#92;
+                    ((TARGET.Name =?= LastMatchName1) * 1000) - &amp;#92;
+                    ((TARGET.Name =?= LastMatchName2) * 1000) - &amp;#92;
+                    ((TARGET.Name =?= LastMatchName3) * 1000)
+&lt;/pre&gt;
+
+For the OSG MM, this statement discourages the scheduler to resubmit a failed job to the same cluster (referred to as TARGET.Name). For !GlideinWMS, TARGET.Name refers to a specific worker node rather than an entire site; therefore, this statement discourages the scheduler to resubmit the job to the same worker node. Because !GlideinWMS runs a pilot job before running a user job, the environment is considered less error-prone than with OSG MM. Therefore this statement is not very useful and it is recommended that it is removed.
+
+---+++ Idle job timeout
+It is common in OSGMM to have a timeout statement similiar to:
+&lt;pre class=&quot;file&quot;&gt;
+# make sure the job is being retried and rematched
+periodic_release = (NumGlobusSubmits &amp;lt; 5)
+globusresubmit = (NumSystemHolds &gt;= NumJobMatches)
+# rematch = True
+globus_rematch = True
+
+# only allow for the job to be queued at a site for a while, then try to move it.
+#  GlobusStatus==16 is suspended
+#  JobStatus==1 is pending
+#  JobStatus==2 is running
+periodic_hold = ( (GlobusStatus==16) || &amp;#92;
+                  ((JobStatus==1) &amp;&amp; ((CurrentTime - EnteredCurrentStatus) &gt; (1*60*60))) || &amp;#92;
+                  ((JobStatus==2) &amp;&amp; ((CurrentTime - EnteredCurrentStatus) &gt; (5*60*60))) )
+
+&lt;/pre&gt;
+OSGMM has the periodic hold in order to redistribute jobs if a site has become too busy and has not started the job yet.  !GlideinWMS does not need this redistribution because when a slot opens, the job moves from the local queue directly to running, without being submitted to the remote site&#39;s queue.
+
+
+---+++ Example !GlideinWMS Condor submission
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show !GlideinWMS Submission file&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;file&quot;&gt;
+inputTab = PrimaseCTDnohis.tab
+storeNumber = 01.24.10-11.34.59
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+transfer_input_files = $(inputTab)
+remote_output_files = srm://red-srm1.unl.edu:8443/srm/v2/server?SFN=/mnt/hadoop/user/powers/Rosetta/$(storeNumber)/Step1/rosetta.step1.tar.gz
+
+executable = init.sh
+Args = $(inputTab) $(remote_output_files)
+
+input=input.file.$(Process)
+output=condor_out/output.$(Cluster).$(Process)
+error=condor_out/error.$(Cluster).$(Process)
+log=results.log
+
+X509UserProxy = /tmp/x509up_u501
+
+queue 1
+&lt;/pre&gt;
+
+   * The =inputTab= and =storeNumber= are the inputs into the file.  =storeNumber= is a unique identifier used for storing on the srm server.
+   * Notice the =should_transfer_files= and =when_to_tranfser_output= are both specified.  These are specified because there is no shared file system in !GlideinWMS
+   * =transfer_input_files= is here to designate what files to transfer with the job.  
+   * =remote_output_files= is where to store the output file after the job completes.  The job (init.sh) has the transfer written into it.
+   * =output=, =error=, and =log= are standard in any Condor job description.
+
+
+%ENDTWISTY%
+
+
+---++DAGMan Pitfalls
+
+If you are using DAGMan as your workflow manager, this section notes differences in how DAGMan works with Condor-G vs. !GlideinWMS.
+
+When A Condor-G job completes, the exit status of the job is always 0 regardless of the actual exit status at the remote site.  Since Condor interprets a 0 exit status as success, DAGMan will always interpret the job as succeeding in Condor-G.  A common approach to solve this is to have each job have a post script to check for successful completion.
+
+In !GlideinWMS, the correct exit status will be transferred back with the job.  In this case, it is easier to use DAGMan&#39;s automatic exit status checking for error detection.  If you only want error detection, then you do not need to add anything to the DAG.  If you want DAGMan to retry the job if it fails, add:
+&lt;pre class=&quot;file&quot;&gt;
+RETRY node_name 5&lt;/pre&gt;
+This will retry the job after a failure 5 times.
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show example !DAGMan Submission file&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;file&quot;&gt;
+JOB step1 condor.step1.submit
+JOB step3 condor.step3.submit
+SCRIPT PRE step1 pre.sh step1
+JOB step2-0 condor.step2.submit
+PARENT step1 CHILD step2-0
+PARENT step2-0 CHILD step3
+RETRY step2-0 1000
+JOB step2-1 condor.step2.submit
+PARENT step1 CHILD step2-1
+PARENT step2-1 CHILD step3
+RETRY step2-1 1000
+....
+JOB step2-999 condor.step2.submit
+PARENT step1 CHILD step2-999
+PARENT step2-999 CHILD step3
+RETRY step2-999 1000
+
+Retry step1 5
+Retry step3 5
+&lt;/pre&gt;
+
+In this example, the DAG has a single setup node (step1), a 1000 node wide middle (step2), and a single finishing node (step3).  
+
+%ENDTWISTY%
+
+
+---++Monitoring Jobs
+
+It is more difficult in !GlideinWMS to monitor exactly where your jobs are going.  !GlideinWMS&#39;s VOFrontend provides some monitoring regarding the glidein (pilot) jobs AND user jobs running at a site. How to obtain information about both types of jobs is explained below.  
+
+This command will output the number of glideins pilot jobs at each site:
+&lt;pre class=&quot;screen&quot;&gt;
+condor_status -format &#39;%s\n&#39; &#39;GLIDEIN_Site&#39; -const &#39;IS_MONITOR_VM =!= TRUE&#39; | sort | uniq -c&lt;/pre&gt;
+This command will output the number of glideins at each site.
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show example output&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+&lt;pre class=&quot;screen&quot;&gt;
+[dweitzel@glidein ~]$ condor_status -format &#39;%s\n&#39; &#39;GLIDEIN_Site&#39; -const &#39;IS_MONITOR_VM =!= TRUE&#39; | sort | uniq -c
+      3 BNL
+    210 Nebraska
+    764 Omaha
+     57 UConn
+      1 UCSD
+     16 UNESP
+      5 Wisconsin
+&lt;/pre&gt;
+
+%ENDTWISTY%
+
+We&#39;ve also found adding the following to your local condor_config is helpful.  The first line defines the JOBGLIDEIN_Site attribute to be equal to the glidein-site of the batch slot.  The second line instructs condor to insert the JOBGLIDEIN_Site attribute into every job when it is submitted.
+&lt;pre class=&quot;file&quot;&gt;
+JOBGLIDEIN_Site=&quot;$$([TARGET.GLIDEIN_Site])&quot;
+SUBMIT_EXPRS = $(SUBMIT_EXPRS) JOBGLIDEIN_Site
+&lt;/pre&gt;
+This means that every running job will have an entry in their !ClassAd noting where it is running.
+
+For example, you can query your job locations using the following:
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show example output&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+[bbockelm@glidein ~]$ condor_q -run -format &#39;%s\n&#39; MATCH_EXP_JOBGLIDEIN_Site | sort | uniq -c
+    403 Omaha
+      5 UConn
+&lt;/pre&gt;
+%ENDTWISTY%
+
+
+---++ Node Verification in !GlideinWMS
+Verification of a worker node can be done before the glidein starts jobs.  A verification script can be specified inside the !VOFrontend&#39;s configuration file, =frontend.xml=.
+
+&lt;pre class=&quot;file&quot;&gt;
+...
+&amp;lt;files&amp;gt;
+   &amp;lt;file absfname=&quot;/home/frontend/glidein_scripts/startd.sh&quot; after_entry=&quot;True&quot; const=&quot;True&quot; executable=&quot;True&quot; untar=&quot;False&quot; wrapper=&quot;False&quot;&amp;gt;
+      &amp;lt;untar_options cond_attr=&quot;TRUE&quot;/&amp;gt;
+   &amp;lt;/file&amp;gt;
+&amp;lt;/files&amp;gt;
+...
+&lt;/pre&gt;
+More documentation on custom scripts can be found on the  [[http://www.uscms.org/SoftwareComputing/Grid/WMS/glideinWMS/doc.v2/manual/factory/custom_scripts.html][!GlideinWMS pages]].
+
+---++ Large Examples
+The following examples are from the LSST workflow that was adapted to !GlideinWMS by Gabriele Garzoglio.
+
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show OSG MM submission file&quot;
+hidelink=&quot;Hide OSG MM submission file&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+&lt;pre class=&quot;file&quot;&gt;
+####################################
+# Job destination parameters.
+####################################
+# In general universe should be, &quot;grid.&quot;
+universe = grid
+# This is the destination of the job.
+grid_resource = gt2 $$(GlueCEInfoContactString)
+
+####################################
+# Executable specification
+####################################
+# Specify the exec here.
+executable = /opt/LSST/LSST/submit/runLSSTsim
+# ... and its args.
+arguments = -v -s 26740 0
+# ... and whether to transfer it or find it on the system.
+transfer_executable = true
+
+####################################
+# Log and output
+####################################
+# In general, transfer_output and transfer_error should be true.
+transfer_output = true
+transfer_error = true
+# In general, stream_output and stream_error should be false.
+stream_output = false
+stream_error = false
+# Specify log, out and error files. Not the use of macros.
+log = /opt/LSST/jdl/runs/LSSTsim_20100608_131223/LSSTsim.log
+output = /opt/LSST/jdl/runs/LSSTsim_20100608_131223/logs/LSSTsim_000.out
+error = /opt/LSST/jdl/runs/LSSTsim_20100608_131223/logs/LSSTsim_000.err
+# Whether and under what circumstances to notify by email.
+notification = NEVER
+# When to transfer output
+WhenToTransferOutput = ON_EXIT
+transfer_output_files = LSSTsim_000.tar.bz2
+
+####################################
+# Job-handling boiler plate
+####################################
+# Extra specifications to be passed through. This says single (non-MPI)
+# job and max execution time of 1440min (1 day).
+globusrsl = (jobType = \&quot;single\&quot;)(maxWallTime = 1440 )
+# Any things to add to the environment
+environment = JOB_OUTPUT_TAR=LSSTsim_000.tar.bz2;CLUSTER_ID=$(Cluster)
+requirements    = ( (TARGET.GlueCEInfoContactString =!= UNDEFINED) &amp;&amp; &amp;#92;
+                    (TARGET.Rank &gt; 300) &amp;&amp; &amp;#92;
+                    (TARGET.LSST_VERSION_LSSTsim =?= &quot;2010-02-04&quot;) )
+
+########################################################################
+# No user-serviceable parts below.
+########################################################################
+
+# when retrying, remember the last 4 resources tried. With the OSG MM, this
+# statement effectively prevents the job to rematch a cluster where it failed. 
+match_list_length = 4
+Rank              = (TARGET.Rank) - &amp;#92;
+                    ((TARGET.Name =?= LastMatchName0) * 1000) - &amp;#92;
+                    ((TARGET.Name =?= LastMatchName1) * 1000) - &amp;#92;
+                    ((TARGET.Name =?= LastMatchName2) * 1000) - &amp;#92;
+                    ((TARGET.Name =?= LastMatchName3) * 1000)
+
+# make sure the job is being retried and rematched
+periodic_release = (NumGlobusSubmits &amp;lt; 5)
+globusresubmit = (NumSystemHolds &gt;= NumJobMatches)
+# rematch = True
+globus_rematch = True
+
+# only allow for the job to be queued at a site for a while, then try to move it.
+#  GlobusStatus==16 is suspended
+#  JobStatus==1 is pending
+#  JobStatus==2 is running
+periodic_hold = ( (GlobusStatus==16) || &amp;#92;
+                  ((JobStatus==1) &amp;&amp; ((CurrentTime - EnteredCurrentStatus) &gt; (1*60*60))) || &amp;#92;
+                  ((JobStatus==2) &amp;&amp; ((CurrentTime - EnteredCurrentStatus) &gt; (5*60*60))) )
+
+# stay in queue on failures
+on_exit_remove = (ExitBySignal == False) &amp;&amp; (ExitCode == 0)
+
+queue
+&lt;/pre&gt;
+
+%ENDTWISTY%
+
+
+
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show equivalent !GlideinWMS submission file&quot;
+hidelink=&quot;Hide equivalent !GlideinWMS submission file&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+
+&lt;pre class=&quot;file&quot;&gt;
+#NOTE: the macro chip_id is defined in the DAG as a number from 0 to 189
+
+
+####################################
+# Job destination parameters.
+####################################
+# In general universe should be, &quot;vanilla&quot; for glidein submissions
+universe = vanilla
+
+####################################
+# Executable specification
+####################################
+# Specify the exec here.
+executable = /opt/LSST/LSST/submit/runLSSTsim
+
+# ... and its args.
++seed = 26740 + $(chip_id)
+arguments = -v -t -s $$([seed]) $(chip_id)
+
+# ... and whether to transfer it or find it on the system.
+transfer_executable = true
+
+####################################
+# Log, input and output
+####################################
+# In general, transfer_output and transfer_error should be true.
+transfer_output = true
+transfer_error = true
+# In general, stream_output and stream_error should be false.
+stream_output = false
+stream_error = false
+
+# Specify log, out and error files. Not the use of macros.
+log = /opt/LSST/jdl/runs/LSSTsim_20100608_131223/LSSTsim.log
+output = /opt/LSST/jdl/runs/LSSTsim_20100608_131223/logs/LSSTsim_$(chip_id)_gg.out
+error = /opt/LSST/jdl/runs/LSSTsim_20100608_131223/logs/LSSTsim_$(chip_id)_gg.err
+
+# Whether and under what circumstances to notify by email.
+notification = NEVER
+
+# Transfer the input file
+should_transfer_files = YES
+transfer_input_files = /opt/LSST/jdl/runs/LSSTsim_20100608_131223/input/trim$(chip_id).cat.bz2
+
+# When to transfer output
+When_To_Transfer_Output = ON_EXIT
+transfer_output_files = LSSTsim_$(chip_id)_gg.tar.bz2
+
+####################################
+# Job-handling boiler plate
+####################################
+# Any things to add to the environment
+environment = JOB_OUTPUT_TAR=$(transfer_output_files);CLUSTER_ID=$(Cluster)
+# Requires nodes with the LSST software pre-installed
+requirements    = ( TARGET.LSST_VERSION_LSSTsim =?= &quot;2010-02-04&quot; )
+
+########################################################################
+# No user-serviceable parts below.
+########################################################################
+
+# Added for glidein WMS for sites with gLExec
+X509UserProxy = /tmp/x509up_u1801
+
+queue 1
+
+&lt;/pre&gt;
+%ENDTWISTY%
+
+
+---++ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = DerekWeitzel
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = User
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = Developer
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = HowTo
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = GabrieleGarzoglio
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = 
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+############################################################################################################
+--&gt;
+
+
+
+-- Main.DerekWeitzel - 24 May 2010
+

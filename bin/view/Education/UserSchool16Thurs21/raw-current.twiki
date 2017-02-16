@@ -1,0 +1,63 @@
+---+ Understanding Data Requirements
+%TOC%
+
+---++ Background
+This exercise&#39;s goal is to learn to think critically about an application&#39;s data needs, especially before submitting a large batch of jobs or using tools for delivering large data to jobs.  In this exercise we will attempt to understand the input and output of the bioinformatics application [[http://blast.ncbi.nlm.nih.gov/][BLAST]], which you used yesterday in Exercise 1.2.
+
+---+++ Setup
+
+   * Login to the OSG submit server, =osg-learn.chtc.wisc.edu=.
+   * Change into your directory from yesterday&#39;s exercise 1.2
+
+---++ Understanding blast
+Remember that =blastx= is executed in a command like the following: 
+
+&lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT_SHORT% &lt;strong&gt;blastx -db %RED%database_rootname%ENDCOLOR% -query %RED%input_file%ENDCOLOR% -out %RED%results_file%ENDCOLOR%&lt;/strong&gt;
+&lt;/pre&gt;
+
+In the above, the =input_file= is a file containing a number of genetic sequences, and the database that these are compared against is made up of several files that begin with the same root name (we previously used the &quot;pdbaa&quot; database, whose files all begin with =pdbaa=). The output from this analysis will be printed to a results file that is also indicated in the command.
+
+
+---++ Adding up data needs
+
+Looking at the files from the =blastx= jobs you ran yesterday, add up the amount of data that was needed for running the job. (If you deleted any of the files from yesterday, just resubmit the job before proceeding.) Here are the commands that will be most useful to you:
+
+How to see the size of a specific file: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% &lt;strong&gt;ls -lh %RED%file%ENDCOLOR%&lt;/strong&gt;
+&lt;/pre&gt;
+
+How to see the size of all files in the current directory: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% &lt;strong&gt;ls -lh&lt;/strong&gt;
+&lt;/pre&gt;
+
+How to determine the total amount of data in the current directory: &lt;pre class=&quot;screen&quot;&gt;
+%UCL_PROMPT% &lt;strong&gt;du -sh %RED%directory%ENDCOLOR%&lt;/strong&gt;
+&lt;/pre&gt;
+
+
+---+++ Input requirements
+
+Looking at yesterday&#39;s exercise, total up the amount of data in all of the files necessary to run the =blastx= job (which will include the executable, itself!). Write down this number. Also take note of how much total data in in the =pdbaa= directory.
+
+---+++ Output requirements
+The output that we care about from =blastx= is saved in the file whose name is indicated after the =-out= argument to =blastx=. However, remember that HTCondor also creates the error, output, and log files, which you&#39;ll need to add up, too. Are there any other files? Total all of these together, as well.
+
+
+---++ Talk about this as a group!
+Once you have completed the above tasks, we&#39;ll talk about the totals as a group.
+
+   * How much disk space is required on the submit server for one blastx run with the input file you used before?
+   * How _many_ files are needed and created for each run?
+   * Assuming that each file is read completely by BLAST, and since you know how long blastx runs (time it!):
+      * At what rate are files read in?  
+      * How many MB/s?
+   * How much total disk space would be necessary on the submit server to run 10 jobs? (remember that some of the files will be shared by all 10 jobs, and will not be multiplied)
+
+
+---++ Up next!
+
+Next you will create a HTCondor submit script to transfer the Blast input files in order to run Blast on a worker nodes.
+
+-- Main.LaurenMichael - 21 Jul 2016
+

@@ -1,0 +1,53 @@
+---++ What is the OSG-&gt;TG Gateway?
+The OSG-TG Gateway (tg.opensciencegrid.org) is basically a job forwarder, which forwards the incoming OSG jobs to TG resources.  At present, all jobs submitted through this gateway will be submitted to &quot;grid-abe.ncsa.teragrid.org&quot; which is a x86_64-based resource. The gateway is maintained,deployed and supported by the !FermiGrid group at Fermilab.
+
+---++ Who can use the OSG-&gt;TG Gateway?
+All OSG users may use the gateway provided they send in their request (which should contain their First/Last Name, Postal/Email address,Phone number and DN/VO) to the !FermiGrid support group using the 
+[[http://servicedesk.fnal.gov][Fermilab Service Desk]]. !FermiGrid support group will review the request and upon approval  add them to the TG allocation.
+
+---++ How can I use the OSG-&gt;TG Gateway?
+
+   * Make sure you are authorized to use the gateway.
+   * Make sure you have sourced the VDT setup.sh/csh file so that you have all client side commands in your PATH
+   * Make sure you have a valid proxy
+
+---++++ Run a simple command line job using globusrun-ws
+   * Run the &quot;globus-credential-delegate&quot; command. (This command will basically store your delegated credential with the delegation service. This delegated credential is used when job gets forwarded from one node to another. By default , the lifetime of this delegated credential is 12 hours, but you can use the -l option to set it according to your preference). Sample execution: 
+bash-3.00$ &lt;font color=&quot;orangered&quot;&gt;globus-credential-delegate -h tg.opensciencegrid.org -p 9443 neha.epr.tg&lt;/font&gt;&lt;br /&gt;&lt;verbatim&gt;EPR will be written to: neha.epr.tg
+Delegated credential EPR:
+Address: https://131.225.107.164:9443/wsrf/services/DelegationService
+Reference property[0]: http://www.globus.org/08/2004/delegationService &quot;&gt;4e1113b0-5738-11dd-b9b0-967ff45aaf7c&lt;/verbatim&gt;
+Note:  In above command, neha.epr is the name of the file which will store the endpoint reference of your delegated credential. You can give it any name according to your choice. The execution of this command will take a while. You may hit the Crtl-C keys, once you see the following on your screen &lt;verbatim&gt;Reference property[0]:http://www.globus.org/08/2004/delegationService&quot;&gt;4e1113b0-5738-11dd-b9b0-967ff45aaf7c&lt;/verbatim&gt;
+   * Submit the job
+bash-3.00$ &lt;font color=&quot;orangered&quot;&gt;globusrun-ws -submit -Jf neha.epr.tg -F tg.opensciencegrid.org:9443 -Ft Cemon -streaming -se n.err -so n.out -c /usr/local/vdt-1.10.1/tgtest/recon1&lt;/font&gt;&lt;br /&gt;&lt;br /&gt;Note: the Jobmanager name is &quot;Cemon&quot; and not &quot;Condor&quot;. Also notice that you need to specify the name of the epr file (in above example - neha.epr.tg). The &quot;-streaming&quot; option enables the streaming of error and output files. %RED% It is recommended that you send a shell script as the executable to run in the globusrun-ws commands above, because of OS version mismatch between tg.opensciencegrid.org (SLF5.1) and grid-abe.ncsa.teragrid.org (RHEL4.4).  Otherwise you can send an executable that is built on SL4 or older and that should run OK. %ENDCOLOR%
+
+---++++ Run a more complex job using Condor-G
+   * Create a condor submit file. Example:
+&lt;verbatim&gt;-bash-3.00$ cat inout.submit
+executable           = inout.sh
+error                = inout.err
+output               = inout.out
+log                  = inout.log
+universe             = grid
+grid_resource        = gt4 https://tg.opensciencegrid.org:9443 Cemon
+whentotransferoutput = ON_EXIT
+notification         = Error
+should_transfer_files = YES
+#transfer_input       = true
+transfer_output      = true
+transfer_executable  = true
+transfer_output_files = out1,out2,out3
+globus_xml = &lt;extensions&gt;&lt;outputfileslist&gt;out1,out2,out3&lt;/outputfileslist&gt;&lt;/extensions&gt;
+queue&lt;/verbatim&gt;
+
+   * Submit the job
+bash-3.00$&lt;font color=&quot;orangered&quot;&gt; condor_submit inout.submit&lt;/font&gt;
+
+---+++++ How to transfer input and output files
+In order to transfer input and/or output files, you need to use the &lt;b&gt;globus_xml&lt;/b&gt; attribute in your condor submit file as follows:
+
+&lt;font color=&quot;royalblue&quot;&gt;&lt;verbatim&gt;globus_xml = &lt;extensions&gt;&lt;outputfileslist&gt;out1,out2,out3&lt;/outputfileslist&gt;&lt;inputfileslist&gt;in1,in2&lt;/inputfileslist&gt;&lt;/extensions&gt;&lt;/verbatim&gt;&lt;/font&gt;
+here - &lt;i&gt;in1, in2 &lt;/i&gt;are the two input files I need to transfer and &lt;i&gt;out1, out2, out3&lt;/i&gt; are the three output files I want back at end of job submission.
+
+---++ Support
+For support, submit a ticket with the [[http://servicedesk.fnal.gov][Fermilab Service Desk]].

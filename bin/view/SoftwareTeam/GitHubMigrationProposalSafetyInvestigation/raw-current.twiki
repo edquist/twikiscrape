@@ -1,0 +1,204 @@
+---++ Safety investigation of the !GitHub migration proposal
+
+From Main.CarlEdquist:
+&lt;verbatim&gt;
+What kind of vulnerabilities are we concerned with?
+
+1. &quot;corruption&quot; -- anything that destroys history; specifically, the ability
+to do fast-forward fetches.
+
+2. &quot;garbage&quot; -- an unauthorized or rogue user (or a rogue github) pushes
+unwanted commits that do not destroy history.  (&quot;Sufficiently-fat-fingered&quot;
+can also be considered rogue.)
+&lt;/verbatim&gt;
+
+3. &quot;destruction&quot; -- someone hacks into github and pushes the &quot;delete&quot; button on
+   a repo.
+
+---+++ Preventing &quot;corruption&quot;
+
+From Main.CarlEdquist:
+
+&lt;verbatim&gt;
+- If &quot;corruption&quot; happens on github, the automated fetch to the AFS repos
+  will fail, and we&#39;ll be notified immediately.  Since non-fast-forward
+pushes will (should) be disabled on github, this would be an indication that
+somebody&#39;s not playing nice, and we may want to investigate that.
+
+In any case, the AFS repos won&#39;t be changed, so we can force-push everything
+back to github to recover.  (Temporarily re-enabling force-pushes for this
+recovery.)
+
+On the developer end, corrupted updates from the github upstream get
+rejected by pulls.  New checkouts of the corrupted github repos (before our
+recovery) will of course contain the corruption, so they can be discarded as
+we&#39;ll direct everyone in an email.
+&lt;/verbatim&gt;
+
+---+++ Preventing &quot;garbage&quot;
+
+From Main.CarlEdquist:
+
+&lt;verbatim&gt;
+- If &quot;garbage&quot; commits make their way into the github repos; first someone
+will have to notice.  If someone is trying to be sneaky and sneak something
+in, it may not be obvious.  (The case seems about the same as for the UW SVN
+repo.)  There are ways to protect against it (namely having everyone sign
+all their own commits, and enforcing checking for this), but I suspect
+that&#39;s more than we really want.
+
+But if a bad commit is discovered (aha! gotcha!), and it&#39;s offensive enough
+that we want to remove it from our repo entirely (instead of just adding a
+further commit to revert it), we can &#39;git reset&#39; the AFS repos to just
+before the offending commit, optionally run &#39;git gc&#39; to remove any offending
+blobs from the object store, force-push back to github, and email everybody.
+
+As a special case, if a 4TB garbage commit makes it to the github repos
+(assuming github itself doesn&#39;t reject it!), then the automated fetches to
+AFS would fail, exhausting the vdt disk quota on AFS.  In this case, the AFS
+repos will not be in a corrupted state, and the garbage commit will not be
+included in the repo, but a (large) incomplete temporary file will be left
+behind (with an obvious name like objects/02/tmp_obj_YCIXgK).
+
+We will have to manually delete such a temp file, and then force-push the
+(unchanged) AFS repo back to github.
+&lt;/verbatim&gt;
+
+---+++ Responding to !GitHub outages
+
+From Main.CarlEdquist:
+
+&lt;verbatim&gt;
+There are two cases to consider.
+
+1. Temporary outages.  (Kind of like when JIRA goes down  :)
+
+2. Severe or permanent outages.  (When it&#39;s too long to tolerate...)
+
+
+For temporary outages, developers can continue to commit to their local
+repos, and do whatever development they want.  This includes making new tags
+and cutting release tarballs to use as new upstream sources for builds.
+Anyone can also clone or update from the official ones in AFS in the mean
+time -- though as long as the outage is considered temporary, no one should
+push back to AFS, but wait until it becomes possible to push back to github
+again.
+
+For severe or permanent outages (which someone with Say can determine), then
+everyone can just switch their upstream (remote) back to AFS.
+
+Something like:
+
+    upstream=/p/condor/workspaces/vdt/git/software/&lt;project&gt;.git
+    git remote set-url origin $upstream
+
+for checkouts with direct AFS access; or for access via ssh:
+
+    upstream=/p/condor/workspaces/vdt/git/software/&lt;project&gt;.git
+    cshost=library.cs.wisc.edu
+    git remote set-url origin $cshost:$upstream
+
+Everyone then gets to play nice (no pull requests) and push directly to the
+AFS location (like they do in FW&#39;s CONDOR_SRC git).  If someday github comes
+back online, we should be able to just fast-forward push the updates to
+github, and tell everybody to switch back.  (But, it&#39;s important that they
+listen!)
+&lt;/verbatim&gt;
+
+---+++ Recovering from repo destruction
+
+Destruction of a !GitHub repo can be handled the same way as a permanent
+outage, since once the repo is destroyed, fetches from it will fail. While we
+wait for !GitHub to be usable again, we switch the location of the upstream Git
+repo to the AFS repo, and work as above.
+
+---+++ Preventing tag corruption
+
+From Main.CarlEdquist:
+
+&lt;verbatim&gt;
+[2] Removing the &#39;+&#39; in the fetch refspec prevents non-fast-forward updates,
+but tag updates are actually a separate issue.  Normally for a checkout, if
+an upstream tag changes, a pull will not update the local tag.  Also, a
+(non-force) push will fail for an updated tag (that is, it will refuse to
+update a tag reference on a remote.)  But in our case, we have a bare repo
+(not a working copy/checkout) and we do fetches, not pulls or pushes.  To my
+horror, I have found no way to prevent tag updates via fetch to a bare repo.
+If tags are included in your fetch, tag updates will come also.
+
+(Again, tag updates will not get pulled into working copy/checkouts that
+have the original tag, but the main issue is how to protect the tags in the
+AFS repos from upstream corruption.)
+
+I would very much welcome any suggestions on how to handle this potential
+issue.  (@bb?)  So far, I have come up with two ways to protect against
+this, both of which I consider a little ugly.
+
+1. fetch to an intermediate bare repo, and then push to the main bare repo.
+The fetch will update the tag, but the push will fail.  This has the
+advantage of being able to detect easily when tag updates happen (which
+should be forbidden, so we do want to know).  The downside is this approach
+uses an extra staging repo.  (Then again, we could use that as an extra
+backup...)
+
+2. use a non-standard fetch refspec for tags; for example:
+
+        fetch = refs/heads/*:refs/heads/*
+        fetch = refs/tags/*:refs/tag-stage/*
+
+Instead of fetching everything (&#39;refs/*&#39;), single out heads and tags, but
+fetch tags to a non-standard location.  As a side effect, new tags will get
+created in the standard location (under refs/tags), along with
+refs/tag-stage, but tag updates will only make it to tag-stage, and will
+(silently) not update the tags under refs/tags.  This appears to work, and
+has the advantage of not needing a separate staging repo.  One disadvantage
+is it does not automatically bring in &#39;other&#39; types of refs (eg, github
+&#39;pull&#39; refs), although if we really want them, we can list them explicitly
+in the fetch list.  Also, this is a little less obvious to detect; there are
+no failures, though if you parse the command output you can detect trouble
+any time there is a tag-stage update, eg:
+
+   8c1bcea..cec9488  v1.2.3         -&gt; refs/tag-stage/v1.2.3
+
+Also worrisome is that the semantics here don&#39;t seem to be clearly
+documented... It would make me feel a little better if we could point to
+something that says yes it&#39;s supposed to work that way.  But in any case,
+I&#39;ve confirmed it works in both git 1.7.12 and 2.5.0.  (So, the behavior
+seems stable...)
+
+---
+
+Alternatively, if we are OK with just being informed of tag updates (instead
+of preventing them), we can add reflogs for all tags, which under normal
+circumstances will remain empty.  Making reflogs for tags automatically is
+not really convenient in git; for some reason core.logAllRefUpdates works
+for refs/heads but not refs/tags (which at least is documented), and
+&#39;git tag --create-reflog&#39; only seems to create a reflog for a new tag.
+
+We can add something like the following to the fetch script, after the fetch
+command runs, to create reflogs for all new tags, and detect tag updates
+from existing ones.
+
+    # from $GIT_DIR
+    for tag in $(git tag); do
+        taglog=logs/refs/tags/$tag
+        tagdir=${taglog%/*}
+        [[ -d $tagdir ]] || mkdir -p $tagdir
+        [[ -e $taglog ]] || touch $taglog
+        if [[ -s $taglog ]]; then
+            echo &quot;Warning: tag $tag has a history...&quot;
+            git reflog refs/tags/$tag
+            echo
+        fi &gt;&amp;2
+    done
+
+&lt;/verbatim&gt;
+
+A third option is to have developers sign tags with their GPG keys.  That might
+not prevent tag corruption, but it would let us know if it had taken place.
+
+
+
+
+
+-- Main.MatyasSelmeci - 26 Feb 2016

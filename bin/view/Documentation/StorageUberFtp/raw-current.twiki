@@ -1,0 +1,303 @@
+---+!! *&lt;nop&gt;UberFTP*
+%DOC_STATUS_TABLE%
+%TOC{depth=&quot;2&quot;}%
+
+---++About This Document
+This document is intended for users who want to use &quot;UberFTP&quot; to either
+   * list files at a storage location 
+   * list directory structure at a storage location
+   * get files from a storage location
+   * put files in to a storage location
+   * transfer files from one storage location to another
+
+!UberFTP is an interactive !GridFTP enabled client. According to [[http://dims.ncsa.uiuc.edu/set/uberftp/index.html][official website]], it is the first interactive, !GridFTP enabled ftp client. It supports GSI authentication, parallel data channels and third party transfers.
+
+---++Requirements
+   * A valid grid proxy (if you want to use GSI authenticated session)
+   * Permission to actually get/put/list the data
+   * OSG Client, CE or WN software installed
+
+---++Procedure
+!UberFTP is packaged in to VDT as one of the [[Documentation.StorageGridFTP][GridFTP]]-enabled clients and should be available on any node that has OSG Client, CE or WN software installed.
+To run the client, you need to 
+   * login to proper node
+   * For older Pacman installs, you will need to =source [VDT_LOCATION]/setup.sh=.  For RPM installs, this is no longer needed.
+   * Make sure you have client in your [PATH] by running following command
+&lt;pre class=&quot;screen&quot;&gt;
+which uberftp
+&lt;/pre&gt;
+
+---+++Usage
+
+Note: Please refer to section &quot;Screen dump of entire Procedure&quot; for examples
+
+&lt;pre class=&quot;screen&quot;&gt;
+uberftp [options] [host options] [host]   (creates an interactive session)
+uberftp [options] [host options]  host cmds (executes the commands mentioned on the remote host)
+uberftp [options] [source-url] [destination-url] (copies file from source to destination location)
+uberftp [options] -f [urlfile] (copies multiple files as specified in urlfile)
+uberftp [options] -[cmd] [url] (executes given command using url as target)
+&lt;/pre&gt;
+
+%EDITTABLE{ header=&quot;| *Parameter* | *Description* |&quot; format=&quot;| text, 30 | textarea |&quot; changerows=&quot;on&quot; editbutton=&quot;Edit Table&quot; }%
+| *Parameter* | *Description* |
+| host | Connect to !GridFTP server serving the data you want to access and/or data location where you want to store data |
+| cmds | This specifies the FTP commands to run once the control connection is establish. This list (mentioned in &quot;Interactive Commands&quot; section below), must be enclosed in quotes. Multiple commands are semicolon delimited. !UberFTP will execute these commands and then exit |
+| sourceurl/destination-url | These denote the source URL and destination URL respectively. The accepted forms are: gsiftp://host[:port]/[path] ,ftp://[user[:pass]@]host[:port]/[path],file:[path]. It may be necessary under some shells to enclose the url in double quotes or escape the &quot;/&quot;in the urls.|
+| urlfile | This file is a list of [source-url] [destination-url] pairs, one pair per line. Blanks lines and lines beginning with &#39;#&#39; are ignored |
+| cmd | This will execute the given command using the url as the target. The supported commands and their syntax are listed below |
+
+%EDITTABLE{ header=&quot;| *HostOptions* | *Description* |&quot; format=&quot;| text, 20 | textarea |&quot; changerows=&quot;on&quot; editbutton=&quot;Edit Table&quot; }%
+| *Host Option* | *Description* |
+| -P port | Connect to port (default 2811 for GSI) |
+| -u user | Specify the user to authenticate as |
+| -p pass | X Use password &#39;pass&#39; when authenticating with &#39;host&#39;. If &#39;pass&#39; equals &#39;X&#39;, read the password from STDIN with character echoing turned off |
+
+%EDITTABLE{ header=&quot;| *Options* | *Description* |&quot; format=&quot;| text, 20 | textarea |&quot; changerows=&quot;on&quot; editbutton=&quot;Edit Table&quot; }%
+| *Option* | *Description* |
+| -active | Use ACTIVE mode for data transfers |
+| -ascii | Use ASCII mode for data transfers |
+| -binary | Use BINARY mode for data transfers |
+| -blksize n | Set the internal buffer size to n |
+| -cksum [on/off] | Enable/Disable CRC checks after file transfers |
+| -debug   n | Set the debug level to n |
+| -family  name | Set the remote storage family to name |
+| -glob [on/off] | Enable/Disable filename globbing |
+| -hash | Enable hashing |
+| -keepalive n | Send control channel keepalive messages every n seconds during data transfers |
+| -mode  [E/S] | Switch the transfer mode to extend block (E) or streams mode(S) |
+| -parallel n | Use n parallel data channels during extended block transfers |
+| -passive | Use PASSIVE mode for data transfers |
+| -pbsz  n | Set the data protection buffer size to n bytes |
+| -prot [C/S/E/P] | Set the data protection level to clear (C), safe (S), confidential (E) or private (P) |
+| -retry n | Retry commands that fail with transient errors n times |
+| -resume path | Retry the recursive transfer starting at path |
+| -tcpbuf n | Set the TCP read/write buffers to n bytes |
+| -wait | This will cause the client to wait for remote files to stage before attempting to transfer them |
+| -v | Print !UberFTP version information and exit. Deprecated |
+| -version | Print !UberFTP version information and exit |
+| -versions | Print version information about all used globus modules and exit |
+
+%EDITTABLE{ header=&quot;| *Cmds* | *Description* |&quot; format=&quot;| text, 20 | textarea |&quot; changerows=&quot;on&quot; editbutton=&quot;Edit Table&quot; }%
+| *Supported Commands* | *Description* | 
+| -cat [url] | Print to stdout the contents of the remote file |
+| -chgrp [-r] group [url] | Set the group ownership on the remote object(s) |
+| -chmod [-r] perms [url] | Set the permissions on the remote object(s) |
+| -dir [-r] !&lt;url&gt; | List the contents of the remote object |
+| -ls [-r] &lt;url&gt; | List the contents of the remote object |
+| -mkdir &lt;url&gt; | Create the remote directory |
+| -rename &lt;url&gt; &lt;path&gt; | Rename the remote object to the given |
+| -rm [-r] &lt;url&gt; | Remove the remote object(s) |
+| -rmdir &lt;url&gt; | Remove the remote directory |
+| -size &lt;url&gt; | Return the size of the remote object |
+| -stage -r seconds &lt;url&gt; | Attempt to stage the remote object(s) over the time period given in seconds |
+
+Note: !UberFTP uses passive STREAMS mode by default.
+
+---+++Interactive Commands
+
+!UberFTP supports the following commands (type =help= at the command prompt to list):
+
+&lt;table style=&quot;valign: top;&quot;&gt;&lt;tr style=&quot;valign: top;&quot;&gt;&lt;td&gt;
+   * active
+   * ascii
+   * binary          
+   * blksize
+   * bugs            
+   * bye             
+   * cat             
+   * cd              
+   * cdup            
+   * chgrp     
+&lt;/td&gt;&lt;td&gt;      
+   * chmod
+   * cksum
+   * close           
+   * dcau
+   * debug
+   * dir
+   * family
+   * get             
+   * glob
+   * hash
+&lt;/td&gt;&lt;td&gt;
+   * help
+   * keepalive
+   * lcat            
+   * lcd
+   * lcdup
+   * lchgrp
+   * lchmod
+   * lclose          
+   * ldir
+   * lls
+&lt;/td&gt;&lt;td&gt;
+   * lmkdir
+   * lopen
+   * lpwd            
+   * lquote          
+   * lrename
+   * lrm
+   * lrmdir
+   * ls              
+   * lsize
+   * lstage
+&lt;/td&gt;&lt;td&gt;
+   * mget 
+   * mkdir
+   * mode            
+   * mput
+   * open
+   * order
+   * parallel
+   * passive         
+   * pbsz
+   * pget
+&lt;/td&gt;&lt;td&gt;
+   * pput
+   * prot
+   * put             
+   * pwd
+   * quit
+   * quote
+   * rename
+   * resume          
+   * retry
+   * rm
+&lt;/td&gt;&lt;td&gt;
+   * rmdir
+   * runique
+   * size            
+   * stage
+   * sunique
+   * tcpbuf
+   * versions
+   * wait 
+&lt;/td&gt;&lt;td style=&quot;valign: top;&quot; valign=&quot;top&quot;&gt;
+&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+
+---+++Normal Transfers
+In normal data transfers, the &quot;local&quot; machine is the one on which you are running the command. 
+   * Use =open= to select the remote host
+   * Perform =put= and =get= between the local client machine and the remote FTP service
+
+---+++Third-Party Transfers
+Third-party transfers are performed similarly to other file transfers.In order to perform a third-party transfer:
+   * Select a new &quot;local&quot; service by using =lopen=. Now all &#39;l*&#39; commands perform actions on the new &#39;local&#39; service as if you were logged into that machine
+   * Use =put= to perform a third-party transfer when moving the file from &quot;local&quot; service to the &quot;remote&quot; service&quot; 
+   * Use =get= to perform a third-party transfer when moving the file from &quot;remote&quot; service to the &quot;local&quot; service&quot;
+   * Use =close= and =lclose= when you are finished with the &quot;remote&quot; and &quot;local&quot; service respectively
+
+---+++GSI Authenticated Session
+   * Obtain a grid proxy using =grid-proxy-init=
+   * Use !UberFTP to access the remote server and run your commands
+   * Close the connection
+
+---++Problem Resolution And Help
+---+++Support
+If you have questions or need help using !UberFTP, please send email to osg-storage@opensciencegrid.org
+---+++References
+[[http://dims.ncsa.uiuc.edu/set/uberftp/userdoc.html][UberFTP website]]&lt;br&gt;&lt;/br&gt;
+[[http://www.nersc.gov/nusers/services/Grid/data.php][Grid Computing at NERSC- Data Transfer]]
+---+++!!Screen dump of the complete procedure
+%BR%
+%TWISTY{
+mode=&quot;div&quot;
+showlink=&quot;Show...&quot;
+hidelink=&quot;Hide&quot;
+showimgleft=&quot;%ICONURLPATH{toggleopen-small}%&quot;
+hideimgleft=&quot;%ICONURLPATH{toggleclose-small}%&quot;
+}%
+&lt;pre class=&quot;screen&quot;&gt;
+% uberftp dtn01.nersc.gov
+220 dtn01.nersc.gov GridFTP Server 2.3 (gcc64dbg, 1144436882-63) ready.
+230 User shreyas logged in.
+UberFTP&gt;        
+To list files in a directory:
+UberFTP&gt; ls
+drwxr-xr-x   2  shreyas  shreyas       27 Apr 26 12:28  .
+drwxr-xr-x  19  shreyas  shreyas     4096 Jun 20 15:57  ..
+-rw-r--r--   1  shreyas  shreyas   692224 Apr 26 12:28  zebu
+-rw-r--r--   1  shreyas  shreyas  2097153 Apr 26 12:28  gnu
+To get a file:
+UberFTP&gt; get dtn01
+dtn01:  107 bytes in 0.05 seconds. 2.30 KB/sec
+To put a file:
+UberFTP&gt; put localfile
+localfile:  107 bytes in 0.05 seconds. 2.30 KB/sec
+To do a third party copy between pdsf and dtn01, we issue an lopen, which causes treats the &quot;lopen&quot;ed host as the local filesystem
+% grid-proxy-init
+% uberftp
+UberFTP&gt; lopen pdsfgrid.nersc.gov
+220 pdsfgrid4.nersc.gov GridFTP Server 2.3 (gcc32dbg, 1144436882-63) ready.
+230 User shreyas logged in.
+UberFTP&gt; open dtn01.nersc.gov
+220 dtn01.nersc.gov GridFTP Server 2.3 (gcc64dbg, 1144436882-63) ready.
+230 User shreyas logged in.
+UberFTP&gt; put pdsffile dtn01
+pdsffile:  107 bytes in 0.05 seconds. 2.17 KB/sec
+UberFTP&gt; get dtn01 pdsffile
+dtn01:  107 bytes in 0.05 seconds. 2.30 KB/sec 
+&lt;/pre&gt;
+%ENDTWISTY%
+
+---++ *Comments*
+%COMMENT{type=&quot;tableappend&quot;}%
+
+%STOPINCLUDE%
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = NehaSharma
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = Scientist
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = HowTo
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = DouglasStrain
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = DouglasStrain
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %YES%
+############################################################################################################
+--&gt;
+

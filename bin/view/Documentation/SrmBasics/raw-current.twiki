@@ -1,0 +1,173 @@
+%LINKCSS%
+
+---+!! The Basics of Using SRM
+
+%DOC_STATUS_TABLE%
+
+%TOC{depth=&quot;2&quot;}%
+
+
+
+
+%STARTINCLUDE%
+
+---++ About This Document
+In the OSG, the most common protocol for interfacing with storage is called SRM (&quot;Storage Resource Management&quot;).  This is a webservice based protocol that has three major goals:
+   1 Unix-like metadata operations (rm, mkdir, ls)
+   1 File movement (copy between two storage elements (SE) or copy between the storage element and the local node) using a variety of protocols.  The most common transfer protocol initiated by SRM clients is !GridFTP.
+   1 Generic management of backend storage.  Many the large SEs have a tape backend or multiple pools of disk server, each with a different purpose.  SRM allows one to direct files into different pools through the use of space tokens and reservations.
+
+In this document, we will interact with the SRM endpoints using the =lcg-utils= clients.  This is one of three clients packaged with the OSG Client and OSG wn-client; the others behave in a similar manner.  Each client has different advantages; =lcg-utils= was selected for its simplicity and usability.
+
+
+---++ File Movement with SRM
+
+Since SRM is a webservice protocol (it operates over HTTP), it is not designed for high-throughput file transfers.  Instead, it redirects users to a different endpoint that implements a transfer protocol (such as !GridFTP).  By simply redirecting the client to another server, the SRM endpoint can effectively load-balance transfers over multiple nodes, allowing transfers to scale.
+
+---++++ Copying files with SRM
+
+We will be using =lcg-cp=, which has the following syntax:
+&lt;pre class=&quot;screen&quot;&gt;
+lcg-cp -D srmv2 -b SRC_URL DEST_URL
+&lt;/pre&gt;
+
+Common protocols are =file://=, =srm://=, or =gsiftp://=.  Example URLs are below.
+*Local file*:
+&lt;pre&gt;
+file:/path/to/local/file
+&lt;/pre&gt;
+*SRM server*:
+&lt;pre&gt;
+srm://srm.example.com:8443/srm/v2/server?SFN=/path/to/remote/file
+&lt;/pre&gt;
+Note the SRM URL requires 4 parts:
+   1 Host name
+   1 Port (must be given; will fail without it)
+   1 Endpoint path.  This can be different for different servers; common endpoints are =srm/v2/server= or =srm/managerv2=.
+   1 File path.  This is the file you want to transfer to/from the remote system.
+
+*GridFTP server* (we do not recommend using !GridFTP):
+&lt;pre&gt;
+gsiftp://ftp.example.com:2811/path/to/remote/file
+&lt;/pre&gt;
+
+Here are some examples of using =lcg-cp= using one of the [[Documentation/FindStorageResources][endpoints found previously]]:
+
+&lt;pre class=&quot;screen&quot;&gt;
+echo &quot;hello_world&quot; &gt; /tmp/hello_world
+lcg-cp -D srmv2 -b file:/tmp/hello_world srm://red-srm1.unl.edu:8443/srm/v2/server?SFN=/mnt/hadoop/public/gpn/hello_world
+lcg-cp -D srmv2 -b srm://red-srm1.unl.edu:8443/srm/v2/server?SFN=/mnt/hadoop/public/gpn/hello_world file:/tmp/hello_world2
+diff -u /tmp/hello_world /tmp/hello_world2
+lcg-cp -D srmv2 -b srm://red-srm1.unl.edu:8443/srm/v2/server?SFN=/mnt/hadoop/public/gpn/hello_world srm://srm.example.com:8443/srm/v2/server?SFN=/mnt/hadoop/foo/hello_world
+&lt;/pre&gt;
+The last command shows you can copy between two servers.
+
+Some notes about =lcg-cp=:
+   1 You must specify the full path, including the destination file name (just the directory name will not do).
+   1 You cannot copy directories recursively.
+   1 =lcg-cp= automatically creates directories if they do not already exist.
+   1 You cannot transfer multiple files with lcg-cp (like you can with =cp=).
+
+---++ Metadata operations with SRM
+SRM has equivalents to many of the traditional Unix commands:
+
+*Delete*
+&lt;pre&gt;
+lcg-del -D srmv2 -b -l URL
+&lt;/pre&gt;
+
+*List directory*
+&lt;pre&gt;
+lcg-ls -l -D srmv2 -b URL
+&lt;/pre&gt;
+
+*Example:*
+This example is straightforward - we use =lcg-ls= to list a few files in a directory, delete one, and then perform the list again to show it is gone.
+&lt;pre class=&quot;screen&quot;&gt;
+[brian@t3 ~]$ lcg-ls -l -b -D srmv2 srm://red-srm1.unl.edu:8443/srm/v2/server?SFN=/mnt/hadoop/public/gpn
+----------   1     2     2      12              UNKNOWN /mnt/hadoop/public/gpn/hello_world
+----------   1     2     2      12              UNKNOWN /mnt/hadoop/public/gpn/hello_world2
+----------   1     2     2      12              UNKNOWN /mnt/hadoop/public/gpn/hello_world3
+[brian@t3 ~]$ lcg-del -b -l -D srmv2 srm://red-srm1.unl.edu:8443/srm/v2/server?SFN=/mnt/hadoop/public/gpn/hello_world
+[brian@t3 ~]$ lcg-ls -l -b -D srmv2 srm://red-srm1.unl.edu:8443/srm/v2/server?SFN=/mnt/hadoop/public/gpn
+----------   1     2     2      12              UNKNOWN /mnt/hadoop/public/gpn/hello_world2
+----------   1     2     2      12              UNKNOWN /mnt/hadoop/public/gpn/hello_world3
+&lt;/pre&gt;
+
+Note that =lcg-ls= does not allow you to do recursive listings.  This prevents you from inadvertently destroying a remote server!
+
+
+---++ Using SRM effectively
+
+Utilizing SRM is a lot like utilizing a FTP server - and it shares some of the drawbacks!  Here&#39;s a few lessons we have learned over the years:
+   1 SRM-based storage elements can be made fast and very scalable.  They can reliably move terabytes an hour, if you have the resources for it.
+      * If you plan on using SRM endpoints you don&#39;t own - opportunistic storage - be prepared for every failure mode imaginable.  Just because SRM *can* move terabytes an hour doesn&#39;t mean the random one you use opportunistically can.
+   1 Successful VOs usually have a &quot;home storage element&quot; they can copy their precious output to.  Once they have brought their output &quot;home&quot;, they can utilize local file system commands and have users work directly with the files.
+      * The &quot;home storage element&quot; is also a very useful fallback if a job cannot stage input from the opportunistic endpoint.
+   1 Managing more than a few hundred files at a remote SRM which you don&#39;t own is either frustrating or takes non-trivial effort.
+      * Opportunistic storage is really opportunistic - if you plan on using someone else&#39;s storage opportunistically, ask yourself beforehand &quot;how will I handle a random file disappearing or becoming inaccessible&quot; before you design your system.  Do not consider it as an afterthought!
+   1 It is not practical to use SRM for files smaller than 
+
+SRM can be daunting, if only because you have to manage the file movement and book-keep what files you saved where!  If your VO is short on effort, we recommend considering the HTTP / caching approach covered elsewhere.
+
+
+
+%STOPINCLUDE%
+
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+   DEAR DOCUMENT OWNER
+   ===================
+
+   Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER          = DerekWeitzel
+
+   Please define the document area, choose one of the defined areas from the next line
+   DOC_AREA = (ComputeElement|Storage|VO|Security|EndUser|Monitoring|General|Trash/Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = User
+
+   define the primary role the document serves, choose one of the defined roles from the next line
+   DOC_ROLE = (Scientist|Student|Developer|SysAdmin|VOManager|Documenter)
+   * Local DOC_ROLE       = Developer
+
+   Please define the document type, choose one of the defined types from the next line
+   DOC_TYPE = (User|Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = HowTo
+   
+   Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+   Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+   change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+   change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+   change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+   DEAR DOCUMENT REVIEWER
+   ======================
+
+   Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = AshuGuru
+  
+   Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+   DEAR DOCUMENT TESTER
+   ====================
+
+   Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = AshuGuru
+  
+   Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %YES%
+############################################################################################################
+--&gt;

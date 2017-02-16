@@ -1,0 +1,136 @@
+---+!! OSG Tarball Clients
+
+%TOC%
+
+---++ Overview
+
+Tarball-based installs for the OSG client and OSG worker node client are now available.
+These are for setting up an OSG client either without root privileges or onto an NFS share or nonstandard directory.
+They are built from the osg-client and osg-wn-client packages from the 3.1.16 release of the OSG Software Stack.
+They are currently in beta state.
+
+For more background, see the [[NonRootClients][non-root clients project page]].
+
+---++ Downloads
+Please pick either the osg-client or the osg-wn-client tarball that is appropriate for your distribution and architecture.
+The latest available ones are:
+
+   * [[http://vdt.cs.wisc.edu/tarball-client/osg-client-3.1.16-5.el5.i386.tar.gz][Full client 3.1.16-5 for 32-bit RHEL5]]
+   * [[http://vdt.cs.wisc.edu/tarball-client/osg-client-3.1.16-5.el5.x86_64.tar.gz][Full client 3.1.16-5 for 64-bit RHEL5]]
+   * [[http://vdt.cs.wisc.edu/tarball-client/osg-client-3.1.16-5.el6.i386.tar.gz][Full client 3.1.16-5 for 32-bit RHEL6]]
+   * [[http://vdt.cs.wisc.edu/tarball-client/osg-client-3.1.16-5.el6.x86_64.tar.gz][Full client 3.1.16-5 for 64-bit RHEL6]]
+   * [[http://vdt.cs.wisc.edu/tarball-client/osg-wn-client-3.1.16-5.el5.i386.tar.gz][Worker-node client 3.1.16-5 for 32-bit RHEL5]]
+   * [[http://vdt.cs.wisc.edu/tarball-client/osg-wn-client-3.1.16-5.el5.x86_64.tar.gz][Worker-node-client 3.1.16-5 for 64-bit RHEL5]]
+   * [[http://vdt.cs.wisc.edu/tarball-client/osg-wn-client-3.1.16-5.el6.i386.tar.gz][Worker-node-client 3.1.16-5 for 32-bit RHEL6]]
+   * [[http://vdt.cs.wisc.edu/tarball-client/osg-wn-client-3.1.16-5.el6.x86_64.tar.gz][Worker-node-client 3.1.16-5 for 64-bit RHEL6]]
+
+---++ Installation
+
+   1. Unpack the tarball.
+   1. Move the directory that was created to where you want the tarball client to be.
+   1. Run &lt;code&gt;&lt;em&gt;/path/to/client/&lt;/em&gt;osg/osg-post-install&lt;/code&gt; to fix the directories in the installation.&lt;br/&gt; \
+      Note that after this, you will not be able to relocate the install again.
+   1. Download and set up CA certificiates using &lt;code&gt;osg-ca-manage&lt;/code&gt;
+   1. Download !CRLs using fetch-crl (EL6) or fetch-crl3 (EL5)
+
+Example install:
+
+&lt;verbatim class=&#39;screen&#39;&gt;
+$ mkdir $HOME/test-install
+$ cd $HOME/test-install
+$ wget http://vdt.cs.wisc.edu/tarball-client/osg-client-3.1.16-5.el6.x86_64.tar.gz
+$ tar xzf osg-client-3.1.16-5.el6.x86_64.tar.gz
+$ cd osg-client
+$ osg/osg-post-install
+$ . setup.sh
+$ osg-ca-manage setupCA --url osg
+$ fetch-crl
+&lt;/verbatim&gt;
+
+---+++ Auto-updating certificates and CRLs
+
+You must create cron jobs to run fetch-crl/fetch-crl3 and osg-update-certs to update your !CRLs and certificates automatically.
+
+Here is what they should look like. (Note: fill in &lt;em&gt;&amp;lt;OSG_LOCATION&amp;gt;&lt;/em&gt; with the location of your tarball install).
+
+&lt;pre class=&#39;file&#39;&gt;
+# Cron job to update certs.
+# Runs every hour by default, though does not update certs until they&#39;re at
+# least 24 hours old.  There is a random sleep time for up to 45 minutes (2700
+# seconds) to avoid overloading cert servers.
+10 * * * *   ( . &lt;em&gt;&amp;lt;OSG_LOCATION&amp;gt;&lt;/em&gt;/setup.sh &amp;&amp; osg-update-certs --random-sleep 2700 --called-from-cron )
+&lt;/pre&gt;
+
+&lt;pre class=&#39;file&#39;&gt;
+# Cron job to update CRLs for EL5:
+# Runs every 6 hours at, 45 minutes +/- 3 minutes.
+42 */6 * * *   ( . &lt;em&gt;&amp;lt;OSG_LOCATION&amp;gt;&lt;/em&gt;/setup.sh &amp;&amp; fetch-crl3 -q -r 360 )
+&lt;/pre&gt;
+
+&lt;pre class=&#39;file&#39;&gt;
+# Cron job to update CRLs for EL6:
+# Runs every 6 hours at, 45 minutes +/- 3 minutes.
+42 */6 * * *   ( . &lt;em&gt;&amp;lt;OSG_LOCATION&amp;gt;&lt;/em&gt;/setup.sh &amp;&amp; fetch-crl -q -r 360 )
+&lt;/pre&gt;
+
+You might want to configure proxy settings in $OSG_LOCATION/etc/fetch-crl.conf (EL6) or $OSG_LOCATION/etc/fetch-crl3.conf (EL5)
+
+
+---++ Usage
+A user must set up their environment before running any of the software provided in the client.
+
+There are two way to do this: either source =setup.sh= or =setup.csh= before
+running a command, or use the =osgrun= wrapper. All three files are located in
+the top-level directory of the client.
+
+*Note:* If =setup.sh=, =setup.csh=, or =osgrun= are missing, then run
+=osg/osg-post-install= to (re)create them.
+
+Example usage with =setup.sh=, assuming an install in =$HOME/test-install/osg-client= :
+
+&lt;pre class=&#39;screen&#39;&gt;
+$ . $HOME/test-install/osg-client/setup.sh
+$ grid-proxy-init
+$ globus-job-run &lt;em&gt;GATEKEEPER&lt;/em&gt; /usr/bin/id
+&lt;/pre&gt;
+
+(If using =csh= or =tcsh=, source =setup.csh= instead of =setup.sh=)
+
+The user might find it convenient to create a shell alias to =setup.sh= to avoid having to type the full path every session.
+For example by adding the following to their =~/.bashrc=:
+&lt;pre class=&#39;file&#39;&gt;
+alias source_setup=&quot;. $HOME/test-install/osg-client/setup.sh&quot;
+&lt;/pre&gt;
+
+Example usage with =osgrun=:
+
+&lt;pre class=&#39;screen&#39;&gt;
+$ $HOME/test-install/osg-client/osgrun grid-proxy-init
+$ $HOME/test-install/osg-client/osgrun globus-job-run &lt;em&gt;GATEKEEPER&lt;/em&gt; /usr/bin/id
+&lt;/pre&gt;
+
+The advantage of =osgrun= is that the environment of the user is left
+unchanged, whereas sourcing =setup.sh= or =setup.csh= will modify variables
+like =PATH=, =LD_LIBRARY_PATH=, and others, until the user exits from their
+shell.
+
+The user might find it useful to set up a shell alias to =osgrun= to avoid having to type the full path every command.
+For example by adding the following to their =~/.bashrc=:
+&lt;pre class=&#39;file&#39;&gt;
+alias osgrun=&quot;$HOME/test-install/osg-client/osgrun&quot;
+&lt;/pre&gt;
+
+
+---++ Known Bugs and Requests
+
+   | *Type* | *Description* | *Status* |
+   | doc | Document how to set up fetch-crl cronjob | done |
+   | doc | Document how to set up osg-update-certs cronjob | done |
+   | bug | Set MANPATH in setup.sh / setup.csh [[https://jira.opensciencegrid.org/browse/SOFTWARE-1009][SOFTWARE-1009]] | done (3.1.16-5) |
+   | doc/enhance | fetch-crl on EL6 is fetch-crl3 on EL5. Make symlinks to reduce confusion. | done (3.1.16-5) |
+   | enhance | Add ability to customize environment (i.e. have setup.sh source setup-local.sh) [[https://jira.opensciencegrid.org/browse/SOFTWARE-1020][SOFTWARE-1020]] | done (3.1.16-5) |
+
+
+
+&lt;!-- vim:ft=twiki
+--&gt;

@@ -1,0 +1,150 @@
+%LINKCSS%
+
+&lt;!-- This is the default OSG documentation template. Please modify it in --&gt;
+&lt;!-- the sections indicated to create your topic.                        --&gt; 
+
+&lt;!-- By default the title is the WikiWord used to create this topic. If  --&gt;
+&lt;!-- you want to modify it to something more meaningful, just replace    --&gt;
+&lt;!-- %TOPIC% below with i.e &quot;My Topic&quot;.                                  --&gt;
+
+---+!! !GlideinWMS VO Frontend Groups
+%TOC%
+
+---++ Breakdown of VO Frontend Group
+A group in the VO Frontend is a logical way to separate jobs in the frontend.  A group can choose a subset of jobs and subset of entry points in order to match jobs with special requirements to entry points that provide them.
+
+---
+&lt;verbatim class=&quot;file&quot;&gt;
+&lt;group name=&quot;htpc&quot; enabled=&quot;True&quot;&gt;
+&lt;/verbatim&gt;
+Name of the group.
+
+---
+
+&lt;verbatim class=&quot;file&quot;&gt;
+   &lt;config&gt;
+      &lt;idle_glideins_per_entry max=&quot;30&quot; reserve=&quot;5&quot;/&gt;
+      &lt;idle_vms_per_entry curb=&quot;5&quot; max=&quot;100&quot;/&gt;
+      &lt;running_glideins_per_entry max=&quot;10000&quot; relative_to_queue=&quot;1.15&quot;/&gt;
+   &lt;/config&gt;
+&lt;/verbatim&gt;
+Configuration options for this frontend.  In this specific example
+   * The frontend will ask the factory to keep 30 glideins idle in the remote queue.
+   * No idea about curb?
+   * The frontend will ask the factory for a limit of 10000 running jobs at the resource, or idle queue * 1.15, which ever is smaller.
+
+---
+
+&lt;verbatim class=&quot;file&quot;&gt;
+      &lt;factory query_expr=&#39;((stringListMember(&quot;HCCHTPC&quot;, GLIDEIN_Supported_VOs)))&#39;&gt;
+&lt;/verbatim&gt;
+Use this query expression when asking for entry points from the factory.
+
+---
+
+&lt;verbatim class=&quot;file&quot;&gt;
+         &lt;collectors&gt;
+            &lt;collector DN=&quot;/DC=org/DC=doegrids/OU=Services/CN=glidein-1.t2.ucsd.edu&quot; comment=&quot;Define factory collector globally for simplicity&quot; factory_identity=&quot;gfactory@glidein-1.t2.ucsd.edu&quot; my_identity=&quot;unlfe@glidein-1.t2.ucsd.edu&quot; node=&quot;glidein-1.t2.ucsd.edu&quot;/&gt;
+         &lt;/collectors&gt;
+&lt;/verbatim&gt;
+The glidein factory to talk to.  Normally this can be declared globally (as it is in the RPM), and therefore does not need to be here if already defined.
+
+---
+
+&lt;verbatim class=&quot;file&quot;&gt;
+      &lt;job query_expr=&quot;(RequiresWholeMachine=?=True)&amp;amp;&amp;amp;(JobUniverse==5)&amp;amp;&amp;amp;(GLIDEIN_Is_Monitor =!= TRUE)&amp;amp;&amp;amp;(JOB_Is_Monitor =!= TRUE)&quot;&gt;
+&lt;/verbatim&gt;
+This is the query expression send to the schedd to filter jobs.  imagine =condor_q -const &amp;lt;query_expr&gt;=.  Notice we filter on a special attribute, =RequiresWholeMachine=.  This attribute needs to be in every HTPC job in order for the frontend to detect it is a HTPC job.  This can be added to the Condor job with the syntax:
+&lt;pre class=&quot;file&quot;&gt;
+universe = vanilla
+...
+%RED%+RequiresWholeMachine = True%ENDCOLOR%
+Requirements = CAN_RUN_WHOLE_MACHINE == TRUE
+...
+queue
+&lt;/pre&gt;
+
+---
+
+&lt;verbatim class=&quot;file&quot;&gt;
+         &lt;schedds&gt;
+            &lt;schedd DN=&quot;/DC=org/DC=doegrids/OU=Services/CN=host/glidein.unl.edu&quot; fullname=&quot;glidein.unl.edu&quot;/&gt;
+         &lt;/schedds&gt;
+&lt;/verbatim&gt;
+This is a list (or in this case, only one) of schedds that will be queried to find HTPC jobs.
+
+---
+
+&lt;verbatim class=&quot;file&quot;&gt;
+   &lt;attrs&gt;
+     &lt;attr name=&quot;CAN_RUN_WHOLE_MACHINE&quot; glidein_publish=&quot;True&quot; job_publish=&quot;False&quot; parameter=&quot;True&quot; type=&quot;expr&quot; value=&quot;True&quot;/&gt;
+     &lt;attr name=&quot;GLIDECLIENT_Group_Start&quot; glidein_publish=&quot;True&quot; job_publish=&quot;False&quot; parameter=&quot;True&quot; type=&quot;string&quot; value=&quot;TARGET.RequiresWholeMachine&quot;/&gt;
+   &lt;/attrs&gt;
+&lt;/verbatim&gt;
+This is a list of additionally attributes that will be published by the Glidein&#39;s Startd.  =GLIDECLIENT_Group_Start= is a special attribute in the !GlideinWMS configuration, it will be appended to the START expression of the glidein.  In this case we make sure that only jobs that have the special attribute, =RequiresWholeMachine=, will run on this glidein.  Further, the startds will advertise =CAN_RUN_WHOLE_MACHINE= in their classads, enabling jobs require htpc slots:
+&lt;pre class=&quot;file&quot;&gt;
+universe = vanilla
+...
++RequiresWholeMachine = True
+Requirements = %RED%CAN_RUN_WHOLE_MACHINE == TRUE%ENDCOLOR%
+...
+queue
+&lt;/pre&gt;
+
+---
+&lt;verbatim class=&quot;file&quot;&gt;
+   &lt;files&gt;
+      &lt;file absfname=&quot;/usr/share/gwms-frontend/glidein_scripts/startd.sh&quot; after_entry=&quot;True&quot; const=&quot;True&quot; executable=&quot;True&quot; untar=&quot;False&quot; wrapper=&quot;False&quot;&gt;
+         &lt;untar_options cond_attr=&quot;TRUE&quot;/&gt;
+      &lt;/file&gt;
+   &lt;/files&gt;
+&lt;/verbatim&gt;
+A list (or in this case, only one) of files that will be brought down at the start of the glidein.  It can be considered a verification script.  This file will be executed before the glidein reports to the frontend to run jobs.  If the script fails (exit status is not 0), the glidein will quickly exit.  Documentation on these scripts, including an API to add custom attributes to the startd, is on the [[http://www.uscms.org/SoftwareComputing/Grid/WMS/glideinWMS/doc.prd/factory/custom_scripts.html][GlideinWMS website]].
+
+
+---++ Example HTPC Group
+Example group for HTPC at HCC.
+
+&lt;verbatim class=&quot;file&quot;&gt;
+&lt;group name=&quot;htpc&quot; enabled=&quot;True&quot;&gt;
+   &lt;config&gt;
+      &lt;idle_glideins_per_entry max=&quot;30&quot; reserve=&quot;5&quot;/&gt;
+      &lt;idle_vms_per_entry curb=&quot;5&quot; max=&quot;100&quot;/&gt;
+      &lt;running_glideins_per_entry max=&quot;10000&quot; relative_to_queue=&quot;1.15&quot;/&gt;
+   &lt;/config&gt;
+   &lt;downtimes/&gt;
+   &lt;match match_expr=&quot;True&quot;&gt;
+      &lt;factory query_expr=&#39;((stringListMember(&quot;HCCHTPC&quot;, GLIDEIN_Supported_VOs)))&#39;&gt;
+         &lt;match_attrs&gt;
+         &lt;/match_attrs&gt;
+         &lt;collectors&gt;
+            &lt;collector DN=&quot;/DC=org/DC=doegrids/OU=Services/CN=glidein-1.t2.ucsd.edu&quot; comment=&quot;Define factory collector globally for simplicity&quot; factory_identity=&quot;gfactory@glidein-1.t2.ucsd.edu&quot; my_identity=&quot;unlfe@glidein-1.t2.ucsd.edu&quot; node=&quot;glidein-1.t2.ucsd.edu&quot;/&gt;
+         &lt;/collectors&gt;
+      &lt;/factory&gt;
+      &lt;job query_expr=&quot;(RequiresWholeMachine=?=True)&amp;amp;&amp;amp;(JobUniverse==5)&amp;amp;&amp;amp;(GLIDEIN_Is_Monitor =!= TRUE)&amp;amp;&amp;amp;(JOB_Is_Monitor =!= TRUE)&quot;&gt;
+         &lt;match_attrs&gt;
+         &lt;/match_attrs&gt;
+         &lt;schedds&gt;
+            &lt;schedd DN=&quot;/DC=org/DC=doegrids/OU=Services/CN=host/glidein.unl.edu&quot; fullname=&quot;glidein.unl.edu&quot;/&gt;
+         &lt;/schedds&gt;
+      &lt;/job&gt;
+   &lt;/match&gt;
+   &lt;security&gt;
+      &lt;proxies&gt;
+      &lt;/proxies&gt;
+   &lt;/security&gt;
+   &lt;attrs&gt;
+     &lt;attr name=&quot;CAN_RUN_WHOLE_MACHINE&quot; glidein_publish=&quot;True&quot; job_publish=&quot;False&quot; parameter=&quot;True&quot; type=&quot;expr&quot; value=&quot;True&quot;/&gt;
+     &lt;attr name=&quot;GLIDECLIENT_Group_Start&quot; glidein_publish=&quot;True&quot; job_publish=&quot;False&quot; parameter=&quot;True&quot; type=&quot;string&quot; value=&quot;TARGET.RequiresWholeMachine&quot;/&gt;
+   &lt;/attrs&gt;
+   &lt;files&gt;
+      &lt;file absfname=&quot;/usr/share/gwms-frontend/glidein_scripts/startd.sh&quot; after_entry=&quot;True&quot; const=&quot;True&quot; executable=&quot;True&quot; untar=&quot;False&quot; wrapper=&quot;False&quot;&gt;
+         &lt;untar_options cond_attr=&quot;TRUE&quot;/&gt;
+      &lt;/file&gt;
+   &lt;/files&gt;
+&lt;/group&gt;
+&lt;/verbatim&gt;
+
+
+
+-- Main.DerekWeitzel - 24 Mar 2011

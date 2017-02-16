@@ -1,0 +1,144 @@
+---++ Coordinates
+   * 4:00 PM Eastern (3:00 PM Central)
+   * Phone: +1-866-740-1260, code 8266135 
+---++ Announcements:
+   * Meeting will continue as usual next week even though several regular participants will be at CHEP. 
+
+---++ Action/Significant Items: 
+   * OSG 3.1.25 Released.  
+   * 40%+ of sites at OSG 3.1.22 or later. 20% at OSG 3.1.11 or before. 
+
+---++ Attendees: Tim, Tim, Kevin, Tony, Chander, Marco, Xin, Armen
+
+---++ CMS (Tony)
+   * Job statistics for last week
+      * 21,796 jobs/day
+
+   * Transfer statisics for last week
+      * ~354 TB/day
+
+   * Firewall rules changed without notification at CERN causing CMS availability and reliability status for all Tier-1&#39;s and quite a few Tier-2&#39;s to show failures.
+
+---++ Atlas (Armen &amp; Xin)
+
+   * General production status.
+      * USATLAS total production over the last week was overall stable, at the average level around 26-31K running jobs. Last Tuesday BNL VOMS server host certificate expired. Anyone who got proxy from BNL VOMS was affected. BNL VOMS daemon was disabled, to get proxies elsewhere till it was fixed. This Monday new certificate at CERN VOMS was wrongly installed, causing all faulty proxies obtained from CERN VOMS, resulting drop in production. Fixed now.
+   * Job statistics for last week.      
+      * Gratia report: 1.8 M pilots processed, with CPU/Walltime ratio of 92%
+      * Real Jobs processed by US sites for last week, reported from PanDA monitor 
+         * 1.1M
+   * Data Transfer statistics for last week 
+      * Data transfer rate was around ~500TB/day at BNL T1.
+   * Issues
+
+---++ Grid Operations Center (Scott T.)
+
+---+++ Operations Last Week
+   * [[http://tinyurl.com/ct2mfy6][GOC Services Availability/Reliability]]
+   * [[http://myosg.grid.iu.edu/miscstatus/index?datasource=status&amp;count_sg_1=on&amp;count_active=on&amp;count_enabled=on][Current Status]]
+   * [[https://opensciencegrid.org/bin/view/Operations/OASISStatusUpdate][Oasis Status]]
+
+   * ITB release, release note in preparation
+      * update wordpress version on web.grid
+      * update condor on osg-xd machine
+      * New  RSV collector/reporter has been certified
+   * Software Repo did not need disk increase. 
+   * OSG-XSEDE experienced some issues for select users using SSH. 
+      * locauthorize wasn&#39;t turned on in authconfig.
+
+   * WMS Glide In Factory
+      * Upgraded SDSC Factory to glideinWMS v3_2 (pre-release) and HTCondor to 8.0.2.
+      * Discovered HTCondor-G bug that affects submission to cream and nordugrid sites if using OSG rpms for globus libraries.
+         * nordugrid_gahp processes were stuck in busy loops, hogging cpu
+         * Jaime Frey provided a patch and it will get into HTCondor 8.0.4
+      * Discovered glideinWMS 3_2 bug where NordurgridRSL was not properly being passed on glidein submission.
+         * glideinWMS developers provided a patch and it will be put into official v3_2 release.
+      * SDSC disk became over 80% full. This was due to starting the new v3_2 instance. We cleared out all the logs from the old v2 instance freeing 100G.
+         * Cleanup took ~7 hours. SDSC was in effective downtime on Friday during this time but the GOC and CERN factories continued to serve the frontends while SDSC was down.
+   * OSG-Connect
+      * New Operational Effort, attendance should start soon. 
+
+---+++ Operations This Week
+
+   * Production Release - [[http://osggoc.blogspot.com/][Change Notification]]
+   * Scott is on PTO. 
+   * Software Release 3.1.25
+      * jGlobus 2.0.6, GlideinWMS 2.7.2, gratia-probe
+      * [[https://twiki.grid.iu.edu/bin/view/Operations/PackageV48][VO Package]] - SeaQuest SubVO and other minor changes. 
+   * Version Histogram from Marco
+
+     &lt;img src=&quot;https://twiki.grid.iu.edu/twiki/pub/Production/October1%2c2013ProductionMeeting/tmp131001-osg_releases_hist.png&quot; alt=&quot;tmp131001-osg_releases_hist.png&quot; width=&#39;887&#39; height=&#39;535&#39; /&gt; 
+
+
+---++ Campus Infrastructures Community (Rob G)
+
+---++ Site Coordination (Marco)
+Note that this report lists the currently active resources in OSG.
+If a site is down or not reporting it will not be counted.
+Therefore there may be fluctuations.
+Each line has the current number and variation from last week in parenthesis.
+You can find a table with current OSG and VDT versions at http://www.mwt2.org/~marco/myosgldr.php
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 3.1.25 / 1.2.32
+      *       87 (-3) OSG 3.x (       1 are 3.1.25)
+      *        8 (-3) OSG 1.2.X resources (       0 are 1.2.32)
+
+
+---++ Software (Tim C.)
+   * [[SoftwareTeam.SP021_NewVersions][OSG Next project]] — support for new release series
+      * Production deployment of repository restructuring is complete!
+      * Final (Koji) deployment scheduled for 22 October
+      * Aiming for 3.2.0 on 12 November
+   * Still working on HTCondor-CE for PBS
+   * RSV for VOs (aka Grid Exerciser II) — in progress
+   * Improving osg-info-services for its 1.0 release
+   * Contributing patches upstream to Globus Toolkit (likely to appear in GT 5.2.6)
+   * Continued work on automated testing
+   * Transitioning HTCondor RPM and Debian packaging to HTCondor development team
+
+
+---++ Release (Tim T.)
+%TABLE{sort=&quot;off&quot;}%
+|  *Version*  |  *Testing*  |  *Freeze*  |  *Release*  | *Notes* |
+| 3.1.25 | 2013-09-23 | 2013-09-30 | 2013-10-08 | jGlobus 2.0.6, !GlideinWMS 2.7.2, gratia-probe |
+| 3.1.26 / 3.2.0 | 2013-10-28 | 2013-11-04 | 2013-11-12 | |
+| 3.1.27 / 3.2.1 | 2013-11-25 | 2013-12-02 | 2013-12-10 | Short testing week due to Thanksgiving Holiday |
+
+Release 3.1.25
+
+   * gratia probes: now filters and logs unreasonably huge CPU time values
+   * GUMS: now extracts VOMS attributes from SSL connection
+   * Globus: Log rotation now performed by copy and truncate
+   * jGlobus 2.0.6: new version with many bug fixes
+      * !BeStMan recompiled with new jGlobus
+      * GUMS recompiled with new jGlobus
+   * glideinWMS 2.7.2
+   * Log XACML failures
+
+Also with this release, we changed the internal structure of the Yum repositories in preparation for a new OSG software release series (3.2.x, coming soon). The changes are backward compatible with the old layout and should be transparent to users. Further, the osg-release RPM, which contains the repository definitions, still works and will always be the preferred way of defining the OSG repositories.
+
+Known issue
+
+   * The update to log XACML failures can cause a failure when LCMAPS is logging to stdout/stderr. The happens when running the llrun tool. This problem will be fixed in 3.1.26.
+
+---++ User Support (Chander, Mats)
+
+We appear to have identified the scaling issue in Public storage using iRODS; Tanya will recode a module to use substantially less memory.
+
+Snowmass and ECFA appear to be wrapping up their work.  So many more cycles are likely to be available for other users.
+
+Next week we plan to integrate in the OSG-XD adjunct server to increase the overall capacity of the front-end (estimate that we will be able to do 20K simultaneous jobs).  As part of this we plan to start sending jobs to FNAL without invoking GLExec (this will only be done for jobs submitted at the OSG-XD host – not for jobs that flock to this system).
+
+There is modest growth in the number of active users per week from XSEDE; at the beginning of the year we averaged 4 and now we are seeing about 8 per week.
+
+We continue to help identify issues for gGactory operations that are affecting production for vo=osg; the most recent was pilots failing at RENCI-Blueridge
+
+
+---++ Security (Kevin)
+   * No new major incidents or vulnerabilities last week.
+   * Investigating what OSG software release is the oldest safe release from a security vulnerability perspective. Looks like cvmfs update was the most recent big security issue, but still investigating other recent security updates.
+   * Mine is back at work
+
+---++ The full report with links is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+-- Main.RobQ - 08 Oct 2013

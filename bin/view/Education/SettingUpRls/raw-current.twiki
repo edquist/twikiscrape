@@ -1,0 +1,57 @@
+%LINKCSS%
+
+---+ Setting Up The Replica Catalog (RLS)
+%STARTINCLUDE%
+%EDITTHIS%
+
+In this exercise you will insert entries into the Replica Catalog. The replica catalog that we use is &lt;span class=&quot;firstterm&quot;&gt;Globus RLS&lt;/span&gt;.
+
+A Replica Catalog maintains the lfn to pfn mapping for the input files of your workflow. Pegasus queries it to determine the locations of the raw input data files required by the workflow. Additionally, all the materialized data is registered into RLS for data reuse later on. 
+
+You can use the =rc-client= command to insert, query and delete from the replica catalog.
+
+The input data to be used for your workflow resides in the =$HOME/Data= directory. We are going to insert entries into the replica catalog that point to the files in this directory.
+
+The instructors have provided a replicas.in.template, the input data file for the rc-client that  contains the mappings that need to be populated in the RLS.
+
+You will need to write some things yourself, by following the instructions below:
+
+&lt;ol&gt;
+   &lt;li&gt;Copy the template file to a file (=replicas.in=) in the =COMPOUND= subdirectory. &lt;/li&gt;
+   &lt;li&gt;Do =@USER@= substitution on the copied file. Replace =@USER@= with your username of the form =trainXX=. &lt;/li&gt;
+   &lt;li&gt;Insert the entries in the RLS and verify if they are correctly inserted.
+       &lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;cp /opt/vdltut/PEGASUS?replicas.in.template replicas.in&lt;/span&gt;
+$ &lt;span class=&quot;in&quot;&gt;vi replicas.in&lt;/span&gt;
+&lt;/pre&gt; &lt;/li&gt;
+   &lt;li&gt;Let&#39;s see what the file looks like.
+      &lt;pre class=&quot;screen&quot;&gt;
+$&lt;/span&gt; &lt;span class=&quot;in&quot;&gt;cat replicas.in&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;train99_180.2004.1014.0.raw gsiftp://gridlab1/opt/vdltut/Data/180.2004.1014.0.raw pool=&quot;local&quot; 
+train99_180.2004.1014.2.raw gsiftp://gridlab1/opt/vdltut//Data/180.2004.1014.2.raw pool=&quot;local&quot;
+train99_180.2004.1017.1.raw gsiftp://gridlab1/opt/vdltut/Data/180.2004.1017.1.raw pool=&quot;local&quot;
+train99_180.2005.0126.0.raw gsiftp://gridlab1/opt/vdltut/Data/180.2005.0126.0.raw pool=&quot;local&quot;
+train99_180.2005.0926.0.raw gsiftp://gridlab1/opt/vdltut/Data/180.2005.0926.0.raw pool=&quot;local&quot;
+train99_180.2005.0126.1.raw gsiftp://gridlab1/opt/vdltut/Data/180.2005.0126.1.raw pool=&quot;local&quot;
+train99_180.geo gsiftp://gridlab1/opt/vdltut/Data/180/180.geo pool=&quot;local&quot;&lt;/span&gt; 
+&lt;/pre&gt; &lt;/li&gt;
+   &lt;li&gt; Now we are ready to run =rc-client= and populate the data. Since each of you have uniques lfn&#39;s that are being registered, all the 7 entries should be successfully registered.
+      &lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;rc-client --insert replicas.in&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;#Successfully worked on    : 7 lines
+#Worked on total number of : 7 lines.&lt;/span&gt; 
+&lt;/pre&gt; &lt;/li&gt;
+   &lt;li&gt; &lt;p&gt;Now the entries have been successfully inserted into the LRC. We should confirm whether the mappings have propogated to the RLI or not. Let us wait about 30 seconds and then query the replica catalog for a particular lfn.&lt;/p&gt; &lt;p&gt;Run =rc-client lookup @USER@_180.geo= where =@USER@= is replaced by your username (e.g., =train76=).&lt;/p&gt;
+       &lt;pre class=&quot;screen&quot;&gt;
+$ &lt;span class=&quot;in&quot;&gt;rc-client lookup train_180.geo&lt;/span&gt;
+&lt;span class=&quot;out&quot;&gt;train46_180.geo gsiftp://skynet-login.isi.edu/opt/vdltut/Data/180/180.geo pool=&quot;local&quot;&lt;/span&gt;
+&lt;/pre&gt; &lt;/li&gt;
+&lt;/ol&gt;
+
+Congratulations!! You have the replica catalog setup correctly for use. This is the catalog which you will tinker with most, while running Pegasus.
+
+
+%STOPINCLUDE%
+
+%BOTTOMMATTER%
+-- Main.ForrestChristian - 27 Feb 2007

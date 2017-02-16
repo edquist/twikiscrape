@@ -1,0 +1,57 @@
+&lt;!--
+   * Set NOT_STARTED = Not Started
+   * Set NOT_RELEASED = Not Released
+   * Set ON_TRACK = &lt;div style=&quot;background-color: #3366FF; color:white&quot;&gt;&amp;nbsp;On Track&amp;nbsp;&lt;/div&gt;
+   * Set BEHIND = &lt;div style=&quot;background-color: #CCFF00;&quot;&gt;&amp;nbsp;Behind&amp;nbsp;&lt;/div&gt;
+   * Set AT_RISK = &lt;div style=&quot;background-color: #CC0000; color:white&quot;&gt;&amp;nbsp;At risk&amp;nbsp;&lt;/div&gt;
+   * Set ACHIEVED = &lt;div style=&quot;background-color: #00FF66;&quot;&gt;&amp;nbsp;Achieved&amp;nbsp;&lt;/div&gt;
+   * Set RELEASED = &lt;div style=&quot;background-color: #00FF66;&quot;&gt;&amp;nbsp;Released&amp;nbsp;&lt;/div&gt;
+   * Set TWISTY_OPTS_DETAILS = mode=&quot;div&quot; showlink=&quot;Details&quot; hidelink=&quot;Hide&quot; showimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif&quot; hideimgleft=&quot;/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif&quot; remember=&quot;on&quot; start=&quot;hide&quot; 
+--&gt;
+
+---+ Proposal for transitioning to GOC Ticket System
+
+---++ Goal
+
+The OSG Software Team should use a single ticket system for providing user support. This system should allow easy access by other OSG staff so we can share expertise when solving tickets. 
+
+---++ Background
+
+Historically, the OSG Software Team has not had a consistent method for providing support. We&#39;ve had two systems:
+
+   1. The UW-Madison portion of the team used [[http://crt.cs.wisc.edu/][RT hosted at the UW-Madison]]. The GOC can assign tickets from their system to RT with ticket interchange software they developed. 
+   1. The Fermilab-based Storage Group (which no longer exists as a separate group) used the GOC Ticket System
+
+Problems we have:
+
+   1. Not everyone has accounts on both systems.
+   1. Not all tickets can be easily assigned to one of those systems because sometimes they cross boundaries. 
+   1. Some tickets should involve other staff in OSG, but it&#39;s not easy to bring them in. 
+   1. The GOC assigns tickets to one of the systems, but they don&#39;t always know which system to assign too.
+   1. We no longer have the Storage Group. 
+
+Clearly, we need a solution. Sooner is better.
+
+---++ The Solution 
+
+We should use a single ticket system. We already have a single system that all OSG Staff can already use or easily gain access to: [[https://ticket.grid.iu.edu/goc/open][GOC Ticket]]. This is a custom front-end to Footprints developed by the GOC. No one needs to use Footprints directly. Authorization happens using standard mechanisms (X.509 certificates &amp; OIM). 
+
+It&#39;s arguable that there are better ticket systems than GOC Footprints. However, GOC Footprints is already usable by all OSG Staff and is already the ticket system used by OSG Operations. We claim that GOC ticket is good enough to meet our needs and does not require us to implement a new ticket system. 
+
+---++ The Transition
+
+We have existing tickets in RT (at the UW-Madison) that should still continue to work while they are resolved. Therefore we can&#39;t simply switch over. We propose the following timeline. 
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Task* | *State* | *Owner* | *Target Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| Ensure that everyone in OSG Software&lt;br&gt;has access to GOC Ticket. | %ACHIEVED% | Soichi Hayashi | 25-Jan-2012 | 12-Feb-2012 | 31-Jan-2012 | |
+| Change script that processes&lt;br&gt; incoming email to RT. | %ACHIEVED% | Tim Cartwright | 30-Jan-2012 | 13-Feb-2012 | %RED%14-Feb-2012%ENDCOLOR% | %TWISTY{%TWISTY_OPTS_DETAILS%}%&lt;ul&gt;&lt;li&gt; If incoming email is for existing RT ticket, file with RT as in the past. &lt;/li&gt;&lt;li&gt; Else if email from goc@opensciencegrid.org, discard&lt;/li&gt;&lt;li&gt;Else redirect email to goc@opensciencegrid.org&lt;/li&gt;%ENDTWISTY% |
+| Add Footprints pseudo-user | %ACHIEVED% | Soichi Hayashi | 30-Jan-2012 | 13-Feb-2012 | %RED%14-Feb-2012%ENDCOLOR% | Used for filtering tickets |
+| Create mailing list as the email for the pseudo-user | %ACHIEVED% | Alain Roy | 1-Feb-2012 | 13-Feb-2012 | 13-Feb-2012 | |
+| Announce changes to support to community | %ACHIEVED% | Alain Roy | 10-Feb-2012 | 10-Feb-2012 | %RED%15-Feb-2012%ENDCOLOR% | |
+| Use new support process | %ACHIEVED% | Software Team | 14-Feb-2012 | Forever... | %RED%15-Feb-2012%ENDCOLOR% | %TWISTY{%TWISTY_OPTS_DETAILS%}%That&#39;s the actual start, not the actual finish.&lt;br&gt;It took slightly longer to deploy than expected, which is why it was a day late.%ENDTWISTY% |
+
+---++ Software Support Details
+
+   * [[SoftwareSupport][How we manage software support]]
+   * [[TriageDuty][Roster and calendar for triage duty]]

@@ -1,0 +1,36 @@
+
+---+ Changing the VOs you support
+
+The GIP attempts to determine which VOs you support at your site through parsing the file =$OSG_LOCATION/monitoring/osg-user-vo-map.txt=.  However, as this file is auto-generated from the site&#39;s GUMS setting, there might be a difference between what&#39;s contained in the user-vo map and what VOs you want to support on your CE.
+
+Most newer modules on the GIP (For OSG 1.0, just PBS and the storage modules.  For OSG 1.2, this should include Condor, SGE, and LSF) respect the additional GIP configuration.  If the file =$OSG_LOCATION/gip/etc/gip.conf= does not exist, create it, and the following line if it is not present:
+
+&lt;verbatim&gt;
+[vo]
+&lt;/verbatim&gt;
+
+---++ Add a new VO
+To add the VO &quot;myVO&quot; to the GIP, add the following line to the =[vo]= section:
+&lt;verbatim&gt;
+vo_whitelist=myVO
+&lt;/verbatim&gt;
+To add multiple VOs, add them on the same line, comma-separated.
+
+---++ Blacklist an existing VO
+To remove a support for the the VO &quot;myVO&quot; in the gip, add the following line to the =[vo]= section:
+&lt;verbatim&gt;
+vo_blacklist=myVO
+&lt;/verbatim&gt;
+To remove multiple VOs, add them on the same line, comma-separated.
+
+---++ Example
+Here is the full =[vo]= section from the template =gip.conf=:
+
+&lt;verbatim&gt;
+[vo]
+vo_blacklist = localUsers
+vo_whitelist = dteam,ops
+autodetect_storage_vos = True
+&lt;/verbatim&gt;
+
+-- Main.BrianBockelman - 27 May 2008

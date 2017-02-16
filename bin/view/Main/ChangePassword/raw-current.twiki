@@ -1,0 +1,33 @@
+---+ %MAKETEXT{&quot;Change Password&quot;}%
+%STARTINCLUDE%
+
+__%MAKETEXT{&quot;Forgotten your password?&quot;}%__ %MAKETEXT{&quot;Use [_1] instead.&quot; args=&quot;ResetPassword&quot;}%
+
+&lt;form name=&quot;manage&quot; action=&quot;%SCRIPTURLPATH{&quot;manage&quot;}%/%TWIKIWEB%/%HOMETOPIC%&quot; method=&quot;post&quot;&gt;
+
+%IF{
+  &quot;context passwords_modifyable&quot;
+  then=&quot;&lt;strong&gt;%MAKETEXT{&quot;After submitting this form your password will be changed.&quot;}%&lt;/strong&gt;&quot;
+  else=&quot;&lt;strong&gt;%MAKETEXT{&quot;Sorry, the password system is currently read only, please contact [_1]&quot; args=&quot;%WIKIWEBMASTER%&quot;}%&lt;/strong&gt;&quot;
+}% &lt;!--
+      * Set NOTMODIFYABLE = %IF{&quot;context passwords_modifyable&quot; then=&quot;&quot; else=&quot;DISABLED&quot;}%
+--&gt;
+
+%TABLE{databg=&quot;transparent&quot; tableborder=&quot;0&quot; tablerules=&quot;none&quot;}% 
+| %MAKETEXT{&quot;Fields marked [_1] are required&quot; args=&quot;=&lt;font color=&#39;red&#39;&gt;**&lt;/font&gt;=&quot;}%  ||
+|  %MAKETEXT{&quot;Your [_1].LoginName&quot; args=&quot;%TWIKIWEB%&quot;}%: | &lt;input %NOTMODIFYABLE% type=&quot;text&quot; name=&quot;username&quot; value=&quot;%URLPARAM{&quot;username&quot; default=&quot;%USERNAME%&quot;}%&quot; size=&quot;40&quot; class=&quot;twikiInputField&quot; /&gt; =%RED%**%ENDCOLOR%= |
+|  %MAKETEXT{&quot;Current password&quot;}%: | &lt;input %NOTMODIFYABLE% type=&quot;password&quot; name=&quot;oldpassword&quot; value=&quot;%URLPARAM{oldpassword}%&quot; size=&quot;40&quot; class=&quot;twikiInputField&quot; /&gt; =%RED%**%ENDCOLOR%= |
+|  %MAKETEXT{&quot;New password&quot;}%: | &lt;input %NOTMODIFYABLE% type=&quot;password&quot; name=&quot;password&quot; size=&quot;40&quot; class=&quot;twikiInputField&quot; /&gt; =%RED%**%ENDCOLOR%= |
+|  %MAKETEXT{&quot;Retype new password&quot;}%: | &lt;input %NOTMODIFYABLE% type=&quot;password&quot; name=&quot;passwordA&quot; size=&quot;40&quot; class=&quot;twikiInputField&quot; /&gt; =%RED%**%ENDCOLOR%= |
+
+&lt;input type=&quot;hidden&quot; name=&quot;TopicName&quot; value=&quot;%TOPIC%&quot; /&gt; &lt;input type=&quot;hidden&quot; name=&quot;action&quot; value=&quot;changePassword&quot; /&gt; &lt;input %NOTMODIFYABLE% type=&quot;submit&quot; class=&quot;twikiSubmit&quot; value=&quot;%MAKETEXT{&quot;Change password&quot;}%&quot; /&gt;
+&lt;!-- /twikiFormStep--&gt;
+&lt;!-- /twikiFormSteps--&gt; &lt;/form&gt;
+
+   * %ICON{info}% %MAKETEXT{&quot;If you have any questions, please contact [_1]&quot; args=&quot;%WIKIWEBMASTER%&quot;}% 
+   * %ICON{info}% %MAKETEXT{&quot;[_1] has a list of other TWiki users&quot; args=&quot;%MAINWEB%.%WIKIUSERSTOPIC%&quot;}% 
+
+%STOPINCLUDE%
+
+__%MAKETEXT{&quot;Related topics:&quot;}%__ ResetPassword, ChangeEmailAddress, UserToolsCategory, AdminToolsCategory
+

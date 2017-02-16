@@ -1,0 +1,152 @@
+---+ %WEB% %CALC{&quot;$PROPERSPACE(%TOPIC%)&quot;}%
+
+---++ Attending
+&lt;!-- List all of the members of the group who attended. Guests are listed under GUESTS.  --&gt;
+   * Jeff Dost
+   * Neha Sharma
+   * Alex Sim
+   * Doug Strain
+   * Tanya Levshina
+
+---++ Status Report
+
+Alex:&lt;pre class=&quot;screen&quot;&gt;
+- 6/15 - 6/22
+ - Follow-up on the EMI SRM interop testing
+ - bestman2 2.0.13 release 
+ - in progress: bestman2 2.1.0 pre-release
+- 6/8 - 6/15
+ - Follow-up on the EMI SRM interop testing
+ - Support on bestman scalability
+ - support on bestman2 2.0.13 release candidate and packaging
+&lt;/pre&gt;
+Doug:&lt;pre class=&quot;screen&quot;&gt;
+- 6/15 - 6/22
+- RPM builds: bestman2 built (waiting on bestman2.1 for continued improvements &amp; requests), xrootd 3.0.4, xrootd-dsi
+- Hadoop testing: Test stand updated to Hadoop 0.20 stable repository.
+- 6/8 - 6/15
+- Native packaging: Built XrootD version 3.0.4
+- Native packaging: Built new Bestman2 RPM
+- Native packaging: Rebuilding xrootd-dsi package.
+&lt;/pre&gt;
+
+Jeff:&lt;pre class=&quot;screen&quot;&gt;
+- 6/15 - 6/22
+Hadoop testing 0.19 -&gt; 0.20 upgrade
+- successfully upgraded but encountered minor issues that should be easily fixed:
+- if yum removes hadoop rpm from 0.19 after installing 0.20, it removes symlinks needed for 0.20:
+          /usr/bin/hadoop
+          /etc/hadoop
+- upgrade instructions say to use /usr/bin/hadoop-daemon but this is a symlink and fails unless you envoke it with real path:
+       /usr/lib/hadoop-0.20/bin/hadoop-daemon.sh
+- hadoop namenode data directories needs ownership change since daemons can no longer be started by root
+- fetch-crl / osg-ca-certs didn&#39;t get upgraded with new rpms
+Hadoop repository updates:
+- rebuilt repo initialization rpms to include osg-ca-certs repository:
+      http://vdt.cs.wisc.edu/hadoop/testing/1.0/rhel5/x86_64/osg-hadoop-1-3.el5.noarch.rpm (for 0.19)
+      http://vdt.cs.wisc.edu/hadoop/testing/2.0/rhel5//x86_64/osg-hadoop-20-3.el5.noarch.rpm (for 0.20)
+Hadoop 0.20 Documentation:
+- reviewed Tanya and Neha&#39;s comments, will update this week
+- 6/8 - 6/15
+
+Hadoop 0.20 repo
+- Currently testing the transition between 0.19 and 0.20 and verifying instructions here:
+          https://twiki.grid.iu.edu/bin/view/Storage/HadoopUpgrade
+
+Documentation
+- completed first draft of https://twiki.grid.iu.edu/bin/view/ReleaseDocumentation/Hadoop20Install
+- will continue to revise as needed
+- update homepage with 0.20 information / links: http://vdt.cs.wisc.edu/components/hadoop.html
+&lt;/pre&gt;
+
+Neha:&lt;pre class=&quot;screen&quot;&gt;
+- 6/15 - 6/22
+- continued with hadoop-bestman installation. sending feedback to jeff as needed
+- asked goc about username/password based authentication on globalnoc to view the tickets
+- suchandra reports success on testing of gratia dcache probes from VDT repository
+
+- 6/8 - 6/15
+- Setup 4 cloud vms  - 3 with dynamic ip and 1 with static ip for bestman hadoop testing.  went over hadoop 0.20 release documentation. 
+done up to hadoop installation. sent partial feedback to jeff and tanya. still missing 1 vm with static ip.
+- Sent feedback to alain about goc ticketing system
+- Pinged Suchandra again on testing of gratia dcache probes from VDT repository
+&lt;/pre&gt;
+Tanya:&lt;pre class=&quot;screen&quot;&gt;
+6/15 - 6/22
+- discussed BeStMan2 release and packaging schedule
+- support for ITB SE hdfs and xrootd installation
+- ran tests against stable osg-hadoop release
+- reviewed BeStMan2/Hadoop installation guide  
+- notified ATLAS Tier-3 that xrootd 3.0.4 rpms are in vdt repo
+- support
+
+6/8 - 6/15
+- reinstalled xrootd nodes after cloud emergency shutdown
+- wrote a script to install mock, downloaded and built xrootd src rpm and then built it in mock
+- xrootd-3.0.4 - rpm testing release, discussed with developers some issues with FRM 
+     (see ticket http://savannah.cern.ch/bugs/?83316)
+- provided info and feedback for  NSF report related to Storage
+- discussed GO with Brian
+- worked with developers on bestman2  2.0.13 packaging and tests 
+- support
+&lt;/pre&gt;
+
+---++ First agenda item
+&lt;!-- DESCRIPTION --&gt;
+!BeStMan2 release
+
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+!BeStMan2 2.0.14 will be released by the end of this week. This will be the last version of !BeStMan2 packaged in pacman. Alex and his team are working on modification of configuration script so it is compatible with native packaging standards. There are still some issues that need to be worked out. We have discussed how to preserve consistency and avoid unnecessary redundancy in bestman2.rc and /etc/sysconfig/bestman2 files. 
+---++ Second agenda item
+&lt;!-- DESCRIPTION --&gt;
+hadoop release
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+Jeff was able to upgrade production installation to the current release by following the instructions written by Brian. He has found some problems and is working on fixing them. Neha is still in the process of testing the installation guide. She has provided feedback to Jeff. Tanya has reviewed this document and has sent her comments to Jeff.
+
+Todo list:
+   1. fix all the issues with upgrade procedure (Jeff)
+   1. review/incorporate suggested changes in documentation (Jeff)
+   1. add current osg-ca-certs release to stable repo (Jeff)
+   1. finish all remaining issues with gratia probes (Jeff)
+   1. finish with doc testing (Neha)
+   1. review/release updated doc (Tanya, Jeff)
+   1. identify all documents that should be under content management(Jeff) and review them (all) 
+   1. marked all outdated documents as &quot;deprecated&quot;  (Jeff)
+   1. announce the release (Jeff) - target date 6/30/11.
+   
+---++ Third agenda item
+Tickets
+---+++ Discussion
+&lt;!-- describe the discussion that took place --&gt;
+
+++++++++++++
+New tickets
+++++++++++++
+
+Closed:
+
+49 - OSG Storage: Bestman: CA certificate location in bestman
+50 - xrootdfs install instructions
+
+++++++++++++
+Old tickets
+++++++++++++
+
+Closed:
+46 - OSG Storage: Bestman: Checksum support
+47 - OSG Storage: Bestman:  RSV errors at UCSD
+48 - OSG Storage: Pigeon Tool: wrong working directory being used by tests
+
+
+Follow up in progress:
+
+
+No Update
+
+42 - OSG Storage: Xrootd: Help with documentation and troubleshooting
+
+---++ Created by:
+&lt;!-- Paste your signature (below) here --&gt;
+-- Main.TanyaLevshina - 22 Jun 2011

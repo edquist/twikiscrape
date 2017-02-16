@@ -1,0 +1,532 @@
+&lt;!--
+      * Set EXPLICITNUMBERINGPLUGIN_BOLD = 1
+--&gt;
+---+!! Migrate from Oracle JDK 6: Technical Details
+
+%TOC%
+
+[[https://jira.opensciencegrid.org/browse/SOFTWARE-890][Main Oracle JDK 6 Deprecation Ticket (SOFTWARE-890)]]
+
+---++ Background
+
+Currently, several of our packages are Java-based, and we build them against
+the Oracle JDK 6. Oracle is officially discontinuing public support for Java 6
+at the end of February 2013, including security fixes. This is a problem for us due to the
+numerous security flaws in Java that people keep discovering. Therefore we must
+move away from Oracle JDK 6.
+
+Our replacement for Oracle JDK 6 is !OpenJDK 7.
+See the following ticket for discussion: 
+[[https://jira.opensciencegrid.org/browse/SOFTWARE-892][Oracle JDK 6 Replacements Ticket (SOFTWARE-892)]]
+
+
+---++ Java Software in Use (TODO)
+
+Most of this software will need to be certified to work on whichever Oracle JDK 6
+replacement we plan to switch to. However, see the notes below.
+
+---+++ Lists
+
+---++++!! Packages depending directly on Oracle JDK
+
+   * bestman2
+   * emi-trustmanager-tomcat
+   * gridftp-hdfs
+   * gums
+   * hadoop-0.20
+   * jclassads
+   * voms-admin-server
+   * voms-api-java
+   * osg-ce
+   * osg-client
+   * osg-gridftp-xrootd
+   * osg-se-bestman
+   * osg-se-bestman-xrootd
+   * osg-se-hadoop
+   * osg-wn-client
+   
+---++++!! Packages depending indirectly on Oracle JDK
+
+   * glite-ce-common-java
+   * glite-ce-monitor
+   * glite-jdl-api-java
+   * glite-ce-cream (we don&#39;t ship it yet)
+   * glite-ce-cream-api-java (we don&#39;t ship it yet)
+   * glite-ce-osg-ce-plugin
+   * rsv-metrics (via bestman2-client)
+   * xrootd-hdfs
+    
+---++++!! OSG Software depending on Java
+   * dcache-srmclient
+   * gratia 
+   * hadoop (ie Hadoop 2.0.0)
+   * pegasus
+
+---++++!! Dependencies of OSG Software depending on Java
+   * argus-* (argus-pep-api-java, cemon build only)
+   * cog-jglobus*
+   * cryptix
+   * emi-trustmanager*
+   * jetty
+   * jglobus
+   * maven*
+   * puretls
+   * slf4j
+   * xalan-j2
+   * xerces
+   * zookeeper (hadoop builds)
+
+---+++ Notes:
+
+Since we are planning to deprecate =glite-ce-monitor= (aka !CEMon) in favor of
+=osg-info-services=, we may be able to get rid of it and its dependencies,
+namely:
+   * argus-*
+   * glite-ce-monitor
+   * glite-ce-osg-ce-plugin
+   * jclassads
+
+Since we are planning to deprecate =jglobus-1= in favor of =jglobus-2=, we may
+be able to get rid of its dependencies, namely:
+   * cog-jglobus
+   * cryptix
+   * puretls
+
+
+---++ Groups to Contact (TODO)
+
+Since we do not even remotely have the resources to re-certify all the software
+we ship, we should ask the upstream developers for help and information
+whenever we can.
+
+(TODO: This list should probably also be a table, and should contain (a) group name; (b); contact info; (c) packages they support; (d) status)
+
+   * gratia team (gratia)
+   * EGI (glite-*?)
+   * dCache team (dcache-srmclient, others?)
+   * ...
+
+
+---++ Other items
+
+---+++ Koji and SVN
+
+We will use the &quot;osg-upcoming&quot; tags and targets for this:
+
+Installs can be tested directly out of the osg-upcoming-minefield repos.
+The .repo files for the osg-upcoming repos are available in the =osg-release-3.0-22= or newer RPM.
+
+Builds should follow the &quot;upcoming&quot; promotion path, i.e. those that are ready to be tested by external users should go in the =osg-upcoming-testing= repo instead of =osg-testing=.
+
+See UpcomingSoftwareRepoProposal.
+
+We&#39;ll put any changes we need to make for the builds in =$SVN/native/redhat/upcoming=
+
+---+++ java-1.7.0-openjdk
+
+Currently, only the most up-to-date EL5 distros have !OpenJDK 7 (as the =java-1.7.0-openjdk= package).
+
+We have no desire to ship !OpenJDK ourselves, so we will be telling users to update their distros if they want it.
+
+
+---++ Upgrade instructions
+
+NOTES: java uses the &quot;alternatives&quot; system, so in theory it is possible to
+install different versions of the jdk side-by-side and pick which one to use.
+In practice, not so much. The package =jdk= itself does not use alternatives
+and instead creates a symlink &lt;code&gt;/usr/bin/java -&amp;gt;
+/usr/java/default/bin/java&lt;/code&gt;, which alternatives is _not_ going to overwrite.
+It&#39;s actually =java-1.6.0-sun-compat= that provides the alternatives support
+for oracle jdk.  But that gets installed _after_ =jdk=, at which point the
+=/usr/bin/java= symlink is already screwed up.
+
+On the flip side, =jdk= isn&#39;t going to overwrite the =/usr/bin/java= symlink if
+it already exists, so if some other version of java is installed _first_, then
+the symlink will point to =/etc/alternatives/java=, and once
+=java-1.6.0-sun-compat= is installed, the user can use &lt;code&gt;alternatives --config
+java&lt;/code&gt; to pick which runtime they want to use.
+
+Since we can&#39;t be sure which situation the user is going to be in, we can
+provide the following instructions which, while clunky, should work for either
+the &quot;installed oracle jdk first&quot; or the &quot;installed other jdk first&quot; situation:
+
+   1. One of these two:
+      1. =yum install java-1.7.0-openjdk java-1.7.0-openjdk-devel=
+         * If yum does not find those packages, STOP and update your distro
+      1. (once we&#39;ve switched our packages to require openjdk7) =yum update --enablerepo=osg-upcoming=
+   1. =yum erase jdk java-1.6.0-sun-compat= (nothing else should get uninstalled by this)
+   1. =yum reinstall java-1.7.0-openjdk java-1.7.0-openjdk-devel=
+   1. =yum install jdk java-1.6.0-sun-compat=
+   1. =alternatives --config java= and pick one of them
+   1. =alternatives --config javac= and pick the same one
+   1. Run =java -version= and =javac -version= to make sure the right versions are symlinked. They should both be 1.7.something
+   1. Restart java services, for example tomcat. See if they work
+   1. If everything works, =yum erase jdk java-1.6.0-sun-compat=
+
+Once we&#39;re done with fixing our packages, here&#39;s the situations that need to
+be tested:
+
+   * ( ) Fresh install of osg, with java not already on the system
+   * ( ) Fresh install of osg, with oracle jdk on the system
+   * ( ) Fresh install of osg, with some other jdk on the system
+   * ( ) Upgrade of osg, with oracle jdk on the system
+   * ( ) Upgrade of osg, with some other jdk on the system
+
+---++ Rebuilding notes and general wisdom
+
+---+++!! Virtual dependency for JRE 7 / JDK 7
+
+The virtual dependency provided by =java-1.7.0-openjdk= (which contains the Java Runtime) is _not_ =java=, but =java7=.
+Likewise, the virtual dependency provided by =java-1.7.0-openjdk-devel= (which contains the Development Kit) is not =java-devel=, but =java7-devel=.
+
+Also note that the Java packages have an epoch of 1.
+
+This means that not only will Oracle JDK 6 falsely match the requirement
+&lt;code&gt;java-devel &amp;gt;= 1.7.0&lt;/code&gt;, but !OpenJDK 7 will not match that requirement. Either
+use &lt;code&gt;java7-devel&lt;/code&gt; or &lt;code&gt;java7-devel &amp;gt;= 1:1.7.0&lt;/code&gt;.
+
+The =jdk=, =java-sun=, =java-devel-sun=, and =java-1.6.0-sun-compat= requirements should be replaced by =java7-devel=.
+The =java= requirement should be replaced by =java7=.
+
+The Fedora packaging guidelines (which we try to follow when we can) for Java state that all Java builds should both Require and !BuildRequire =jpackage-utils=.
+
+---++ Testing
+
+---+++ Testing Instructions for !OpenJDK 7
+
+The following instructions show how to test java software on openjdk 1.7.0,
+making sure that no other jdks are installed.
+
+You should do this on a clean VM that you do not plan to reuse for other kinds of tests.
+
+
+&lt;!-- The funny ##t#. syntax is from the ExplicitNumbering plugin.
+It keeps the &quot;pre&quot; blocks from breaking up the numbering. - MatyasSelmeci --&gt;
+
+In the first few steps, you will install all the software you need to test:
+
+##. Follow the Documentation/Release3.YumRepositories docs to set up yum repositories.
+
+##. Update osg-release to 3.0-22 or newer to get the osg-upcoming repos \
+&lt;pre class=&quot;rootscreen&quot;&gt;yum update -y --enablerepo=osg-minefield osg-release&lt;/pre&gt;
+
+##. Install =yum-utils= to get =yumdownloader= \
+&lt;pre class=&quot;rootscreen&quot;&gt;yum install -y yum-utils&lt;/pre&gt;
+
+##. Install packages to test from the osg-upcoming repos. (Pass &lt;code&gt;--enablerepo=osg-upcoming-minefield&lt;/code&gt; to yum)
+
+##. Ensure !OpenJDK 7 is installed \
+&lt;pre class=&quot;rootscreen&quot;&gt;yum install java-1.7.0-openjdk java-1.7.0-openjdk-devel&lt;/pre&gt;
+
+In the next set of steps, you will erase the old JDKs to keep them from being used, while not letting yum erase the packages that &quot;require&quot; the old JDKs.
+This is done by forcefully erasing the packages and then adding entries for them back into rpm&#39;s database.
+That will also allow you to install other Java-based software later without worrying about it bringing in old JDKs.
+
+##6. Make a directory to hold RPMs of the old JDKs&lt;pre class=&quot;rootscreen&quot;&gt;mkdir -p /tmp/javarpms; cd /tmp/javarpms&lt;/pre&gt;
+
+##. Save a list of old jdks that are installed&lt;pre class=&quot;rootscreen&quot;&gt;rpm -qa | egrep &#39;^(java|jdk)-1.[1-6]&#39; | grep -v java-1.7.0 &amp;gt; oldjava.txt&lt;/pre&gt;
+
+##. Download RPMs for the old JDKs&lt;pre class=&quot;rootscreen&quot;&gt;xargs -a oldjava.txt yumdownloader&lt;/pre&gt;
+
+##. Erase old jdks, without removing anything that &quot;requires&quot; them&lt;pre class=&quot;rootscreen&quot;&gt;xargs -a oldjava.txt rpm -ev --nodeps&lt;/pre&gt;
+
+##. Add entries for the old JDKs into rpm&#39;s database -- essentially making it pretend they are installed.&lt;pre class=&quot;rootscreen&quot;&gt;rpm -ivh --justdb *.rpm&lt;/pre&gt;
+
+##. Reinstall openjdk 7 to fix alternatives symlinks, and ensure alternatives are correctly set up \
+&lt;pre class=&quot;rootscreen&quot;&gt;
+yum reinstall java-1.7.0-openjdk java-1.7.0-openjdk-devel
+alternatives --config java                # the only choice should be openjdk
+alternatives --config javac
+ls -l /usr/bin/java* | fgrep alternatives # should not be empty
+java -version | fgrep 1.7.0               # should not be empty
+&lt;/pre&gt;
+
+##. Run your tests. If you want to install more software to test, go ahead; the &lt;code&gt;rpm --justdb&lt;/code&gt; line should ensure that no more old JDKs are brought in
+
+*Note:* last time I tried this, bestman broke because =/usr/java/latest= didn&#39;t
+exist. Only the =jdk= package provides that. We might have to patch bestman to
+not need it? (Also, bestman2 failed to start but =test_05_bestman= was still
+successful... might need to look into that)
+
+*Note:* on el5, =jpackage-utils= does not create a =/usr/share/java-1.7.0= and
+a =/usr/lib/java-1.7.0= directory. Keep an eye out for any problems caused by
+that; but we want to avoid packaging =jpackage-utils= if we can.
+
+
+---+++ GUMS
+
+Main.MatyasSelmeci: Briefly did a functional test of GUMS on EL6. 
+Set up FC machines in parallel with GUMS from osg-testing:
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% yum install -y osg-ca-certs gums-{client,service} fetch-crl globus-proxy-utils
+%UCL_PROMPT_ROOT% service mysqld start
+%UCL_PROMPT_ROOT% mysql_secure_installation
+%UCL_PROMPT_ROOT% mysql -p mysql
+&amp;gt;&amp;gt; create user &#39;gums&#39;@&#39;localhost&#39; identified by &#39;GUMSPASSWORD&#39;;
+&amp;gt;&amp;gt; grant all privileges on *.* to &#39;gums&#39;@&#39;localhost&#39; with grant option;
+%UCL_PROMPT_ROOT% gums-setup-mysql-database --user gums --host `hostname`:3306 --password GUMSPASSWORD
+%UCL_PROMPT_ROOT% gums-add-mysql-admin YOUR_DN
+%UCL_PROMPT_ROOT% fetch-crl
+%UCL_PROMPT_ROOT% sed -i -e &quot;s/localhost/`hostname`/&quot; /etc/gums/gums-client.properties
+%UCL_PROMPT_ROOT% mkdir -p /etc/grid-security/http
+%UCL_PROMPT_ROOT% cd /etc/grid-security/http; for x in cert key; do rm -f http$x.pem; cp -f ../host$x.pem http$x.pem; done
+%UCL_PROMPT_ROOT% chown -R tomcat:tomcat /etc/grid-security/http
+%UCL_PROMPT_ROOT% /var/lib/trustmanager-tomcat/configure.sh
+&lt;/pre&gt;
+(replace YOUR_DN with your DN, and GUMSPASSWORD with a password for the gums db user)
+Then I edited =/etc/gums/gums.config= and made the following changes:
+&lt;verbatim class=&quot;file&quot;&gt;
+--- old 2012-04-25 16:29:14.000000000 -0500
++++ new 2012-04-25 16:32:31.000000000 -0500
+@@ -31,6 +31,8 @@
+                         access=&#39;read self&#39;
+                         description=&#39;Testing GUMS-status with GIP Probe&#39;
+                         persistenceFactory=&#39;mysql&#39;/&gt;
++
++                &lt;manualUserGroup persistenceFactory=&#39;mysql&#39; name=&#39;LOGIN&#39;/&gt;
+        &lt;/userGroups&gt;
+
+        &lt;accountMappers&gt;
+@@ -38,6 +40,8 @@
+                        name=&#39;gums-test&#39;
+                        description=&#39;Testing GUMS-status with GIP Probe&#39;
+                        accountName=&#39;GumsTestUserMappingSuccessful&#39;/&gt;
++
++                &lt;groupAccountMapper name=&#39;LOGIN&#39; accountName=&#39;LOGIN&#39;/&gt;
+        &lt;/accountMappers&gt;
+
+        &lt;groupToAccountMappings&gt;
+@@ -48,13 +52,18 @@
+                        accountingVo=&#39;&#39;
+                        userGroups=&#39;gums-test&#39;
+                        accountMappers=&#39;gums-test&#39;/&gt;
++
++                &lt;groupToAccountMapping name=&#39;LOGIN&#39; userGroups=&#39;LOGIN&#39; accountMappers=&#39;LOGIN&#39;/&gt;
+        &lt;/groupToAccountMappings&gt;
+
+        &lt;hostToGroupMappings&gt;
++        &lt;!--
+                &lt;hostToGroupMapping
+                        groupToAccountMappings=&#39;gums-test&#39;
+                        description=&#39;&#39;
+                        cn=&#39;*/?*.fnal.gov&#39;/&gt;
++        --&gt;
++                &lt;hostToGroupMapping cn=&#39;HOSTNAME&#39; groupToAccountMappings=&#39;LOGIN&#39;/&gt;
+        &lt;/hostToGroupMappings&gt;
+
+ &lt;/gums&gt;
+&lt;/verbatim&gt;
+(replace =HOSTNAME= with the hostname and =LOGIN= with your login)
+
+At this point you can do the following:
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT% service tomcat6 start
+%UCL_PROMPT_ROOT% gums manualGroupAdd LOGIN YOUR_DN
+%UCL_PROMPT_ROOT% gums-host generateGridMapfile
+%UCL_PROMPT_ROOT% gums-host mapUser YOUR_DN
+&lt;/pre&gt;
+as well as try out the web interface by going to =https://HOSTNAME:8443/gums=
+
+
+Once I verified that it worked on both machines, I shut off tomcat6 on the experimental machine, and did the following to replace oracle jdk with openjdk 7:
+&lt;pre class=&quot;rootscreen&quot;&gt;
+%UCL_PROMPT_ROOT%; yum install java-1.7.0-openjdk{,-devel}
+%UCL_PROMPT_ROOT%; yum erase java-1.6.0-openjdk
+%UCL_PROMPT_ROOT%; rpm -e --nodeps jdk java-1.6.0-sun-compat
+&lt;/pre&gt;
+Then I restarted tomcat6, tried the previous tests, and had no problems.
+
+
+---++ Tracking
+
+---+++Build Results
+For now, we can track the overall state of Java builds here. Try to keep the information brief, so that there is one line per row.
+
+| *Package* | *Owner* | *VR* | *EL5 Status* | *EL6 Status* | *Ticket(s)* | *Notes* |
+| bestman2 | Carl | | %ORANGE%Builds wrong (2)%ENDCOLOR% | %ORANGE%Builds wrong (2)%ENDCOLOR% | |
+| dcache-srmclient | Mat | | %GREEN%Builds Ok (6)%ENDCOLOR% | %ORANGE%Builds wrong(2)%ENDCOLOR% | | |
+| emi-trustmanager-tomcat | Carl | | %GREEN%Builds OK (6)%ENDCOLOR% | %GREEN%Builds OK (6)%ENDCOLOR% | | |
+| glite-ce-common-java | Carl | | %GREEN%Builds OK (6)%ENDCOLOR% | %GREEN%Builds OK (6)%ENDCOLOR% | | |
+| glite-jdl-api-java | Carl | | %GREEN%Builds OK (6)%ENDCOLOR% | %GREEN%Builds OK (6)%ENDCOLOR% | | |
+| glite-ce-osg-ce-plugin | Carl | | %GREEN%Builds OK (6)%ENDCOLOR% | %GREEN%Builds OK (6)%ENDCOLOR% | | |
+| gratia (package dir: gratia-service) | Carl | | %ORANGE%Builds wrong (2)%ENDCOLOR% | %ORANGE%Builds wrong (2)%ENDCOLOR% | | See (9) also |
+| gridftp-hdfs | Carl | | %GREEN%Builds OK%ENDCOLOR% | %GREEN%Builds OK%ENDCOLOR% | | Doesn&#39;t actually contain any jars |
+| gums | Carl | | %ORANGE%Builds wrong (2)%ENDCOLOR% | %ORANGE%Builds wrong (2)%ENDCOLOR% | | |
+| hadoop | | | %RED%Build Fails (12)%ENDCOLOR% | %ORANGE%Builds wrong (2)%ENDCOLOR% | | Maybe wait on this one |
+| hadoop-0.20 | Carl | | %GREEN%Builds OK (6)%ENDCOLOR% |  %GREEN%Builds OK (6)%ENDCOLOR% | | See (11) also |
+| jclassads | Carl | | %GREEN%Builds OK%ENDCOLOR% | %GREEN%Builds (*)%ENDCOLOR% | | See EL6 issue below.  Builds with JDK 7 |
+| jglobus (2) | Carl | | %GREEN%Builds OK (6)%ENDCOLOR% | %GREEN%Builds OK (6)%ENDCOLOR% | | |
+| pegasus | Mat | | %GREEN%Builds OK (6)%ENDCOLOR% | %ORANGE%Builds wrong (2)%ENDCOLOR% | | |
+| voms-admin-server | Carl | | %ORANGE%Builds wrong (2)%ENDCOLOR% | %ORANGE%Builds wrong (2)%ENDCOLOR% | | |
+| voms-api-java | Carl | | %GREEN%Builds OK (6)%ENDCOLOR% | %GREEN%Builds OK%ENDCOLOR% | | See (8) also |
+
+
+---++++More Build Results
+
+The following is a dependency tsort&#39;ed list of packages that need to be rebuilt because of a java requirement, or because of a build requirement on another package that gets rebuilt.  (Building them in this order should satisfy build requirements correctly, but more parallelism is possible.  See [[%ATTACHURL%/deps4.png][build dependency graph]] for detail, or [[%ATTACHURL%/deps4r.png][build+requires dependency graph]] for more)
+
+
+| *Package* | *Owner* | *VR* | *EL5 Status* | *EL6 Status* | *Ticket(s)* | *Notes* |
+| voms-api-java | Carl | | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | already migrated |
+| protobuf | Carl | | Skipping | Skipping | | this version doesn&#39;t use java |
+| pegasus | Mat | | %GREEN%OK%ENDCOLOR% | %ORANGE%Builds wrong (2)%ENDCOLOR% | | already migrated |
+| osg-wn-client | Brian | | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| osg-se-hadoop | Brian | | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| osg-se-bestman-xrootd | Brian | | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| osg-se-bestman | Brian | | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| osg-gridftp-xrootd | Brian | | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| osg-discovery | Carl | | %ORANGE%Builds OK%ENDCOLOR% | %RED%Build Fails%ENDCOLOR% | | pre-1.7 jars |
+| osg-client | Brian | | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| osg-ce | Brian | | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| ndt | Carl | 3.6.5-3 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| maven3 | Carl | 3.0.4-2 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| maven22 | Carl | 2.2.1-23.4.1 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| jetty | Carl | 8.1.4-1 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| jclassads | Carl | | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | already migrated |
+| hadoop-0.20 | Carl | | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | already migrated |
+| gratia | Carl | | %ORANGE%Builds wrong (2)%ENDCOLOR% | %ORANGE%Builds wrong (2)%ENDCOLOR% | | already migrated, see above |
+| glite-data-transfer-interface | Carl | 3.7.0-4 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| emi-trustmanager | Carl | 3.0.3-4 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| dcache-srmclient | Mat | | %GREEN%OK%ENDCOLOR% | %ORANGE%Builds wrong (2)%ENDCOLOR% | | already migrated |
+| glite-security-util-java | Carl | 2.8.0-3.2 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| zookeeper | Carl | | %RED%Build Fails%ENDCOLOR% | | | |
+| slf4j | Carl | 0:1.5.2-5 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| jglobus | Carl | 2.0.4-7 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| xrootd-hdfs | Carl | 1.8.3-5 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| glite-fts-client | Carl | | %RED%Build Fails%ENDCOLOR% | %RED%Build Fails%ENDCOLOR% | | Fails for trunk also (13) |
+| emi-trustmanager-tomcat | Carl | 3.0.0-7 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| emi-trustmanager-axis | Carl | 1.0.1-1.2 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| glite-security-trustmanager | Carl | 2.5.5-6.2 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| hadoop | Carl | | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | Maybe wait on this one |
+| gridftp-hdfs | | | | | | Waiting on hadoop |
+| cog-jglobus-axis | Carl | 1.8.0-3 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| voms-admin-server | Carl | 2.7.0-1.5 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| xalan-j2 | Carl | 2.7.0-10.1 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| joda-time | Carl | 1.5.2-7.1 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| gums | Carl | 1.3.18.009-15.8 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | Contains extra jars |
+| bestman2 | Carl | 2.3.0-12 | %GREEN%OK%ENDCOLOR% | %GREEN%OK%ENDCOLOR% | | |
+| bigtop-utils | Mat | | | | | | |
+| bigtop-jsvc | Mat | | | | | | |
+
+---+++ Known Issues
+
+For now, this section contains known problems stemming from builds. For items that require fixing, we will create JIRA tickets eventually. But for now, the plan is simply to capture issues that we know we must address.
+
+   * For EL6 koji builds, buildrequiring the !OpenJDK 7 JDK package brings in Java 5 and Java 6 JDKs as well, and it is unknown which one is actually used to compile in the general case.  The version used to build a jar file can be determined from the Created-By: line in META-INF/MANIFEST.MF (see the attached script below).  So far it varies  :(
+
+   * (1) Ant Error: Could not find or load main class org.apache.tools.ant.launch.Launcher (see (6) for how we are dealing with it in EL5)
+
+   * (2) Installs JDK 7 but still builds with JDK 6
+
+   * (3) error: File not found: /builddir/build/BUILDROOT/glite-ce-common-java-1.14.0-4.2.osg.el6.noarch/usr/share/javadoc/glite-ce-common-java/html/resources/inherit.gif (or similar .../html/resources/inherit.gif)
+     ... The issue with this one is a different set of .gif files under .../html/resources/ is generated for the -doc package.  The fix is just to list .../html/resources/*.gif instead
+
+   * (4) Caused by: org.apache.maven.plugin.MojoExecutionException: An error has occurred in JavaDocs report generation:Exit code: 1 - /builddir/build/BUILD/JGlobus/gridftp/src/main/java/org/globus/ftp/FTPClient.java:2066: error: unmappable character for encoding ANSI_X3.4-1968
+
+   * (5) Error: Could not find or load main class org.codehaus.classworlds.Launcher
+
+   * (6) Uses the jpackage-utils package from centos in our upcoming repo
+
+   * (7) [javac] javac: target release 1.5 conflicts with default source release 1.7
+
+   * (8) The java version in the jar file is 23.2-b09, but apparently that is tied to 1.7.0_06 ... it would be nice to find a better way to identify which JDK it was built with
+
+   * (9) For some reason with the EL6 build of gratia, the build finishes but javac gets stuck running indefinitely ... speculation is that there may be a race condition, and we may want to see if ant has an option to build serially
+
+   * (10) BUILD FAILED
+     /builddir/build/BUILD/hadoop-0.20.2+737/build.xml:400: Unable to find a javac compiler; com.sun.tools.javac.Main is not on the classpath.
+     Perhaps JAVA_HOME does not point to the JDK.
+     It is currently set to &quot;/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.9.x86_64/jre&quot;
+
+   * (11) Weird thing in Koji, retrieving built rpms with --getfile generates html (error message) files with
+     the .rpm names.  Doesn&#39;t seem to be a problem for the actual rpms in koji though.
+
+   * (12) (hadoop) Non-resolvable parent POM: Could not transfer artifact com.cloudera.cdh:cdh-root:pom:4.1.1 from/to cdh.repo (https://repository.cloudera.com/artifactory/cloudera-repos): java.lang.RuntimeException: Unexpected error: java.security.InvalidAlgorithmParameterException: the trustAnchors parameter must be non-empty and &#39;parent.relativePath&#39; points at wrong local POM @ line 17, column 11
+   
+   * The above (12) is only an issue on el5.  The trustAnchors complaint seems to be because maven can&#39;t find the CA certs, which as it turns out are in /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/lib/security/cacerts, but /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.9.x86_64/jre/lib/security/cacerts is a broken symlink to /etc/pki/java/cacerts
+
+   * (13) /usr/bin/ld: cannot find -lcgsi_plugin_gsoap_2.7
+     make[3]: *** [libglite_data_transfer_api_simple_c.la] Error 1
+
+
+   * [[%ATTACHURL%/jar-jdk-version.sh][jar-jdk-version.sh]]: script to scrape Created-By: java version out of a .jar file
+
+   * [[%ATTACHURL%/rpm-jar-creators.sh][rpm-jar-creators.sh]]: script to scrape Created-By: java version from jars inside an rpm
+
+---+++ Testing Results
+
+| *Group* | *Package* | *Owner* | *Meta-package* | *VR* | *EL5 Status* | *EL6 Status* | *Ticket(s)* | *Notes* |
+| Bestman | bestman2 | Neha | osg-se-bestman | | %ORANGE% Works with minor config change (1)%ENDCOLOR% | %ORANGE% Works with minor config change (1)%ENDCOLOR% | | See Testing Details |
+| . . . \ | jglobus (2) | Neha | osg-se-bestman | | %GREEN%Works OK%ENDCOLOR%  | %GREEN%Works OK%ENDCOLOR% | | |
+| . . . \ | voms-api-java | Neha | osg-se-bestman | | %GREEN%Works OK%ENDCOLOR% | %GREEN%Works OK%ENDCOLOR% | | |
+| Hadoop | hadoop | Carl | osg-se-hadoop | | | | |Waiting on EL5 build|
+| . . . \ | hadoop-0.20 | Carl | hadoop-0.20-osg | | %GREEN%Works OK%ENDCOLOR% | %GREEN%Works OK%ENDCOLOR% | | See (5) also |
+| . . . \ | gridftp-hdfs | Carl | osg-gridftp-hdfs | | %GREEN%Works OK%ENDCOLOR% | %GREEN%Works OK%ENDCOLOR% | | Works with grid-mapfile (6) |
+| WN-Client | dcache-srmclient | Neha | osg-wn-client | | %GREEN%Works OK%ENDCOLOR% | %GREEN%Works OK%ENDCOLOR% | | See Testing Details |
+| Gratia | gratia | Neha | gratia-service | | %BROWN% Unable to test (3)%ENDCOLOR% | %GREEN%Works OK%ENDCOLOR%  | | See Testing Details |
+| GUMS | gums | Neha | osg-gums | | %BROWN% Unable to test (3)%ENDCOLOR% | %GREEN%Works OK%ENDCOLOR% | | See Testing Details |
+| . . . \ | emi-trustmanager-tomcat | Neha | osg-gums | | %BROWN% Unable to test (3)%ENDCOLOR% | %GREEN%Works OK%ENDCOLOR% | | |
+| Pegasus | pegasus | Carl | pegasus | | %GREEN%Works OK%ENDCOLOR% | %GREEN%Works OK%ENDCOLOR% | | Notes under (7) |
+| VOMS | voms-admin-server | Carl | osg-voms | | %GREEN%Works OK (2)%ENDCOLOR% | %GREEN%Works OK%ENDCOLOR% | | Only basic testing |
+| CEMon | glite-ce-common-java | Carl | glite-ce-monitor | | | | | Going away |
+| . . . \ | glite-ce-osg-ce-plugin | Carl | glite-ce-monitor | | | | | |
+| . . . \ | jclassads | Carl | glite-ce-monitor | | | | | |
+
+---+++ Testing Results — Phase 3
+
+| *Component* | *Installed* | *Owner* | *EL5* | *EL6* | *Notes* |
+| VOMS | osg-voms&lt;br/&gt;&lt;span style=&quot;font-size: 50%;&quot;&gt;voms-admin-server&lt;/span&gt; | Carl | %GREEN%Looks good%ENDCOLOR% | %GREEN%Looks good (8)%ENDCOLOR% | |
+| GUMS | osg-gums&lt;br/&gt;&lt;span style=&quot;font-size: 50%;&quot;&gt;gums, emi-trustmanager-tomcat&lt;/span&gt; | Neha | %GREEN%Looks good%ENDCOLOR% | %GREEN%Looks good%ENDCOLOR% | See Testing Details Below |
+| Gratia service | gratia-service&lt;br/&gt;&lt;span style=&quot;font-size: 50%;&quot;&gt;emi-trustmanager-tomcat, jpackage-utils&lt;/span&gt; | Carl | %GREEN%Looks good%ENDCOLOR% | %GREEN%Looks good%ENDCOLOR% | See notes in (10) |
+| !BeStMan 2 | osg-se-bestman&lt;br/&gt;&lt;span style=&quot;font-size: 50%;&quot;&gt;bestman2, jglobus, voms-api-java, emi-trustmanager-axis&lt;/span&gt; | Neha | %GREEN%Looks good%ENDCOLOR% | %GREEN%Looks good%ENDCOLOR% | See Testing Details Below |
+| !dCache SRM clients | dcache-srmclient | Neha | %GREEN%Looks good%ENDCOLOR% | %GREEN%Looks good%ENDCOLOR%  | See Testing Details Below |
+| !Bestman SRM clients | bestman2-client | Neha | %BROWN%Looks good%ENDCOLOR% | %GREEN%Looks good%ENDCOLOR%  | See Testing Details Below |
+| Pegasus | pegasus | Brian | %GREEN%Looks good%ENDCOLOR% | %GREEN%Looks good%ENDCOLOR% | |
+| HDFS 0.20 | osg-se-hadoop&lt;br/&gt;&lt;span style=&quot;font-size: 50%;&quot;&gt;hadoop-0.20, &amp;hellip;&lt;/span&gt; | Carl | %GREEN%Looks good%ENDCOLOR% | %GREEN%Looks good%ENDCOLOR% | But see (9) |
+| CE Monitor | | | | | |
+
+---+++ Known Issues
+For now, this section will contain known problems observed in !OpenJDK 7 runtime environment . For items that require fixing, we will create JIRA tickets eventually. But for now, the plan is simply to capture issues that we know we must address. 
+
+   * (1) Bestman server startup fails with &lt;i&gt;&quot;ERROR: Cannot find the java executable in the /usr/java/latest/bin location, ERROR: Please define $JAVA_HOME correctly&quot;&lt;/i&gt; . Fix is to modify the JAVA_HOME location in =/etc/sysconfig/bestman2= from =/usr/java/latest= to =/usr=.
+
+   * (2) During the voms installation for el5, there were some warnings about the missing /usr/lib/java-1.7.0 dir, but it doesn&#39;t seem to break anything.  Also, after removing the old (pre-1.7) java packages, symlinks from the java-1.4.2-gcj still seem to be around, pointing to (valid) /usr/share/java/libgcj-4.1.2.jar, /usr/lib64/gcj-4.1.2/lib{jvm,jawt}.so
+
+   * (3) During the GUMS and Gratia installation on el5, there were few &lt;i&gt;/usr/bin/build-jar-repository: error: JAVAVER_LIBDIR /usr/share/java-1.7.0 does not exist or is not a directory&lt;/i&gt; errors. Unable to upgrade jpackage-utils at this point and so tomcat start up fails with missing =/usr/share/java-1.7.0= and =/usr/lib/java-1.7.0= errors. EL6 install is ok.
+
+   * (4) During the Gratia installation on el5, there were few &lt;i&gt;/usr/bin/build-jar-repository: error: JAVAVER_LIBDIR /usr/share/java-1.7.0 does not exist or is not a directory&lt;/i&gt; errors. Unable to upgrade jpackage-utils at this point. EL6 install is ok.
+  
+   * (5) Basic testing for hadoop-0.20 looks ok -- in the multi-vm setup adding files via the hadoop command line tool or the fuse mount works and everything looks ok from the web interface.  Oddly, changing file ownerships only seems to work with the hadoop command line tool, but not from the fuse mount.  This does not include testing the gridftp functionality of the gridftp node (that&#39;ll go under gridftp-hdfs)
+
+   * (6) Validation was done with copying files with globus-url-copy using a grid-mapfile.  (I have not gotten it to work with GUMS security)
+
+   * (7) Tested using a modified version of the example from http://pegasus.isi.edu/news/osg-xsede (I put the output/scratch/workflows dirs under /tmp, as things seem to break if they are located on a network filesystem, which is the case for the fermicloud user homedirs)
+
+   * (8) Never received emails for AUP expiry in el6... on the other hand, I can&#39;t seem to get them to work on el6 with the production (non-upcoming) version either.
+
+   * (9) upgrade on a node with bestman2 module needs to edit /etc/sysconfig/hadoop2 to fix JAVA_HOME (yum won&#39;t replace since it gets user updated).  Also on the bestman2 node, srm-ping and srm-ls work, but i get &quot;java.net.ConnectException: Connection refused&quot; errors with srm-copy... I get the same errors before upgrading though, so probably I&#39;m just doing it wrong.  Everything else (HDFS functionality, web interface, integration with fuse, xrootd, gridftp) works fine.
+
+   * (10) Collection and reporting and administrative web interfaces appear to be working correctly, the only charts that produce errors are the &quot;Last Year&#39;s Usage for All VOs&quot; reports (presumably because there is no data) ... This looks like a bug, but it does also happen with the trunk version, so it doesn&#39;t appear to be java7 specific.
+
+---+++ Testing Details
+
+   * bestman2 testing involved being able to run the ping,copy (put/get), list, remove file/dir commands from both fermi srmclient and lbnl srmclient packages against the Bestman server successfully. 
+   * dcache-srmclient testing involved being able to run srmping, srmmkdir, srmcp(put/get), srmls, srmrm, srmrmdir commands against 2 bestman servers (fg-bestman1 Oracle JDK 6, fermicloud347- OpenJDK 7)
+   * bestman-client testing involved bring able to run srm-ping, srm-mkdir, srm-copy (put/get), srm-ls, srm-rm, srm-rmdir commands against 2 bestman servers (fg-bestman1, fermicloud347). I had to install missing-java-1.7.0-dirs package on SL5 node, else build-classpath would fail with ==/usr/bin/build-classpath: error: JAVAVER_LIBDIR /usr/share/java-1.7.0 does not exist or is not a directory== error message. 
+   * gums test cases covered 
+&lt;pre&gt;
+   %GREEN%pass%ENDCOLOR% - Upon start of GUMS via &#39;service tomcat5 start&#39;, monitored /var/log/tomcat5/catalina.out, /var/log/tomcat5/trustmanager.log for any errors
+   %GREEN%pass%ENDCOLOR%  - Brought up the web interface successfully -  https://fermicloud304.fnal.gov:8443/gums/ 
+   %GREEN%pass%ENDCOLOR%  - Clicked on &#39;Summary&#39; - was able to see only &#39;gums-test&#39; VO. I had missed copying over the /etc/gums/gums.config.template to /etc/gums/gums.config. After copying that and restarting could see several OSG VOs listed.
+   %GREEN%pass%ENDCOLOR%  - Clicked on &#39;User Management/Update VO Members&#39; and then &#39;update VO members database&#39;. This took a while (as expected) but finished successfully for most VOs/groups. Monitored the /var/log/tomcat5/gums-service-admin.log file to see the updates as they were happening. Some failed, but that is OK
+   %GREEN%pass%ENDCOLOR%  - Clicked on &#39;View Mappings/ Map Grid Identity to Account&#39; , entered the information in the form - DN of the gatekeeper, DN of the user, FQAN .
+With &quot;/DC=gov/DC=fnal/O=Fermilab/OU=Services/CN=fermigridosg1.fnal.gov&quot;, &quot;/DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Neha Sharma/CN=UID:neha&quot; and no FQAN I got mapped to &#39;fgtest&#39;.
+With &quot;/DC=gov/DC=fnal/O=Fermilab/OU=Services/CN=fermigridosg1.fnal.gov&quot;, &quot;/DC=gov/DC=fnal/O=Fermilab/OU=People/CN=Neha Sharma/CN=UID:neha&quot; and FQAN &quot;/fermilab/Role=NULL&quot; I got mapped to &#39;fnalgrid&#39;.
+   %GREEN%pass%ENDCOLOR%  - Tried to remove user group &#39;accelerator&#39; without removing its reference in group to account mapping. This failed with proper error message. Tried to remove group to account mapping without removing host to group mapping. This also failed with proper error message. Next, removed the group entry from host to group mappings, then from group to account mapping and was then able to remove the user group.
+   %GREEN%pass%ENDCOLOR%  - Using the web interface, was able to generate osg-user-vo-map successfully
+   %GREEN%pass - Was able to map local account to grid identities (local account i used was fgtest and usign web interface was able to list all DNs that could be mapped to this account on a particular CE - fermigridosg1.fnal.gov
+   %GREEN%pass%ENDCOLOR%  - Was able to create gridmap file for a CE - fermigridosg1.fnal.gov
+   %RED%fail%ENDCOLOR% - Identified an issue with the web interface. However, it is *not* OpenJDK 7 related. It is not refreshing/updating the list of GUMS admins and propagating this information correctly between the web pages. When I click on &#39;merge configuration&#39; for first time, I can do it. However a minute later, I get authorization denied for merge configuration and any other admin operations. Was able to reproduce this on SL5/ SL6 installs
+&lt;/pre&gt;
+   * gratia testing involved configuring a test probe (fermicloud046) to send records to collector and being able to see them on server side. Also monitoring of logs.
+

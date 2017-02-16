@@ -1,0 +1,53 @@
+*WORK IN PROGRESS* 
+
+&lt;style type=&quot;text/css&quot;&gt;
+.tg  {border-collapse:collapse;border-spacing:0;width:100%}
+.tg td{font-family:Arial, sans-serif;font-size:12px;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:12px;font-weight:normal;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg .tg-raw1{font-weight:bold;color:#0055ff;text-align:left}
+.tg .tg-header{font-weight:bold;background-color:#c0c0c0;text-align:center}
+.tg .tg-splitheader{font-weight:bold;background-color:#e0e0e0;text-align:center}
+&lt;/style&gt;
+
+
+&lt;!-- some useful definitions  (need 3 white spaces before * to enable it)
+   * Set UCL_PROMPT_ROOT = [root@factory ~]$
+   * Set VERSION = 2.4.6
+   * Set WRAPPERVERSION = 0.9.16
+--&gt;
+
+---+!! Submission to CREAM CE
+&lt;!--
+%DOC_STATUS_TABLE%
+--&gt;
+%TOC{depth=&quot;3&quot;}%
+
+---# About this Document
+
+This document describes how to configure !AutoPyFactory to submit to a CREAM CE.
+
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;Header&quot;}%
+%INCLUDE{&quot;Trash/DocumentationTeam/DocConventions&quot; section=&quot;CommandLine&quot;}%
+
+%INCLUDE{&quot;Documentation/Release3/AutoPyFactory&quot; section=&quot;Version&quot;}%
+
+---# Configuration
+
+In order to submit to CREAM, just set accordingly the batch submit plugin, and all related attributes. 
+For example:
+
+&lt;pre class=&quot;file&quot;&gt;
+batchsubmitplugin = CondorCREAM
+
+batchsubmit.condorcream.webservice = lcgce04.gridpp.rl.ac.uk
+batchsubmit.condorcream.port = 8443
+batchsubmit.condorcream.batch = pbs
+batchsubmit.condorcream.queue = grid3000M 
+batchsubmit.condorcream.condor_attributes = periodic_remove = (JobStatus == 5 &amp;&amp; (CurrentTime - EnteredCurrentStatus) &gt; 3600) || (JobStatus == 1 &amp;&amp; globusstatus =!= 1 &amp;&amp; (CurrentTime - EnteredCurrentStatus) &gt; 86400)
+
+batchsubmit.condorcream.proxy = atlas-production
+&lt;/pre&gt;
+
+
+-- Main.JoseCaballero - 12 Jul 2016
+

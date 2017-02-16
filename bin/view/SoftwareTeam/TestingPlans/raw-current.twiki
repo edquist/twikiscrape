@@ -1,0 +1,174 @@
+&lt;!--
+   * Set PENDING = &lt;div style=&quot;color: black; background-color: yellow; padding-left: 8px; padding-right: 8px;&quot;&gt;Waiting&lt;/div&gt;
+   * Set ON_TRACK = &lt;span style=&quot;color: white; background-color: #3366FF; padding-left: 8px; padding-right: 8px;&quot;&gt;On Track&lt;/div&gt;
+   * Set BEHIND = &lt;div style=&quot;background-color: #CCFF00;&quot;&gt;&amp;nbsp;Behind&amp;nbsp;&lt;/div&gt;
+   * Set AT_RISK = &lt;div style=&quot;background-color: #CC0000; color:white&quot;&gt;&amp;nbsp;At Risk&amp;nbsp;&lt;/div&gt;
+   * Set SKIPPED = &lt;div style=&quot;background-color: #CC0000; color:white&quot;&gt;&amp;nbsp;Skipped&amp;nbsp;&lt;/div&gt;
+   * Set COMPLETE = &lt;div style=&quot;color: white; background-color: black; padding-left: 8px; padding-right: 8px;&quot;&gt;Done&lt;/div&gt;
+--&gt;
+
+---+ Plans for Development of Automated Testing
+
+%TOC{depth=&quot;2&quot;}%
+
+This document is a collection of &#39;mini-design docs&#39; for proposed improvements to the automated test suite (osg-test and the VMU infrastructure). 
+
+---++ Split cert creation into independent script/library
+
+Base ticket: https://jira.opensciencegrid.org/browse/SOFTWARE-2141
+
+Support CILogon style certs: https://jira.opensciencegrid.org/browse/SOFTWARE-2142
+
+---++ Improve VMU test reporting with component tags
+
+First pass: https://jira.opensciencegrid.org/browse/SOFTWARE-2086
+
+After that, perhaps add variables at the module level to indicate a test module&#39;s component?
+
+---++ osg-test Sources for EOL OSG Releases
+
+https://jira.opensciencegrid.org/browse/SOFTWARE-2177
+
+https://twiki.grid.iu.edu/bin/view/SoftwareTeam/DesignOsgTestSource
+
+---++ Allow installing specific packages out of specific yum repos in VMU runs
+
+https://jira.opensciencegrid.org/browse/SOFTWARE-1733
+
+https://twiki.opensciencegrid.org/bin/view/Main/VmuDevTests
+
+---++ File saving and cleanup improvements
+
+   * At least, ensure that site admin config and key data is safe
+   * Have stringent tests for ourselves, but disabled by default?
+
+---++ Add ability to run tests more selectively
+
+   * Only test a particular package
+   * Only run set-up (or specific range of?) steps (to test manually)
+   * Only certain tags (e.g., “quick” or “jobs” or “external services”)
+
+---++ Easily access past test results
+
+   * Weekly/monthly views
+   * Menu for jumping between different test dates
+
+---++ Service library for starting/monitoring/stopping services
+
+Make OO
+
+---++ File manipulation library for easy config changes
+
+---++ Get away from numbering modules
+But what instead?
+
+---++ Declare sequence and state dependencies at the module or class level
+
+---++ Allow randomization of sequence, insofar as possible
+
+---++ Repeat tests
+   * Do 1 install, then configure - test - reconfig - test - …, then clean up
+      * Configure “by hand”
+      * Configure with osg-configure
+      * Configure with Puppet
+   * The above, but install, config, test, upgrade, test, restore
+   * Repeat tests within a config for a number of iterations or a time period
+
+---++ Notes from 1/5/15 Brainstorm Session
+
+&lt;pre class=&quot;file&quot;&gt;
+Things we want osg-test to do (differently)
+
+Repeating
+   * do 1 install, then configure - test - reconfig - test - …, then clean up
+      * configure “by hand”
+      * configure with osg-configure
+      * configure with Puppet
+   * the above, but install, config, test, upgrade, test, restore
+   * repeat tests within a config for a number of iterations or a time period
+
+   * do file saving and cleanup Right™
+      * at least, ensure that site admin config and key data is safe
+      * have stringent tests for ourselves, but disabled by default?
+
+   * get away from numbering modules… but what instead?
+   * so how about sequence-of-execution dependencies (at least)
+   * declare sequence and state dependencies at the module or class level
+   * allow randomization of sequence, insofar as possible
+
+   * provide capability to be more selective about which tests run
+      * only test a particular package
+      * only run set-up (or specific range of?) steps (to test manually)
+      * only certain tags (e.g., “quick” or “jobs” or “external services”)
+
+   * improve efficiency and robustness of Fetch CRL steps
+
+   * add “component” tags for reporting
+   * reporting: easier to access past results (weekly/monthly view(s))
+   * auto-summarizing
+
+   * build a service library that knows how to start, monitor, and stop services
+      * make object oriented
+   * build a file-manipulation library to simplify making config changes
+
+   * finish EL 7 support
+
+
+Proposal
+
+   * All configuration code goes into a library of tasks organized by component (more or less)
+   * Configuration tasks are idempotent and aware of state (within reason)
+   * Configuration tasks can be invoked with options (“make HTCondor CE work with PBS”)
+
+   * Tests are organized into relatively small modules
+   * All of the individual test functions in a test module share one set of metadata
+   * A test module may declare run-time sequence dependencies on other test modules
+   * Test modules are organized into a hierarchy (or forest) to allow easy declaration of groups of tests to run at once
+   * There is a task that runs tests (one or more points in the forest, filtered and topologically sorted)
+
+   * Sets of related tasks (configuration and test) are grouped
+   * Each group of tasks can have sequence dependencies on the others
+   * Could this level of organization just be a DAG of tasks? With dependency-based sequence resolution on the “parallel” bits?
+
+   * The driver knows to do basic set up, install, tasks, update, tasks, clean up
+&lt;/pre&gt;
+---+ Old WBS&#39;s
+
+NOTE: Effort estimates are actual effort, not calendar time, and are given by order-of-magnitude only at this time. See below the table for notes on particular items.
+
+---++ 8/2013 WBS
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| *Ver* | *Milestone* | *State* | *Owner* | *Effort* | *Est. Start* | *Est. Finish* | *Act. Finish* | *Notes* |
+| 1.2.x | Add initial phase of Gratia tests | %ON_TRACK% | !BrianL | day | | 2013-08-13 | | |
+| 1.3 | Allow osg-test to accept a config file | | Brian |  week  | 2013-07-30 | 2013-08-23 | | |
+| 2.0 | Add sequence metadata and randomized topological sort algorithm | | Brian | month | | 2013-11 | | |
+| 2.1 | State based skipping at the modular level | | Brian |  month  | | 2014-02 | | |
+
+Notes:
+
+   * With the sequencing changes set for 2.0, we&#39;ll also want to rename the tests to get rid of their reliance on the numbering system.
+
+   * The notes from below still apply!
+
+---++ 2012 WBS
+
+%TABLE{ sort=&quot;off&quot; valign=&quot;top&quot; }%
+| # | *Milestone* | *State* | *Owner* | *Effort* | *Start* | *Target Finish* | *Actual Finish* | *Notes* |
+| 1.1 | Separate support library from tests | 0.0.11 | Tim |  week  |  2012-01-12  | |  2012-01-20  | |
+| 1.2 | Add global state to library; separate test files | 0.0.11 | Tim |  day  |  2012-01-20  | |  2012-01-24  | |
+| 1.3 | Add a few useful functions to support library | 0.0.11 | Tim |  week  |  2012-01-25  | |  2012-02-02  | |
+| 1.4 | Release osg-test with new features &amp; gLExec | 0.0.11 | Tim |  hour  |  2012-02-14  | |  2012-02-20  | |
+| 1.5 | Test Fest | | Tim |  day  | | | | Doug, Maxim, Neha, Scot |
+| 2.1 | Replace nose with simplest possible driver | | Tim |  week  | | | | |
+| 2.2 | Add sequence metadata and ordering algorithm | | Tim |  week  | | | | |
+| 2.3 | Add state requirements and refactor runtime algorithm | | Tim |  week  | | | | |
+| 2.4 | Expand possible test outcomes and reporting | | Tim |  week  | | | | |
+
+Notes on tasks:
+
+   * *Separate support library from tests.* Originally, all modules (i.e., Python files) that supported the =osg-test= script were in a single module directory (=osgtest=). The goal of this change is to create two subdirectories of =osgtest=, one for the support library (in =library=) and one for the actual test files (in =tests=). As a result of the filesystem reorganization, all references to the support library were changed.
+
+   * *Add global state to library.* Right now, each test module (i.e., Python file) tracks its own state, as far as setting up services and so forth. Also, the library itself has some shared state, implemented in a very ad hoc way. The goal of this task is to design and implement a simple, consistent, central mechanism for all global state, so that each test module could be smaller and a bit simpler to understand and sequence. The task also includes refactoring existing tests to use the new global state, possibly breaking up some of the longer test files (VOMS!) in the process.
+
+   * *Add state requirements and refactor runtime algorithm.* Still under design. Each test (or small set of tests) may have two different kinds of requirements: ones that impose a sequence on the tests, and then &quot;state requirements&quot; that describe what state the system must be in for the tests to be run (as opposed to being skipped). This task will include brief analysis of what is needed, a bit of design, and then, if still needed, implementation.

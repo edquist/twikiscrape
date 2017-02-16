@@ -1,0 +1,272 @@
+---+!! *&lt;noop&gt;%SPACEOUT{ &quot;VO Packages&quot; }%*
+%TOC{depth=&quot;2&quot;}%
+
+---+ v31
+
+---++ GRASE and !NYSGrid
+GRASE and NYSGrid VOMS ports were changed. 
+[[https://ticket.grid.iu.edu/goc/viewer?id=8075][GOC ticket 8075]]
+
+---+++ vomses file changes
+
+GRASE VOMS port changed from 15001 to 15000
+
+NYSGrid VOMS port changed from 15002 to 15001
+
+---++ !DayaBay 
+The !DayaBay VO was added.
+[[https://ticket.grid.iu.edu/goc/viewer?id=8092][GOC ticket 8092]]
+
+---+++ vomses files changes
+Added
+&lt;verbatim&gt;
+&quot;dayabay&quot; &quot;voms.lbl.gov&quot; &quot;15000&quot; &quot;/DC=org/DC=doegrids/OU=Services/CN=voms.lbl.gov&quot; &quot;dayabay&quot;
+&lt;/verbatim&gt;
+
+---+++ edg_mkgridmap.conf changes
+Added 
+&lt;verbatim&gt;
+#USER-VO-MAP dayabay DayaBay - 42 - Doug Olson (dlolson@lbl.gov)
+group vomss://voms.lbl.gov:8443/voms/dayabay dayabay
+&lt;/verbatim&gt;
+
+---+++ GUMS Config
+Added 
+&lt;verbatim&gt;
+&lt;groupMapping name=&#39;dayabay&#39; accountingVo=&#39;dayabay&#39; accountingDesc=&#39;DayaBay&#39;&gt;
+    &lt;userGroup className=&#39;gov.bnl.gums.VOMSGroup&#39;
+    url=&#39;https://voms.lbl.gov:8443/voms/dayabay/services/VOMSAdmin&#39;        
+    persistenceFactory=&#39;mysql&#39;        
+    name=&#39;dayabay&#39;    voGroup=&quot;/DayaBay&quot;    
+    sslCertfile=&#39;/etc/grid-security/http/httpcert.pem&#39;    
+    sslKey=&#39;/etc/grid-security/http/httpkey.pem&#39;    
+    matchFQAN=&quot;exact&quot;/&gt;
+    &lt;accountMapping className=&#39;gov.bnl.gums.GroupAccountMapper&#39;
+    groupName=&#39;dayabay&#39; /&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Plus dayabay to hostGroup className.
+
+---+++ UNIIX Accounts
+Add:  dayabay
+
+---++ !FermiGrid
+Removed all previous GUMS Config entries for Fermigrid and replaced with new config.
+[[https://ticket.grid.iu.edu/goc/viewer?id=8093][GOC Ticket 8093]]
+
+---+++ GUMS Config
+
+&lt;verbatim&gt;
+&lt;!-- 2 Fermilab --&gt;
+
+&lt;groupMapping name=&quot;fermilab&quot; accountingVo=&quot;fermilab&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;fermilab&quot; voGroup=&quot;/fermilab/grid&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;fnalgrid&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;accelerator&quot; accountingVo=&quot;accelerator&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;accelerator&quot; voGroup=&quot;/fermilab/accelerator&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;fnal_acc&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;argoneut&quot; accountingVo=&quot;argoneut&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;argoneut&quot; voGroup=&quot;/fermilab/argoneut&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;argoneut&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;cdms&quot; accountingVo=&quot;cdms&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;cdms&quot; voGroup=&quot;/fermilab/cdms&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;cdms&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;lbne&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;lbne&quot; voGroup=&quot;/fermilab/lbne&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbne&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;minerva&quot; accountingVo=&quot;minerva&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;minerva&quot; voGroup=&quot;/fermilab/minerva&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;minerva&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;miniboone&quot; accountingVo=&quot;miniboone&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;miniboone&quot; voGroup=&quot;/fermilab/miniboone&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;minboone&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;minos&quot; accountingVo=&quot;minos&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;minos&quot; voGroup=&quot;/fermilab/minos&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;minos&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;mipp&quot; accountingVo=&quot;mipp&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;mipp&quot; voGroup=&quot;/fermilab/mipp&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;mipp&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;mu2e&quot; accountingVo=&quot;mu2e&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;mu2e&quot; voGroup=&quot;/fermilab/mu2e&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;mu2e&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;nova&quot; accountingVo=&quot;nova&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;nova&quot; voGroup=&quot;/fermilab/nova&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;nova&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;numi&quot; accountingVo=&quot;numi&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;numi&quot; voGroup=&quot;/fermilab/numi&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;numi&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;patriot&quot; accountingVo=&quot;patriot&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;patriot&quot; voGroup=&quot;/fermilab/patriot&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;patriot&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;theory&quot; accountingVo=&quot;theory&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;theory&quot; voGroup=&quot;/fermilab/theory&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;fnal_thy&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;fermilab-test&quot; accountingVo=&quot;fermilab-test&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;fermilab-test&quot; voGroup=&quot;/fermilab/test&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;fgtest&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;!-- Fermilab subgroup Production roles below this --&gt;
+
+&lt;groupMapping name=&quot;fermilab-production&quot; accountingVo=&quot;fermilab&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;fermilab-production&quot; voGroup=&quot;/fermilab&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;fermipro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;accelerator-production&quot; accountingVo=&quot;accelerator&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;accelerator-production&quot; voGroup=&quot;/fermilab/accelerator&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;accelpro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;argoneut-production&quot; accountingVo=&quot;argoneut&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;argoneut-production&quot; voGroup=&quot;/fermilab/argoneut&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;argoneutpro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;cdms-production&quot; accountingVo=&quot;cdms&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;cdms-production&quot; voGroup=&quot;/fermilab/cdms&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;cdmspro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;lbne-production&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;lbne-production&quot; voGroup=&quot;/fermilab/lbne&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbnepro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;minerva-production&quot; accountingVo=&quot;minerva&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;minerva-production&quot; voGroup=&quot;/fermilab/minerva&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;minervapro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;miniboone-production&quot; accountingVo=&quot;miniboone&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;miniboone-production&quot; voGroup=&quot;/fermilab/miniboone&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;minbnpro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;minos-production&quot; accountingVo=&quot;minos&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;minos-production&quot; voGroup=&quot;/fermilab/minos&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;minospro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;mipp-production&quot; accountingVo=&quot;mipp&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;mipp-production&quot; voGroup=&quot;/fermilab/mipp&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;mipppro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;nova-production&quot; accountingVo=&quot;nova&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;nova-production&quot; voGroup=&quot;/fermilab/nova&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;novapro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;numi-production&quot; accountingVo=&quot;numi&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;numi-production&quot; voGroup=&quot;/fermilab/numi&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;numipro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;patriot-production&quot; accountingVo=&quot;patriot&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;patriot-production&quot; voGroup=&quot;/fermilab/patriot&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;patripro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;theory-production&quot; accountingVo=&quot;theory&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;theory-production&quot; voGroup=&quot;/fermilab/theory&quot; voRole=&quot;Production&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;theopro&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;!-- Fermilab analysis roles below this--&gt;
+&lt;groupMapping name=&quot;argoneutana&quot; accountingVo=&quot;argoneut&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;argoneutana&quot; voGroup=&quot;/fermilab/argoneut&quot; voRole=&quot;Analysis&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;argoneutana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;lbneana&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;lbneana&quot; voGroup=&quot;/fermilab/lbne&quot; voRole=&quot;Analysis&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbneana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;minervaana&quot; accountingVo=&quot;minerva&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;minervaana&quot; voGroup=&quot;/fermilab/minerva&quot; voRole=&quot;Analysis&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;minervaana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;minosana&quot; accountingVo=&quot;minos&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;minosana&quot; voGroup=&quot;/fermilab/minos&quot; voRole=&quot;Analysis&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;minosana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;novaana&quot; accountingVo=&quot;nova&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;novaana&quot; voGroup=&quot;/fermilab/nova&quot; voRole=&quot;Analysis&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;novaana&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;!-- Fermilab glidein roles below this--&gt;
+&lt;groupMapping name=&quot;fggli&quot; accountingVo=&quot;fermilab&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;fggli&quot; voGroup=&quot;/fermilab/grid&quot; voRole=&quot;pilot&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;fggli&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;argoneutgli&quot; accountingVo=&quot;argoneut&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;argoneutgli&quot; voGroup=&quot;/fermilab/argoneut&quot; voRole=&quot;pilot&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;argoneutgli&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;lbnegli&quot; accountingVo=&quot;lbne&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;lbnegli&quot; voGroup=&quot;/fermilab/lbne&quot; voRole=&quot;pilot&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;lbnegli&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;minervagli&quot; accountingVo=&quot;minerva&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;minervagli&quot; voGroup=&quot;/fermilab/minerva&quot; voRole=&quot;pilot&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;minervagli&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;minosgli&quot; accountingVo=&quot;minos&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;minosgli&quot; voGroup=&quot;/fermilab/minos&quot; voRole=&quot;pilot&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;minosgli&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;groupMapping name=&quot;novagli&quot; accountingVo=&quot;nova&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;novagli&quot; voGroup=&quot;/fermilab/nova&quot; voRole=&quot;pilot&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;novagli&quot;/&gt;
+&lt;/groupMapping&gt;
+
+&lt;!-- Fermilab admin roles --&gt;
+
+&lt;groupMapping name=&quot;fgadmin&quot; accountingVo=&quot;fermilab&quot; accountingDesc=&quot;FERMILAB&quot;&gt;
+&lt;userGroup className=&quot;gov.bnl.gums.VOMSGroup&quot; url=&quot;https://voms.fnal.gov:8443/voms/fermilab/services/VOMSAdmin&quot; persistenceFactory=&quot;mysql&quot; name=&quot;fgadmin&quot; voGroup=&quot;/fermilab/grid&quot; voRole=&quot;admin&quot; sslCertfile=&quot;/etc/grid-security/http/httpcert.pem&quot; sslKey=&quot;/etc/grid-security/http/httpkey.pem&quot; matchFQAN=&quot;exact&quot;/&gt;
+&lt;accountMapping className=&quot;gov.bnl.gums.GroupAccountMapper&quot; groupName=&quot;fgadmin&quot;/&gt;
+&lt;/groupMapping&gt;
+&lt;/verbatim&gt;
+
+Names also updated for hostGroup nameClass to match these changes.
+
+-- Main.RobQ - 26 Feb 2010

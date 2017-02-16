@@ -1,0 +1,94 @@
+%LINKCSS%
+
+---+!! %SPACEOUT{ &quot;%TOPIC%&quot; }%
+%TOC{depth=&quot;2&quot;}%
+%STARTINCLUDE%
+
+---++Introduction
+
+This TWiki page serves as entry point for documentation on how to use the OSG. As the OSG support model assumes the end-user scientists to be supported by large &quot;Virtual Organisations&quot; (VO)
+that provide the actual user interfaces and user support, the primary target audience here are
+the VO user support teams, rather than the actual scientists as end-users.  However this should also help individual or small group researchers who don&#39;t have the wherewithal to form a VO, and who therefore are welcome to join the &quot;OSG&quot; VO.
+
+Compute resources on the OSG are accessed through a protocol named GRAM using a tool called =Condor-G=.  Storage resources are accessed through a protocol named SRM, and a variety of clients are used.  In this guide, we provide examples for accessing storage and compute resources.
+
+---++Getting Access to computing resources via OSG
+
+Getting access to computing resources via the OSG involves the following steps:
+
+   1. Acquire an X.509 certificate from one of the [[http://vdt.cs.wisc.edu/certificate_authorities.html][supported CAs]]. As an example, you might follow [[https://twiki.grid.iu.edu/twiki/bin/view/Trash/Trash/OSGRA/][these instructions for obtaining a doesciencegrid certificate]].
+   1. [[GettingStarted#I_want_to_use_OSG_resources][Register with your VO.]] Each VO maintains a &lt;span class=&quot;firstterm&quot;&gt;virtual organization membership service&lt;/span&gt; (&lt;span class=&quot;arconym&quot;&gt;VOMS&lt;/span&gt;) that often has a form for end-user scientists to register. The VO may [[http://osg-docdb.opensciencegrid.org/cgi-bin/ShowDocument?docid=153][implement policies]] using [[http://osg-docdb.opensciencegrid.org/cgi-bin/ShowDocument?docid=154][groups and roles]] and extended proxies in order to differentiate access rights and priorities for different end-users. Every VO is expected to maintain its own [[VO/WebHome][VO-specific instructions on membership, usage, etc., and general information for users]].
+   1. [[ReleaseDocumentation.ClientInstallationGuide][Install the OSG client software]] on your desktop.
+
+----+++A word on Policies for resource usage
+
+The OSG does not allocate resources as none of the resources available via the grid are &quot;owned&quot; by the OSG. The owners &amp;#8212; generally large VOs and IT organisations, including national labs &amp;#8212; fully control usage policies on their resources. 
+
+Many VOs allow you to use resources beyond those owned by the VO. The most common policy for resource utilisation outside your own VO is &quot;opportunistic use&quot;. The interpretation of this varies greatly. Some sites allow access to all their &quot;spare&quot; resources to anybody registered with a VO on OSG, others to only a small subset of resources and/or VOs. Some sites interpret &quot;spare&quot; to mean &quot;until a more privileged user arrives&quot;, others guarantee a minimum wall clock time for your job once it starts.
+
+The only reliable way to find out policy is to try to run a job.
+
+%WARNING% A cluster is a large error amplifier!
+
+%INCLUDE{ &quot;FindAvailableResource&quot; }%
+
+---++Using the Computing Resources
+
+OSG provides an interface at each compute site, refered to as the _Compute Element (CE)_. In principle, both =globus-job-run= and =Condor-G= can be used to submit jobs to the CE. As a matter of policy, the large-scale use of globus-job-run is banned - use Condor-G to submit your jobs.  You may be banned at some OSG sites if you do not use Condor-G or a similar submission tool.  More info on Condor-G [[http://www.cs.wisc.edu/condor/manual/v7.3/5_3Grid_Universe.html#SECTION00632000000000000000][can be found in the extensive Condor manual]].
+
+There&#39;s a &quot;[[http://www.cs.wisc.edu/condor/condorg/goldenrules.html][golden rules]]&quot; document you might find useful for submitting a large number of jobs.
+
+---++++Submitting single job using =Condor-G=
+
+%INCLUDE{&quot;CondorSubmittingSingleJob&quot; }%
+
+---++++Submitting multiple jobs using condor-g
+
+%INCLUDE{ &quot;CondorSubmittingMultipleJobs&quot; }%
+
+---+++Consuming storage
+There are a variety of different [[Trash.ReleaseDocumentationLocalStorageConfiguration][storage areas in OSG]]. As a general rule, you should keep the size of the files you transfer using Condor-G to a minimum (preferably less than 10 and definitely less than 100MB per job).  The bulk of what you need for running your jobs should be staged in (e.g. as part of a &lt;span class=&quot;acronym&quot;&gt;DAG&lt;/span&gt;) before the job submission. Similarly, output files, and any significant logfiles should be staged out, e.g. as part of a DAG, after the job completes using SRM.
+
+---+++ Finding Storage Endpoints
+%INCLUDE{&quot;FindStorageResources&quot;}%
+
+---++++ Write a file to the remote endpoint
+&lt;verbatim&gt;
+lcg-cp -b -D srmv2 file:////bin/sh srm://red-srm1.unl.edu:8443/srm/v2/server?SFN=/mnt/hadoop/public/gpn/sh-copy
+&lt;/verbatim&gt;
+
+Note that recursive copying of a directory does not work.
+
+---++++ Download a file from the remote endpoint
+&lt;verbatim&gt;
+lcg-cp -b -D srmv2 srm://red-srm1.unl.edu:8443/srm/v2/server?SFN=/mnt/hadoop/public/gpn/sh-copy file:///tmp/sh-copy 
+&lt;/verbatim&gt;
+
+---++++ SRM copy (SRM to SRM):
+&lt;verbatim&gt;
+ srmcp srm://myhost.mydomain.edu/dir1/dir2/sh-copy srm://anotherhost.org/newdir/sh-copy 
+&lt;/verbatim&gt;
+
+---++++ SRM copy (gsiFTP to SRM):
+&lt;verbatim&gt;  
+ srmcp gsiftp://ftphost.org//path/file srm://myhost.mydomain.edu/dir1/dir2/file
+&lt;/verbatim&gt;
+
+---+++ globus-url-copy syntax
+&lt;span class=&quot;command&quot;&gt;globus-url-copy&lt;/span&gt; uses similar syntax but can only communicate with gsiftp servers
+
+&lt;verbatim&gt;
+globus-url-copy file:////bin/sh gsiftp://myhost.mydomain.edu/dir1/dir2/sh-copy
+globus-url-copy gsiftp://myhost.mydomain.edu/dir1/dir2/file file:///$OSG_WN_TMP/local-copy
+&lt;/verbatim&gt;
+
+---+++Condor Hold (_error_) Codes
+
+Sometimes, jobs that you submit actually run, and sometimes they don&#39;t. When they don&#39;t, exit error codes may be useful.  If the job goes on hold (status &#39;H&#39;), the Condor hold reason and hold code may be helpful.  These are visible in the output of &lt;span class=command&gt;condor_q -l &lt;i&gt;jobid&lt;/i&gt;&lt;/span&gt;.  Hold codes are documented in the [[http://www.cs.wisc.edu/condor/manual/v6.8/2_5Submitting_Job.html#2162][Condor manual]].
+
+See [[Documentation/Release3.CondorErrors]] for more details.
+
+---++ Troubleshooting Using the OSG
+%INCLUDE{ &quot;GridUsersGuideTroubleshootingOSG&quot; }%
+GridUsersGuideTroubleshootingOSG
+

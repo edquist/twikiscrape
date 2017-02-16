@@ -1,0 +1,236 @@
+%LINKCSS%
+
+---+!! HTCondor CE Routes
+%TOC%
+
+In addition to the following variables:
+
+   * JOB_ROUTER_SCHEDD2_NAME, JOB_ROUTER_SCHEDD2_POOL (part of the HTCondor-CE config)
+   * QUEUE_SUPER_USER_MAY_IMPERSONATE (part of the local HTCondor config)
+
+there are many customization options for how a grid job should be transformed to a job in the site&#39;s HTCondor install.  This page covers two approaches - customizing jobs in a declarative config file language or through a custom (imperative) script.  The declarative config file language may be easier for some to understand and share while the script approach adds a significant amount of flexibility.
+
+%STARTINCLUDE%
+
+---++ Customization using the Config File
+
+A job is localized by the !JobRouter, which matches it to one *job route*, then applying the transformations specified in the route.  The most common way to specify a route is via the HTCondor configuration file.  See the [[http://research.cs.wisc.edu/htcondor/manual/v8.0/5_4HTCondor_Job.html][HTCondor documentation]] for a full reference on job routes. Note: it refers to the current stable realease of HTCondor v8.0.x.
+
+Assuming HTCondor collector for grid pool running on the same host, for example here is the default route for a HTCondor site:
+&lt;verbatim&gt;
+JOB_ROUTER_ENTRIES = \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, $(FULL_HOSTNAME), $(FULL_HOSTNAME)); \
+     TargetUniverse = 5; \
+     name = &quot;Local_Condor&quot;; \
+   ]
+&lt;/verbatim&gt;
+
+If HTCondor collector for grid pool is NOT same host, here appropriate lines has to be part of the route configuration:
+&lt;verbatim&gt;
+JOB_ROUTER_SCHEDD2_POOL=&lt;Condor Collector for grid pool&gt;
+JOB_ROUTER_ENTRIES = \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot; $(JOB_ROUTER_SCHEDD2_POOL)&quot;); \
+     TargetUniverse = 5; \
+     set_InputRSL = FALSE; \
+     name = &quot;Condor_grid_pool&quot;; \
+   ] 
+&lt;/verbatim&gt;
+
+Note all routes should have a name and set the !GridResource attribute (the reason for the latter is vestigial and may be removed in the future).  Each route is a HTCondor !ClassAd.  When writing a new route, three grammatical things to check are:
+   * Each route begins and ends with a square bracket,
+   * Each attribute ends with a semicolon, and
+   * Comments are specified with a C-style comment (=/* ... */=), as opposed to a configuration file comment (=#=).
+
+Multiple routes may be specified, one after another.  The first matching route is used; a route matches if its Requirements expression evaluates to true and it is within its !MaxJobs setting.  For example, the following route places the job in the accounting group &quot;hcc&quot; if it carries a VOMS attribute and the accounting group &quot;other&quot; otherwise.
+
+&lt;verbatim&gt;
+JOB_ROUTER_ENTRIES = \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, $(FULL_HOSTNAME), $(FULL_HOSTNAME)); \
+     TargetUniverse = 5; \
+     name = &quot;Condor_hcc&quot;; \
+     Requirements = regexp(&quot;^/hcc/&quot;, x509UserProxyFirstFQAN); \
+     eval_set_AccountingGroup = strcat(&quot;hcc.&quot;, Owner); \
+   ] \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, $(FULL_HOSTNAME), $(FULL_HOSTNAME)); \
+     TargetUniverse = 5; \
+     name = &quot;Condor_other&quot;; \
+     Requirements = regexp(&quot;^/hcc/&quot;, x509UserProxyFirstFQAN) =!= TRUE; \
+     eval_set_AccountingGroup = strcat(&quot;other.&quot;, Owner); \
+   ]
+&lt;/verbatim&gt;
+
+%NOTE% Using !AccountingGroups properly presumes extattr table and uid table in place which is basically same technique as setting up accounting for GRAM CE. Syntax of such tables is documented at &quot;Condor accounting groups&quot; section in [[https://twiki.grid.iu.edu/bin/view/Documentation/Release3/InstallComputeElement][here]]. Setting these according to the documentation should get the HTCondor-CE map your submitted jobs to different accounting groups (depending on the proxy&#39;s role for instance). Example with presence of {extattr,uid}_table.txt matching on conditional statement:
+
+&lt;verbatim&gt;
+JOB_ROUTER_ENTRIES = \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, $(FULL_HOSTNAME), $(FULL_HOSTNAME)); \
+     TargetUniverse = 5; \
+     name = &quot;Local_Condor&quot;; \
+     set_Requirements = ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( IS_GLIDEIN =!= true || TARGET.GLIDECLIENT_Group =?= &quot;T2Overflow&quot; ) \
+         &amp;&amp; ( TARGET.Arch == &quot;X86_64&quot; ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+     set_WantIOProxy = true; \
+     delete_PeriodicRemove = true; \
+     eval_set_AccountingGroup = strcat(ifThenElse(regexp(&quot;\/cms\/Role\=pilot&quot;, x509UserProxyFirstFQAN), &quot;cms.wlcgpledge.pilot&quot;, \
+                                       ifThenElse(regexp(&quot;\/cms\/Role\=production&quot;, x509UserProxyFirstFQAN), &quot;cms.prod&quot;, \
+                                       ifThenElse(regexp(&quot;\/cms\/uscms&quot;, x509UserProxyFirstFQAN), &quot;cms.other.us&quot;, &quot;other&quot; \
+                                      ))), &quot;.&quot;, Owner); \
+     eval_set_RequestMemory = 2500; \
+   ]
+&lt;/verbatim&gt;
+=/etc/osg/extattr_table.txt:=
+&lt;verbatim&gt;
+# extended-attribute matching table
+# format: [perl regular expression] [group]
+cms\/Role=pilot cms.wlcgpledge.pilot
+cms\/Role=production cms.prod
+cms\/Role=t1production cms.prod
+uscms cms.other.us
+&lt;/verbatim&gt;
+
+----+++ Additional route attributes
+
+Some sites may want to set a default attribute (such as a memory request) if not present in the !ClassAd.  Here is an example:
+
+&lt;verbatim&gt;
+JOB_ROUTER_ENTRIES = \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, $(FULL_HOSTNAME), $(FULL_HOSTNAME)); \
+     TargetUniverse = 5; \
+     name = &quot;Condor_hcc&quot;; \
+     Requirements = regexp(&quot;^/hcc/&quot;, x509UserProxyFirstFQAN); \
+     eval_set_AccountingGroup = strcat(&quot;hcc.&quot;, Owner); \
+     eval_set_RequestMemory = ifThenElse(isUndefined(RequestMemory), 1000, RequestMemory); \  =/* ==&gt; for HTCondor-CE &lt;=v0.6.1 */=
+     set_default_maxMemory = 1000; \ =/* ==&gt; supported in &gt;=v0.6.2 */=
+   ]
+&lt;/verbatim&gt;
+
+This example sets the !RequestMemory/maxMemory attribute to 1000MB of memory if not explicitly requested by the user. Example shows config implementation for HTCondor-CE builds &lt;=v0.6.1 and &gt;=v0.6.2. For builds &gt;=v0.6.2: if maxMemory is not defined in the config default value is set to 2000.
+
+For PBS, SGE, LSF, or SLURM sites, it is often useful to request a specific queue (differs in builds &lt;=v0.6.1 and &gt;=v0.6.2, see below.  Here&#39;s an example for a PBS site:
+
+&lt;verbatim&gt;
+JOB_ROUTER_ENTRIES = \
+   [ \
+     GridResource = &quot;batch pbs&quot;; \
+     TargetUniverse = 9; \
+     name = &quot;Local_PBS_cms&quot;; \
+     set_remote_queue = &quot;cms&quot;; \ =/* ==&gt; for HTCondor-CE &lt;=v0.6.1 */=
+     set_default_queue = &quot;cms&quot;;  \ =/* ==&gt; supported in &gt;=v0.6.2 */=
+     Requirements = target.x509UserProxyVOName =?= &quot;cms&quot;; \
+   ]
+&lt;/verbatim&gt;
+
+The route turns the CE job into a PBS grid-universe job, which will in turn be submitted to PBS.  [[http://research.cs.wisc.edu/htcondor/manual/v8.0/5_3Grid_Universe.html#SECTION00635000000000000000][See the relevant HTCondor documentation]].
+
+----+++Site config JOB_ROUTER_ENTRIES examples
+----++++ BNL-ATLAS site
+At BNL, we classify incoming jobs into different &quot;queues&quot; in local condor pool, by using an attribute of &quot;RACF_Group&quot;. We also have a set of common attributes, like Job_Type and Experiment, that go with every queue, and some of them get assigned different values based on the queue name. Here is how we implement it:
+   * In user&#39;s condor-g job submit file, user will specify the queue name, for example, if user wants to run a job in the long analysis queue, then to specify this:
+&lt;verbatim&gt;
+   +remote_queue=&quot;analysis.long&quot; 
+&lt;/verbatim&gt;
+   * On the HTCondor-CE, we translate this attribute of &quot;queue&quot; into local tags in the JobRouter configuration file, for example:
+&lt;verbatim&gt;
+Requirements = target.queue==&quot;analysis.long&quot;; \                                                                                                                                   
+eval_set_RACF_Group = &quot;long&quot;; \                                                                                                                                                   
+set_Experiment = &quot;atlas&quot;; \                                                                                                                                                        
+set_Job_Type = &quot;cas&quot;; \
+...
+...
+&lt;/verbatim&gt;
+   * below is a more complete sample of JobRouter configuration file:
+
+%TWISTY{%TWISTY_OPTS_OUTPUT% showlink=&quot;BNL-ATLAS site - click to expand sanitized entries&quot;}%
+&lt;pre class=&quot;screen&quot;&gt;
+JOB_ROUTER_ENTRIES = \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot;$(FULL_HOSTNAME)&quot;); \
+     TargetUniverse = 5; \
+     name = &quot;BNL_Condor_Pool_long&quot;; \
+     Requirements = target.queue==&quot;analysis.long&quot;; \
+     eval_set_RACF_Group = &quot;long&quot;; \
+     set_Experiment = &quot;atlas&quot;; \
+     set_requirements = ( ( Arch == &quot;INTEL&quot; || Arch == &quot;X86_64&quot; ) &amp;&amp; ( CPU_Experiment == &quot;atlas&quot; ) ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+     set_Job_Type = &quot;cas&quot;; \
+     set_JobLeaseDuration = 3600; \
+     set_PeriodicHold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \
+     eval_set_VO = x509UserProxyVOName; \
+   ] \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot;$(FULL_HOSTNAME)&quot;); \
+     TargetUniverse = 5; \
+     name = &quot;BNL_Condor_Pool_short&quot;; \
+     Requirements = target.queue==&quot;analysis.short&quot;; \
+     eval_set_RACF_Group = &quot;short&quot;; \
+     set_Experiment = &quot;atlas&quot;; \
+     set_requirements = ( ( Arch == &quot;INTEL&quot; || Arch == &quot;X86_64&quot; ) &amp;&amp; ( CPU_Experiment == &quot;atlas&quot; ) ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+     set_Job_Type = &quot;cas&quot;; \
+     set_JobLeaseDuration = 3600; \
+     set_PeriodicHold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \
+     eval_set_VO = x509UserProxyVOName; \
+   ] \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot;$(FULL_HOSTNAME)&quot;); \
+     TargetUniverse = 5; \
+     name = &quot;BNL_Condor_Pool_grid&quot;; \
+     Requirements = target.queue==&quot;grid&quot;; \
+     eval_set_RACF_Group = &quot;grid&quot;; \
+     set_Experiment = &quot;atlas&quot;; \
+     set_requirements = ( ( Arch == &quot;INTEL&quot; || Arch == &quot;X86_64&quot; ) &amp;&amp; ( CPU_Experiment == &quot;atlas&quot; ) ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+     set_Job_Type = &quot;cas&quot;; \
+     set_JobLeaseDuration = 3600; \
+     set_PeriodicHold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \
+     eval_set_VO = x509UserProxyVOName; \
+   ] \
+   [ \
+     GridResource = &quot;condor localhost localhost&quot;; \
+     eval_set_GridResource = strcat(&quot;condor &quot;, &quot;$(FULL_HOSTNAME)&quot;, &quot;$(FULL_HOSTNAME)&quot;); \
+     TargetUniverse = 5; \
+     name = &quot;BNL_Condor_Pool&quot;; \
+     Requirements = target.queue is undefined; \
+     eval_set_RACF_Group = &quot;grid&quot;; \
+     set_requirements = ( ( Arch == &quot;INTEL&quot; || Arch == &quot;X86_64&quot; ) &amp;&amp; ( CPU_Experiment == &quot;rcf&quot; ) ) &amp;&amp; ( TARGET.OpSys == &quot;LINUX&quot; ) &amp;&amp; ( TARGET.Disk &gt;= RequestDisk ) &amp;&amp; ( TARGET.Memory &gt;= RequestMemory ) &amp;&amp; ( TARGET.HasFileTransfer ); \
+     set_Experiment = &quot;atlas&quot;; \
+     set_Job_Type = &quot;cas&quot;; \
+     set_JobLeaseDuration = 3600; \
+     set_PeriodicHold = (NumJobStarts &gt;= 1 &amp;&amp; JobStatus == 1) || NumJobStarts &gt; 1; \
+     eval_set_VO = x509UserProxyVOName; \
+   ]
+&lt;/pre&gt;
+%ENDTWISTY%
+
+---++ Customization using Job Hooks
+
+Some sites may not be able to specify their desired policy solely through the !ClassAd language.  For example, they may decide to alter the accounting group based on the contents of a separate file on disk, or conduct in-depth transformations of a particular attribute.  In this case, HTCondor provides [[http://research.cs.wisc.edu/htcondor/manual/v8.0/4_4Hooks.html#SECTION00542000000000000000][JobRouter hooks]]; these provide the site admin with a means to transform the job via an arbitrary script.
+
+The job hooks currently work but are relatively difficult to work with.  Site admins are welcome to follow along the activity on [[https://htcondor-wiki.cs.wisc.edu/index.cgi/tktview?tn=3380][this ticket]].
+
+---++ Customizing Submit Files
+
+For PBS, SGE, SLURM, and LSF, the blahp submit scripts have a callout hook which allows the site to add default attributes.
+
+For PBS, the file is located at =/usr/libexec/blahp/pbs_local_submit_attributes.sh=.  The following example shows how to set a default walltime (10 minutes) for jobs:
+
+&lt;verbatim&gt;
+[root@example-ce1 ~]# cat /usr/libexec/blahp/pbs_local_submit_attributes.sh 
+echo &quot;#PBS -l walltime=00:10:00&quot;
+&lt;/verbatim&gt;
+
+This may be used for adding default attributes, but cannot customize the submit files more than that.
+
+%STOPINCLUDE%
+

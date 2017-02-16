@@ -1,0 +1,140 @@
+---+!! Configure !RSV to use a service certificate on your CE or SE.
+%DOC_STATUS_TABLE%
+%TOC%
+
+---+ About this Document
+This document explains how you can configure the authorization system on your CE/SE (!GUMS/Edg-mkgridmap/simple grid-mapfile) to accept !RSV probe jobs.
+
+---+ Resources that use GUMS
+
+*Important Notes common to two GUMS-related sub-sections below:*
+   * Each service cert DN needs to be added separately: You must manually add each !RSV service DN to the &quot;rsv&quot; user group (defined in step 1 below):
+      * Go to the !GUMS server web interface at https://&lt;YOUR-GUMS-HOST-NAME&gt;:8443/gums/ and click &quot;Manual User Group Members&quot;
+      * Then click &quot;Add&quot;, then enter the service cert DN and =rsv= as the usergroup
+      * Click &quot;Save&quot;. And repeat for each DN (if you&#39;re configuring multiple !RSV service cert DNs).
+
+   * &lt;strong&gt;IMPORTANT NOTE: &lt;/strong&gt; If your GUMS server version is &lt; 1.2.17, then when converting to the the 1.2 format, it will give the rsv usergroup &quot;write&quot; privilege by default, so the administrator should change this to &quot;read all&quot;.  This has been changed to &quot;read all&quot; by default in GUMS 1.2.17 and above.
+
+
+---++ Add !RSV service cert DN using !GUMS server web interface
+If you want to use the web interface, as recommended, add the same elements above using the web interface at https://&lt;YOUR-GUMS-HOST-NAME&gt;:8443/gums/ by:
+   1 Click &quot;User Groups&quot; -&gt; Click &quot;Add&quot; -&gt; Select &quot;manual&quot; for the type, type =rsv= for the name, and select &quot;read all&quot; for the permissions -&gt; Click &quot;Save&quot;
+   2 Click &quot;Account Mappers&quot; -&gt; Click &quot;Add&quot; -&gt; Select &quot;group&quot; for the type, type =rsv= for the account and =rsv= for the name -&gt; Cick &quot;Save&quot;
+   3 Click &quot;Group To Account Mappings&quot; -&gt; Click &quot;Add&quot; -&gt; Select =rsv= for the the User Group and =rsv= for the Account Mapper -&gt; Click &quot;Save&quot;
+   4 Click &quot;Host To Group Mappings&quot; -&gt; Click &quot;edit&quot; on all relevant host to group mappings -&gt; Select =rsv= in the last &quot;Group To Account Mapping(s)&quot; slot -&gt; Click &quot;Save&quot;
+   5 Add the service cert DN to the user group, as described in the common notes above
+---++ Add !RSV service cert DN manually by editing !GUMS server config file
+We really recommend to use the Web GUI to avoid errors. A misplaced parenthesis may break all the configuration and be difficult to catch. Anyway, if you really want to add manually the configuration to allow an !RSV service certificate into your GUMS server config (a file in !GUMS 1.2 format), then take the following 4 steps:
+
+   1. Add the following to the userGroups section in =/etc/gums/gums.config= on your !GUMS server:&lt;pre class=&quot;file&quot;&gt;
+    &amp;lt;manualUserGroup
+        name=&#39;rsv&#39;
+        access=&#39;read all&#39;
+        description=&#39;&#39;
+        persistenceFactory=&#39;mysql&#39;/&amp;gt;
+&lt;/pre&gt; &lt;br&gt; Explanation (optional read): This creates a new gums group to hold all DNs that want to run RSV jobs. You will populate this group with the RSV DN as per instructions below.
+   2. Add the following to the accountMappers section: &lt;pre class=&quot;file&quot;&gt;
+    &amp;lt;groupAccountMapper
+        name=&#39;rsv&#39;
+        description=&#39;&#39;
+         accountName=&#39;rsv&#39;/&amp;gt;
+&lt;/pre&gt; &lt;br&gt; Explanation (optional read): This creates a new gums account mapper: whenever GUMS associates a DN to this mapper, the mapper will map that DN to the local user &#39;rsv&#39;. GUMS is told by the association between the RSV group (defined in (1) ) and this mapper in the next step.
+   3. Add the following to the groupToAccountMappings section: &lt;pre class=&quot;file&quot;&gt;
+    &amp;lt;groupToAccountMapping
+            name=&#39;rsv&#39;
+            description=&#39;&#39;
+            accountingVoSubgroup=&#39;&#39;
+            accountingVo=&#39;&#39;
+            userGroups=&#39;rsv&#39;
+            accountMappers=&#39;rsv&#39;/&amp;gt;
+&lt;/pre&gt; &lt;br&gt; Explanation (optional read): This tells GUMS that the group created is (1) should be associated with the account mapper created in (2). In other words, if a DN is a member of the RSV user group, it should be mapped as per the RSV account mapper i.e. to the local account rsv.
+   4. Add the rsv reference to your hostToGroupMapping element(s) such as (&#39;bnl.gov&#39; in the cn attribute should be replaced by your domain name): &lt;pre class=&quot;file&quot;&gt;
+    &amp;lt;hostToGroupMapping
+        groupToAccountMappings=&#39;rsv, cdf, fermilab, grase, mis, fmri, sdss, star&#39;
+        description=&#39;&#39;
+        cn=&#39;*/?*.bnl.gov&#39;/&amp;gt;
+&lt;/pre&gt; &lt;br&gt;  Explanation (optional read): With this, GUMS will use the listed account mappings in the order they appear (see &#39;groupToAccountMappings&#39;  attribute) for all requests generated by a CE in your domain name (see &#39;cn&#39; attribute). 
+
+Explanation (optional read):  In summary, when running an RSV probe, a CE presents the RSV DN to GUMS. GUMS checks that the CE is in your domain (as per step 4) and starts trying to match the RSV DN with the rules expressed in the listed group to account mappings. GUMS tries the rsv group to account mapping in its first attempt. As per step 3, GUMS checks if the RSV DN is part of the rsv user group (as per step 1). If the DN is there (...you will populate this group following instructions below...), GUMS selects the rsv account mapper (again, as per the association in step 3), which will map that DN to the rsv account (as per step 2).
+
+
+
+---+ Resources that use a (manually edited) !GridMapfile
+If you manually edit a grid-mapfile, then simply add something like this: 
+ &lt;pre class=&quot;file&quot;&gt;&quot;/DC=org/DC=doegrids/OU=Services/CN=rsv/foo.bar.edu&quot; rsv&lt;/pre&gt;
+The grid-mapfile is typically located at /etc/grid-security/grid-mapfile.
+
+
+---+ Resources that use !edg-mkgridmap
+
+If you use edg-mkgridmap, then you should add to your file with local accounts mappings (e.g. =/etc/grid-security/local-grid-mapfile=) a line like the following:
+ &lt;pre class=&quot;file&quot;&gt;&quot;/DC=org/DC=doegrids/OU=Services/CN=rsv/foo.bar.edu&quot; rsv&lt;/pre&gt; and make sure that the local file is enabled in =/etc/edg-mkgridmap.conf=:
+&lt;pre class=&quot;file&quot;&gt;gmf_local /etc/grid-security/local-grid-mapfile&lt;/pre&gt;
+
+%WARNING% make sure that the file name in the =gmf_local= line of =/etc/edg-mkgridmap.conf= matches the name of the file you edited (=/etc/grid-security/local-grid-mapfile=)!
+
+For more information on =edg-mkgridmap= and the use of local accounts you can check [[Edg-mkgridmap][the local authentication page describing edg-mkgridmap]].
+
+---+ References
+RSV documents
+   * A [[RsvOverview][Introduction to RSV]]
+   * The [[RsvArchitecture][RSV architecture]]
+GUMS:
+   * [[InstallGums][GUMS installation]]
+---+ Comments
+%COMMENT{type=&quot;tableappend&quot;}%
+
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = MarcoMambelli
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|General|Trash/Trash/Integration|Monitoring|Operations|Security|Storage|Trash/Tier3|User|VO)
+   * Local DOC_AREA       = General
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (Developer|Documenter|Scientist|Student|SysAdmin|VOManager)
+   * Local DOC_ROLE       = SysAdmin
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (HowTo|Installation|Knowledge|Navigation|Planning|Training|Troubleshooting)
+   * Local DOC_TYPE       = Installation
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %NO%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %YES%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %YES%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %YES%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = StevenTimm
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %YES%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         =
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %IN_PROGRESS%
+############################################################################################################
+--&gt;

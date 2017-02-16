@@ -1,0 +1,136 @@
+---+ Style Browser
+Explore the style variations of the %TWIKIWEB%.NatSkin by changing the base
+_style_ and a _variation_ of it. In general style variations are used to change
+the header art but also adapt colors to match the graphics. Various elements of
+the style can be relocated using style switches or even be switched off. Use
+the &quot;reset&quot; button whenever you want to revert your selection and come back to
+the site&#39;s default settings. Note that each web may have its own defaults build
+in. If you select different style options they have precedence over those.
+
+Register [[%TWIKIREGISTRATION%][here]] to make your settings persistent.
+See the TWiki.NatSkinPlugin documentation on how to use style settings in your personal
+&lt;nop&gt;%WIKITOOLNAME% account.
+
+%STARTINCLUDE%
+&lt;table&gt;&lt;tr&gt;&lt;td&gt;
+&lt;div class=&quot;twikiPageForm&quot;&gt;
+&lt;div class=&quot;natSkinStyleBrowser&quot;&gt;
+%IFSKINSTATETHEN{final=&quot;all&quot;}%
+&lt;!-- %RED%all styles and switches are final%ENDCOLOR% --&gt;
+%ELSESKINSTATE%
+&lt;form action=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%BASEWEB%/%BASETOPIC%&quot; methd=&quot;post&quot;&gt;
+&lt;table border=&quot;0&quot;&gt;
+%IFSKINSTATETHEN{final=&quot;style&quot;}% %ELSESKINSTATE%
+&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt; *%MAKETEXT{&quot;Style&quot;}%:* &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&quot;?switchstyle=prev&amp;refresh=on&quot; title=&quot;%MAKETEXT{&quot;Switch to previous style&quot;}%&quot;&gt;&lt;img src=&quot;%PUBURLPATH%/%TWIKIWEB%/TWikiDocGraphics/arrowleft.gif&quot; border=&quot;0&quot; alt=&quot;%MAKETEXT{&quot;prev&quot;}%&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;select name=&quot;style&quot;&gt;
+&lt;noautolink&gt;
+%FORMATLIST{&quot;%KNOWNSTYLES%&quot; pattern=&quot;\s*(.*)\s*&quot; format=&quot;&lt;option $percntIFSKINSTATE{style=\&quot;$1\&quot; then=\&quot;selected=\\&quot;selected\\&quot;\&quot;}$percnt&gt;$1&lt;/option&gt;&quot; join=&quot;\n&quot; separator=&quot; &quot;}%
+&lt;/noautolink&gt;
+&lt;/select&gt;
+&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;&lt;a href=&quot;?switchstyle=next&amp;refresh=on&quot; title=&quot;%MAKETEXT{&quot;Switch to next style&quot;}%&quot;&gt;&lt;img src=&quot;%PUBURLPATH%/%TWIKIWEB%/TWikiDocGraphics/arrowright.gif&quot; border=&quot;0&quot; alt=&quot;%MAKETEXT{&quot;next&quot;}%&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+%FISKINSTATE%
+%IFSKINSTATETHEN{final=&quot;variation&quot;}% %ELSESKINSTATE%
+&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt; *%MAKETEXT{&quot;Variation&quot;}%:* &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a href=&quot;?switchvariation=prev&amp;refresh=on&quot; title=&quot;%MAKETEXT{&quot;Switch to previous variation&quot;}%&quot;&gt;&lt;img src=&quot;%PUBURLPATH%/%TWIKIWEB%/TWikiDocGraphics/arrowleft.gif&quot; border=&quot;0&quot; alt=&quot;%MAKETEXT{&quot;prev&quot;}%&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;select name=&quot;stylevariation&quot;&gt;
+&lt;noautolink&gt;
+%FORMATLIST{&quot;none, %KNOWNVARIATIONS%&quot; pattern=&quot;\s*(.*)\s*&quot; format=&quot;&lt;option $percntIFSKINSTATE{variation=\&quot;$1\&quot; then=\&quot;selected=\\&quot;selected\\&quot;\&quot;}$percnt&gt;$1&lt;/option&gt;&quot; join=&quot;\n&quot; separator=&quot; &quot;}%
+&lt;/noautolink&gt;
+&lt;/select&gt;
+&lt;/td&gt;
+&lt;td align=&quot;right&quot;&gt;&lt;a href=&quot;?switchvariation=next&amp;refresh=on&quot; title=&quot;%MAKETEXT{&quot;Switch to next variation&quot;}%&quot;&gt;&lt;img src=&quot;%PUBURLPATH%/%TWIKIWEB%/TWikiDocGraphics/arrowright.gif&quot; border=&quot;0&quot; alt=&quot;%MAKETEXT{&quot;prev&quot;}%&quot;/&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+%FISKINSTATE%
+%IFSKINSTATETHEN{final=&quot;switches&quot;}% %ELSESKINSTATE%
+&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt; &lt;p /&gt; *%MAKETEXT{&quot;Layout&quot;}%:* &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td colspan=&quot;3&quot;&gt;
+%IFSKINSTATETHEN{final=&quot;border&quot;}% %ELSESKINSTATE%
+&lt;ul&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;borderon&quot; name=&quot;styleborder&quot; value=&quot;on&quot; %IFSKINSTATE{border=&quot;on&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;borderon&quot;&gt;%MAKETEXT{&quot;Border On&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;borderoff&quot; name=&quot;styleborder&quot; value=&quot;off&quot; %IFSKINSTATE{border=&quot;off&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;borderoff&quot;&gt;%MAKETEXT{&quot;Border Off&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;borderthin&quot; name=&quot;styleborder&quot; value=&quot;thin&quot; %IFSKINSTATE{border=&quot;thin&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;borderthin&quot;&gt;%MAKETEXT{&quot;Thin Layout&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;/ul&gt;
+%FISKINSTATE%
+%IFSKINSTATETHEN{final=&quot;sidebar&quot;}% %ELSESKINSTATE%
+&lt;ul&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;sidebarleft&quot; name=&quot;stylesidebar&quot; value=&quot;left&quot; %IFSKINSTATE{sidebar=&quot;left&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;sidebarleft&quot;&gt;%MAKETEXT{&quot;Sidebar Left&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;sidebarright&quot; name=&quot;stylesidebar&quot; value=&quot;right&quot; %IFSKINSTATE{sidebar=&quot;right&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;sidebarright&quot;&gt;%MAKETEXT{&quot;Sidebar Right&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;sidebarboth&quot; name=&quot;stylesidebar&quot; value=&quot;both&quot; %IFSKINSTATE{sidebar=&quot;both&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;sidebarboth&quot;&gt;%MAKETEXT{&quot;Both sidebars&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;sidebaroff&quot; name=&quot;stylesidebar&quot; value=&quot;off&quot; %IFSKINSTATE{sidebar=&quot;off&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;sidebaroff&quot;&gt;%MAKETEXT{&quot;Sidebar Off&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;/ul&gt;
+%FISKINSTATE%
+%IFSKINSTATETHEN{final=&quot;buttons&quot;}% %ELSESKINSTATE%
+&lt;ul&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;buttonson&quot; name=&quot;stylebuttons&quot; value=&quot;on&quot; %IFSKINSTATE{buttons=&quot;on&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;buttonson&quot;&gt;%MAKETEXT{&quot;Web Buttons On&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;buttonsoff&quot; name=&quot;stylebuttons&quot; value=&quot;off&quot; %IFSKINSTATE{buttons=&quot;off&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;buttonsoff&quot;&gt;%MAKETEXT{&quot;Web Buttons Off&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;/ul&gt;
+%FISKINSTATE%
+%IFSKINSTATETHEN{final=&quot;searchbox&quot;}% %ELSESKINSTATE%
+&lt;ul&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;searchboxtop&quot; name=&quot;stylesearchbox&quot; value=&quot;top&quot; %IFSKINSTATE{searchbox=&quot;top&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;searchboxtop&quot;&gt;%MAKETEXT{&quot;Searchbox in topbar&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;searchboxpos1&quot; name=&quot;stylesearchbox&quot; value=&quot;pos1&quot; %IFSKINSTATE{searchbox=&quot;pos1&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;searchboxpos1&quot;&gt;%MAKETEXT{&quot;Searchbox in pos. 1&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;searchboxpos2&quot; name=&quot;stylesearchbox&quot; value=&quot;pos2&quot; %IFSKINSTATE{searchbox=&quot;pos2&quot; then=&quot;checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;searchboxpos2&quot;&gt;%MAKETEXT{&quot;Searchbox in pos. 2&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;searchboxpos3&quot; name=&quot;stylesearchbox&quot; value=&quot;pos3&quot; %IFSKINSTATE{searchbox=&quot;pos3&quot; then=&quot; checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;searchboxpos3&quot;&gt;%MAKETEXT{&quot;Searchbox in pos. 3&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt; &lt;input type=&quot;radio&quot; class=&quot;twikiRadiobox&quot; id=&quot;searchboxoff&quot; name=&quot;stylesearchbox&quot; value=&quot;off&quot; %IFSKINSTATE{searchbox=&quot;off&quot; then=&quot; checked=\&quot;checked\&quot;&quot;}% /&gt;&lt;label for=&quot;searchboxoff&quot;&gt;%MAKETEXT{&quot;Searchbox off&quot;}%&lt;/label&gt;&lt;/li&gt;
+&lt;/ul&gt;
+%FISKINSTATE%
+&lt;/td&gt;&lt;/tr&gt;
+%FISKINSTATE%
+&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt; *%MAKETEXT{&quot;Presets&quot;}%:* &lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;
+   * &lt;a href=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%BASEWEB%/%BASETOPIC%?refresh=on&amp;
+*~~ style=JotSpot&amp;
+*~~ stylevariation=none&amp;
+*~~ styleborder=off&amp;
+*~~ stylesidebar=left&amp;
+*~~ stylesearchbox=pos1&amp;
+*~~ stylebuttons=on&quot;&gt;Jotspot&lt;/a&gt;
+   * &lt;a href=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%BASEWEB%/%BASETOPIC%?refresh=on&amp;
+*~~ style=SeaGreen&amp;
+*~~ stylevariation=none&amp;
+*~~ styleborder=thin&amp;
+*~~ stylesidebar=right&amp;
+*~~ stylesearchbox=top&amp;
+*~~ stylebuttons=on&quot;&gt;MovableType&lt;/a&gt;
+   * &lt;a href=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%BASEWEB%/%BASETOPIC%?refresh=on&amp;
+*~~ style=Pattern&amp;
+*~~ stylevariation=none&amp;
+*~~ styleborder=off&amp;
+*~~ stylesidebar=left&amp;
+*~~ stylesearchbox=top&amp;
+*~~ stylebuttons=off&quot;&gt;TWiki&lt;/a&gt;
+   * &lt;a href=&quot;%SCRIPTURLPATH{&quot;view&quot;}%/%BASEWEB%/%BASETOPIC%?refresh=on&amp;
+*~~ style=Kubrick&amp;
+*~~ stylevariation=none&amp;
+*~~ styleborder=thin&amp;
+*~~ stylesidebar=right&amp;
+*~~ stylesearchbox=pos1&amp;
+*~~ stylebuttons=on&quot;&gt;Wordpress&lt;/a&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td colspan=&quot;3&quot; align=&quot;center&quot;&gt;
+&lt;div style=&quot;white-space:nowrap&quot;&gt;
+&lt;input style=&quot;width:49%&quot; type=&quot;submit&quot; value=&quot;OK&quot; title=&quot;%MAKETEXT{&quot;Submit changes&quot;}%&quot;/&gt;
+&lt;input style=&quot;width:49%&quot; type=&quot;button&quot; value=&quot;Reset&quot; title=&quot;%MAKETEXT{&quot;Reset to defaults&quot;}%&quot; 
+~~~ onclick=&quot;window.location.href=&#39;%SCRIPTURLPATH{&quot;view&quot;}%/%BASEWEB%/%BASETOPIC%?resetstyle=on&amp;refresh=on&#39;;&quot; /&gt;
+&lt;/div&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;search&quot; value=&quot;%URLPARAM{search}%&quot; /&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;refresh&quot; value=&quot;on&quot; /&gt;
+&lt;/form&gt;%ENDSECTION{&quot;presets&quot;}%
+&lt;/div&gt;
+%FISKINSTATE%
+&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+%STOPINCLUDE%
+
+

@@ -1,0 +1,128 @@
+&lt;!--
+   * Set VIEWTHISTOPIC = &lt;div class=&quot;twikiSmall&quot;&gt;&lt;a href=&quot;%TOPIC%&quot;&gt;View this section&lt;/a&gt;&lt;/div&gt;
+--&gt; 
+
+---+ FNAL-specific Gratia collector installation guide.
+
+%TOC%
+
+---++ Install and configure a standard VDT CA certificates installation.
+
+---++ Obtain and install the Java Runtime.
+
+Install the appropriate =java-sun-compat= from the FSL distribution&#39;s yum repository.
+ 
+---++ Obtain and install the !MySql client.
+
+If not already available on the node, install the !MySql client from the FSL distribution&#39;s yum repository.
+
+---++ Ensure the existence of a suitable DB schema.
+
+Create a new empty DB if necessary with appropriate access permissions for gratia (all) and reader (SELECT and EXECUTE).
+
+These are the !MySql commands (as !MySql root user) using _gratia_mydb_ with tomcat on _gratia-vm02.fnal.gov_ as the example:
+&lt;verbatim&gt;
+CREATE DATABASE [MY_DATABASE]; 
+GRANT ALL PRIVILEGES ON [MY_DATABASE].* TO &#39;gratia&#39;@&#39;%.fnal.gov&#39; IDENTIFIED BY &#39;update_password&#39;; 
+GRANT SELECT,EXECUTE ON [MY_DATABASE].* TO &#39;reader&#39;@&#39;%&#39; IDENTIFIED BY &#39;reader_password&#39;; 
+&lt;/verbatim&gt;
+
+Additionally. you may need to add this entry is it does not exist in the _mysql.db_ database:
+&lt;verbatim&gt;
+GRANT SELECT ON information_schema.* TO &#39;gratia&#39;@&#39;%.fnal.gov&#39; IDENTIFIED BY &#39;update_password&#39;; 
+&lt;/verbatim&gt;
+
+You will also need to allow root access from the collector node (this is for the post-install.sh script executed by the collector):
+&lt;verbatim&gt;
+GRANT ALL PRIVILEGES ON *&lt;nop&gt;**.* TO &#39;root&#39;@&#39;[COLLECTOR_NODE]&#39; IDENTIFIED BY &#39;root_password&#39;;
+GRANT GRANT OPTION ON *&lt;nop&gt;**.* TO &#39;root&#39;@&#39;[COLLECTOR_NODE]&#39; IDENTIFIED BY &#39;root_password&#39;;
+FLUSH PRIVILEGES;
+&lt;/verbatim&gt;
+
+---++ Create or adjust configuration data file.
+ The &lt;tt&gt;[PATH-TO-GRATIA-RELEASE]/common/configuration/configure-collector&lt;/tt&gt; script configures necessary software and configuration files for the Gratia collectors at FNAL based on a data file. The current production data files are to be found in the CD CVS repository: =:ext:cvsuser@cdcvs.fnal.gov:/cvs/cd/fermigrid/gratia-ops/collector-config/=. Current contents (2010/08/02) are:
+
+   * =collector-fermi-gratia10.dat=
+   * =collector-fermi-gratia11.dat=
+   * =collector-integration-gratia05.dat=
+   * =collector-osg-gratia12.dat=
+   * =collector-osg-gratia13.dat=
+
+Edit the appropriate data file if it does not already contain the correct information for the collector you wish to install. Refer to =%default_attributes= and existing or commented attributes in &lt;tt&gt;[PATH-TO-GRATIA-RELEASE]/common/configuration/service-configuration.properties&lt;/tt&gt; for possible attributes. Be especially careful not to use ports already in use.
+
+The =.dat= file is &#39;eval&#39;ed by perl and should constitute a properly constructed perl associative array (&#39;hash&#39;). 
+
+Example configuration:
+&lt;verbatim&gt;  
+ &quot;fermi-osg&quot; =&gt;
+ {
+  access_log =&gt; 1,
+  collector_host =&gt; &quot;gratia-fermi-osg.fnal.gov&quot;,
+  db_host =&gt; &quot;gr-fnal-mysql-collector.fnal.gov&quot;,
+  db_port =&gt; 3306,
+  db_schema =&gt; &quot;fermi_osg&quot;,
+  http_port =&gt; 80,
+  install_prefix =&gt; &quot;/data&quot;,
+  instance_name =&gt; &quot;gratia&quot;,
+  jsvc =&gt; &quot;/data/jsvc/bin/jsvc&quot;,
+  max_heap_size =&gt; &quot;1536m&quot;,
+  max_perm_size =&gt; &quot;256m&quot;,
+  remote_host =&gt; &quot;gr10x0.fnal.gov&quot;,
+  rmi_port =&gt; 17000,
+  server_port =&gt; 8104,
+  ssl_port =&gt; 443,
+  tomcat_group =&gt; &quot;daemon&quot;,
+  tomcat_user =&gt; &quot;daemon&quot;,
+  want_reporting =&gt; &quot;redirect&quot;,
+  &quot;properties.attributes&quot; =&gt;
+  {
+   &quot;maintain.history.log&quot; =&gt; 75,
+   &quot;monitor.from.address&quot; =&gt; &#39;gratia-operation@opensciencegrid.org&#39;,
+   &quot;monitor.recordProcessor.wait&quot; =&gt; 60,
+   &quot;monitor.to.address.0&quot; =&gt; &#39;gratia-root@fnal.gov&#39;,
+   &quot;service.admin.DN.0&quot; =&gt; &#39;/DC=org/DC=doegrids/OU=Services/CN=gr10x5.fnal.gov&#39;,
+   &quot;service.admin.DN.1&quot; =&gt; &#39;/DC=org/DC=doegrids/OU=Services/CN=gr11x5.fnal.gov&#39;,
+   &quot;service.admin.DN.2&quot; =&gt; &#39;/DC=org/DC=doegrids/OU=Services/CN=gr10x0.fnal.gov&#39;,
+   &quot;service.admin.FQAN.0&quot; =&gt; &quot;/fermilab/Role=GratiaAdmin&quot;,
+   &quot;service.lifetime.JobUsageRecord&quot; =&gt; &quot;3 months&quot;,
+   &quot;service.lifetime.MetricRecord&quot; =&gt; &quot;1 month&quot;,
+   &quot;service.lifetime.ComputeElement&quot; =&gt; &quot;3 months&quot;,
+   &quot;service.lifetime.StorageElement&quot; =&gt; &quot;3 months&quot;,
+   &quot;service.lifetime.ComputeElementRecord&quot; =&gt; &quot;3 months&quot;,
+   &quot;service.lifetime.StorageElementRecord&quot; =&gt; &quot;3 months&quot;,
+   &quot;service.lifetime.Subcluster&quot; =&gt; &quot;3 months&quot;,
+   &quot;service.lifetimeManagement.checkInterval&quot; =&gt; &quot;24 hours&quot;,
+   &quot;service.security.level&quot; =&gt; 3,
+  }
+ },
+&lt;/verbatim&gt;
+
+Once the above steps have been carried out, the rest of the procedure is identical to upgrading an already-installed collector.
+
+Note that any attribute to be found by name in =service-configuration.properties= should be in the &lt;tt&gt;&quot;properties.attributes&quot;&lt;/tt&gt; section of the configuration file.
+
+Also note: this will alter the configuration for *future* installs (provided the area =~gratia/gratia-ops= is updated). For current installs it is easier by far to edit =/data/tomcat-gratia/gratia/service-configuration.properties= manually and restart the service.
+
+---++ Perform the install / upgrade.
+
+There are several short-cut scripts in =:ext:cvsuser@cdcvs.fnal.gov:/cvs/cd/fermigrid/gratia-ops/=:
+
+   * =upgrade-fermi-collectors=
+   * =upgrade-fermi-reporting=
+   * =upgrade-osg-collectors=
+   * =upgrade-osg-reporting=
+
+They all make use of the &lt;tt&gt;install-group&lt;/tt&gt; (=https://gratia.svn.sourceforge.net/svnroot/gratia/trunk/build-scripts/install-group=) script infrastructure for installing multiple similar releases in the same operation, which in turn uses [[GratiaInstallReleaseScript][&lt;tt&gt;install-release&lt;/tt&gt;]] (=https://gratia.svn.sourceforge.net/svnroot/gratia/trunk/build-scripts/install-release=).
+
+For an in-depth example of all the steps required to perform a production upgrade, including taking account of such things as heartbeat and minimizing service downtime, see the [[GratiaReleaseV1dot06][release 1.06 notes]].
+
+---++ Set up backups and other maintenance tasks
+
+   * See the [[GratiaServiceOperationGuide#Information_on_backups][backups]] section of the [[GratiaServiceOperationGuide][service operation guide]] for details on backups of various types. Note DB schema backups should generally only be done on the reporting DB.
+   * On each DB VM, set up [[GratiaServiceOperationGuide#Schema_optimization][schema optimization]] in root&#39;s crontab (collector and reporting DB).
+
+---++ Set up production reporting.
+
+   * As the Gratia user on the reporting DB, install the reporting =crontab=, currently saved as =~gratia/cron.gr13x5=:&lt;verbatim&gt;crontab ~gratia/cron.gr13x5&lt;/verbatim&gt;
+
+-- Main.ChrisGreen - 02 Aug 2010

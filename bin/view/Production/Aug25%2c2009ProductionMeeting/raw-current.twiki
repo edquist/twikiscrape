@@ -1,0 +1,144 @@
+-- Main.DanFraser - 18 Aug 2009
+---++++ This Report is available at https://twiki.grid.iu.edu/bin/view/Production/WeeklyProductionMeetings
+
+---++ Action/Significant Items
+   * Burt noted that CMS really needs the RSV Gratia probe to monitor Gratia.
+      * Request will be forwarded to STG (Dan)
+   * An OSG related crash occurred at Nebraska (combination of Condor error in creating and not removing directories + VDT error for no timeouts)
+      * This is being investigated by the Condor and VDT teams. VDT Ticket 5721
+   * Gratia collector problems when results are accumulated faster than they can be processed. Failure occurs when more than ~2M records are collected.
+      * Fixes have been identified by the Gratia team and will be pushed to Xin this week.
+         * compress the unprocessed records at regular intervals (increases the cache store)
+         * Put the collector daemon to sleep when too many records have accumulated (keeps daemon from crashing)
+   * Dan to follow up with Greg on GPN VO due to security errors triggering a recommendation that this be set to inactive.
+
+---++ Attendees:
+   * Xin, Armen, Britta, Mats, Brian, Suchandra, Burt, Marco, Abhishek, Rob Q., Mine, Chander, Dan 
+---++ CMS (Burt)
+   * Computing: 150 khour/day, 93% success. CPU/wallclock at 70% (excluding FNAL skims: 72%).
+   * Storage: Tier 1 transferred 2.4 PB last week (peak of 500 TB/day). Tier 2s transfered 322 TB (peak: 67 TB/day). Probes still not functional yet at MIT, UERJ.  Florida appears to have disappeared as of Aug 5.
+   * OSG: No change: we have 3 CEs at OSG 1.2 (both Nebraska and cit-gatekeeper2). Tier 3s at 1.2: UCDavis, FIT, UMD, Vanderbilt, UCR.
+   * RSV
+      * What&#39;s the status of the gratia RSV probe?  We currently lack documentation and configure_osg_rsv does not seem to support it.  What&#39;s the plans for testing and deployment?
+      * VDT-support 5721 -- RSV started up a huge number of local scheduler jobs due to a permissions error and brought down condor-cron.
+
+---++ Atlas (Armen &amp; Xin)
+
+   * Reprocessing still scheduled for Aug 31, right now the ATLAS production is dominated by US sites, running group production, keeping 6k~7k running jobs on all USATLAS sites. 
+
+   * job statistics for last week. 
+      * Gratia report: USATLAS ran 632K jobs, with CPU/Walltime ratio of 91%. 
+      * PanDA world-wide production report (real jobs):
+         * completed successfully 260K managed MC production, validation jobs
+         * average  37K jobs per day
+         * failed   26K  jobs
+         * average efficiency: 91% for jobs and 97% for walltime
+
+   * Site issue
+      * BNL dCache transfer gratia probe is restarted, after several bug fixes and new query with daily time range to avoid partition bottleneck. The dcache gratia report is caching up. There are still problems when an overloaded collector caused the number of accumulated records to reach 2M on the probe node. 
+      * BNL is changing the sitename for WLCG today, from BNL-LCG2 to BNL-ATLAS, this requires all ATLAS sites to update their FTS channel information.  
+
+   * request for OSG WN-Client package update  
+      * latest lcg-utils package has the checksum utility to allow validation of transfers, which is needed by ATLAS DDM system. The previously agreed date for this update with VDT is Sep 1.  
+
+
+---++ LIGO (Britta)
+
+   * Gratia reports:
+      * Current week&#39;s total usage: 4 users utilized 19 sites;
+      * 5937 jobs total (5081 / 856 = 85.6% success)
+      * 25910.7 wall clock hours total (22239.6 / 3671.0 = 85.8% success);
+
+      * Last week&#39;s total usage: 4 users utilized 17 sites; 
+      * 8921 jobs total (8224 / 697 = 92.2% success);
+      * 43883.2 wall clock hours total (40198.4 / 3684.8 = 91.6% success);
+ 
+   * E@OSG reports
+      * Recent Average Credit (RAC): 144,164.36993, Last week:228,610.24739 
+      * E@H rank based on RAC: 8 (+0)
+      * E@H rank based on accumulated Credits: 20 (+0)
+
+   * Details
+      * 08/11 - 08/21: Einstein@Home is down as the result of fileserver crash. Repairs in progress
+      * TTU-ANTAEUS upgrades to OSG 1.2 (08/20, 08/21), 08/24 can&#39;t authenticate, MyOSG shows Maintenance
+      * RHEL 5 upgrade is finished. at GPN! Can&#39;t deploy code: no g++ compiler, e-mailed sys admin 08/21
+      * Robert deployed Condor_G code (1.4.x) on 17 sites and tested over the weekend
+         * gpn -no g++ compiler
+
+---++ Integration (Suchandra)
+   * OSG 1.2.1 released on monday
+   * Working on 1.0.5 update instructions
+   * Testing dcache 2.4.1 release
+   * Testing packages for 1.2.2 release
+   * Documentation work still ongoing
+
+---++ Site Coordination (Marco)
+   * Site update status (from !MyOSG as of today):
+      * Most recent production version is OSG 1.2.1
+      * 16 OSG 1.2.X resources (2 are 1.2.1)
+      * 33 OSG 1.0.X resources (20 are 1.0.4)                                                                                                                                                                  
+      * 26 OSG 1.0.0
+      * 2 OSG 0.8.0 (OU_OCHEP_SWT2, UIC_PHYSICS)
+   * Joint integration and deployment meeting on Thursday
+
+---++ Engagement (Mats)
+
+7 users utilized 35 sites
+
+14223 jobs total (10624 / 3599 = 74.7% success)
+
+9477.4 wall clock hours total (8827.2 / 650.2 = 93.1% success)
+
+
+Slow week. No production issues.
+
+
+---++ Metrics (Brian)
+
+   * BNL is now 1/2 way through backlog; reporting rate is 3-4x above where it needs to be to &quot;stay current&quot;
+   * Working with Gratia team to produce a document on all the ways Gratia can fail.
+   * Meeting with MyOSG team tomorrow - if you know of any OSG requests for MyOSG, please funnel them through me.
+
+---++ Virtual Organizations Group (Abhishek)
+
+---+++ VOs with High Activity
+
+   * D0 -- MC Production average at 50-60,000 hours/day. Equivalent 8 Million Events/week. CPU/wall 70%. Failures at Purdue SE; now resolved. Pre-emption at CMS sites is affecting D0&#39;s production: MIT, Caltech, Florida, UERJ, GLOW. D0 workflow is not designed to handle pre-emption.
+
+   * Fermi-VO -- Fermi KCA changes are upcoming; packages are being tested, not fully ready yet. [More details may be with OSG security]. In the interim, a few users of Fermi-VO, CDF, D0, ILC, CMS, DES are likely to be affected. 
+
+   * CDF -- Production average at 150,000 hours/day, localized at Fermi resources. Have asked CDF Mgt to think about opportunistic usage across OSG.
+
+---+++ VOs with Limited Activity
+
+   * !IceCube -- Work in progress with !IceCube simulation team (P. Desiati, J. Velez, S. Barnet), GLOW and UCSD site teams. GLOW has setup a glidein schedd, to port !IceCube jobs for glideinWMS. Short-term plan is to use Squid (not SRM) to minimize failure modes. Currently, !IceCube team is porting the jobs. 
+
+   * nanoHUB -- Ramping up again after a 3 weeks slowdown. Average 400 hours/day. Influx of &#39;User jobs&#39; also started; in addition to &#39;Application jobs&#39;. More specifics are awaited from nanoHUB team.
+   
+   * GROW -- Planning to be a CMS Tier-3, with local (Univ. of Iowa) CMS users. This is in addition to being a local campus VO/grid. More discussion expected in coming weeks.
+   
+   * !SBGrid/NEBioGrid -- Team&#39;s current focus is to port MPI jobs; possibly integrating into Condor job manager. Team&#39;s internal target timeline is 4-6 weeks.
+   
+   * !CompBioGrid -- Shifting from PBS to Condor for local site. We have conveyed that !CompBioGrid science is of higher value than its site; and if needed, !CompBioGrid can use other sites to port applications.
+
+
+---++ Grid Operations Center (Rob Q.)
+
+---+++ Operations Last Week 
+   * Another notification went out to update OIM contact information. If you have not yet done this, please do so. Security contacts that have not responded will be targeted by the Operations and Security Team.
+   * No BDII Interruptions week of August 17th to August 23rd.
+
+---+++ Operations This Week
+   * pyOpenSSL issue causes problems with RSV records on resources that do not have pyOpenSSL on system by default. This causes the Gratia transfer mechanism used by RSV to fail. This was put into the production cache on Friday evening and announced Monday.
+   * VORS was removed from the network this morning and GridScan site verify tests were stopped. Please let us know if you are experiencing any issues so we can help you gather information from !MyOSG
+      * Down to 12 RSV-Tickets open for non-reporting CEs. 3 are NERSC and targeted for an early Sept update. 
+   * !MyOSG 1.6 is under testing at myosg-itb.grid.iu.edu. See testing request at bottom of agenda scheduled release August 28th. We&#39;ve talked with Metrics and Gratia, we targeted several VOs last week, including STAR, Fermilab, NYSGrid, and SBGrid.
+
+---+++ Future Events
+   * September Machine Room Move in Bloomington September 19 2009 - All GOC Services in Bloomington are expected to be down. IUPUI will still be handling BDII traffic. GOC will attempt to install as many other services on an Indianapolis based server/VM as possible, especially other critical ones like !MyOSG. This could be delayed until October 17th if it benefits anyone in the collaboration, the original date was picked with the idea of a October LHC turn up. 
+      * ATLAS has confirmed this date is OK
+      * Waiting for word from CMS
+      * High probability that this will happen on October 17th and not September 19th
+
+
+---++ Security (Mine)

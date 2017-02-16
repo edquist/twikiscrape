@@ -1,0 +1,74 @@
+---+ Software Evolution Proposal 11: Adding SE support to configure-osg
+
+| *SEP* | 11 |
+| *Title* | Adding support for configure SE installations to configure-osg |
+| *Comment Period Ends:* | 2010-05-12 |
+| *Last Modified:* | 2010-04-28 | 
+| *Created:* | 2010-04-28 |
+| *Author:* | Suchandra Thapa |
+| *Status:* | Draft |
+| *Type:* | Software |
+
+---++ Problem/Motivation
+Currently configure-osg only supports configuring CE software.  Extending this to allow other OSG installation would make things easier for administrators and allow them configure other OSG installations.  The most effective way to do this would be to gradually add support for new software components in order to make sure that configuration of each component is production ready before working on support for a new component.
+
+---++ Proposed changes
+
+Currently there&#39;s rudimentary support for configuring bestman, xrootd, xrootdfs, and gridftp in configure-osg.  The changes proposed would be to polish this and then support these changes for production use.  The proposed component support is as follows:
+   * Xrootd
+   * Xrootdfs
+   * Bestman
+   * Xrootd-gridftp
+
+The proposed support will allow typical configurations of bestman-gateway, bestman-xrootd, and bestman standalone to be configured.
+
+---++ Implementation
+
+The configuration would be done in separate sections for Xrootd, Xrootdfs, Bestman, and GridFTP.  These sections are kept in a separate file for storage configuration (=$VDT_LOCATION/osg/etc/storage.ini=) and would not be present in the config.ini seen on a CE.  Admins configuring a CE would not see any visible changes. For, each section the following options will be supported:
+
+   * Bestman 
+          | Option | Purpose |
+          | enabled | True/False/Ignore to allow this component to be enabled, disabled, or just ignored |
+          | user | User that the bestman services should run as |
+          | mode | xrootd, standalone, or gateway depending on how bestman is being used | 
+          | transfer_servers | list of gridftp servers to use as gateways | 
+          | token_list | optional list of space tokens to use | 
+          | http_port | http port for bestman |
+          | https_port | https port for bestman |
+          | certificate_file | location of certificate to use for https |
+          | key_file | private key file for https |
+          | allowed_paths | in standalone mode,  the list of directories that bestman can access |
+          | blocked_paths | in standalone mode, the list of directories that bestman should not access |
+   * Gridftp
+          | Option | Purpose |
+          | enabled | True/False/Ignore to allow this component to be enabled, disabled, or just ignored |
+          | user | User that the bestman services should run as |
+          | mode | xrootd or standalone depending on how gridftp is being used | 
+          | redirector_host | hostname for the server running the redirector service | 
+          | redirector_storage_path | path to the xrootd storage path directory on the redirector |
+          | mount_point | path to location of the xrootdfs mount that should be used |
+   * !XrootdFS
+          | Option | Purpose |
+          | enabled | True/False/Ignore to allow this component to be enabled, disabled, or just ignored |
+          | user | User that the xrootdfs server should use |
+          | redirector_host | hostname for the server running the redirector service | 
+          | redirector_storage_path | path to the xrootd storage path directory on the redirector |
+          | mount_point | path to location of the xrootdfs mount point |
+   * Xrootd
+          | Option | Purpose |
+          | enabled | True/False/Ignore to allow this component to be enabled, disabled, or just ignored |
+          | user | User that the xrootd daemon should run as |
+          | redirector_host | hostname for the server running the redirector service | 
+          | redirector_storage_path | path to the xrootd storage path directory on the redirector |
+          | redirector_storage_cache |path to the xrootd storage cache directory on the redirector |
+          | token_list | optional list of space tokens to use | 
+          | public_cache_size | size of storage area allocated for public use (in GB) |
+
+---++ Change log
+   | 04-28-2010 | Created and circulated |
+   | 04-28-2010 | Additional details added |
+
+
+
+
+-- Main.SuchandraThapa - 28 Apr 2010

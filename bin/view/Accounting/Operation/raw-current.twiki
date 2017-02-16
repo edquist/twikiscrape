@@ -1,0 +1,90 @@
+---+ Some Operational Tasks.
+
+This pages describes the main operation tasks to be executed by a Collector administrator.
+
+This documentation assumes that you are connected to http://yourhostname:yourport/gratia-administration.
+
+The Gratia administration services provides several options for securing the administrative tasks. The basic system status is available to all users. All other services that allow you configure the system, turn on/off service, perform replication, etc, can be restricted to selected personnel.
+
+The secured tasks are all shown as dimmed in the menu until you are authorized. When you attempt to access those tasks, you will be redirected to an SSL secured port requiring you to have a certificate in your browser from a trusted CA (Certificate Authority). This initiates the login process. (See the &quot;Administration Login&quot; link for more detail)
+
+Note that at the bottom left of the page, you can find the version number of the installed Gratia Software and the name of the schema. Once logged-in, this also provide the db host and port.
+
+---++ Starting and stopping the service
+
+&lt;pre&gt;service TOMCAT_INITD_SERVICE start&lt;/pre&gt; &lt;pre&gt;service TOMCAT_INITD_SERVICE stop&lt;/pre&gt;
+
+Note that the correct value of =TOMCAT_INITD_SERVICE= may be found in the [[http://fermigrid.fnal.gov/gratia-production-organization.html][list of services operated by Fermigrid]].
+
+---++ Site Name changes
+
+As of v1.00, the name recorded in Gratia must match the name recorded in OSG&#39;s OIM database.
+
+The name of Site sometimes need to be updated in the Gratia database. This usually happens for the following 2 reasons. If a new site mis-configures their Gratia Probe, the name recorded for the site to which the Probe belong might be incorrect entered. If a site is renamed in OIM.
+
+To change the name, select the &quot;Site Table&quot; link. Find the old Site Name in the table, edit the name to enter the new name. Scroll to the bottom of the page and click &quot;Apply&quot;.
+
+---++ Probe changes
+
+There are a few things that can changes the name of a Gratia Accounting Probe:
+   1 Change in the name of the hostname of the reporting Gateway *if* using the default naming convention.
+   1 Change in default naming convention (_On recommendation from the Gratia, VDT modified at least once the naming convention for the PBS/LSF probes_).
+   1 Intentional deviation from the default by the Site Administrator.
+
+In addition to the change in the name of the Probe, its *_state_* can also change.  In particular, old probes from either a retired Gateway or even a retired Site, need to be marked as &#39;disabled&#39; in the Gratia database in order for the reporting tools to avoid complaining about the lack of input from those deprecated probes.
+
+---++ Automating those Site and Probe changes.
+
+Currently, any change in the name or state of the Probes or Sites must be manually reported to the Gratia Services Administrators so that they can reflect this changes via the administration interface.
+
+---++ Change the name use for a VO in the reports.
+
+To change to which VO is set of records is assign to (from a report perspective), select &quot;VOName Correction&quot;
+
+The page contains 3 columns:
+
+   * Reported VOName: The VOName reported by the probe. For probe v0.34 and above this usually contains the FQAN of the certificate used to submit the job. 
+   * Reported !ReportableVOName: The &#39;reportableVoName&#39; reported by the probe. For probe v0.34 and above this usually contains the best guess at what the VO name is. 
+   * Actual VO: The name actually used in the reporting tool as the VO to which the job(s) belongs. 
+
+To change the way a pair &quot;Reported VOName&quot;/&quot;Reported !ReportableVOName&quot; is displayed, scan the list for the proper/revelant entry and select a new &quot;VOName&quot; from the drop down list. Then click on &quot;Apply&quot; (at the very bottom of the page).
+
+The best guess for what is the VO name should be, is done using the following rule:
+
+If there&#39;s no !VONameCorrection entry, then if there&#39;s a leading / in VOName the default translation is to !ReportableVOName, otherwise the default translation is to VOName.
+
+---++ Adding a VO Name (very rare)
+
+If a VOName is not available in the list of VOs, select the &quot;VO Management&quot; link. Scroll to the bottom of the page, edit one of the box with &quot;&lt;New VO Name&gt;&quot; and click on Apply
+
+---++ Automating change in VO Name.
+
+We will soon sync with OIM ... the information in OIM is a connection between a FQAN and a VO reporting name.
+
+---++ Setting up replication
+
+Replication is set up on the sender. Select the &quot;Replication&quot; link to manage the replication.
+
+See the &quot;[[http://gratia.opensciencegrid.org:8880/gratia-administration/replication-howto.jsp][replication]]&quot; link under the, &quot;Documentation&quot; heading on the [[http://gratia.opensciencegrid.org:8880/gratia-administration][service administration]] page for more details.
+
+---++ Rolling back a release (extremely rare)
+
+The rolling back procedure depends on whether the release involved any schema upgrade (see release notes for details)
+
+---+++ Rolling back when no schema upgrade.
+
+In this case, the database schema is still compatible with the previous release and rolling up back simply involved re-installing the previous release as normal.
+
+---+++ Rolling back in the usual case
+
+In this case, the database schema is no longer compatible with the previous release and rolling back involves restoring the previous database from backup.
+
+The steps are
+   * Wipe out database (do *not* use &quot;rm -r&quot; as this will leave the entire DB in an unstable state).
+   * Re-install old schema from backups (this includes re-installing previous version of the Collector software)  See the [[InnodbBackup][information on backups]]
+   * Make sure the gratia/data directory contains history directories and files from the point the new collector was turned off for rollback back to just before the upgrade occurred. Restore missing histories from enstore if necessary,
+   * Re-play the history (see the Gratia administration page, select the System/Administration link and follow the instruction under Disaster Recovery/Replay)
+
+---++ Installing and configuring the latest version of ZRM (extremely rare)
+
+%INCLUDE{&quot;InnodbBackup&quot; section=&quot;InstallConfigureZRM&quot;}%

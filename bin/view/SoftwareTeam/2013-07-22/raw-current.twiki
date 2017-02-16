@@ -1,0 +1,123 @@
+---+ OSG Software and Release Teams Meeting, 22 July 2013
+
+*Attending:* !BrianL, Carl, Mat, Neha, Suchandra, !TimC, !TimT, Xin
+&lt;!-- !BrianB, !BrianL, Carl, Igor, !JohnW, Marco, Mat, Neha, Suchandra, !TimC, !TimT, Xin --&gt;
+
+---++ Announcements
+
+   * Brian Bockelman still out on paternity leave. No news from him so far.
+   * [[https://www.xsede.org/web/xsede13 XSEDE13]] is this week, so some of our colleagues (e.g., Igor, Derek, Lauren, !RobQ) may less available.
+
+---+++ Triage Duty
+   * Carl this week
+   * Suchandra next week
+   * %RED%16 (–1) open tickets%ENDCOLOR%
+
+---+++ JIRA
+   * Open: 162 (+2)
+   * In Progress: 18 (–1)
+   * Ready for Testing: 16 (+5)
+   * Ready for Release: 0 (+0)
+
+---+++ Deployments
+| OSG 3.x | 85 (–4) sites | 17 (n/a) using 3.1.21 |
+| OSG 1.2 | 17 (0) sites | 1 (0) using 1.2.32 |
+There is a nice tracking table [[http://tinyurl.com/pacmansites][available as a Google spreadsheet]].
+
+---+++ Release Schedule
+%TABLE{sort=&quot;off&quot;}%
+|  *Version*  |  *Testing*  |  *Freeze*  |  *Release*  | *Notes* |
+| 3.1.22 | 2013-07-30 | 2013-08-05 | 2013-08-13 | dcache-srmclient, RSV, many bug fixes, CVMFS? |
+| 3.1.23 | 2013-08-27 | 2013-09-03 &lt;span style=&quot;color: red; font-weight: bold;&quot;&gt;*&lt;/span&gt; | 2013-09-10 | |
+| 3.1.24 | 2013-09-24 | 2013-09-30 | 2013-10-08 | |
+*Notes:* Additional “emergency” releases may be scheduled for the 4th Tuesday of each month. The *Testing* date is when acceptance testing will be scheduled for releasable packages; if a package is added after this date, it may not be possible to schedule adequate testing time, thereby forcing it into the next release.
+
+&lt;span style=&quot;color: red; font-weight: bold;&quot;&gt;*&lt;/span&gt; Due to the Labor Day federal holiday, the freeze date for 3.1.23 is delayed by one day.
+
+---++ OSG Software Team
+
+---+++ Accomplishments
+
+   * Tested and promoted bigtop-utils ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1114 SW-1114]])
+   * Tested and promoted Gratia probes ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1111 SW-1111]])
+   * Debugged an RSV/HTCondor-Cron issue at IU ([[https://ticket.grid.iu.edu/goc/15689 GOC #15689]])
+   * Tested and promoted a new version of the GRAM PBS/SLURM patch ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1105 SW-1105]])
+   * Improved configuration file and documentation for HTCondor-Cron ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1124 SW-1124]])
+   * Ruled out !BoxGrinder and Image Factory as good tools for making VM images
+   * Made various small improvements to the osg-test libraries ([[https://jira.opensciencegrid.org/browse/SOFTWARE-1117][SW-1117]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1118][SW-1118]], [[https://jira.opensciencegrid.org/browse/SOFTWARE-1122][SW-1122]])
+   * Investigated the possibility of propping up our own CVMFS repository in tests
+   * Reviewed Srini’s Gratia probe tests
+   * Wrote documentation for an OSG SLURM CE
+   * Debugged and fixed osg-configure
+   * Support!
+
+---+++ OSG Projects
+
+Work with Tim to make sure work is reflected in JIRA and that tickets are correct state. %RED%Be sure to mark active work as _In Progress_.%ENDCOLOR%
+
+   * RSV tasks (Carl, shadowing Mat): plan for new release in osg-testing prior to published 30 July date
+      * Who is working on [[https://jira.opensciencegrid.org/browse/SOFTWARE-1080][SW-1080]] — RSV init exit status? Can it make the release?
+      * Please mark other tickets as “In Progress”
+   * SLURM support (Suchandra): retest on both PBS and SLURM systems
+   * OSG Software 3.2 project: refine project definition this week (!TimC)
+   * OSG WN client in OASIS: still working to define tasks and owners
+   * Small osg-test updates (!BrianL): finish and release (to testing) this week?
+   * Running osg-test in VM universe in CHTC (!TimC): still compiling notes, suggestions, and a preliminary approach
+
+---+++ HTCondor Projects
+
+   * Unification of HTCondor RPMs (Carl): ???
+   * Take on HTCondor Debian packaging (!BrianL): starting working on 8.0.1
+
+---+++ Coming Soon
+
+   * Big round of Globus Toolkit updates? (waiting for patches to be moved upstream, then subsequent release)
+   * Automated testing: Still want more tests and improved infrastructure
+
+---+++ Notes
+
+*RSV:* Carl and Mat will decide which features to include in the next RSV release, make sure their tickets are marked “In Progress”, and report to !TimC. Someone should take care of [[https://jira.opensciencegrid.org/browse/SOFTWARE-1080 SW-1080]].
+
+*SLURM:* John Thiltges at UNL is testing the latest PBS jobmanager for SLURM support; Suchandra has been running it on his PBS CE with no problems so far. GIP and Gratia support for SLURM not done yet. No info on status.
+
+*OSG 3.2:* !TimC to flesh out proposal. Will seek review after that. !TimC wants to schedule a meeting to get a concrete design together.
+
+*WN client in OASIS:* No real progress.
+
+*osg-test:* !BrianL will cut a new release with his latest changes by the end of the week. It may or may not include Srini’s Gratia work, depending on what state it is in.
+
+*Tests in VM universe:* !TimC investigated tools to create VM images of base OS installs. !BoxGrinder is no longer supported, and Image Factory is poorly supported and mostly consists of unneeded features. It sounds like Oz is the way to go for now.
+
+*HTCondor unification:* UW builds now work; standard universe and externals go in separate subpackages. Flightworthy is working on getting standard universe to build in Proper builds, not done yet. Carl is looking at upgrade scenarios. OSG builds should be ready for testing in two weeks. Should start talking with Fedora about what it would take for them to accept the unified RPM.
+
+*Debian:* Brian needs to get on the htcondor-debian list. 7.8.8 has been uploaded, now working on the 8.0 series.
+
+*Other:* Gratia web service script always exits with 0. There might be a fix, just needs to be tested.
+
+
+---++ OSG Release Team
+
+---+++ Accomplishments
+
+   * Documented [[SoftwareReleaseSchedule][OSG Software release schedule]]
+
+---+++ Projects
+
+   * 16 tickets ready for testing (mostly small stuff)
+   * CVMFS 2.1.11 or 2.1.12?
+   * Test BNL stratum 1 in oasis-config (CVMFS 2.1.11 required?? Did the meta package idea get implemented?)
+   * Test SHA-2 compatibility with dcache-srmclient
+
+   * Document testing expertise on wiki as well as ITB site capabilities.
+
+---+++ Notes
+
+*Testing:* 16 tickets ready for testing; !TimT will be handing out assignments.
+
+*CVMFS:* CVMFS 2.1.11 vs 2.1.12 -- Waiting for 2.1.12, may test the release candidate if available.  Still waiting for clarity.
+
+*oasis-config:* needs to be changed to not depend on a specific CVMFS version.
+
+*Testing Expertise:* !TimT gathering team members testing experience for on-line document on testing expertise of testers and ITB sites.
+
+*Test case documentation:* !TimT will start collecting testing instructions.

@@ -1,0 +1,27 @@
+%TOC%
+
+---+++ Hardware Deployed
+   * 4 x 7TB Apple RAID arrays, served by Dual Opteron single core with 4GB RAM each.
+   * 1 x Warewulf headnode: higgsboson.ucr.edu
+   * 10 x Warewulf worker nodes. Dual Dual Opteron with 4GB RAM each.  They are named boson0000-boson0010.
+   * Private Gbit LAN connecting all nodes.
+   * Public Gbit LAN connecting higgsboson and the storage nodes. 
+
+---+++ Services Deployed at hosts
+   * Condor batch system hosted by higgsboson.  I.e. collector and negotiator are run there.
+   * &lt;nop&gt;PhEDEx for CMS data transfers hosted by bottom.ucr.edu.
+   * OSG CE hosted by top.ucr.edu. This includes CEMon, pre-WS GRAM (incl. gftp that comes with it), schedd for condor batch system, etc..
+   * GUMS hosted by bottom.ucr.edu.
+   * GT4 gridftp server for filling data disks from &lt;nop&gt;PhEDEx hosted by bottom.
+   * CMS data areas hosted by top, bottom, strange and charm.
+   * local user data hosted by strange.
+   * OSG Client software installed on strange.
+   * 4 batch slots on each worker node.
+   * NFS exported from each storage node. Read only to the worker nodes. Read/write to the storage nodes.
+   * OSG_APP exported read only from bottom to all worker nodes, and read/write to all storage nodes.
+   * No OSG_DATA is implemented.
+
+---+++ Policies implemented
+   * A UCR [[http://hepuser.ucsd.edu/twiki/bin/view/UCSDTier2/UCSDCondorGroupConfig][group in condor]] that has first access to all batch slots that open up.
+   * Other than that, all are allowed by default but may be halted or killed at any time.
+   * A maximum wall clock time of 24 hours is strictly enforced.

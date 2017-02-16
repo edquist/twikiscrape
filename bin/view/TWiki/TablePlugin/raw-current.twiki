@@ -1,0 +1,166 @@
+
+
+---+ Table Plugin
+
+Gives extra control of table display:
+   * Allows sorting
+   * Changing table properties like border width, cell spacing and cell padding
+   * Changing background color and text color for header cells
+   * Changing background color and text color for data cells - colors can _alternate_
+   * Table attributes can be set and overridden in this order:
+      * Default =TABLEATTRIBUTES= Plugin setting in this topic.
+      * A =TABLEATTRIBUTES= preferences setting on site-level (%TWIKIWEB%.TWikiPreferences) or web-level (any WebPreferences), e.g.
+         * =Set TABLEATTRIBUTES = tableborder=&quot;0&quot; cellpadding=&quot;1&quot; ...=
+      * Before a table using =%&lt;nop&gt;TABLE{...}%=
+   * Row spans
+
+---++ Sorting
+
+Click on column heading text to sort by a column.  Initial column will be sorted in descending order, click again to get ascending order.  The type of data in the cell is determined automatically:
+
+   * date if format is:
+      * dd MMM YYY - hh:mm
+      * dd-MMM-YY or dd-MMM-YYYY (can be / or space in place of -)
+      * MMM is Jan, Feb, etc
+   * number is digits, with optional decimal point
+   * otherwise treated as text
+
+---++ Row spans
+
+Table cells with a single caret indicate follow-up rows of multi-row spans. For example,
+&lt;table width=&quot;100%&quot;&gt;&lt;tr&gt;&lt;td&gt;
+&lt;verbatim&gt;
+| One One | One Two | One Three |
+| ^ | Two Two | Two Three |
+| Three One | ^ | Three Three |
+&lt;/verbatim&gt;
+&lt;/td&gt;&lt;td align=&quot;right&quot;&gt;
+| One One | One Two | One Three |
+| ^ | Two Two | Two Three |
+| Three One | ^ | Three Three |
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+---++ &lt;nop&gt;%TOPIC% Global Settings
+
+Plugin settings are stored as preferences variables. To reference
+a plugin setting write ==%&lt;nop&gt;&amp;lt;plugin&amp;gt;_&amp;lt;setting&amp;gt;%==, for example, ==%&lt;nop&gt;INTERWIKIPLUGIN_SHORTDESCRIPTION%==
+
+   * One line description, shown in the %TWIKIWEB%.TextFormattingRules topic:
+      * Set SHORTDESCRIPTION = Control attributes of tables and sorting of table columns
+
+   * Set DEBUG to 1 to get debug messages in =data/debug.txt=.  Default: =0=
+      * Set DEBUG = 0
+
+   * Make all tables in a topic sortable. If this is set to =all=, all tables that have a header row (including those that do not have %TABLE before them) will be made sortable. If set to =none=, only tables with %TABLE will be sortable. Topic rendering is faster if this is set to =none=.
+      * #Set SORT = none
+      * Set SORT = all
+
+   * Default table attributes:
+      * Set TABLEATTRIBUTES = tableborder=&quot;0&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; headerbg=&quot;#dadada&quot; headercolor=&quot;#000000&quot; databg=&quot;#eaeaea, #ffffff&quot;
+      * Classic skin table attributes:
+         * #Set TABLEATTRIBUTES = tableborder=&quot;1&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; headerbg=&quot;#99CCCC&quot; databg=&quot;#FFFFCC, #FFFFFF&quot;
+
+---++ Table Attributes
+
+Attributes are defined as a =TABLEATTRIBUTES= Plugin setting in this topic, a =TABLEATTRIBUTES= preferences setting, or on line before the table using =%&lt;nop&gt;TABLE{...}%=:
+
+| *Argument* | *Comment* | *Example* |
+| =sort=     | Set table sorting =&quot;on&quot;= or =&quot;off&quot;= | =sort=&quot;on&quot;= |
+| =initsort= | Column to sort initially (=&quot;1&quot;= to number of columns) | =initsort=&quot;2&quot;= |
+| =initdirection= | Initial sorting direction for =initsort=, set to  =&quot;up&quot;= or =&quot;down&quot;= | =initdirection=&quot;up&quot;= |
+| =headerbg= | Header cell background colour. Choose one of the %TWIKIWEB%.StandardColors | =headerbg=&quot;#99CCCC&quot;= |
+| =headercolor= | Header cell text colour | =headercolor=&quot;#0000CC&quot;= |
+| =databg=   | Data cell background colour, a comma separated list. Specify =&quot;none&quot;= for no colour, that is to use the colour/background of the page the table is on. | =databg=&quot;#C8CB8F, #DBDDB5&quot;= |
+| =datacolor= | Data cell text colour, a comma separated list | =datacolor=&quot;#0000CC, #000000&quot;= |
+| =tableborder= | Table border width (pixels) | =tableborder=&quot;2&quot;= |
+| =tableframe= | Table frame, set to =&quot;void&quot;= (no sides), =&quot;above&quot;= (the top side only), =&quot;below&quot;= (the bottom side only), =&quot;hsides&quot;= (the top and bottom sides only), =&quot;lhs&quot;= (the left-hand side only), =&quot;rhs&quot;= (the right-hand side only), =&quot;vsides&quot;= (the right and left sides only), =&quot;box&quot;= (all four sides), =&quot;border&quot;= (all four sides); default =&quot;void&quot;= | =tableframe=&quot;hsides&quot;= |
+| =tablerules= | Table rules, set to =&quot;none&quot;= (no rules), =&quot;groups&quot;= (rules will appear between row groups and column groups only), =&quot;rows&quot;= (rules will appear between rows only), =&quot;cols&quot;= (rules will appear between columns only), =&quot;all&quot;= (rules will appear between all rows and columns); default =&quot;none&quot;= | =tablerules=&quot;rows&quot;= |        
+| =cellpadding= | Cell padding (pixels) | =cellpadding=&quot;0&quot;= |
+| =cellspacing= | Cell spacing (pixels) | =cellspacing=&quot;3&quot;= |
+| =valign= | Vertical alignment of cells, set to =&quot;top&quot;=, =&quot;middle&quot;=, =&quot;bottom&quot;= or =&quot;baseline&quot;= | =valign=&quot;top&quot;= |
+| =headeralign= | Header cell alignment, one value for all columns, or a comma separated list for different alignment of individual columns. Set to =&quot;left&quot;=, =&quot;center&quot;=, =&quot;right&quot;= or =&quot;justify&quot;=. Overrides individual cell settings | =headeralign=&quot;left, right&quot;= |
+| =dataalign= | Data cell alignment, one value for all columns, or a comma separated list for different alignment of individual columns. Set to =&quot;left&quot;=, =&quot;center&quot;=, =&quot;right&quot;= or =&quot;justify&quot;=. Overrides individual cell settings | =dataalign=&quot;center&quot;= |
+| =tablewidth= | Table width: Percentage of window width, or absolute pixel value. Default is unspecified. | =tablewidth=&quot;100%&quot;= |
+| =columnwidths= | Column widths: Comma delimited list of column widths, percentage or absolute pixel value. Default is unspecified. | =columnwidths=&quot;80%, 20%&quot;= |
+| =headerrows= | Number of header rows to exclude from sort; default =&quot;1&quot;= | =headerrows=&quot;1&quot;= |
+| =footerrows= | Number of footer rows to exclude from sort; default =&quot;0&quot;= | =footerrows=&quot;1&quot;= |
+| =id= | Table identifier string. Default is unspecified. | =id=&quot;userTable&quot;= |
+| =summary= | Table summary used by screenreaders: A summary of what the table presents. It should provide an orientation for someone who listens to the table. Default is unspecified. | =summary=&quot;List of subscribed users&quot;= |
+| =caption= | Table caption: A title that will be displayed just above the table. Default is unspecified. | =caption=&quot;Users&quot;= |
+
+The =%&lt;nop&gt;TABLE{...}%= settings override =TABLEATTRIBUTES= preferences settings, which override the =TABLEATTRIBUTES= Plugin settings. 
+
+---++ Examples
+
+---+++ Use of %&lt;nop&gt;TABLE{...}%
+
+Line before table: =%&lt;nop&gt;TABLE{ sort=&quot;on&quot; tableborder=&quot;0&quot; cellpadding=&quot;1&quot; cellspacing=&quot;3&quot; headerbg=&quot;#D5CCB1&quot; headercolor=&quot;#666666&quot; databg=&quot;#FAF0D4, #F3DFA8&quot; headerrows=&quot;2&quot; footerrows=&quot;1&quot; }%=
+
+%TABLE{ sort=&quot;on&quot; tableborder=&quot;0&quot; cellpadding=&quot;1&quot; cellspacing=&quot;3&quot; headerbg=&quot;#D5CCB1&quot; headercolor=&quot;#666666&quot; databg=&quot;#FAF0D4, #F3DFA8&quot; headerrows=&quot;2&quot; footerrows=&quot;1&quot; }%
+| *Table with two Header Rows and Footer Row* ||||||
+| *Num* | *Status* | *Action* | *Who* | *When* | *Progress* |
+| 1 | C | Chose new colours | John | 1-Dec-02 | |
+| 2 | X | Release | John | 1-Apr-02 | |
+| 3 |   | Get feedback | Anne | 1-Feb-02 | |
+| 12 | C | Spec error handling | Jack | 1-Dec-02 | |
+| 5 |   | Abc | John | | |
+| *Num* | *Status* | *Action* | *Who* | *When* | *Progress* |
+
+---+++ Table with 4 digit year dates and no use of %&lt;nop&gt;TABLE{...}%
+
+| *When* |
+| 1-Jan-2004 |
+| 1-Jan-2003 |
+| 2-Jan-2005 |
+
+---++ Plugin Installation Instructions
+This plugin is pre-installed with your TWiki release. You should not have to install it other than to do an upgrade.
+
+   * Download the ZIP file from the Plugin web (see below)
+   * Unzip ==%TOPIC%.zip== in your twiki installation directory. Content:
+     | *File:* | *Description:* |
+     | ==data/TWiki/%TOPIC%.txt== | Plugin topic |
+     | ==data/TWiki/%TOPIC%.txt,v== | Plugin topic repository |
+     | ==lib/TWiki/Plugins/%TOPIC%.pm== | Plugin Perl module |
+     | ==pub/TWiki/%TOPIC%/diamond.gif== | Diamond symbol |
+     | ==pub/TWiki/%TOPIC%/down.gif== | Down arrow |
+     | ==pub/TWiki/%TOPIC%/up.gif== | Up arrow |
+   * (Dakar) Visit =configure= in your TWiki installation, and enable the plugin in the {Plugins} section.
+   * Test if the plugin is correctly installed:
+      * Check above example if the table renders as expected
+      * Try click on heading to sort.  Other tables should also be sortable
+
+---++ Plugin Info
+
+|  Plugin Author: | TWiki:Main/JohnTalintyre, TWiki:Main/PeterThoeny |
+|  Plugin Version: | 1.014 |
+|  Change History: | &lt;!-- specify latest version first --&gt;&amp;nbsp; |
+|  13 Dec 2005 | AC: Added support for id, summary and caption |
+|  5 Mar 2005 | 1.014: Crawford Currie eliminated deprecated handlers for Dakar |
+|  01 Aug 2004: | AC: Added CSS support for first column and ascending/descending table headers |
+|  21 Mar 2004: | PTh: Internal change: Fixed reference to unofficial variable |
+|  01 Jan 2004: | PTh: Alternating data row colors restart again after each header row |
+|  01 Dec 2003: | PTh: Fixed error when footerrows was specified on an empty table, contributed by TWiki:Main/PaulineCheung |
+|  24 May 2003: | PTh: New =&amp;#124;^&amp;#124;= rule for multi row span (TWiki:Main/WalterMundt); added tableframe and tablerules (TWiki:Main/JohannesMartin); ignore columnwidths for multi column span; validate headerrows and footerrows (TWiki:Main/DarrylGreen); fixed link color problem and up/down icon color problem for dark header background |
+|  17 Dec 2002: | PTh: Removed individual table Plugin settings; added TABLEATTRIBUTES Plugins setting and TABLEATTRIBUTES preferences setting |
+|  15 Dec 2002: | PTh: Added headerrows and footerrows params (TWiki:Main/DarrylGreen, TWiki:Main/WoutMertens); added tablewidth and columnwidths params (TWiki:Main/ThorstenSommermann) |
+|  09 Dec 2002: | PTh: Added headercolor and datacolor parameters |
+|  05 Jun 2002: | PTh: Added &quot;none&quot; value to databg parameter (suggested by TWiki:Main/TaitCyrus); fixed sorting by stripping HTML tags, removing links and making sort ignore case (suggested by TWiki:Main/ShawnBradford) |
+|  13 Mar 2002: | PTh: Added TWiki:Main/ShawnBradford &#39;s initsort and initdirection |
+|  12 Mar 2002: | PTh: Added valign, headeralign and dataalign; fixed bug of swapped cellpadding/cellspacing; fixed warning of uninitialized value |
+|  05 Jan 2002: | PTh: Fixed sorting bug of cells with leading white space  |
+|  06 Dec 2001: | PTh: Fixed date sorting bug &lt;br /&gt; 03 Dec 2001 PTh: Fixed sort=&quot;off&quot; bug and more |
+|  29 Nov 2001: | PTh: Fixed Perl warnings |
+|  16 Nov 2001: | PTh: Added table border, cell spacing, cell padding, gif files |
+|  07 Oct 2001: | JT: Initial version |
+|  CPAN Dependencies: | none |
+|  Other Dependencies: | none |
+|  Perl Version: | 5.0 |
+|  Plugin Home: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC% |
+|  Feedback: | http://TWiki.org/cgi-bin/view/Plugins/%TOPIC%Dev |
+
+__Related Topics:__ %TWIKIWEB%.TWikiPreferences, %TWIKIWEB%.TWikiPlugins, %TWIKIWEB%.StandardColors
+
+
+
+

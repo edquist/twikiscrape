@@ -1,0 +1,181 @@
+-- Main.DanFraser - 28 Apr 2009
+---++ Background and Purpose of a T3
+Sites may choose to set up a T3 for any of the following reasons:
+   * User storage and analysis computing is limited on T2s.
+   * T2 queues may fill up when LHC data starts arriving .
+   * Ability to develop physics analyses on small datasets before submitting large jobs to T2s.
+   * Ability to jobs locally with high priority instead of submitting to the grid.
+
+Size: As there are no specific requirements that define a T3, the computing and 
+storage capabilities of existing sites varies widely.
+   * Typical number of cores: O(10 to 100).
+   * Typical storage: O(10-100) TB.
+   * New sites are now (and for the next few months will be) receiving funds for setting up T3s. Typical funds are on the order of $30-50k.
+   * On-site support resources (especially for the newest T3s) are usually small, e.g., some fraction of a graduate student who may or may not be a &quot;trained&quot; Admin.
+   * Atlas is anticipating as many as ~20 new sites coming online over the next few months.
+   * CMS anticipates 10 to 20 new sites in the US over the next year.
+
+%RED% All acronyms should be defined or referenced with a link. %ENDCOLOR%
+
+For Atlas, there are ~five T3 sites running an OSG stack and  that are registered in OIM. There are approximately 35 other sites (and potential sites) although these primarily use DQ2 to get data from T2&#39;s remotely and do not currently run an OSG stack.
+Atlas T3s running an OSG stack include:
+   * GLOW-Atlas[-SRM] (CE, SE, DDM) Trash/Tier3gs
+   * !IllinoisHEP (CE, SE, DDM) Trash/Tier3gs
+   * UTD-HEP (CE)
+   * LTU_CCU (??)
+   * LTU_OSG (??)
+   * Duke_University_Tier_3 (SE)
+   * U-Chicago (SE, DDM) Trash/Tier3gs -- Not reporting to OSG (University_of_Chicago_Teraport_Cluster??)
+Atlas T3s (and planned T3s) that are not running an OSG stack include:
+   * ANL
+   * Albany
+   * Amherst
+   * Argonne
+   * Arizona
+   * Arlington
+   * Boston
+   * Brandeis
+   * Chicago
+   * Columbia
+   * Dallas
+   * Duke
+   * Fresno
+   * Hampton
+   * Harvard
+   * Illinois
+   * Indiana
+   * Iowa
+   * Iowa State
+   * Irvine
+   * LBNL
+   * Lousiana Tech
+   * Michigan
+   * Michigan State
+   * MIT
+   * New Mexico
+   * Northern Illinois
+   * NYU
+   * Ohio State
+   * Oklahoma
+   * Oklahoma State
+   * Oregon
+   * Penn.
+   * Pittsburgh
+   * Santa Cruz
+   * South Carolina
+   * Southern Methodist
+   * Stony Brook
+   * Tufts
+   * Washington
+   * Wisconsin
+   * Yale
+
+For CMS, there are ~27 T3 sites in the US. The following sites are known (or believed) to be running an OSG stack: 
+   * osu-cms (CE, SE)
+   * TTU[-ANTAEUS][-SIGMORGH] (CE, SE)
+   * umd-cms (CE, SE)
+   * !UColorado_HEP (CE, SE)
+   * UCR-HEP[-SE] (CE)
+   * Cornell - NYSGRID_CORNELL_NYS1 (CE, SE) ??
+   * USCMS-FNAL-XEN (CE)
+   * Rice (CE)
+   * rutgers-cms (CE, SE)
+   * Vanderbilt[_SE] (CE, SE)
+   * !UCLA_Saxon_T3 (CE)
+   * FLTECH (CE, SE, GridFTP)
+   * UCD[_SE] (CE, SE) 
+   * !UMissHEP (CE)
+   * osu-cms (CE, SE)
+   * !Nebraska CMS T3 (CE, SE)   (Omaha)
+   * Nebraska or GPN_HUSKER (CE) ??
+   * Virginia - UVA-sunfire (CE) ??
+   * FNALLPC - Not Reporting on OSG ??
+   * Kansas - Not Reporting on OSG ??
+   * Minnesota - Not Reporting on OSG ??
+   * Princeton - Not Reporting on OSG ??
+   * !Princeton ICSE - Not Reporting on OSG ??
+   * John Hopkins - Not Reporting on OSG ??
+   * Tennessee - Not Reporting on OSG ??
+   * Iowa - Not Reporting on OSG ?? 
+   * Caltech - Not Reporting on OSG ??
+   * FIU-PG (CE)  No longer Reporting on OSG ??
+   * FSU - decommissioned
+
+
+---++ CE Considerations
+
+There are several reasons why sites deploy CEs:
+   1 To enable their resources to be shared with other grid users
+   1 To provide a common interface between grid jobs submitted locally and off-site jobs
+   1 Sites can be remotely accessed via Certificate (no password required)
+   1 Historically the installation of a CE included the monitoring capabilities for both CEs and SEs; also the installation of a CE includes GridFTP which makes the addition of an SE that much easier.
+
+For Atlas:
+   * All (or nearly all) jobs are submitted via PanDA and users do not directly interface to CEs.
+   * Enabling the same job submission interface on local resources implies that sites must install PanDA software as well as DDM software. Only three?? of the existing T3s currently do this. This type of infrastructure layer implies a significant amount of overhead that can be handled by more mature T3 sites with ~1FTE to support them. It is not recommended for new or beginning sites.
+   * Most of the new T3s coming online are not expected to share resources.
+   * Hence the conclusion is that most Atlas T3s will NOT need to install a CE.
+
+For CMS:
+   * Jobs may be submitted to a T3
+      * via the CMS Remote Analysis Builder ([[https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideCrab CRAB]]),
+      * through a CE, 
+      * or via a local batch queue.
+   * Many sites allow (or will allow) access to non-local CMS users, although priority is usually given to local users.
+   * The most common pattern is to install both a CE and an SE.
+
+---++ SE and File System Considerations
+
+There are several reasons why sites deploy SEs:
+   1 Provide a common storage interface to applications 
+   1 It may be more efficient to analyze local data instead of data at a T2
+   1 T2&#39;s prefer accesses via SEs since data transfers can be managed better and reduce the risk of overloading T2 sites
+   1 SEs allow space management operations (quota enforcement, space reservations)
+   1 SSO access to storage provided by a grid certificate
+   1 Data can be transferred using 3rd party transfers. This also provides automation (e.g. data subscription).
+   1 Make many disks look like one (?)
+
+An important consideration in setting up an SE is the choice of file system. SE&#39;s provide a grid accessible interface (GridFTP or BeStMan/SRM) to a variety of file systems (NFS, XROOTD, dCache, HDFS). An important capability of GridFTP or BeStMan/SRM is that it can interface to multiple file systems at the same time. 
+   * dCache is not recommended for new T3s due to the level of support required for this product
+   * HDFS is being tested and is not yet being recommended for T3s except under experimental circumstances
+   * For T3&#39;s that already have commercial grade central file systems (e.g. Network Appliances or BluArc), it is beneficial for SE&#39;s to leverage that capability in setting up their SEs. Conversely, sites without this capability may prefer to consider installing their own file system such as XROOTD. 
+   * Sites should consider the following items concerning XROOTD:
+      * An XROOTD file system is strongly recommended for sites that anticipate running PROOF.
+      * Central file systems require that users manage their own datasets. While this can be quite manageable for small numbers of datasets, for larger numbers of datasets XROOTD provides significant help in managing the datasets and can be very beneficial.
+      * An important capability of XROOTD is the ability to run jobs where the data resides as opposed to moving large datasets througout the network that can significantly impact processing time. Users can of course acquire this benefit via scripting on central file systems, but XROOTD handles this automatically for ROOT based files.
+      * In situations where a distributed file system is needed, XROOTD provides a commonly used solution.
+
+For Atlas:
+   * Sites are encouraged to deploy an SE for data interfacing to the T1/T2s.
+   * Sites may not have a complete choice over existing file systems and infrastructure since T3s may be (or become) part of an existing system.
+   * Since the SE can interface with multiple file systems at the same time, sites have the option to add a separate XROOTD filesystem as a stand alone file system in parallel to the existing file system when XROOTD is needed.
+   * Atlas is recommending a separation between Grid storage and local only storage.
+      * Prevents a user from interfering with managed storage
+
+For CMS: 
+   * Transfer of data to/from a T3 site is handled by Physics Experiment Data Export ([[http://cmsweb.cern.ch/phedex/ PhEDEx]]).
+
+---++ Cluster Configuration Considerations:
+   * Since not all sites are dedicated T3s, there is expected to be a wide variation in the infrastructure that sits below the usual OSG stack (e.g. batch scheduler, cluster management tools)
+   * Some interactivity for small jobs is desirable especially for setting up and debugging in preparation for running large jobs
+   * Using a batch system such as Condor is a basic component for configuring a T3. 
+
+---++ Security Considerations
+   * The main concerns from the VOs are:
+      * Someone can use resources without authorization.
+      * Someone could break into the sites and steal (or compromise) security credentials and run jobs at other sites
+      * An incident could occur that would cause the institutional infrastructure to shut down the site
+   * Often the organizational level system administrators need to be educated about running Grid software. In at least one case so far, a call to discuss the OSG security model was required before they would allow grid software to be utilized.
+   * The OSG security team indicates that the most likely problem scenario is simply a DOS attack. There are more ports open and an additional software stack that needs to be maintained.
+   * There are still lots of misconceptions about security in the community especially about the real risks and practical aspects of security management. Education is needed.
+
+---++ Support Considerations
+   * Both CMS and Atlas generally agree that the best way to support T3s is to enable the T3s to help each other.
+   * Both CMS and Atlas have communication channels and wiki pages but they are open to help from OSG on this front
+
+---++ Requirements Summary
+   * Sites - Help in enabling social networking for T3 admins - See &lt;WBS.1.0.2.2.1&gt;   &lt;WBS.1.0.2.2.2&gt;   &lt;WBS.1.3.4.2&gt;
+   * STG - A T3 guide for configuring Condor as a cluster manager (best practices, common configurations for T3s) - See &lt;WBS.1.0.2.2.2.1&gt; &lt;WBS.1.8.2.3&gt;
+   * Storage - A T3 configuration guide for BeStMan-XROOTD (for Atlas) - See &lt;WBS.1.0.2.2.2.1&gt;  &lt;WBS.1.8.2.3&gt;
+   * Security - A clear online training program/guide for T3 admins (Material from the Admin workshop in Aug &#39;09 is a good start) - See &lt;WBS.1.8.2.3&gt;
+   * Security - A Document (or an aggregated collection of docs) that explain why using the Grid security model is at least as safe (if not safer) than SSH models most commonly used within organizations (targeted toward institutional site admins) - See &lt;WBS.1.0.2.2.2.2&gt;  &lt;WBS.1.7.4.2.2&gt;  &lt;WBS.1.7.4.2.3&gt;

@@ -1,0 +1,132 @@
+%LINKCSS%
+
+%TOC%
+
+---+ Building Globus
+
+These are notes meant for the Software Team. 
+
+In September 2011, we added Globus 5.2 to the VDT. Unfortunately, it is not a drop-in replacement for Globus 5.0 from EPEL. Due to changes in how threading was implemented, Globus shared libraries versions were incremented. (Globus maintained source code compatibility, so it&#39;s just a matter of rebuilding software that depends on Globus.) We hope that this will propagate neatly into EPEL, but until it does, we have done two things:
+
+   1. Adding Globus 5.2 to our repository and rebuilt all software we ship that depends on Globus. 
+   1. Copied packages from EPEL that we use that depend on Globus into our repository, and rebuilt them against Globus 5.2. 
+
+A couple of notes from Matyas Selmeci, who did this work are below. These are mostly copied from [[https://jira.opensciencegrid.org/browse/SOFTWARE-200][JIRA SOFTWARE-200]].
+
+---++ Finding dependencies
+
+A quick and dirty shell script to find packages that depend on Globus (run this inside a yum repository):
+&lt;pre&gt;
+for i in `ls *.rpm | grep -vP &#39;^globus|grid-packaging&#39;`; do
+  yum -q deplist $i | grep -Psq &#39;globus|grid-packaging&#39; &amp;&amp; \
+    rpm -qp $i --queryformat &#39;%{sourcerpm}\n&#39;
+done|sort|uniq
+&lt;/pre&gt;
+
+---++ Note 1: Fulfilling build prereqs
+
+The following packages had to be retagged into el5-gt52b to fulfill build prereqs:
+
+   * glite-data-build
+   * glite-data-transfer-interface
+   * glite-service-discovery-api-c
+   * glite-service-discovery-build-common-cpp
+   * gridsite
+   * lcmaps-plugins-basic
+   * lcmaps-plugins-glexec-tracking
+   * lcmaps-plugins-gums-client
+   * lcmaps-plugins-saz-client
+   * lcmaps-plugins-scas-client
+   * lcmaps-plugins-verify-proxy
+   * saml2-xacml2-c-lib
+
+---++ Note 2: Rebuilding packages that depend on Globus
+
+The following packages needed to be rebuilt: (arrows point from dependencies)
+
+   * CGSI-gSOAP * &lt;- voms
+   * condor
+   * dcache-srmclient
+   * dcap-tunnel-gsi *
+   * edg-gridftp-client
+   * gfal &lt;- CGSI-gSOAP, lfc-client (part of lcgdm), voms
+   * glite-build-common-cpp
+   * glite-data-delegation-api-c &lt;- glite-security-delegation-interface, glite-data-build, CGSI-gSOAP
+   * glite-data-delegation-cli &lt;- glite-data-delegation-api-c, glite-data-util-c-devel
+   * glite-data-util-c &lt;- glite-service-discovery-api-c, glite-service-discovery-build-common-cpp, gridsite
+   * glite-fts-client &lt;- glite-build-common-cpp, glite-data-delegation-cli-devel, glite-data-transfer-interface
+   * glite-security-delegation-interface
+   * globus-gridmap-callout-error *
+   * gratia-probe *
+   * lcas
+   * lcas-lcmaps-gt4-interface &lt;- lcmaps-plugins-*, globus-gridmap-callout-error, saml2-xacml2-c-lib
+   * lcas-plugins-basic &lt;- lcas
+   * lcg-utils &lt;- CGSI-gSOAP, gfal, voms
+   * lcgdm &lt;- voms, CGSI-gSOAP
+   * lcmaps
+   * myproxy &lt;- voms
+   * uberftp
+   * voms *
+
+---++ Notes for specific packages:
+
+---+++ CGSI-gSOAP
+
+needed to import this one so I could bump it
+
+---+++ dcap-tunnel-gsi
+
+needed to import this one so I could bump it
+
+---+++ globus-gridmap-callout-error
+
+Had to import this one from EPEL.
+Got a &#39;flavor gcc64pthr has not been installed&#39; error from configure. Fixed that in spec file.
+
+Next error I got was this:
+
+&lt;pre class=&quot;screen&quot;&gt;
+ + /usr/share/globus/globus-gpt2pkg-config pkgdata/pkg_data_gcc64_dev.gpt
+ /var/tmp/rpm-tmp.95712: line 47: /usr/share/globus/globus-gpt2pkg-config: No such file or directory
+&lt;/pre&gt;
+
+that file is found only in epel&#39;s package of globus-core-5.17-3.el5, not in any of our packages (both old and new). I haven&#39;t found anything comparable in our globus-core, either.
+
+Got a new globus-gridmap-callout-error srpm from Joe Bester by email. (globus-gridmap-callout-error-1.1-1.src.rpm)
+Passed it through (no osg dir)
+
+---+++ gratia-probe
+
+this needed to be imported, and I don&#39;t really know where the original RPM comes from.
+
+TODO add a README file
+
+---+++ voms
+
+globus_thread_h.patch
+
+The error:
+&lt;pre class=&quot;screen&quot;&gt;
+    ../../src/include/gssapi_compat.h:76: error: conflicting declaration &#39;typedef int globus_mutex_t&#39;
+    /usr/include/globus/globus_thread.h:117: error: &#39;globus_mutex_t&#39; has a previous declaration as &#39;typedef union globus_mutex_t globus_mutex_t&#39;
+&lt;/pre&gt;
+The typedef in gssapi_compat.h is surrounded by an ifdef, and the name of the macro being tested had changed in 5.2. Created a patch against the ifdef.
+
+N.B.: there are two src/include/gssapi_compat.h files, one for the compat version (1.9.19.2) and one for the new version.
+
+TODO patch should be sent upstream
+
+---+++ java errors
+
+The errors followed this general pattern:
+
+&lt;pre class=&quot;screen&quot;&gt;
+    Foo.java: cannot access Bar
+    bad class file: Bar.class
+    class file contains wrong class: (some completely unrelated class)
+    Please remove or make sure it appears in the correct subdirectory of the classpath.
+&lt;/pre&gt;
+The problem was due to parallel make ( =make %{?_smp_mflags}= ). Replaced all of those with make -j1 in the spec file.
+
+Note when bumping voms that there are two macros, =%release1= and =%release2=. One of these is used for the compat version, one for the current. Both have to be bumped.
+

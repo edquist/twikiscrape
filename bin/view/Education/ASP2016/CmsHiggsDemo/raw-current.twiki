@@ -1,0 +1,171 @@
+---+ !!Discover the prized Higgs boson with CMS on the Open Science Grid
+---++++ !!Original author: Oliver Gutsche of CMS and Fermilab
+%TOC{title=&quot;Outline:&quot;}% 
+
+---++ Introduction
+
+In a nutshell, the Higgs boson is a hypothesised particle which, if it exists, would give the mechanism by which particles acquire mass. 
+
+Feel the thrill of discovery as you use the CMS software and simulated data to find this elusive, coveted treasure! You&#39;ll run your job real-time on remote computers made available through Open Science Grid.
+
+Only people eligible for membership in the CMS VO can set up their computing environments appropriately to run this demo. If you&#39;re not affiliated with CMS, you&#39;ll have to run the demo with somebody who is.
+
+---++ Overview
+
+In this demo you will create analysis code to use within the CMS analysis software framework.  This diagram illustrates the steps that you&#39;ll follow and how the pieces in the demo fit together.
+
+&lt;!-- cms higgs demo flow (2): --&gt;
+     &lt;img src=&quot;%ATTACHURLPATH%/cms_higgs_demo_flow2.gif&quot; alt=&quot;cms_higgs_demo_flow2.gif&quot; width=&#39;912&#39; height=&#39;432&#39; /&gt;
+
+---++ Things to do ahead of time
+   * Get a grid (PKI) certificate; load it into your browser and copy it into the =$HOME/.globus area= of the UNIX/Linux machine you&#39;re going to use.
+   * Convert the certificate using the =openssl= command as shown (use your actual =.pl2= certificate filename with no angle brackets; use the output names =usercert.pem= and =userkey.pem= as shown):
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; font-weight: 700; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+      openssl pkcs12 -in &lt;YourCert&gt;.p12 -clcerts -nokeys -out $HOME/.globus/usercert.pem
+      openssl pkcs12 -in &lt;YourCert&gt;.p12 -nocerts -out $HOME/.globus/userkey.pem
+      chmod go-rw $HOME/.globus/userkey.pem
+&lt;/verbatim&gt;
+   * Join the CMS VO. Go to [[https://lcg-voms.cern.ch:8443/vo/cms/vomrs?path=/RootNode][the CMS VO registration page]]. It may take a day or so to get approved and become fully registered.
+
+---++ Set up your environment and prepare your user area
+
+   * First, check the [[CmsDemoFormatConventions][Format conventions]] to understand what the blue, red and gray sections mean as you go through the demo.
+   * [[MidWestGridWorkshop2007Setup][Set up your CMS software environment]].
+   *  Get a grid proxy. Run
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; font-weight: 700; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+grid-proxy-init
+&lt;/verbatim&gt;
+(or if you prefer, you can run =voms-proxy-init= instead.) In either case 
+you will be prompted for your pass phrase.
+   * To check your proxy, run
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; font-weight: 700; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+voms-proxy-info -all
+&lt;/verbatim&gt;
+If it doesn&#39;t work, go back and check your certificate and make sure that the =.globus/userkey.pem= file is there.
+
+---++ Prepare the analysis code 
+The overall collection of CMS analysis software, referred to as CMSSW, is built around a Framework, an Event Data Model, and Services needed by the simulation, calibration and alignment, and reconstruction modules that process event data. 
+
+The CMSSW framework implements a software bus model wherein there is one executable and many plug-in modules which run algorithms. The same executable is used for both detector and Monte Carlo (simulation) data.   You will need to create a plug-in module for the Higgs analysis; it will plug into the Framework.
+
+Your Higgs analysis module will access reconstructed simulated tracks, and write out a file with histograms.
+
+Go to the [[CmsCodePrep][Code preparation]] page. 
+
+---++ Find the dataset
+
+CMSSW data discovery is available on the [[http://cmsdbs.cern.ch/DBS2_discovery/][DBS/DLS discovery]] page. You&#39;ll want to search on the string: 
+&lt;verbatim&gt;
+*Higgs-ZZ-4mu
+&lt;/verbatim&gt;
+The search is case sensitive. Cut and paste this string (including the asterisk) into the long field near the bottom labelled &quot;Processed dataset&quot;, then click &quot;Find&quot;.
+The returned page gives both the dataset names and, for each, the set of locations (destination sites) from which to choose. Make a note of the dataset and location you want. Since you&#39;re using real datasets, they will change over time.
+
+---++ Execute your analysis job on an OSG resource
+---+++ Set up the build program
+Cms Remote Analysis Builder (CRAB) is a Python program intended to simplify the process of creation and submission of CMS analysis jobs into a grid environment.
+
+Setup CRAB (using =.sh= or =.csh= as appropriate):
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; font-weight: 700; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+source /uscmst1/prod/grid/CRAB_1_5_1/crab.sh
+&lt;/verbatim&gt;
+---+++ Make a configuration file
+Create the CRAB configuration file: =Demo/MyTrackAnalyzer/test/crab.cfg= and give it the following contents, replacing the items in brackets &lt;...&gt; appropriately: 
+&lt;verbatim style=&quot;background-color: lightgrey;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+[CRAB]
+jobtype                = cmssw
+scheduler              = condor_g
+
+[CMSSW]
+datasetpath            = &lt;dataset name discovered with discovery page&gt;
+pset                       = &lt;parameter-set for analysis code (e.g., demotest.cfg)&gt;
+total_number_of_events = 100
+events_per_job         = 10
+output_file            = &lt;histogram file name (e.g., histograms.root)&gt;
+
+[EDG]
+se_white_list          = &lt;location found with dataset discovery page (e.g., srm.unl.edu)&gt;
+virtual_organization   = cms
+lcg_catalog_type       = lfc
+lfc_host               = lfc-cms-test.cern.ch
+lfc_home               = /grid/cms
+
+[USER]
+return_data       = 1
+&lt;/verbatim&gt;
+---+++ Create your jobs
+Now it&#39;s time to create the 10 jobs (notice in file above, 100 events/10 evts-per-job).  CRAB does this for you. It will read this configuration file. 
+
+If you have any outstanding jobs, kill them first (use =crab -kill all=).  It may prompt for your passphrase.
+
+Run the command:
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; font-weight: 700; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+crab -create
+&lt;/verbatim&gt;
+...end of output ...
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+...
+crab. Contacting DLS...
+crab. Sites (1) hosting part/all of dataset: [&#39;srm.unl.edu&#39;]
+
+crab. 10 job(s) can run on 100 events.
+
+crab. Creating 10 jobs, please wait...
+
+crab. Total of 10 jobs created.
+
+crab. Log-file is /uscms/home/aheavey/demo/CMSSW_1_2_0/src/Demo/MyTrackAnalyzer/test/crab_0_070529_144807/log/crab.log
+&lt;/verbatim&gt;
+---+++ Submit your jobs to the grid
+Use CRAB to submit these jobs to the grid:
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; font-weight: 700; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+crab -submit all -continue
+&lt;/verbatim&gt;
+...end of output ...
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px;margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+...
+crab. Total of 10 jobs submitted.
+crab. Log-file is /uscms/home/aheavey/demo/CMSSW_1_2_0/src/Demo/MyTrackAnalyzer/test/crab_0_070531_120336/log/crab.log
+&lt;/verbatim&gt;
+
+If something fails after submission, before resubmitting, first kill them (=crab -kill all=). Then rerun =crab -create= and resubmit them (=crab -resubmit all=). 
+---+++ Check status of your jobs
+To check the status, run:
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; font-weight: 700; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+crab -status -c
+&lt;/verbatim&gt;
+Initially you should see that each job is scheduled, and near the end it says =10 Jobs Scheduled=.  Time can vary, but a few minutes later, it&#39;s likely that the status will have changed to &quot;Running&quot;.  Try again every few minutes until you see that they&#39;re completed; status will be &quot;Done (success)&quot;.
+
+You can also check your jobs&#39; status at the [[http://lxarda09.cern.ch/dashboard/request.py/jobsummary][DashBoard]].  If your job isn&#39;t progressing fast enough at your chosen location, you can check site activity here and choose a different location if you like. You&#39;ll have to kill the jobs, edit your =crab.cfg= and resubmit, of course. 
+
+---+++ Retrieve your output
+Use CRAB to retrieve your output:
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; font-weight: 700; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+crab -getoutput -c
+&lt;/verbatim&gt;
+The output will tell you which directory contains the output it returned.  Change to that directory. 
+
+---++ Make some histograms
+Add histogram files of individual jobs together using the ROOT tool&#39;s =hadd= command: 
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; font-weight: 700; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+cd crab_?_*_*/res
+hadd histograms.root *.root
+&lt;/verbatim&gt;
+To display the histograms, start up ROOT:
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; font-weight: 700; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+root histograms.root
+&lt;/verbatim&gt;
+then at its numbered prompts, the following three =Draw= commands will each produce a histogram.
+&lt;verbatim style=&quot;background-color: lightblue;  text-align: left;padding: 10px; font-weight: 700; margin-left: 20px;margin-right: 20px;color: black;&quot;&gt;
+pt-&gt;Draw();
+mmumu-&gt;Draw();
+mzz-&gt;Draw();
+&lt;/verbatim&gt;
+Congratulations! Now just wait for Stockholm to call.
+---
+
+-- Main.AnneHeavey - 21 June 2007
+
+
+
+

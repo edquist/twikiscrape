@@ -1,0 +1,52 @@
+---+!! LSST infrastructure guide (Phase I).
+
+The LSST infrastructure is maintained using the OSGMM installation on engage-central.renci.org. The LSST-specific scripts are in the Engage SVN repository, =https://osg-svn.renci.org/svn/Engage/trunk/LSST=.
+
+In order to obtain access to engage-central (user OSGMM) or the repository, contact the [[mailto:engage-team@renci.org][Engage team]].
+
+---++ LSST configuration in OSGMM.
+
+OSGMM has two hooks: maintenance and verification. Maintenance jobs are run once per day on each site, verification jobs generally 1-4 times per day.
+
+&lt;ol&gt;
+&lt;li&gt; =https://osg-svn.renci.org/svn/Engage/trunk/LSST/osgmm/extra.maintenance-script.fork.frag= needs to be inserted into the correct place in =~osgmm/installs/current/etc/extra.maintenance-script.fork=.&lt;br/&gt;
+This script fragment&#39;s main function is to obtain the actual =install-lsst= script from =http://engage-central.renci.org/~osgmm/software/install-lsst= and execute it.
+&lt;/li&gt;
+&lt;li&gt;Similarly, =https://osg-svn.renci.org/svn/Engage/trunk/LSST/osgmm/extra.verification-script.fork.frag= needs to be inserted into the correct place in =~osgmm/installs/current/etc/extra.verification-script.fork=.&lt;br/&gt;
+This script fragment examines the software environment on the target site and advertises attributes in the OSGMM !ClassAd for that site.
+&lt;/li&gt;
+&lt;/ol&gt;
+
+---+++ =install-lsst= and associated files.
+
+=https://osg-svn.renci.org/svn/Engage/trunk/LSST/osgmm/install-lsst= should be installed in =~osgmm/public_html/software/=. This is the real location of =http://engage-central.renci.org/~osgmm/software/install-lsst=.
+
+At the top of the =install-lsst= script are the variables which may need to be changed to manage the installation of new versions of the code. The versions are in code rather than (for instance) in an obtained configuration in order to avoid hammering the software server.
+
+Current location of install packages: =gsiftp://fermigridosg1.fnal.gov/grid/data/engage/LSST/software/LSSTsim/$LSST_version/= &lt;br/&gt;
+Note: =fermigridosg1.fnal.gov= is an alias for =fg1x1.fnal.gov=.
+
+---++ Packaging software and data.
+
+Source packages as used for the build are in =https://osg-svn.renci.org/svn/Engage/trunk/LSST/src/=.
+
+The script =https://osg-svn.renci.org/svn/Engage/trunk/LSST/util-scripts/build-host.sh= will build and name the resulting tar file according to the architecture of the host upon which it was executed. For example:
+
+   * =fnpcsrv1.fnal.gov=: FSL4/32
+   * =fnpcsrv2.fnal.gov=: FSL4/64
+   * =fnpcsrv532.fnal.gov=: FSL5/32
+   * =fnpcsrv564.fnal.gov=: FSL5/64
+
+The two data tarballs under =gsiftp://fermigridosg1.fnal.gov/grid/data/engage/LSST/software/catalog= and =gsiftp://fermigridosg1.fnal.gov/grid/data/engage/LSST/software/data= are the per-chip sky-position-specific and full-sky catalogs respectively. These are also installed and managed by the =install-lsst= script.
+
+---++ Possible site problems requiring intervention.
+
+=condor_grid_overview=, and =condor_status -long= may be used to see if sites have the software installed properly. Possible problems include site advertising not matching site capability, authorization problems or lack of space in =OSG_APP= or =OSG_DATA= on the remote node.
+
+The installed software may be rendered inoperable by file-system changes on the remote node, since part of the installation process involves letting the software know about its installation directory and other aspects of its environment. If this becomes stale for any reason, obtain the =lsst-fix-env-paths= script from =https://osg-svn.renci.org/svn/Engage/trunk/LSST/util-scripts/= and execute:
+&lt;verbatim&gt;
+globus-job-run &lt;site-GK&gt; -s lsst-fix-env-paths
+&lt;/verbatim&gt;
+for the affected site. Subsequent attempts to run simulation jobs on that site are now more likely to be successful.
+
+-- Main.ChrisGreen - 29 Jul 2010

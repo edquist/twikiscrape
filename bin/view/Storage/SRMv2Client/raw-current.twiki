@@ -1,0 +1,431 @@
+%DOC_STATUS_TABLE%
+https://twiki.grid.iu.edu/twiki/pub/Storage/WebHome/images.jpg
+
+---++ SRM v2.2 client status (LBNL implementation)
+
+!SRM-client toolkit is a full implementation of SRM v2.2, developed by Lawrence Berkeley National Laboratory, as generic SRM v2.2 clients. They have been tested for all current SRM v2.2 implementations such as !BeStMan, CASTOR, dCache, DPM, SRM/SRB and !StoRM. They are continuously being tested for compatibility and interoperability.  Note: These do not work with the previous SRM v1.1 servers.
+
+---+++ News
+   * 5-16-2008 !srm-client-2 v2.2.0.10 is released.
+
+---+++ Links
+
+   * [[http://datagrid.lbl.gov/bestman][Downloadables and instructions]]
+   * [[http://datagrid.lbl.gov/bestman/bestman-manual.html][srm-client-2 Manual]]
+   * [[http://www.ci.uchicago.edu/osgedu/schools/2008/figs/data.html][SRM v2.2 client lab exercises from 2008 FIU Grid School]]
+
+---+++ Client Commands Topics
+
+   * &lt;a href=&quot;#ping&quot;&gt;Ping&lt;/a&gt;
+   * &lt;a href=&quot;#put&quot;&gt;Put&lt;/a&gt;
+   * &lt;a href=&quot;#ls&quot;&gt;Ls&lt;/a&gt;
+   * &lt;a href=&quot;#get&quot;&gt;Get&lt;/a&gt;
+   * &lt;a href=&quot;#rm&quot;&gt;Rm&lt;/a&gt;
+   * &lt;a href=&quot;#mkdir&quot;&gt;Mkdir&lt;/a&gt;
+   * &lt;a href=&quot;#rmdir&quot;&gt;Rmdir&lt;/a&gt;
+   * &lt;a href=&quot;#sp_reserve&quot;&gt;Space Reservation&lt;/a&gt;
+   * &lt;a href=&quot;#sp_update&quot;&gt;Space Update&lt;/a&gt;
+   * &lt;a href=&quot;#sp_tokens&quot;&gt;Space Tokens Retrieval&lt;/a&gt;
+   * &lt;a href=&quot;#sp_info&quot;&gt;Space Information Retrieval&lt;/a&gt;
+   * &lt;a href=&quot;#sp_put&quot;&gt;Put operation with the reserved space&lt;/a&gt;
+   * &lt;a href=&quot;#sp_purge&quot;&gt;Purge an SURL in the reserved space&lt;/a&gt;
+   * &lt;a href=&quot;#sp_release&quot;&gt;Space Release&lt;/a&gt;
+
+---+++ Support
+   * email to srm@lbl.gov
+
+---+++ Sample Client Commands
+
+   * &lt;a name=&quot;sample_client&quot;&gt;&lt;b&gt;Sample client runs&lt;/b&gt;&lt;/a&gt;
+      * Note: more samples are coming... for both !BeStMan and dCache
+      * Assuming that SRM_Service_Endpoint_LBNL=srm://osp4.lbl.gov:8443/srm/v2/manager
+      * Assuming that SRM_PATH_LBNL=/srmcache/star
+      * Assuming that SRM_Service_Endpoint_FNAL=srm://fgitbse.fnal.gov:8443/srm/managerv2
+      * Assuming that SRM_PATH_FNAL=/pnfs/fnal.gov/data/osg
+         * &lt;a name=&quot;ping&quot;&gt;&lt;b&gt;Ping&lt;/b&gt;&lt;/a&gt;
+            * srm-ping $SRM_Service_Endpoint_LBNL
+            * srm-ping $SRM_Service_Endpoint_FNAL
+         * &lt;a name=&quot;put&quot;&gt;&lt;b&gt;Put&lt;/b&gt;&lt;/a&gt;
+            * srm-copy file:////tmp/test.data $SRM_Service_Endpoint_LBNL\?SFN=$SRM_PATH_LBNL/osg.test.data
+            * srm-copy file:////tmp/test.data $SRM_Service_Endpoint_FNAL\?SFN=$SRM_PATH_FNAL/osg.test.data
+         * &lt;a name=&quot;ls&quot;&gt;&lt;b&gt;Ls&lt;/b&gt;&lt;/a&gt;
+            * srm-ls $SRM_Service_Endpoint_LBNL\?SFN=$SRM_PATH_LBNL/osg.test.data
+            * srm-ls $SRM_Service_Endpoint_FNAL\?SFN=$SRM_PATH_FNAL/osg.test.data
+         * &lt;a name=&quot;get&quot;&gt;&lt;b&gt;Get&lt;/b&gt;&lt;/a&gt;
+            * srm-copy $SRM_Service_Endpoint_LBNL\?SFN=$SRM_PATH_LBNL/osg.test.data file:////tmp/osg.data
+            * srm-copy $SRM_Service_Endpoint_FNAL\?SFN=$SRM_PATH_FNAL/osg.test.data file:////tmp/osg.data
+         * &lt;a name=&quot;rm&quot;&gt;&lt;b&gt;Rm&lt;/b&gt;&lt;/a&gt;
+            * srm-rm $SRM_Service_Endpoint_LBNL\?SFN=$SRM_PATH_LBNL/osg.test.data
+            * srm-rm $SRM_Service_Endpoint_FNAL\?SFN=$SRM_PATH_FNAL/osg.test.data
+         * &lt;a name=&quot;mkdir&quot;&gt;&lt;b&gt;Mkdir&lt;/b&gt;&lt;/a&gt;
+            * srm-mkdir $SRM_Service_Endpoint_LBNL\?SFN=$SRM_PATH_LBNL/osg.test.dir
+            * srm-mkdir $SRM_Service_Endpoint_FNAL\?SFN=$SRM_PATH_FNAL/osg.test.dir
+         * &lt;a name=&quot;rmdir&quot;&gt;&lt;b&gt;Rmdir&lt;/b&gt;&lt;/a&gt;
+            * srm-rmdir $SRM_Service_Endpoint_LBNL\?SFN=$SRM_PATH_LBNL/osg.test.dir
+            * srm-rmdir $SRM_Service_Endpoint_FNAL\?SFN=$SRM_PATH_FNAL/osg.test.dir
+         * &lt;a name=&quot;sp_reserve&quot;&gt;&lt;b&gt;Space Reservation&lt;/b&gt;&lt;/a&gt;
+            * srm-sp-reserve -serviceurl $SRM_Service_Endpoint_LBNL -size 1000 -gsize 900 -lifetime 900
+               * e.g. &lt;pre&gt;
+% srm-sp-reserve -serviceurl srm://osp4.lbl.gov:8443/srm/v2/server   \
+                            -size 1000 -gsize 900 -lifetime 900
+
+SRM-SPACE: Thu May 15 17:12:46 PDT 2008 Calling SrmReserveSpace
+
+SRM-SPACE: .......................
+	Status Code=SRM_SUCCESS
+	SpaceToken=V.3
+	TotalReservedSpaceSize=1000
+	Guaranteed Space Size=1000
+	Lifetime=900
+
+Printing text report now...
+
+SRM-CLIENT*REQUEST_STATUS=SRM_SUCCESS
+SRM-CLIENT*REQUEST-TOKEN=null
+SRM-CLIENT*SPACE-TOKEN=V.3
+SRM-CLIENT*EXPLANATION=null
+SRM-CLIENT*TOTALRESERVEDSPACESIZE=1000
+SRM-CLIENT*GUARANTEEDSPACESIZE=1000
+SRM-CLIENT*LIFETIME=900
+
+&lt;/pre&gt;
+            * srm-sp-reserve -serviceurl $SRM_Service_Endpoint_FNAL -size 1000 -gsize 900 -lifetime 900
+               * e.g. &lt;pre&gt;
+% srm-sp-reserve -serviceurl srm://fgitbse.fnal.gov:8443/srm/managerv2 \
+                             -size 1000 -gsize 900 -lifetime 900
+
+SRM-SPACE: Thu May 15 17:25:30 PDT 2008 Calling SrmReserveSpace
+
+SRM-SPACE: .......................
+	Status Code=SRM_REQUEST_INPROGRESS
+	Request token=-2147473469
+SRM-SPACE: Thu May 15 17:26:05 PDT 2008 Calling Reserve space request
+SRM-SPACE: Status Code for spaceStatusRequest SRM_SUCCESS
+	explanation= at Thu May 15 19:25:34 CDT 2008 state Done : space reservation succeeded
+	SpaceToken=50080
+	TotalReservedSpaceSize=900
+	Retention Policy=REPLICA
+	Access Latency=ONLINE
+
+Printing text report now...
+
+SRM-CLIENT*REQUEST_STATUS=SRM_REQUEST_INPROGRESS
+SRM-CLIENT*REQUEST_EXPLANATION= at Thu May 15 19:25:34 CDT 2008 state TQueued : put on the thread queue
+SRM-CLIENT*REQUEST-TOKEN=-2147473469
+SRM-CLIENT*SPACE-TOKEN=50080
+SRM-CLIENT*EXPLANATION= at Thu May 15 19:25:34 CDT 2008 state Done : space reservation succeeded
+SRM-CLIENT*TOTALRESERVEDSPACESIZE=900
+SRM-CLIENT*RETENTIONPOLICY=REPLICA
+SRM-CLIENT*ACCESSLATENCY=ONLINE
+&lt;/pre&gt;
+         * &lt;a name=&quot;sp_update&quot;&gt;&lt;b&gt;Space Update&lt;/b&gt;&lt;/a&gt;
+            * srm-sp-update -serviceurl $SRM_Service_Endpoint_LBNL -size 5000 -gsize 4000 -lifetime 300 -spacetoken V.10
+               * e.g. &lt;pre&gt;
+% srm-sp-update -serviceurl srm://osp4.lbl.gov:8443/srm/v2/server  \
+                           -size 5000 -gsize 4000 -lifetime 300 -spacetoken V.3
+
+SRM-SPACE: Thu May 15 17:13:20 PDT 2008 Calling updateSpace request
+	status=SRM_SUCCESS
+	Request token=null
+	lifetime=299
+	Min=5000
+	Max=5000
+&lt;/pre&gt;
+            * srm-sp-update -serviceurl $SRM_Service_Endpoint_FNAL -size 5000 -gsize 4000 -lifetime 300 -spacetoken 50080
+               * e.g. &lt;pre&gt;
+% srm-sp-update -serviceurl srm://fgitbse.fnal.gov:8443/srm/managerv2 \
+                           -size 5000 -gsize 4000 -lifetime 300 -spacetoken 50080
+
+SRM-SPACE: Thu May 15 17:26:50 PDT 2008 Calling updateSpace request
+	status=SRM_NOT_SUPPORTED
+	explanation=can not find a handler, not implemented
+	Request token=null
+&lt;/pre&gt;
+         * &lt;a name=&quot;sp_tokens&quot;&gt;&lt;b&gt;Space Tokens Retrieval&lt;/b&gt;&lt;/a&gt;
+            * srm-sp-tokens -serviceurl $SRM_Service_Endpoint_LBNL
+               * e.g. &lt;pre&gt;
+% srm-sp-tokens -serviceurl srm://osp4.lbl.gov:8443/srm/v2/server 
+
+SRM-SPACE: Thu May 15 17:13:50 PDT 2008 Calling srmGetSpaceTokens ...
+SRM-SPACE: ...................................
+	Status=SRM_SUCCESS
+	Explanation=null
+SRM-SPACE (0)SpaceToken=V.3
+&lt;/pre&gt;
+            * srm-sp-tokens -serviceurl $SRM_Service_Endpoint_FNAL
+               * e.g. &lt;pre&gt;
+% srm-sp-tokens -serviceurl srm://fgitbse.fnal.gov:8443/srm/managerv2
+
+SRM-SPACE: Thu May 15 17:27:16 PDT 2008 Calling srmGetSpaceTokens ...
+SRM-SPACE: ...................................
+	Status=SRM_SUCCESS
+	Explanation=OK
+SRM-SPACE (0)SpaceToken=50080
+&lt;/pre&gt;
+         * &lt;a name=&quot;sp_info&quot;&gt;&lt;b&gt;Space Information Retrieval&lt;/b&gt;&lt;/a&gt;
+            * srm-sp-info -serviceurl $SRM_Service_Endpoint_LBNL -spacetoken V.10
+               * e.g. &lt;pre&gt;
+% srm-sp-info -serviceurl srm://osp4.lbl.gov:8443/srm/v2/server -spacetoken V.3
+
+SRM-SPACE: Thu May 15 17:14:11 PDT 2008 Calling SrmGetSpaceMetaDataRequest ...
+
+SRM-SPACE:  ....space token details ....
+	status=SRM_SUCCESS
+	SpaceToken=V.3
+	TotalSize=5000
+	Owner=star
+	LifetimeAssigned=326
+	LifetimeLeft=250
+	UnusedSize=5000
+	GuaranteedSize=5000
+	RetentionPolicy=REPLICA
+	AccessLatency=ONLINE
+	status=SRM_SUCCESS
+	explanation=null
+&lt;/pre&gt;
+            * srm-sp-info -serviceurl $SRM_Service_Endpoint_FNAL -spacetoken 50080
+               * e.g. &lt;pre&gt;
+% srm-sp-info -serviceurl srm://fgitbse.fnal.gov:8443/srm/managerv2 -spacetoken 50080
+
+SRM-SPACE: Thu May 15 17:27:42 PDT 2008 Calling SrmGetSpaceMetaDataRequest ...
+
+SRM-SPACE:  ....space token details ....
+	status=SRM_SUCCESS
+	SpaceToken=50080
+	TotalSize=900
+	Owner=VoGroup=osg VoRole=null
+	LifetimeAssigned=900
+	LifetimeLeft=768
+	UnusedSize=900
+	GuaranteedSize=900
+	RetentionPolicy=REPLICA
+	AccessLatency=ONLINE
+	status=SRM_SUCCESS
+	explanation=ok
+&lt;/pre&gt;
+         * &lt;a name=&quot;sp_put&quot;&gt;&lt;b&gt;Put operation with the reserved space&lt;/b&gt;&lt;/a&gt;
+            * srm-copy file:////tmp/test.data $SRM_Service_Endpoint_LBNL\?SFN=$SRM_PATH_LBNL/osg.test2.data -spacetoken V.10
+               *.e.g. &lt;pre&gt;
+% srm-copy file:////tmp/test.data \
+                  srm://osp4.lbl.gov:8443/srm/v2/server\?SFN=/srmcache/star/mytest \
+                  -spacetoken V.3
+
+SRM-CLIENT: Thu May 15 17:14:51 PDT 2008 Connecting to httpg://osp4.lbl.gov:8443/srm/v2/server
+
+SRM-CLIENT: Thu May 15 17:14:52 PDT 2008 Calling SrmPrepareToPutRequest now ...
+request.token=star:22(PUT)
+status=SRM_REQUEST_INPROGRESS
+explanation=null
+SRM-CLIENT: Next status call in 30 seconds.
+SRM-CLIENT: Thu May 15 17:15:34 PDT 2008 Calling Status at Thu May 15 17:15:34 PDT 2008
+SRM-CLIENT: Result Status from SRM (srmStatusOfPutRequest)=SRM_SUCCESS
+
+SRM-CLIENT: RemainingPinTime=168
+
+SRM-CLIENT: RequestFileStatus for SURL=file:////tmp/test.data is Ready.
+SRM-CLIENT: received TURL=gsiftp://osp4.lbl.gov//export/srm/itb/cache/star/V.3-1805566576/mytest
+
+SRM-CLIENT: Thu May 15 17:15:36 PDT 2008 start file transfer.
+SRM-CLIENT:Source=file:////tmp/test.data
+SRM-CLIENT:Target=gsiftp://osp4.lbl.gov//export/srm/itb/cache/star/V.3-1805566576/mytest
+
+SRM-CLIENT: Thu May 15 17:15:39 PDT 2008 end file transfer.
+
+SRM-CLIENT: Thu May 15 17:15:39 PDT 2008 Calling putDone for srm://osp4.lbl.gov:8443/srm/v2/server?SFN=/srmcache/star/mytest
+
+SRM-CLIENT: Thu May 15 17:15:43 PDT 2008 end file transfer.
+
+SRM-CLIENT: Request completed with success
+
+SRM-CLIENT: Printing text report now ...
+
+SRM-CLIENT*REQUESTTYPE=put
+SRM-CLIENT*TOTALFILES=1
+SRM-CLIENT*TOTAL_SUCCESS=1
+SRM-CLIENT*TOTAL_FAILED=0
+SRM-CLIENT*REQUEST_TOKEN=star:22(PUT)
+SRM-CLIENT*REQUEST_STATUS=SRM_SUCCESS
+SRM-CLIENT*SOURCEURL[0]=file:////tmp/test.data
+SRM-CLIENT*TARGETURL[0]=srm://osp4.lbl.gov:8443/srm/v2/server?SFN=/srmcache/star/mytest
+SRM-CLIENT*TRANSFERURL[0]=gsiftp://osp4.lbl.gov//export/srm/itb/cache/star/V.3-1805566576/mytest
+SRM-CLIENT*ACTUALSIZE[0]=15
+SRM-CLIENT*FILE_STATUS[0]=SRM_SUCCESS
+SRM-CLIENT*EXPLANATION[0]=SRM-CLIENT: PutDone is called successfully
+&lt;/pre&gt;
+            * srm-copy file:////tmp/test.data $SRM_Service_Endpoint_FNAL\?SFN=$SRM_PATH_FNAL/osg.test2.data -spacetoken 50080
+               * e.g. &lt;pre&gt;
+% srm-copy file:////tmp/test.data \
+                      srm://fgitbse.fnal.gov:8443/srm/managerv2\?SFN=/pnfs/fnal.gov/data/osg/asim.test.data \
+                     -spacetoken 50080
+
+SRM-CLIENT: Thu May 15 17:29:10 PDT 2008 Calling SrmPrepareToPutRequest now ...
+request.token=-2147473466
+status=SRM_REQUEST_QUEUED
+explanation= at Thu May 15 19:29:14 CDT 2008 state Pending : created
+SRM-CLIENT: Next status call in 30 seconds.
+SRM-CLIENT: Thu May 15 17:29:45 PDT 2008 Calling Status at Thu May 15 17:29:45 PDT 2008
+SRM-CLIENT: Result Status from SRM (srmStatusOfPutRequest)=SRM_SUCCESS
+	SRM-CLIENT: Check Status Explanation= at Thu May 15 19:29:14 CDT 2008 state Pending : created
+
+SRM-CLIENT: RemainingPinTime=14368
+
+SRM-CLIENT: RequestFileStatus for SURL=file:////tmp/test.data is Ready.
+SRM-CLIENT: received TURL=gsiftp://fgitbse.fnal.gov:2811///asim.test.data
+
+SRM-CLIENT: Thu May 15 17:29:46 PDT 2008 start file transfer.
+SRM-CLIENT:Source=file:////tmp/test.data
+SRM-CLIENT:Target=gsiftp://fgitbse.fnal.gov:2811///asim.test.data
+
+SRM-CLIENT: Thu May 15 17:29:51 PDT 2008 end file transfer.
+
+SRM-CLIENT: Thu May 15 17:29:51 PDT 2008 Calling putDone for srm://fgitbse.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/data/osg/asim.test.data
+
+SRM-CLIENT: Thu May 15 17:29:52 PDT 2008 end file transfer.
+
+SRM-CLIENT: Request completed with success
+
+SRM-CLIENT: Printing text report now ...
+
+SRM-CLIENT*REQUESTTYPE=put
+SRM-CLIENT*TOTALFILES=1
+SRM-CLIENT*TOTAL_SUCCESS=1
+SRM-CLIENT*TOTAL_FAILED=0
+SRM-CLIENT*REQUEST_TOKEN=-2147473466
+SRM-CLIENT*REQUEST_STATUS=SRM_SUCCESS
+SRM-CLIENT*REQUEST_EXPLANATION= at Thu May 15 19:29:14 CDT 2008 state Pending : created
+SRM-CLIENT*SOURCEURL[0]=file:////tmp/test.data
+SRM-CLIENT*TARGETURL[0]=srm://fgitbse.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/data/osg/asim.test.data
+SRM-CLIENT*TRANSFERURL[0]=gsiftp://fgitbse.fnal.gov:2811///asim.test.data
+SRM-CLIENT*ACTUALSIZE[0]=15
+SRM-CLIENT*FILE_STATUS[0]=SRM_SUCCESS
+SRM-CLIENT*EXPLANATION[0]=Done
+&lt;/pre&gt;
+         * &lt;a name=&quot;sp_purge&quot;&gt;&lt;b&gt;Purge an SURL in the reserved space&lt;/b&gt;&lt;/a&gt;
+            * srm-sp-purge -serviceurl $SRM_Service_Endpoint_LBNL -s &quot;$SRM_Service_Endpoint_LBNL?SFN=$SRM_PATH_LBNL/osg.test2.data&quot; -spacetoken V.10 
+               * e.g. &lt;pre&gt;
+% srm-sp-purge -serviceurl  srm://osp4.lbl.gov:8443/srm/v2/server  \
+                         -spacetoken V.3 \
+                         -s &quot; srm://osp4.lbl.gov:8443/srm/v2/server?SFN=/srmcache/star/mytest&quot;
+
+SRM-SPACE: Thu May 15 17:16:01 PDT 2008 Calling purgeFromSpace 
+
+	SURL=srm://osp4.lbl.gov:8443/srm/v2/server?SFN=/srmcache/star/mytest
+	status=SRM_LAST_COPY
+	explanation=null
+
+** Note: the file is the only copy available for the SURL, and purging from the space has to be failed.
+** Note: the underlying storage work differently, and 
+               dCache at FNAL allows purging space independent from the file.
+               the file copy is still in the storage, and only the space for that SURL is purged.
+               to remove the SURL, need to use srmRm.
+
+% srm-rm srm://osp4.lbl.gov:8443/srm/v2/server\?SFN=/srmcache/star/mytest 
+
+SRM-DIR: Thu May 15 17:17:05 PDT 2008 Calling SrmRmFile
+SRM-DIR: Total files to remove: 1
+	status=SRM_SUCCESS
+	explanation=null
+	surl=srm://osp4.lbl.gov:8443/srm/v2/server?SFN=/srmcache/star/mytest
+	status=SRM_SUCCESS
+	explanation=null
+
+% srm-sp-release -serviceurl srm://osp4.lbl.gov:8443/srm/v2/server -spacetoken V.3
+
+SRM-SPACE: Thu May 15 17:17:28 PDT 2008Calling ReleaseSpace request ....
+SRM-SPACE: Releasing space for token=V.3
+	status=SRM_SUCCESS
+&lt;/pre&gt;
+            * srm-sp-purge -serviceurl $SRM_Service_Endpoint_FNAL -s &quot;$SRM_Service_Endpoint_FNAL?SFN=$SRM_PATH_FNAL/osg.test2.data&quot; -spacetoken 50080
+               * e.g. &lt;pre&gt;
+% srm-sp-purge -serviceurl srm://fgitbse.fnal.gov:8443/srm/managerv2 \
+                         -spacetoken 50080 \
+                         -s srm://fgitbse.fnal.gov:8443/srm/managerv2\?SFN=/pnfs/fnal.gov/data/osg/asim.test.data
+
+SRM-SPACE: Thu May 15 17:40:41 PDT 2008 Calling purgeFromSpace 
+
+SRM-SPACE: SRM returned null getArrayOfFileStatuses for SrmPurgeFromSpace request
+&lt;/pre&gt;
+         * &lt;a name=&quot;sp_release&quot;&gt;&lt;b&gt;Space Release&lt;/b&gt;&lt;/a&gt;
+            * srm-sp-release -serviceurl $SRM_Service_Endpoint_LBNL -spacetoken V.10
+            * srm-sp-release -serviceurl $SRM_Service_Endpoint_FNAL -spacetoken 50080
+               * e.g. &lt;pre&gt;
+% srm-sp-release -serviceurl srm://fgitbse.fnal.gov:8443/srm/managerv2 -spacetoken 50082
+
+SRM-SPACE: Thu May 15 17:41:16 PDT 2008Calling ReleaseSpace request ....
+SRM-SPACE: Releasing space for token=50082
+	status=SRM_SUCCESS
+	explanation=Space released
+
+% srm-rm srm://fgitbse.fnal.gov:8443/srm/managerv2\?SFN=/pnfs/fnal.gov/data/osg/asim.test.data
+
+SRM-DIR: Thu May 15 17:41:30 PDT 2008 Calling SrmRmFile
+SRM-DIR: Total files to remove: 1
+	status=SRM_SUCCESS
+	explanation=successfully removed files
+	surl=srm://fgitbse.fnal.gov:8443/srm/managerv2?SFN=/pnfs/fnal.gov/data/osg/asim.test.data
+	status=SRM_SUCCESS
+	explanation=null
+
+&lt;/pre&gt;
+ 
+
+---+++ Support
+   * email to srm@lbl.gov
+
+%BR%
+
+-- Main.AlexSim - 23 May 2008
+
+&lt;!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ ===================
+
+ Thank you for claiming ownership for this document! Please fill in your FirstLast name here:
+   * Local OWNER = AlexSim 
+
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (ComputeElement|Storage|VO|Security|User|Monitoring|General|Trash/Integration|Operations|Tier3)
+   * Local DOC_AREA       = Storage
+
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (EndUser|Student|Developer|SysAdmin|VOManager)
+   * Local DOC_ROLE       = EndUser
+
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge)
+   * Local DOC_TYPE       = HowTo
+  Please define if this document in general needs to be reviewed before release ( %YES% | %NO% )
+   * Local INCLUDE_REVIEW = %YES%
+
+ Please define if this document in general needs to be tested before release ( %YES% | %NO% )
+   * Local INCLUDE_TEST   = %YES%
+
+ change to %YES% once the document is ready to be reviewed and back to %NO% if that is not the case
+   * Local REVIEW_READY   = %NO%
+
+ change to %YES% once the document is ready to be tested and back to %NO% if that is not the case
+   * Local TEST_READY     = %NO%
+
+ change to %YES% only if the document has passed the review and the test (if applicable) and is ready for release
+   * Local RELEASE_READY  = %NO%
+
+
+ DEAR DOCUMENT REVIEWER
+ ======================
+
+ Thank for reviewing this document! Please fill in your FirstLast name here:
+   * Local REVIEWER       = TedHesselroth
+ Please define the review status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local REVIEW_PASSED  = %NO%
+
+
+ DEAR DOCUMENT TESTER
+ ====================
+
+ Thank for testing this document! Please fill in your FirstLast name here:
+   * Local TESTER         = NehaSharma
+ Please define the test status for this document to be in progress ( %IN_PROGRESS% ), failed ( %NO% ) or passed ( %YES% )
+   * Local TEST_PASSED    = %NO%
+############################################################################################################
+--&gt;

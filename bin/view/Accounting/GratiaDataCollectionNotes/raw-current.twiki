@@ -1,0 +1,166 @@
+---+!! Gratia Data Collection Notes
+
+---++ Introduction
+
+This attempts to put all in one place a description of the algorithms followed when collecting and processing job level Gratia data. Where appropriate, common and probe-specific behaviors will be discussed, including any historical behaviors that still may be of relevance.
+
+---++ Overview of Gratia data collection.
+
+Speaking very generally, a Gratia probe will:
+   1. Collect information from one or more sources;
+   1. Prepare a record for upload to the probe by using the Gratia python API;
+   1. Contact a Gratia data collection service, upload some meta-information and then the job level data.
+
+The different types of data sent to Gratia collectors include:
+
+   1. Local and OSG-originated job level information on batch jobs executed by a variety of LRMS (Local Resource Management Systems) including Condor, PBS (including Torque), LSF, SGE;
+   1. Summary level information from a variety of resources (PANDA is a prime example) for _ad hoc_ comparison with job-level data.
+   1. Summarized process-level information.
+   1. Metric information from RSV tests.
+   1. Pilot level information from the glExec pilot/glide-in system.
+   1. Storage allocation information from OSG Storage Elements (SEs).
+   1. Transfer-level information from dCache and GRIDFtp.
+
+At the collector these data are received, stored in a DB and summarized as appropriate. Reports are available either via the BIRT interface, or as text-based emails.
+
+---++ Anatomy of a record upload.
+
+&lt;ol&gt;&lt;li&gt;The probe will register its relevant version information with the Gratia infrastructure using any or all of the following python routines:
+    &lt;dl&gt;&lt;dt&gt; &lt;tt&gt;Gratia.registerReporter(&lt;em&gt;name&lt;/em&gt;, &lt;em&gt;version string&lt;/em&gt;)&lt;/tt&gt; &lt;/dt&gt;&lt;dd&gt; &lt;tt&gt;Gratia.registerReporter(&quot;glexec.py&quot;, &quot;v1.0.2&quot;)&lt;/tt&gt; &lt;/dd&gt;
+        &lt;dt&gt; &lt;tt&gt;Gratia.registerReporterLibrary(&lt;em&gt;name&lt;/em&gt;, &lt;em&gt;version string&lt;/em&gt;)&lt;/tt&gt; &lt;/dt&gt;&lt;dd&gt; &lt;tt&gt;Gratia.registerReporterLibrary(&quot;glexec_extraSubs.py&quot;, &quot;v1.1&quot;)&lt;/tt&gt; &lt;/dd&gt;
+        &lt;dt&gt; &lt;tt&gt;Gratia.registerService(&lt;em&gt;name&lt;/em&gt;, &lt;em&gt;version string&lt;/em&gt;)&lt;/tt&gt; &lt;/dt&gt;&lt;dd&gt; &lt;tt&gt;Gratia.registerService(&quot;Condor&quot;, &quot;v7.0.3&quot;)&lt;/tt&gt; &lt;/dd&gt;
+    &lt;/dl&gt;
+    A useful utility routine here is &lt;tt&gt;Gratia.extractRevision(&quot;$Revision: %&quot;)&lt;/tt&gt; &lt;/li&gt;
+    &lt;li&gt;Initialize the Gratia system and perform a handshake with the collector: &lt;tt&gt;Gratia.initialize(&lt;em&gt;[config-file]&lt;/em&gt;)&lt;/tt&gt; &lt;/li&gt;
+    &lt;li&gt;Attempt to send any records written to file but not uploaded successfully.&lt;/li&gt;
+    &lt;li&gt;For each job record to upload:
+    &lt;ul&gt;&lt;li&gt;Define the job level record with information gleaned from the primary information source (eg LRMS log).&lt;/li&gt;
+        &lt;li&gt;Give the send instruction for the record (&lt;tt&gt;record.Send()&lt;/tt&gt;).&lt;/li&gt;
+        &lt;li&gt;Pre-process the data prior to sending by:
+        &lt;ul&gt;&lt;li&gt;Checking the !MeterName, !SiteName and Grid attributes and adding them to the record as appropriate.&lt;/li&gt;
+            &lt;li id=&quot;check_vo&quot;&gt;Checking and obtaining the best possible values for !VOName and !ReportableVOName according to an established order of precedence. Please see the specific [[#Methods_used_to_ascertain_the_us][notes on !VOName and !ReportableVOName]] below.&lt;/li&gt;
+        &lt;li&gt;Suppress records as appropriate according to configuration settings and data checks ([[#record_suppression][see below]]).&lt;/li&gt;
+        &lt;li&gt;Create a file backup of the record.&lt;/li&gt;
+        &lt;li&gt;Send the record and delete the file backup upon successful completion.&lt;/li&gt;
+        &lt;/ul&gt;&lt;/li&gt;
+    &lt;/ul&gt;&lt;/li&gt;
+    &lt;li&gt;Remove old log files and old (unusable) data files.&lt;/li&gt;
+    &lt;li&gt;Produce a summary of records sent and failed.&lt;/li&gt;
+    &lt;li&gt;Disconnect and exit.&lt;/li&gt;
+&lt;/ol&gt;
+
+---++ Behavior common to all probes.
+
+&lt;ul&gt;
+    &lt;li&gt; _Any_ probe reading data from elsewhere (DB, log files, etc) must take care to track progress and avoid sending multiple records describing the same event.&lt;/li&gt;
+    &lt;li&gt;The second and subsequent records received by the collector describing the same given event are not written to the DB in the usual manner but are stored in the !DupRecord table along with a reference to the original record. These are not considered further by the collector except to be cleaned up according to the configured housekeeping schedule. A revised description of an event therefore must be incorporated in the DB manually.&lt;/li&gt;
+    &lt;li&gt;Records not sent to the collector successfully will be stored on disk and sent when connection is re-established.&lt;/li&gt;
+    &lt;li&gt;Log-scraping probes (eg PBS / LSF, SGE) must take special care to track progress and avoid rewinding and re-sending information about old jobs. In addition, one must take care to avoid problems associated with the possibility of reading the log at the same time as new information is being added (possibly at high rate). This problem is especially acute when the log is mirrored in some way from its primary location (rsync or NFS).&lt;/li&gt;
+    &lt;li id=&quot;record_suppression&quot;&gt;Several !ProbeConfig attributes control whether and how records are suppressed without being uploaded to the collector:
+    &lt;dl&gt;&lt;dt&gt;&lt;tt&gt;SuppressUnknownVORecords&lt;/tt&gt;&lt;/dt&gt;
+        &lt;dd&gt;Suppress records with a !VOName of &quot;Unknown.&quot;&lt;/dd&gt;
+        &lt;dt&gt;&lt;tt&gt;SuppressNoDNRecords&lt;/tt&gt;&lt;/dt&gt;
+        &lt;dd&gt;Suppress records with no DN.&lt;/dd&gt;
+        &lt;dt&gt;&lt;tt&gt;SuppressGridLocalRecords&lt;/tt&gt;&lt;/dt&gt;
+        &lt;dd&gt;Suppress records with a Grid attribute of &quot;Local.&quot; In VDT 1.10.1n, this option is true by default.&lt;/dd&gt;
+    &lt;/dl&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+---++ Behavior common to LRMS probes.
+
+[ LRMS -&gt; Local Resource Management System a.k.a batch manager. ]
+
+---+++ Methods used to ascertain the user details associated with a job.
+
+The user details attributes of an LRMS Gratia record are:
+   * !LocalUserId;
+   * !GlobalUserName;
+   * DN;
+   * !VOName; _and_
+   * !ReportableVOName
+
+In particular, !VOName and !ReportableVOName correspond respectively to _either_:
+   * FQAN, VO Name (or sub-VO name as appropriate, eg Minos); _or_
+   * voi, !VOc as specified in =$VDT_LOCATION/monitoring/osg-user-vo-map.txt=.
+
+On a modern system (OSG 1.0+ for Condor probe, OSG 1.0/VDT 1.10.1n+ for other probes), the DN, FQAN and VO name are obtained via a Gratia-specific hook in the job manager Perl code which runs voms-proxy-info on the delegated proxy (if available). The proxy is available if the jobs was submitted via:
+   * !CondorG;
+   * =globus-job-run= (or =globusrun=); _or_
+   * =globusrun-ws= with explicit credential delegation.
+
+Whether FQAN / !VOName are available in this manner depends on whether the submitter used a voms-proxy (yes) or vanilla grid-proxy (no).
+
+The information gleaned in this way is stored in a, &quot;certinfo&quot; file in =$VDT_LOCATION/gratia/var/data=.
+
+If the DN is not available via this method, it is obtainable from the !ClassAd for Condor jobs or via reverse grid map file look-up for the SGE probe.
+
+On older OSG installations or if a delegated proxy is not available, the !LocalUserId is used to look up the voi &amp; !VOc.  Note that here, we are completely at the mercy of the site admins, since a reverse grid map file may be generated by =edg-mkgridmap=, GUMS or (as on several sites) by hand, with varying levels of consistency and reliability. This method is also a first-match system, so the mapping is imperfect in a variety of increasingly common scenarios.
+
+To summarize: following algorithm is used by the =Gratia.py= infrastructure at the [[#check_vo][relevant point]] to decide what gets sent to the collector:
+   1. !VOName / !ReportableVOName as provided by the specific probe if !VOName is the FQAN;
+   1. Credentials from a certinfo file if one can be associated with the job record;
+   1. !VOName / !ReportableVOName if provided by the specific probe; _or_
+   1. voi &amp; !VOc from a reverse grid map file.
+
+At the collector level every unique combination of !VOName / !ReportableVOName is put into a table. This combination is used to look up the &quot;true&quot; VO name for reporting purposes. If this combination has not been seen before the default translation of the combination is the !VOName unless the !VOName is an FQAN, in which case the default translation is the !ReportableVOName. This translation may be changed on the collector using the administration GUI.
+
+---+++ Notes on local vs OSG-GRAM jobs.
+
+Condor (with =PER_JOB_HISTORY_DIR=) and most other known LRMS (SGE, PBS, LSF) store information for _all_ jobs seen, not necessarily just GRAM-originated jobs. In campus grid situations where the same LRMS is used for GRAM and non-GRAM jobs it is extremely difficult for the probe to distinguish one from the other. One increasingly common case is locally scheduled MPI jobs; another is jobs executed via a Teragrid gateway. One is reliant on the construction of the reverse mapping file and the grid-identity to !LocalUserId (UNIX UID) mapping to distinguish GRAM from non-GRAM. 
+
+Currently, having a GRAM job does not mean having access to FQAN (grid-proxy-based  authorization) or even DN (non-delegated WS jobs), so that is not a foolproof discriminator. Similarly, a job coming in through the teragrid gateway might be mapped to the same !LocalUserId as one via the OSG gateway as recently happened to nanoHUB at Purdue. Also, a hand-written mapfile (_cf_ OUHEP) might manually map individual users to a VO (DOSAR) such that PBS jobs mapped via =osg-user-vo-map.txt= will be accounted (as far as Gratia can tell) as an OSG job.
+
+Finally, there has been a practice on the part of LHC experiments (notably ATLAS) to run jobs locally but have them reported to Gratia in order to get them credited to WLCG via Gratia&#39;s automatic reporting to same. This also leads to blurring of the distinction between local and GRAM jobs.
+
+---++ Specific probe behavior and other notes.
+
+---+++ Condor
+
+   * The probe as released with VDT 1.10.1n is capable of tagging !ClassAds as being of GRAM origin in the job manager and marking jobs that do not possess this tag as Grid=Local. The configuration attribute =SuppressGridLocalRecords= can therefore be used to filter-out local jobs.
+
+   * Newer versions of Condor (&gt;=6.9.0) can be configured to write !ClassAd files into a known directory upon completion. =PER_JOB_HISTORY_DIR= should be set to match the configuration attribute =DataFolder= (default =$VDT_LOCATION/gratia/var/data=) in this case.
+
+   * With older versions of Condor (or where =PER_JOB_HISTORY_DIR= is not set correctly) we rely on a GRAM stub being written to =$VDT_LOCATION/gratia/var/data= either by the job manager (GT2) or by the probe itself after extracting the information from =globus-condor.log=. Once the job ID is ascertained, =condor_history= is invoked, which can be very slow on (eg) systems running Quill.
+
+   * Some pre-OSG-1.0 versions of the probe did not catch jobs if the version of Condor was &gt;6.9.0 but did not have =PER_JOB_HISTORY_DIR= set. Similarly WS jobs were missed if a GRAM stub was required for one reason or another because individual stubs were not available for GT4 jobs. Now if _PER_JOB_HISTORY_DIR= is not set the GRAM stub is used as a fallback; and the =globus-condor.log= is parsed for GRAM stub information from WS jobs.
+
+   * As of VDT 1.10.1n grid monitor jobs are tagged with =ResourceType= = &#39;Documentation/Release3.GridMonitor&#39; and are therefore separable from normal jobs. As of Gratia Services v1.00.5 these data are stored only; and not used in any reports or queries.
+
+---+++ PBS / LSF
+
+   * Pre-VDT 1.10.1n, the probe was not able to associate certinfo files to a particular job (even if a certinfo file was written). Combined with PBS&#39; lack of a DN this rendered PBS entirely reliant on the map file for VO information.
+
+   * Pre-OSG 1.0, the probe was susceptible to mis-reading the LRMS log file when the LRMS was under high load. This mis-reading tended to occur when the LRMS log file was copied in some way to the machine upon which the probe ran (either via rsync or NFS mount).
+
+   * Some ways of configuring the LRMS render Gratia unable to see the correct accounting information for jobs (certain queue forwarding scenarios).
+
+---+++ SGE
+
+On some sites running SGE, the reverse map file contains the DN. This probe is able to parse the DN information out of the map file in those circumstances.
+
+---+++ gLexec
+
+   * This is the only OSG Gratia probe currently which must be run on the WN. It must be configured properly such that the =MeterName= in !ProbeConfig corresponds exactly to the GK&#39;s =MeterName=.
+
+   * gLexec information received at the collector is tagged differently to standard LRMS jobs and is therefore separable. As of Gratia Services v1.00.5 these data are stored only; and not used in any reports or queries.
+
+---+++ PS-Accounting
+
+   * This non-OSG probe collects summarized ps-accounting data gathered by the UNIX =psacct= utility. It is not to be considered comparable to job-level data.
+
+---++ Advice to OSG VOs wishing to get as complete an accounting of their activities as possible.
+
+---+++ Things you can do yourself.
+
+   * Always use a VOMS proxy rather than a grid proxy;
+   * If you submit via non-CondorG WS: always explicitly delegate your credentials;
+   * Always use the right FQAN for the job -- Role=RSV, Role=Pilot, Role=Production, etc, etc. Any distinct FQAN can be mapped to a different, &quot;VO&quot; as desired for fine-grained accounting.
+
+---+++ Things to ask of the sites where you run jobs.
+
+   * If the sites are nominally, &quot;yours,&quot; then you can separate out any test batch and fork jobs run by the RSV system by running them with separable credentials (eg Role=RSV) and having the Gratia team translate them to a different reporting VO label.
+   * Install and run the managedfork system to account for fork jobs run on the gatekeeper (this will also manage gatekeeper load better than the default fork queue.
+   * Install the latest version of OSG (currently 1.0), and the latest patches / updates therefor.
+   * If they are running Condor (as batch _and/or_ managedfork LRMS) they should follow the pre-install checklist which specifies how to check the PER_JOB_HISTORY_DIR attribute of their condor_config to ensure all condor jobs are caught and their reporting is as efficient as possible and contains the maximum amount of information.
+
+-- Main.ChrisGreen - 01 Dec 2008

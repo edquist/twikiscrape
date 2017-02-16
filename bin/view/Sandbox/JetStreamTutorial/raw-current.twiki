@@ -1,0 +1,63 @@
+---+ Using Open Stack and Atmosphere on !JetStream
+
+---++ Getting to Jetstream
+
+Point your browser at [[https://use.jetstream-cloud.org]]. 
+
+You will be presented with a list of the available images on the Jetstream system. Remember Jetstream is build on !OpenStack technology. The web GUI is called atmosphere. 
+
+To log onto Jetstream click the Login button in the top right corner. Select &#39;XSEDE&#39; in the dropdown menu. This will take you to a login screen, enter the credentials you were provided and click the &#39;Sign In&#39; button to login. 
+
+You will be presented the Jetsteam dashboard and a &#39;Getting Started&#39; screen. 
+
+---++ Finding a VM Image and Starting It
+
+From here you can go directly to the &#39;Images&#39; tab and look for an interesting VM image. 
+
+For this example we&#39;ll use the Galaxy Standalone (16.01) Image. Feel free to look at other images if you find them more interesting. Click on &#39;LAUNCH&#39; to start a VM. You will be presented with a New Project window. Create a name and description for your project, this allows you to organize your related VMs into groups. All VMs will be started within a project group. 
+
+NOTE: Be sure to choose at least a Large Instance size for Galaxy. The Provider should be Jetstream - Indiana University. (Though Jetstream - TACC will work it is the University of Texas instance and we&#39;ve only requested IU cycles.)
+
+Press the &#39;Launch Instance&#39; button. 
+
+You will see a progress bar as your VM starts up along with some important information about the VM including the IP address. Copy this address we&#39;ll use it later. Once your VM has started, it will take a few minutes to build, configure  the network, and start up. If you had a non-training account you would get an email on completion. This takes 3-5 minutes. 
+
+---++ Connecting to the VM 
+
+You can now click on your VM to get further information. 
+
+On the right hand menu you will see many actions you can take on the VM including Reporting Problems, Creating an Image of this VM for later use, Suspend activity, Stop, Reboot, Redeploy and Delete. 
+
+Below this menu there is an link called &quot;Open Web Shell&quot; this opens a browser based terminal you can use to connect to via SSH to the VM. Click on this button after a few moments a Atmosphere ssh session will start. Several testers have mentioned this does not work correctly with their browser, it does work with my FF 49.0.2. 
+
+What can you find out about this machine?
+
+The FQDN for this VM 
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;hostname&lt;/pre&gt;
+
+The OS and Hardware Architecture
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;uname -a&lt;/pre&gt;
+
+See the Galaxy processes
+&lt;pre style=&quot;margin-left:4em&quot; class=&quot;screen&quot;&gt;ps -ef | grep galaxy&lt;/pre&gt;
+
+Can you use the &#39;ps&#39; command to find out what database Galaxy is using? 
+
+---++ Connecting to the Web Interface (Galaxy Only)
+
+Open another browser window. Using the information from the &#39;hostname&#39; command you&#39;ve run in the previous step, point your web browser at the galaxy web interface. You&#39;ve set up a fully functioning Galaxy Bioinformatics workflow interface. Click around and see what you&#39;ve done. Without data at hand there not much to be done here. 
+
+---++ Shutting down your VM
+When you&#39;re done close your browser pointing at Galaxy, &#39;exit&#39; your Web Shell and navigate back to the Jetstream dashboard. You can review the usage statistics for CPU and Storage. 
+
+Click on the &#39;Projects&#39; tab and then the project where you started your VM image. Click the instance name to get to the actions menu. From here click stop. This will give you a warning message to be sure you want to stop this instance. If you had modified it in any way you could then create an image of your new step up for later use. 
+
+You&#39;ve just done a very complex operation, creating an OS, installing a complex web service, starting it and finally retired it. Congratulations!
+
+More about Openstack [[https://www.openstack.org/]]
+More about Atmosphere [[https://github.com/iPlantCollaborativeOpenSource/atmosphere]]
+More about Galaxy [[https://usegalaxy.org/]]
+
+---++ Slides
+   * [[%ATTACHURL%/BTown-Lecture.pdf][Slides]]
+
