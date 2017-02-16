@@ -19,10 +19,18 @@ def geturi(url, qq):
     return "%s?%s" % (url, qstr)
 
 def readurl(url):
-    return urllib2.urlopen(url).read()
+    return urllib2.urlopen(url, timeout=10).read()
 
 def writefile(path, txt):
     open(path, "w").write(txt)
+
+def synchtml(url,path):
+    if os.path.exists(path):
+        return open(path).read()
+    else:
+        html = readurl(url)
+        writefile(path, html)
+        return html
 
 def get_links(html):
     linkpat = r'<a href="%s([^"#]*)["#]' % baseview
@@ -37,24 +45,28 @@ def fetch_page(page, rev="current", recurse=False):
     if not os.path.exists(relpath):
         os.makedirs(relpath)
 
-    rawuri = geturi(url, rawmode)
-    rawpath = "%s/raw-%s" % (relpath, rev)
-    html = readurl(rawuri)
-    writefile(rawpath, html)
+    try:
+        rawuri = geturi(url, rawmode)
+        rawpath = "%s/raw-%s" % (relpath, rev)
+        synchtml(rawuri, rawpath)
 
-    printuri = geturi(url, printmode)
-    printpath = "%s/print-%s" % (relpath, rev)
-    html = readurl(printuri)
-    writefile(printpath, html)
+        printuri = geturi(url, printmode)
+        printpath = "%s/print-%s" % (relpath, rev)
+        html = synchtml(printuri, printpath)
+        links = get_links(html)
+        html = None  # GC html
 
-    visited.add(page)
-    for l in get_links(html):
-        if l not in visited:
-            if recurse:
-                fetch_page(l, recurse=True)
-            else:
-                print "link:", l
-                visited.add(page)
+        visited.add(page)
+        for link in links:
+            if link not in visited:
+                if recurse:
+                    fetch_page(link, recurse=True)
+                else:
+                    print "link:", link
+                    visited.add(page)
+    except urllib2.URLError:
+        visited.add(page)
+        print >>sys.stderr, "timed out trying to read %s" % page
 
 if sys.argv[1:]:
     for page in sys.argv[1:]:
