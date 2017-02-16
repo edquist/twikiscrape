@@ -28,7 +28,7 @@ def get_links(html):
     linkpat = r'<a href="%s([^"#]*)["#]' % baseview
     return re.findall(linkpat, html)
 
-def fetch_page(page, rev="current"):
+def fetch_page(page, rev="current", recurse=False):
     print "getting", page
     #if not page.startswith('/'):
     abspage = baseview + page
@@ -50,13 +50,16 @@ def fetch_page(page, rev="current"):
     visited.add(page)
     for l in get_links(html):
         if l not in visited:
-            #fetch_page(page)
-            print l
+            if recurse:
+                fetch_page(l, recurse=True)
+            else:
+                print "link:", l
+                visited.add(page)
 
 if sys.argv[1:]:
     for page in sys.argv[1:]:
-        fetch_page(page)
+        fetch_page(page, recurse=False)
 else:
     #fetch_page("Documentation/Release3/NavAdminStorage")
-    fetch_page(startpage)
+    fetch_page(startpage, recurse=True)
 
