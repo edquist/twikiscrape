@@ -1,0 +1,504 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> InstallCvmfsStratum1 &lt; Documentation/Release3 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/Release3/InstallCvmfsStratum1?_T=16 Feb 2017" type="application/x-wiki" title="edit InstallCvmfsStratum1" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/Release3/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/InstallCvmfsStratum1"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFFFF;
+	}
+	.patternBookView {
+		border-color:#FFFFFF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <link rel="stylesheet" type="text/css" href="https://twiki.opensciencegrid.org/twiki/pub/Documentation/Tools/exercises.css">
+<h1><a name="Install_a_CVMFS_Stratum_1"></a>  Install a CVMFS Stratum 1 </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#1_About_this_Document">1  About this Document</a>
+</li> <li> <a href="?cover=print#2_Applicable_versions">2  Applicable versions</a>
+</li> <li> <a href="?cover=print#3_Requirements">3  Requirements</a> <ul>
+<li> <a href="?cover=print#3_1_Host_and_OS">3.1  Host and OS</a>
+</li> <li> <a href="?cover=print#3_2_Users_and_Groups">3.2  Users and Groups</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#4_Install_Instructions">4  Install Instructions</a> <ul>
+<li> <a href="?cover=print#4_1_Installing_cvmfs_server_and">4.1  Installing cvmfs-server and httpd</a> <ul>
+<li> <a href="?cover=print#4_1_1_Installing_a_CVMFS_reposit">4.1.1  Installing a CVMFS repository server</a>
+</li> <li> <a href="?cover=print#4_1_2_Installing_CVMFS_stratum_1">4.1.2  Installing CVMFS stratum 1 code without repository server code</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#4_2_Installing_frontier_squid_an">4.2  Installing frontier-squid and frontier-awstats</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#5_Configuring">5  Configuring</a> <ul>
+<li> <a href="?cover=print#5_1_Configuring_the_system">5.1  Configuring the system</a>
+</li> <li> <a href="?cover=print#5_2_Configuring_cron">5.2  Configuring cron</a>
+</li> <li> <a href="?cover=print#5_3_Configuring_apache">5.3  Configuring apache</a>
+</li> <li> <a href="?cover=print#5_4_Configuring_frontier_squid">5.4  Configuring frontier-squid</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#6_Verifying">6  Verifying</a> <ul>
+<li> <a href="?cover=print#6_1_Adding_an_example_repository">6.1  Adding an example repository</a>
+</li> <li> <a href="?cover=print#6_2_Verifying_that_the_replica_i">6.2  Verifying that  the replica is being served</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#7_Setting_up_monitoring">7  Setting up monitoring</a>
+</li></ul> 
+</div>
+<p />
+<h1><a name="1_About_this_Document"></a> 1  About this Document </h1>
+This document describes how to install a CVMFS Stratum 1.  There are many different variations on how to do that, but this document focuses on the configuration of the OSG GOC Stratum 1 oasis-replica.opensciencegrid.org.  It is applicable to other Stratum 1s as well, very likely with modifications (some of which are suggested in the document below).  
+<p />
+<h1><a name="2_Applicable_versions"></a> 2  Applicable versions </h1>
+The applicable software versions for this document are cvmfs and cvmfs-server &gt;= 2.2.1.
+<p />
+<h1><a name="3_Requirements"></a> 3  Requirements </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="3_1_Host_and_OS"></a> 3.1  Host and OS </span></h2>
+<p /> <ul>
+<li> OS is a 64-bit Red Hat Enterprise Linux 5, 6, 7, and variants (see <a href="/bin/view/Documentation/Release3/SupportedOperatingSystems" class="twikiLink">details...</a>). 
+</li> <li> Root access
+</li> <li> SELinux disabled
+</li> <li> Adequate disk space for the repositories that will be served, at <code>/srv/cvmfs</code>.  Do not use xfs as the filesystem type on operating systems older than RHEL7, because it has been demonstrated to perform poorly for CVMFS repositories; instead use ext3 or ext4.  About 10GB should be reserved for apache and squid logs under /var/log on a production server, although they normally will not get that large.  A Stratum 1 that is also a repository server should have at least 5GB available at <code>/var/cache</code>.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="3_2_Users_and_Groups"></a> 3.2  Users and Groups </span></h2>
+<p />
+If your machine is also going to be a repository server like the OSG GOC, the installation will create one user unless it already exists:
+<p />
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallCvmfsStratum1?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">User</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1 twikiLastCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallCvmfsStratum1?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Comment</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>cvmfs</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> CernVM-FS service account </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<p />
+A repository server installation will also create a cvmfs group and default the cvmfs user to that group.
+<p />
+In addition, if the fuse rpm is not for some reason already installed, installing the repository server packages will also install fuse and that will create another group:
+<p />
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallCvmfsStratum1?cover=print;sortcol=0;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Group</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallCvmfsStratum1?cover=print;sortcol=1;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Comment</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallCvmfsStratum1?cover=print;sortcol=2;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Group members</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>cvmfs</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> CernVM-FS service account </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> none </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>fuse</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> FUSE service account </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <code>cvmfs</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<p />
+<h1><a name="4_Install_Instructions"></a> 4  Install Instructions </h1>
+<p />
+All CVMFS Stratum 1s require cvmfs-server software and apache (httpd).  It is highly recommended to also install frontier-squid and frontier-awstats on the same machine to be able to easily join the WLCG <a href="http://wlcg-squid-monitor.cern.ch/snmpstats/indexcvmfs.html" target="_top">MRTG</a> and <a href="http://wlcg-squid-monitor.cern.ch/awstats/cvmfs.html" target="_top">awstats</a> monitoring systems.  The recommended configuration for frontier-squid below does not do any caching, it is just for monitoring.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="4_1_Installing_cvmfs_server_and"></a> 4.1  Installing cvmfs-server and httpd </span></h2>
+<p />
+The OSG GOC Stratum 1 has to function as a repository server in addition to serving repository replications; most Stratum 1s serve only replications.   Serving repositories is done quite differently on Redhat EL5 and EL6 systems.  Instructions are also provided for how to install cvmfs-server on Stratum 1s that do not have to be repository servers, which is the same on both versions of operating systems.  Choose one of the following three sections.
+<p />
+<h3><a name="4_1_1_Installing_a_CVMFS_reposit"></a> 4.1.1  Installing a CVMFS repository server </h3>
+<p />
+<h4><a name="4_1_1_1_Installing_CVMFS_reposit"></a> 4.1.1.1  Installing CVMFS repository server on RHEL5 </h4>
+<p />
+Redhat EL5-based systems that are not Scientific Linux-based should first build the <a href="http://ftp.scientificlinux.org/linux/scientific/5x/SRPMS/SL/aufs-0.20090202.cvs-6.sl5.src.rpm" target="_top">SL5 aufs source rpm</a> and install the resulting rpm in their own yum repository. 
+<p />
+Follow these instructions to install:<pre class="rootscreen">
+[root@client ~]$ rpm -i http://cvmrepo.web.cern.ch/cvmrepo/yum/cvmfs/EL/5/x86_64/cvmfs-release-2-4.el5.noarch.rpm
+[root@client ~]$ rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+[root@client ~]$ yum -y install aufs cvmfs-server.x86_64 cvmfs.x86_64 mod_wsgi</pre>
+<p />
+<h4><a name="4_1_1_2_Installing_CVMFS_reposit"></a> 4.1.1.2  Installing CVMFS repository server on RHEL6 </h4>
+<p />
+Redhat EL6-based systems running a CVMFS repository server have to get their kernel from CERN: <pre class="rootscreen">
+[root@client ~]$ rpm -i http://cvmrepo.web.cern.ch/cvmrepo/yum/cvmfs-release-latest.noarch.rpm
+[root@client ~]$ yum -y install --enablerepo=cernvm-kernel kernel aufs2-util cvmfs-server.x86_64 cvmfs.x86_64 mod_wsgi
+[root@client ~]$ reboot</pre>
+<p />
+<h4><a name="4_1_1_3_CVMFS_repository_server"></a> 4.1.1.3  CVMFS repository server and RHEL7 </h4>
+RHEL7.2 cannot be reliably used as a repository server, because of bugs in the union filesystem OverlayFS.  The bugs are fixed in RHEL7.3.
+<p />
+Redhat EL7.3-based systems running a CVMFS repository server is the simplest method: <pre class="rootscreen">
+[root@client ~]$ rpm -i http://cvmrepo.web.cern.ch/cvmrepo/yum/cvmfs-release-latest.noarch.rpm
+[root@client ~]$ yum -y install cvmfs-server.x86_64 cvmfs.x86_64 mod_wsgi</pre>
+<p />
+<h3><a name="4_1_2_Installing_CVMFS_stratum_1"></a> 4.1.2  Installing CVMFS stratum 1 code without repository server code </h3>
+If you're not installing for the OSG GOC or otherwise want to support serving repositories on the same machine as a Stratum 1, use this section.
+<p />
+On Redhat EL5, first do these commands:<pre class="rootscreen">
+[root@client ~]$ curl -O https://cvmrepo.web.cern.ch/cvmrepo/yum/cvmfs/EL/5/x86_64/cvmfs-release-2-4.el5.noarch.rpm
+[root@client ~]$ rpm -i cvmfs-release-2-4.el5.noarch.rpm
+[root@client ~]$ curl -O https://dl.fedoraproject.org/pub/epel/epel-release-latest-5.noarch.rpm
+[root@client ~]$ rpm -Uvh epel-release-latest-5.noarch.rpm</pre>
+<p />
+On Redhat EL6, first do these commands:<pre class="rootscreen">
+[root@client ~]$ rpm -i https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest.noarch.rpm</pre>
+<p />
+On Redhat EL7, first do these commands:<pre class="rootscreen">
+[root@client ~]$ rpm -i https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest.noarch.rpm</pre>
+<p />
+Then on any type of system do this command:<pre class="rootscreen">
+[root@client ~]$ yum -y install cvmfs-server.x86_64 cvmfs-config mod_wsgi</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="4_2_Installing_frontier_squid_an"></a> 4.2  Installing frontier-squid and frontier-awstats </span></h2>
+<p />
+Do these commands to install frontier-squid and frontier-awstats:<pre class="rootscreen">
+[root@client ~]$ rpm -i http://frontier.cern.ch/dist/rpms/RPMS/noarch/frontier-release-1.1-1.noarch.rpm
+[root@client ~]$ yum -y install frontier-awstats</pre>
+<p />
+<h1><a name="5_Configuring"></a> 5  Configuring </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="5_1_Configuring_the_system"></a> 5.1  Configuring the system </span></h2>
+<p />
+Increase the default number of open file descriptors:<pre class="rootscreen">
+[root@client ~]$ echo -e "*\t\t-\tnofile\t\t16384" >>/etc/security/limits.conf
+[root@client ~]$ ulimit -n 16384</pre>
+In order for this to apply also interactively when logging in over ssh, the option <code>UsePAM</code> has to be set to <code>yes</code> in <code>/etc/ssh/sshd_config</code>.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="5_2_Configuring_cron"></a> 5.2  Configuring cron </span></h2>
+First, create the log directory: <pre class="rootscreen">
+[root@client ~]$ mkdir -p /var/log/cvmfs
+</pre>
+<p />
+Put the following in <code>/etc/cron.d/cvmfs</code>:<pre class="file">
+0,15,30,45 * * * *    root    test -d /srv/cvmfs || exit;cvmfs_server snapshot -ai
+0 9 * * * root   find /srv/cvmfs/*.*/data/txn -name "*.*" -mtime +2 2>/dev/null|xargs rm -f</pre>
+<p />
+Also put the following in <code>/etc/logrotate.d/cvmfs</code>:<pre class="file">
+/var/log/cvmfs/*.log {
+    weekly
+    missingok
+    notifempty
+}</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="5_3_Configuring_apache"></a> 5.3  Configuring apache </span></h2>
+<p />
+If you are installing frontier-squid, create <code>/etc/httpd/conf.d/cvmfs.conf</code> and put the following lines into it:<pre class="file">
+Listen 8080
+KeepAlive On</pre>
+<p />
+If you are not installing frontier-squid, instead put the following lines into that file:<pre class="file">
+Listen 8000
+KeepAlive On</pre>
+<p />
+If you will be serving opensciencegrid.org repositories, you have to allow for old client configurations that access repositories without the domain name added.  For that reason, you will need to remove each <code>/etc/httpd/conf.d/cvmfs.&lt;repositoryname&gt;.conf</code> that adding a replica creates (this is included in the <a href="http://svn.usatlas.bnl.gov/svn/oasis/oasis-server/trunk/bin/add_osg_repository" target="_top">add_osg_repository script</a>), and instead add the following to <code>/etc/httpd/conf.d/cvmfs.conf</code>:<pre class="file">
+RewriteEngine On
+RewriteRule ^/cvmfs/(&#91;^./]&#42;)/(.&#42;)$ /cvmfs/$1.opensciencegrid.org/$2
+RewriteRule ^/cvmfs/(&#91;^/]+)/api/(.&#42;)$ /cvmfs/$1/api/$2 &#91;PT]
+RewriteRule ^/cvmfs/(.&#42;)$ /srv/cvmfs/$1
+&#60;Directory &#34;/srv/cvmfs&#34;&#62; 
+    Options -MultiViews +FollowSymLinks -Indexes
+    AllowOverride All 
+    Order allow,deny 
+    Allow from all
+
+    EnableMMAP Off 
+    EnableSendFile Off
+
+    &#60;FilesMatch &#34;^\.cvmfs&#34;&#62;
+        ForceType application/x-cvmfs
+    &#60;/FilesMatch&#62;
+
+    Header unset Last-Modified
+    FileETag None
+
+    ExpiresActive On
+    ExpiresDefault &#34;access plus 3 days&#34; 
+    ExpiresByType text/html &#34;access plus 15 minutes&#34; 
+    ExpiresByType application/x-cvmfs &#34;access plus 2 minutes&#34;
+&#60;/Directory&#62;
+
+WSGIDaemonProcess cvmfs-api processes&#61;2 display-name&#61;&#37;{GROUP} \
+    python-path&#61;/usr/share/cvmfs-server/webapi
+WSGIProcessGroup cvmfs-api
+WSGISocketPrefix /var/run/wsgi
+WSGIScriptAliasMatch /cvmfs/(&#91;^/]+)/api /var/www/wsgi-scripts/cvmfs-api.wsgi/$1
+</pre>
+<p />
+On EL7-based systems (apache httpd 2.4 and later) replace the "Order allow, deny" and "Allow from all" to "Require all granted".
+<p />
+If you will be serving cern.ch repositories, it has the same problem; replace opensciencegrid.org above with cern.ch.  If you need to serve both opensciencegrid.org and cern.ch contact Dave Dykstra to discuss the options.
+<p />
+Then enable apache:<pre class="rootscreen">
+[root@client ~]$ chkconfig httpd on
+[root@client ~]$ service httpd start</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="5_4_Configuring_frontier_squid"></a> 5.4  Configuring frontier-squid </span></h2>
+<p />
+Put the following in <code>/etc/squid/customize.sh</code> after the existing comment header:<pre class="file">
+awk --file `dirname $0`/customhelps.awk --source '{
+
+# cache only api calls
+insertline("^http_access deny all", "acl CVMFSAPI urlpath_regex ^/cvmfs/[^/]*/api/")
+insertline("^http_access deny all", "cache deny !CVMFSAPI")
+
+# port 80 is also supported, through an iptables redirect
+setoption("http_port", "8000 accel defaultsite=localhost:8080 no-vhost")
+setoption("cache_peer", "localhost parent 8080 0 no-query originserver")
+
+# allow incoming http accesses from anywhere
+# all requests will be forwarded to the originserver
+commentout("http_access allow NET_LOCAL")
+insertline("^http_access deny all", "http_access allow all")
+
+# do not let squid cache DNS entries more than 5 minutes
+setoption("positive_dns_ttl", "5 minutes")
+
+# set shutdown_lifetime to 0 to avoid giving new connections error 
+# codes, which get cached upstream
+setoption("shutdown_lifetime", "0 seconds")
+
+# turn off collapsed_forwarding to prevent slow clients from slowing down faster ones
+setoption("collapsed_forwarding", "off")
+
+print
+}'</pre>
+<p />
+On an RHEL7 system, make sure that iptables-services is installed and enabled:<pre class="rootscreen">
+[root@client ~]$ yum -y install iptables-services
+[root@client ~]$ systemctl enable iptables</pre>
+<p />
+Forward port 80 to port 8000 (first command is for external, second command for localhost):<pre class="rootscreen">
+[root@client ~]$ iptables -t nat -A PREROUTING -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8000
+[root@client ~]$ iptables -t nat -A OUTPUT -o lo -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8000
+[root@client ~]$ service iptables save
+[root@client ~]$ ip6tables -t nat -A PREROUTING -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8000
+[root@client ~]$ ip6tables -t nat -A OUTPUT -o lo -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8000
+[root@client ~]$ service ip6tables save</pre>
+<p />
+Enable frontier-squid:<pre class="rootscreen">
+[root@client ~]$ chkconfig frontier-squid on
+[root@client ~]$ service frontier-squid start</pre>
+<p />
+Note: the above configuration is for a single squid thread, which is fine for 1gbit/s and possibly 2gbit/s, but if higher bandwidth is needed, see the <a href="https://twiki.cern.ch/twiki/bin/view/Frontier/InstallSquid#Running_multiple_squid_workers" target="_top">instructions for running multiple squid workers</a>.
+<p />
+<h1><a name="6_Verifying"></a> 6  Verifying </h1>
+<p />
+In order to verify that everything is installed correctly, create a repository replica.  The repository chosen for the instructions below is one from egi.eu because it is very small, but you can use another one if you prefer.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="6_1_Adding_an_example_repository"></a> 6.1  Adding an example repository </span></h2>
+<p />
+The OSG GOC Stratum 1 should add a repository replica using the <code>add_osg_repository</code> script from the oasis-2 rpm.  Instructions for installing that are elsewhere but you can also <a href="http://svn.usatlas.bnl.gov/svn/oasis/oasis-server/trunk/bin/add_osg_repository" target="_top">download add_osg_repository</a>.  This script assumes that the oasis.opensciencegrid.org replica repository was first created, so this instruction creates it but does not download the first snapshot because that would take a lot of space and time.  Use these commands to create the oasis replica and to create and download the example replica:<pre class="rootscreen">
+[root@client ~]$ cvmfs_server add-replica -o root  http://oasis.opensciencegrid.org:8000/cvmfs/oasis.opensciencegrid.org /etc/cvmfs/keys/opensciencegrid.org/opensciencegrid.org.pub
+[root@client ~]$ add_osg_repository http://cvmfs-stratum0.gridpp.rl.ac.uk:8000/cvmfs/config-egi.egi.eu</pre>
+<p />
+It's a good idea for other Stratum 1s to make their own scripts for adding repository replicas, because there's always two or three commands to run, and it's easy to forget the commands after the first one.  The first command is generically this: <pre class="rootscreen">
+[root@client ~]$ cvmfs_server add-replica -o root  http://cvmfs-stratum0.gridpp.rl.ac.uk:8000/cvmfs/config-egi.egi.eu /etc/cvmfs/keys/egi.eu/egi.eu.pub</pre>
+However, non-GOC OSG Stratum 1s (that is, at BNL and FNAL), for the sake of fulfilling an OSG security requirement, need to instead read from the OSG GOC machine with this as their first command:<pre class="rootscreen">
+[root@client ~]$ cvmfs_server add-replica -o root  http://oasis-replica.opensciencegrid.org:8000/cvmfs/config-egi.egi.eu /etc/cvmfs/keys/egi.eu/egi.eu.pub:/etc/cvmfs/keys/opensciencegrid.org/opensciencegrid.org.pub</pre>
+<p />
+The second command for Stratum 1s that have the httpd configuration as described above in the <a href="/bin/view/Documentation/Release3/InstallCvmfsStratum1#Configuring_apache" class="twikiCurrentTopicLink twikiAnchorLink">Configuring apache section</a> is this:<pre class="rootscreen">
+[root@client ~]$ rm -f /etc/httpd/conf.d/cvmfs.config-egi.egi.eu.conf</pre>
+<p />
+Then the next command is this:<pre class="rootscreen">
+[root@client ~]$ cvmfs_server snapshot config-egi.egi.eu</pre>
+With large repositories that can take a very long time, but with small repositories it should be very quick and not show any errors.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="6_2_Verifying_that_the_replica_i"></a> 6.2  Verifying that  the replica is being served </span></h2>
+<p />
+Now to verify that the replication is working, do the following commands:<pre class="screen">
+[user@client ~]$ wget -qdO- http://localhost:8000/cvmfs/config-egi.egi.eu/.cvmfspublished|cat -v
+[user@client ~]$ wget -qdO- http://localhost:80/cvmfs/config-egi.egi.eu/.cvmfspublished|cat -v</pre>
+Both commands should show a short file including gibberish at the end which is the signature.
+<p />
+It is a good idea to familiarize yourself with the log entries at <code>/var/log/httpd/access_log</code> and also, if you have installed frontier-squid, at <code>/var/log/squid/access.log</code>.  Also, at least 15 minutes after the snapshot is finished, check the log <code>/var/log/cvmfs</code> to see that it tried to get an update and got no errors.
+<p />
+<h1><a name="7_Setting_up_monitoring"></a> 7  Setting up monitoring </h1>
+<p />
+If you installed frontier-squid and frontier-awstats, there is a little more to do to configure monitoring.  
+<p />
+First, make sure that your firewall accepts UDP queries from the monitoring server at CERN.  Details are on <a href="https://twiki.cern.ch/twiki/bin/view/Frontier/InstallSquid#Enabling_monitoring" target="_top">the frontier-squid instructions</a>.  Next, choose any random password and put it in <code>/etc/awstats/password-file</code>.  Then tell Dave Dykstra the fully qualified domain name of your machine and the password you chose, and he'll set up the monitoring servers.
+<p />
+<p />
+<!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ <code><b>===============</b></code>
+<p />
+ Thank you for claiming ownership for this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Documentation/Release3/FirstLast?topicparent=Documentation/Release3.InstallCvmfsStratum1" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local OWNER = <span class="twikiNewLink">DaveDykstra<a href="/bin/edit/Documentation/Release3/DaveDykstra?topicparent=Documentation/Release3.InstallCvmfsStratum1" rel="nofollow" title="DaveDykstra (this topic does not yet exist; you can create it)">?</a></span>
+</li></ul> 
+<p />
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (<span class="twikiNewLink">ComputeElement<a href="/bin/edit/Documentation/Release3/ComputeElement?topicparent=Documentation/Release3.InstallCvmfsStratum1" rel="nofollow" title="ComputeElement (this topic does not yet exist; you can create it)">?</a></span>|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3) <ul>
+<li> Local DOC_AREA       = Storage
+</li></ul> 
+<p />
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (<span class="twikiNewLink">EndUser<a href="/bin/edit/Documentation/Release3/EndUser?topicparent=Documentation/Release3.InstallCvmfsStratum1" rel="nofollow" title="EndUser (this topic does not yet exist; you can create it)">?</a></span>|Student|Developer|SysAdmin|VOManager) <ul>
+<li> Local DOC_ROLE       = <span class="twikiNewLink">SysAdmin<a href="/bin/edit/Documentation/Release3/SysAdmin?topicparent=Documentation/Release3.InstallCvmfsStratum1" rel="nofollow" title="SysAdmin (this topic does not yet exist; you can create it)">?</a></span>
+</li></ul> 
+<p />
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge) <ul>
+<li> Local DOC_TYPE       = Installation  Please define if this document in general needs to be reviewed before release ( 1 | 0 )
+</li> <li> Local INCLUDE_REVIEW = 0
+</li></ul> 
+<p />
+ Please define if this document in general needs to be tested before release ( 1 | 0 ) <ul>
+<li> Local INCLUDE_TEST   = 0
+</li></ul> 
+<p />
+ change to 1 once the document is ready to be reviewed and back to 0 if that is not the case <ul>
+<li> Local REVIEW_READY   = 0
+</li></ul> 
+<p />
+ change to 1 once the document is ready to be tested and back to 0 if that is not the case <ul>
+<li> Local TEST_READY     = 0
+</li></ul> 
+<p />
+ change to 1 only if the document has passed the review and the test (if applicable) and is ready for release <ul>
+<li> Local RELEASE_READY  = 0
+</li></ul> 
+<p />
+<p />
+ DEAR DOCUMENT REVIEWER
+ <code><b>==================</b></code>
+<p />
+ Thank for reviewing this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Documentation/Release3/FirstLast?topicparent=Documentation/Release3.InstallCvmfsStratum1" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local REVIEWER       = <span class="twikiNewLink">MarcoMambelli<a href="/bin/edit/Documentation/Release3/MarcoMambelli?topicparent=Documentation/Release3.InstallCvmfsStratum1" rel="nofollow" title="MarcoMambelli (this topic does not yet exist; you can create it)">?</a></span> Please define the review status for this document to be in progress ( 2 ), failed ( 0 ) or passed ( 1 )
+</li> <li> Local REVIEW_PASSED  = 0
+</li></ul> 
+<p />
+<p />
+ DEAR DOCUMENT TESTER
+ <code><b>================</b></code>
+<p />
+ Thank for testing this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Documentation/Release3/FirstLast?topicparent=Documentation/Release3.InstallCvmfsStratum1" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local TESTER         = <span class="twikiNewLink">VinceNeal<a href="/bin/edit/Documentation/Release3/VinceNeal?topicparent=Documentation/Release3.InstallCvmfsStratum1" rel="nofollow" title="VinceNeal (this topic does not yet exist; you can create it)">?</a></span> Please define the test status for this document to be in progress ( 2 ), failed ( 0 ) or passed ( 1 )
+</li> <li> Local TEST_PASSED    = 0
+</li></ul> 
+############################################################################################################
+-->
+<p />
+<p />
+<p />
+-- <a href="/bin/view/Main/DaveDykstra" class="twikiLink">DaveDykstra</a> - 29 Aug 2014</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation/Release3<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>InstallCvmfsStratum1</span> <br />    
+Topic revision: r31 - 06 Feb 2017 - 03:49:10 - <a href="/bin/view/Main/DaveDykstra" class="twikiLink">DaveDykstra</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

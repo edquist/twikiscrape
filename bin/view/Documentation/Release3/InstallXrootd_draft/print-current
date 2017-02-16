@@ -1,0 +1,995 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> InstallXrootd_draft &lt; Documentation/Release3 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/Release3/InstallXrootd_draft?_T=16 Feb 2017" type="application/x-wiki" title="edit InstallXrootd_draft" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/Release3/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/InstallXrootd_draft"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFFFF;
+	}
+	.patternBookView {
+		border-color:#FFFFFF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--TABLEPLUGIN_table3--><style type="text/css" media="all">
+.tableSortIcon img {padding-left:.3em; vertical-align:text-bottom;}
+</style>
+<!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <link rel="stylesheet" type="text/css" href="https://twiki.opensciencegrid.org/twiki/pub/Documentation/Tools/exercises.css">
+<style type="text/css">
+code em, pre em { color: red; font-weight: normal; font-style: normal; }
+</style>
+<p />
+<h1><a name="Installing_and_Maintaining_XRoot"></a>  Installing and Maintaining XRootD </h1>
+<p />
+<!-- Prompt rendering changes
+Root's on a server, not a client. <ul>
+<li> Local UCL_PROMPT_ROOT = [root@server ~]#
+</li></ul> 
+-->
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#About_This_Guide"> About This Guide</a>
+</li> <li> <a href="?cover=print#Before_Starting"> Before Starting</a>
+</li> <li> <a href="?cover=print#Installing_an_XRootD_Server"> Installing an XRootD Server</a>
+</li> <li> <a href="?cover=print#Configuring_an_XRootD_Server"> Configuring an XRootD Server</a> <ul>
+<li> <a href="?cover=print#Minimal_configuration"> Minimal configuration</a>
+</li> <li> <a href="?cover=print#Advanced_configuration"> Advanced configuration</a>
+</li> <li> <a href="?cover=print#Creating_an_XRootD_cluster"> Creating an XRootD cluster</a>
+</li> <li> <a href="?cover=print#Optional_Adding_Simple_Server_In"> (Optional) Adding Simple Server Inventory to your cluster</a>
+</li> <li> <a href="?cover=print#Optional_Authorization"> (Optional) Authorization</a>
+</li> <li> <a href="?cover=print#Optional_Adding_CMS_TFC_support"> (Optional) Adding CMS TFC support to XRootD (CMS sites only)</a>
+</li> <li> <a href="?cover=print#Optional_Adding_Hadoop_support_t"> (Optional) Adding Hadoop support to XRootD</a>
+</li> <li> <a href="?cover=print#Optional_Adding_File_Residency_M"> (Optional) Adding File Residency Manager (FRM) to an XRootd cluster</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Using_XRootD"> Using XRootD</a> <ul>
+<li> <a href="?cover=print#Managing_XRootD_services"> Managing XRootD services</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Getting_Help"> Getting Help</a>
+</li> <li> <a href="?cover=print#Reference"> Reference</a> <ul>
+<li> <a href="?cover=print#File_locations"> File locations</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Links"> Links</a>
+</li></ul> 
+</div>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="About_This_Guide"></a> About This Guide </span></h2>
+<p />
+<a href="http://xrootd.org/" target="_top">XRootD</a> is a hierarchical storage system that can be used in a variety of ways to access data, typically distributed among actual storage resources. One way to use XRootD is to have it refer to many data resources at a single site, and another way to use it is to refer to many storage systems, most likely distributed among sites. An XRootD system includes a <em>redirector</em>, which accepts requests for data and finds a storage repository&nbsp;&mdash; locally or otherwise&nbsp;&mdash; that can provide the data to the requestor.
+<p />
+Use this page to learn how to install, configure, and use an XRootD redirector as part of a Storage Element (SE) or as part of a global namespace.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Before_Starting"></a> Before Starting </span></h2>
+<p />
+Before starting the installation process, consider the following points:
+<p /> <ul>
+<li> <strong>User IDs:</strong> If it does not exist already, the installation will create the Linux user ID <code>xrootd</code> <!-- no fixed UID -->
+</li> <li> <strong>Service certificate:</strong> The XRootD service uses a host certificate at <code>/etc/grid-security/host*.pem</code>
+</li> <li> <strong>Networking:</strong> The XRootD service uses port 1094 by default; for more information, see the <a href="/bin/view/Documentation/Release3/FirewallInformation" class="twikiLink">firewall information</a> page
+</li></ul> 
+<p />
+As with all OSG software installations, there are some one-time (per host) steps to prepare in advance:
+<p /> <ul>
+<li> Ensure the host has <a href="/bin/view/Documentation/Release3/SupportedOperatingSystems" class="twikiLink">a supported operating system</a>
+</li> <li> Obtain root access to the host
+</li> <li> Prepare <a href="/bin/view/Documentation/Release3/YumRepositories" class="twikiLink">the required Yum repositories</a>
+</li> <li> Install <a href="/bin/view/Documentation/Release3/InstallCertAuth" class="twikiLink">CA certificates</a>
+</li></ul> 
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Installing_an_XRootD_Server"></a> Installing an XRootD Server </span></h2>
+<p />
+An installation of the XRootD server consists of the server itself and its dependencies. Install these with Yum:
+<p />
+<pre class="rootscreen">[root@server ~]# yum install xrootd</pre>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuring_an_XRootD_Server"></a> Configuring an XRootD Server </span></h2>
+<p />
+<h3><a name="Minimal_configuration"></a> Minimal configuration </h3>
+<p />
+A new installation of XRootD is already configured to run a standalone server that serves files from <code>/tmp</code> on the local file system. This configuration is useful to verify basic connectivity between your clients and your server. To do this, start the <code>xrootd</code> service with standalone config as described in the <a href="/bin/view/Documentation/Release3/InstallXrootd_draft#ManagingServices" class="twikiCurrentTopicLink twikiAnchorLink">managing services section</a>.
+<p />
+You should be able now to copy a file such as <code>/bin/sh</code> using <code>xrdcp</code> command into <code>/tmp</code>. To test, do:
+<p />
+<pre class="rootscreen">
+[root@server ~]# yum install xrootd-client
+[root@server ~]# xrdcp /bin/sh root://localhost:1094//tmp/first_test
+[xrootd] Total 0.76 MB  |====================| 100.00 % [inf MB/s]
+[root@server ~]# ls -l /tmp/first_test
+-rw-r--r-- 1 xrootd xrootd 801512 Apr 11 10:48 /tmp/first_test
+</pre>
+<p />
+Other than for testing, a standalone server is useful when you want to serve files off of a single host with lots of large disks. If your storage capacity is spread out over multiple hosts, you will need to set up an XRootD cluster.
+<p />
+<h3><a name="Advanced_configuration"></a> Advanced configuration </h3>
+<p />
+An advanced XRootD setup has multiple components; it is important to validate that each additional component that you set up is working before moving on to the next component. We have included validation instructions after each component below.
+<p />
+<h3><a name="Creating_an_XRootD_cluster"></a> Creating an XRootD cluster </h3>
+<p />
+<img src="/twiki/pub/Documentation/Release3/InstallXrootd_draft/rdr.jpg" alt="rdr.jpg" width="736" height="318"/>
+<p />
+If your storage is spread out over multiple hosts, you will need to set up an
+XRootD <em>cluster</em>.  The cluster uses one "redirector" node as a frontend for
+user accesses, and multiple data nodes that have the data that users request.
+Two daemons will run on each node:
+<p /> <dl>
+<dt> <code>xrootd</code> </dt><dd> The eXtended Root Daemon controls file access and storage.
+</dd> <dt> <code>cmsd</code> </dt><dd> The Cluster Management Services Daemon controls communication between nodes.
+</dd></dl> 
+<p />
+Note that for large virtual organizations, a site-level redirector may actually
+also communicate upwards to a regional or global redirector that handles access
+to a multi-level hierarchy.  This section will only cover handling one level of
+XRootD hierarchy.
+<p />
+In the instructions below, <font color="#ff0000">RDRNODE</font> will refer to the redirector
+host and <font color="#ff0000">DATANODE</font> will refer to the data node host. These should
+be replaced with the fully-qualified domain name of the host in question.
+<p />
+<h4><a name="Modify_etc_xrootd_xrootd_cluster"></a> Modify /etc/xrootd/xrootd-clustered.cfg </h4>
+<p />
+You will need to modify the <code>xrootd-clustered.cfg</code> on the redirector node and
+each data node. The following example should serve as a base configuration for
+clustering. Further customizations are detailed below.
+<p />
+<pre class="file">
+all.export <font color="#ff0000">/tmp</font> stage
+set xrdr = <font color="#ff0000">RDRNODE</font>
+all.manager $(xrdr):3121
+
+if $(xrdr)
+  # Lines in this block are only executed on the redirector node
+  all.role manager
+else
+  # Lines in this block are executed on all nodes but the redirector node
+  all.role server
+  cms.space min <font color="#ff0000">2g 5g</font>
+fi
+</pre>
+<p />
+You will need to customize the following lines:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallXrootd_draft?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Configuration Line</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1 twikiLastCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallXrootd_draft?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Changes Needed</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>all.export <font color="#ff0000">/tmp</font> stage</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> Change <code>/tmp</code> to the directory to allow XRootD access to </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>set xrdr&#61;<font color="#ff0000">RDRNODE</font></code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> Change to the hostname of the redirector </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>cms.space min <font color="#ff0000">2g 5g</font></code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> Reserve this amount of free space on the node.                          For this example, if space falls below 2GB, xrootd                          will not store further files on this node until space                          climbs above 5GB. You can use <code>k</code>, <code>m</code>, <code>g</code>, or <code>t</code>                          to indicate kilobyte, megabytes, gigabytes, or                          terabytes, respectively. </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<p />
+Further information can be found at <a href="http://xrootd.slac.stanford.edu/doc" target="_top">http://xrootd.slac.stanford.edu/doc</a>
+<p />
+<p />
+<h4><a name="Verifying_the_clustered_config"></a> Verifying the clustered config </h4>
+<p />
+Start both <code>xrootd</code> and <code>cmsd</code> on all nodes according to the instructions in
+the <a href="/bin/view/Documentation/Release3/InstallXrootd_draft#ManagingServices" class="twikiCurrentTopicLink twikiAnchorLink">managing services section</a>.
+<p />
+Verify that you can copy a file such as <code>/bin/sh</code> to <code>/tmp</code> on the server data via the redirector:
+<p />
+<pre class="rootscreen">
+[root@server ~]# xrdcp /bin/sh  root://<font color="#ff0000">RDRNODE</font>:1094///tmp/second_test
+[xrootd] Total 0.76 MB  |====================| 100.00 % [inf MB/s]
+</pre>
+<p />
+Check that the <code>/tmp/second_test</code> is located on data server <font color="#ff0000">DATANODE</font>.
+<p />
+<h3><a name="Optional_Adding_Simple_Server_In"></a> (Optional) Adding Simple Server Inventory to your cluster </h3>
+<p />
+The Simple Server Inventory (SSI) provide means to have an inventory for each data server (See details in <a href="http://xrootd.org/doc/prod/cms_config.htm" target="_top">XRootD CMS config</a>).
+SSI requires:
+<p /> <ul>
+<li> A second instance of the <code>xrootd</code> daemon on the redirector
+</li> <li> A "composite name space daemon" (<code>XrdCnsd</code>) on each data server; this daemon handles the inventory
+</li></ul> 
+<p />
+As an example, we will set up a two-node XRootD cluster with SSI.
+<p />
+Host A is a redirector node that is running the following daemons: <ol>
+<li> xrootd redirector
+</li> <li> cmsd
+</li> <li> xrootd - second instance that required for SSI
+</li></ol> 
+<p />
+Host B is a data server that is running the following daemons: <ol>
+<li> xrootd data server
+</li> <li> cmsd
+</li> <li> XrdCnsd - started automatically by xrootd
+</li></ol> 
+<p />
+We will need to create a directory on the redirector node for Inventory files.
+<pre class="rootscreen">
+[root@server ~]# mkdir -p /data/inventory
+[root@server ~]# chown xrootd:xrootd /data/inventory
+</pre>
+<p />
+On the data server (host B) let's create the storage cache that will be different from <code><b>/tmp</b></code>.
+<pre class="rootscreen">
+[root@server ~]# mkdir -p  /local/xrootd
+[root@server ~]# chown xrootd:xrootd /local/xrootd
+</pre>
+<p />
+We will be running two instances of XRootD on <font color="#ff0000">hostA</font>. Modify
+<code>/etc/xrootd/xrootd-clustered.cfg</code> to give the two instances different
+behavior, as such:
+<pre class="file">
+all.export /data/xrootdfs
+set xrdr=<font color="#ff0000">hostA</font>
+all.manager $(xrdr):3121
+if $(xrdr) &amp;&amp; named cns
+      all.export /data/inventory
+      xrd.port 1095
+else if $(xrdr)
+      all.role manager
+      xrd.port 1094
+else
+      all.role server
+      oss.localroot /local/xrootd
+      ofs.notify closew create mkdir mv rm rmdir trunc | /usr/bin/XrdCnsd -d -D 2 -i 90 -b $(xrdr):1095:/data/inventory
+      #add cms.space if you have less the 11GB
+      # cms.space options http://xrootd.slac.stanford.edu/doc/dev/cms_config.htm
+      cms.space min 2g 5g
+fi
+</pre>
+<p />
+<h4><a name="Starting_a_second_instance_of_XR"></a> Starting a second instance of XRootD on EL 6 </h4>
+<p />
+The procedure for starting a second instance differs between EL 6 and EL 7.
+This section is the procedure for EL 6.
+<p />
+Now, we have to change <code><b>/etc/sysconfig/xrootd</b></code> on the redirector node (<font color="#ff0000">hostA</font>) to run multiple instances of xrootd.
+The second instance of xrootd will be named "cns" and will be used for SSI.<pre class="file">
+XROOTD_USER=xrootd
+XROOTD_GROUP=xrootd
+XROOTD_DEFAULT_OPTIONS="<font color="#ff0000">-k 7</font> -l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg"
+<font color="#ff0000">XROOTD_CNS_OPTIONS="-k 7 -l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg"</font>
+CMSD_DEFAULT_OPTIONS="<font color="#ff0000">-k 7</font> -l /var/log/xrootd/cmsd.log -c /etc/xrootd/xrootd-clustered.cfg"
+FRMD_DEFAULT_OPTIONS="<font color="#ff0000">-k 7</font> -l /var/log/xrootd/frmd.log -c /etc/xrootd/xrootd-clustered.cfg"
+<font color="#ff0000">XROOTD_INSTANCES="default cns"</font>
+CMSD_INSTANCES="default"
+FRMD_INSTANCES="default"
+</pre>
+<p />
+Now, we can start xrootd cluster executing the following commands. On redirector you will see:<pre class="rootscreen">
+[root@server ~]# service xrootd start
+Starting xrootd (xrootd, default):                        <font color="#008000">[  OK  ]</font>
+Starting xrootd (xrootd, cns):                             <font color="#008000">[  OK  ]</font>
+[root@server ~]# service cmsd start
+Starting xrootd (cmsd, default):                          <font color="#008000">[  OK  ]</font>
+</pre>
+<p />
+On redirector node you should see two instances of xrootd running:<pre class="rootscreen">
+[root@server ~]# ps auxww|grep xrootd
+xrootd   29036  0.0  0.0  44008  3172 ?        Sl   Apr11   0:00 /usr/bin/xrootd -k 7 -l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg -b -s /var/run/xrootd/xrootd-default.pid -n default
+xrootd   29108  0.0  0.0  43868  3016 ?        Sl   Apr11   0:00 /usr/bin/xrootd -k 7 -l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg -b -s /var/run/xrootd/xrootd-cns.pid -n cns
+xrootd   29196  0.0  0.0  51420  3692 ?        Sl   Apr11   0:00 /usr/bin/cmsd -k 7 -l /var/log/xrootd/cmsd.log -c /etc/xrootd/xrootd-clustered.cfg -b -s /var/run/xrootd/cmsd-default.pid -n default
+</pre><img width="16" alt="warning" align="top" src="/twiki/pub/TWiki/TWikiDocGraphics/warning.gif" height="16" border="0" /> the log file for second named instance of xrootd with be placed in /var/log/xrootd/cns/xrootd.log
+<p />
+On data server node you should that XrdCnsd process has been started:<pre class="rootscreen">
+[root@server ~]# ps auxww|grep xrootd
+xrootd   19156  0.0  0.0  48096  3256 ?        Sl   07:37   0:00 /usr/bin/cmsd -l /var/log/xrootd/cmsd.log -c /etc/xrootd/xrootd-clustered.cfg -b -s /var/run/xrootd/cmsd-default.pid -n default
+xrootd   19880  0.0  0.0  46124  2916 ?        Sl   08:33   0:00 /usr/bin/xrootd -l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg -b -s /var/run/xrootd/xrootd-default.pid -n default
+xrootd   19894  0.0  0.1  71164  6960 ?        Sl   08:33   0:00 /usr/bin/XrdCnsd -d -D 2 -i 90 -b fermicloud053.fnal.gov:1095:/data/inventory
+</pre>
+<p />
+<h4><a name="Starting_a_second_instance_o_AN1"></a> Starting a second instance of XRootD on EL 7 </h4>
+<p />
+The procedure for starting a second instance differs between EL 6 and EL 7.
+This section is the procedure for EL 7.
+<p /> <ol>
+<li> Create a symlink pointing to <code>/etc/xrootd/xrootd-clustered.cfg</code> at      <code>/etc/xrootd/xrootd-cns.cfg</code>:<pre class="rootscreen">
+[root@server ~]# ln -s /etc/xrootd/xrootd-clustered.cfg /etc/xrootd/xrootd-cns.cfg
+</pre>
+</li> <li> Start an instance of the <code>xrootd</code> service named <code>cns</code> using the syntax in      the <a href="/bin/view/Documentation/Release3/InstallXrootd_draft#ManagingServices" class="twikiCurrentTopicLink twikiAnchorLink">managing services section</a>:<pre class="rootscreen">
+[root@server ~]# systemctl start xrootd@cns
+</pre>
+</li></ol> 
+<p />
+<p />
+<h4><a name="Testing_an_XRootD_cluster_with_S"></a> Testing an XRootD cluster with SSI </h4>
+<p /> <ol>
+<li> Copy file to redirector node specifying storage path (/data/xrootdfs instead of /tmp): <pre class="rootscreen">
+[root@server ~]# xrdcp /bin/sh root://localhost:1094//data/xrootdfs/test1
+[xrootd] Total 0.00 MB  |====================| 100.00 % [inf MB/s]
+</pre>
+</li> <li> To verify that SSI is working execute cns_ssi command on the redirector node: <pre class="rootscreen">
+[root@server ~]# cns_ssi list /data/inventory
+fermicloud054.fnal.gov incomplete inventory as of Mon Apr 11 17:28:11 2011
+[root@server ~]# cns_ssi updt /data/inventory
+cns_ssi: fermicloud054.fnal.gov inventory with 1 directory and 1 file updated with 0 errors.
+[root@server ~]# cns_ssi list /data/inventory
+fermicloud054.fnal.gov complete inventory as of Tue Apr 12 07:38:29 2011
+/data/xrootdfs/test1
+</pre>
+</li></ol> 
+<strong>Note</strong>: In this example, <code>fermicloud53.fnal.gov</code> is a redirector node and <code>fermicloud054.fnal.gov</code> is a data node.
+<p />
+<h3><a name="Optional_Authorization"></a> (Optional) Authorization </h3>
+<p />
+There are several authorization options in XRootD available through the security plugins.
+In this document, we will cover two options for security:
+<p /> <ul>
+<li> Simple Unix Security: Based on user accounts that the client is logged in as.
+</li> <li> xrootd-lcmaps: Using the lcmaps callout to use GUMS authorization
+</li></ul> 
+<p />
+Note: On the data nodes, the files will actually be owned by unix user <code>xrootd</code> (or other daemon user),
+not as the user authenticated to, under most circumstances.  xrootd will verify the permissions and authorization
+based on the user that the security plugin authenticates you to (for instance, your unix user for option 1 or your
+gums id for option 2), but, internally, the data node files will be owned by the <code>xrootd</code> user.
+<p />
+<p />
+<h4><a name="Authorization_file"></a> Authorization file </h4>
+<p />
+In order to add security to your cluster you will need to add "auth_file" on the your data server node.
+Create <code>/etc/xrootd/auth_file</code> :<pre class="file">
+# This means that all the users have read access to the datasets
+u * <font color="#ff0000">/data/xrootdfs</font> lr
+
+# This means that all the users have full access to their private dirs
+u = <font color="#ff0000">/data/xrootdfs/</font>@=/ a
+
+# This means that this privileged user can do everything
+# You need at least one user like that, in order to create the
+# private dir for each user willing to store his data in the facility
+u xrootd <font color="#ff0000">/data/xrootdfs</font> a
+</pre> Here we assume that your storage path is "/data/xrootdfs" (same as in the previous example).
+<p />
+Change file ownership (if you have created file as root):<pre class="rootscreen">
+ $ chown xrootd:xrootd /etc/xrootd/auth_file
+</pre>
+<p />
+This file is a flat file of the following form:
+<pre class="file">
+idtype id path privs
+</pre>
+<p />
+Some examples of each option.  For more details or examples on how to use
+templated user options, see <a href="http://xrootd.org/doc/dev/sec_config.htm#_Toc317706960" target="_top">XRootd Authorization Database File</a>.
+<p />
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> idtype </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> Type of id - u for username, g for group, etc </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> id </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> Username (or groupname).  Use <noop>*</noop> for all users or <noop>=</noop> for user-specific capabilities, like home directories </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> path </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> The path prefix to be used for matching purposes. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> privs </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> Letter list of privileges: <code>a - all ; l - lookup ; d - delete ; n - rename ; i - insert ; r - read ; k - lock (not used) ; w - write</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<p />
+<h4><a name="Security_option_1_adding_simple"></a> Security option 1: adding simple (Unix) security </h4>
+<p />
+The first step in adding simple Unix security to validate based on username is to create the <code>auth_file</code> as in the previous section.
+<p />
+The next step is to modify  <code><b>/etc/xrootd/xrootd-clustered.cfg</b></code> on both nodes:<pre class="file">
+all.export /data/xrootdfs
+set xrdr=<font color="#ff0000">hostA</font>
+all.manager $(xrdr):3121
+if $(xrdr) &amp;&amp; named cns
+      all.export /data/inventory
+      xrd.port 1095
+else if $(xrdr)
+      all.role manager
+      xrd.port 1094
+else
+      all.role server
+      oss.localroot /local/xrootd
+      ofs.notify closew create mkdir mv rm rmdir trunc | /usr/bin/XrdCnsd -d -D 2 -i 90 -b $(xrdr):1095:/data/inventory
+      cms.space min 2g 5g
+<font color="#ff0000">
+        # ENABLE_SECURITY_BEGIN
+        xrootd.seclib /usr/lib64/libXrdSec.so
+        # this specify that we use the 'unix' authentication module, additional one can be specified.
+        sec.protocol /usr/lib64 unix
+        # this is the authorization file
+        acc.authdb /etc/xrootd/auth_file
+        ofs.authorize
+        # ENABLE_SECURITY_END
+</font>
+fi
+</pre>
+<p />
+Note that, to access users directories, you will have to create them in oss.localroot
+(For instance, <code>/local/xrootd/data/xrootdfs/username</code>) and make sure they are
+writable by <code>xrootd</code> user (or the daemon user, if you have changed it).  Files in localroot on
+the data nodes are normally owned by <code>xrootd</code> not by the authenticated username.
+<p />
+After making all the changes, please, restart xrootd and cmsd daemons on all nodes.
+<p />
+<h4><a name="Testing_an_XRootD_cluster_with_s"></a> Testing an XRootD cluster with simple security enabled </h4> <ol>
+<li> Login on redirector node as root
+</li> <li> Check that user "root" still can read files: <pre class="rootscreen">
+[root@server ~]# xrdcp  root://localhost:1094//data/xrootdfs/test1 /tmp/b
+[xrootd] Total 0.00 MB  |====================| 100.00 % [inf MB/s]
+</pre>
+</li> <li> Check that user "root" can not write files under /data/xrootdfs:<pre class="rootscreen">
+[root@server ~]#  xrdcp /tmp/b root://localhost:1094//data/xrootdfs/test2
+Last server error 3010 ('Unable to create /data/xrootdfs/test2; Permission denied')
+Error accessing path/file for root://localhost:1094//data/xrootdfs/test3
+</pre> or you may get this error:<pre class="rootscreen">
+[root@server ~]# xrdcp /tmp/b root://localhost:1094//data/xrootdfs/test2
+Last server error 3011 ('No servers are available to write the file.')
+Error accessing path/file for root://localhost:1094//data/xrootdfs/test2
+</pre>
+</li> <li> Check that user can copy/retrieve files to/from /data/xrootdfs/~/...<pre class="rootscreen">
+[root@server ~]# su - <font color="#ff0000">user</font>
+-bash-3.2$   xrdcp  /tmp/a  root://localhost:1094//data/xrootdfs/<font color="#ff0000">user</font>/test1
+[xrootd] Total 0.00 MB  |====================| 100.00 % [inf MB/s]
+-bash-3.2$  xrdcp    root://localhost:1094//data/xrootdfs/<font color="#ff0000">user</font>/test1 /tmp/c
+[xrootd] Total 0.00 MB  |====================| 100.00 % [inf MB/s]
+</pre>
+</li></ol> 
+<p />
+<h4><a name="Security_option_2_xrootd_lcmaps"></a> Security option 2: xrootd-lcmaps authorization </h4>
+<p />
+The xrootd-lcmaps security plugin uses the <code>lcmaps</code> package to access the <code>GUMS</code> server to authenticate and authorize users
+based on X509 certificates.
+<p />
+<strong>Certificate Installation</strong>
+<p />
+In order to use lcmaps, you will need CA certificates and certificate
+revocation lists. See the following documents for instructions:
+<p /> <ul>
+<li> <a href="/bin/view/Documentation/Release3/InstallCertAuth#Install_CA_certificates_Options" class="twikiAnchorLink">Install CA certificates</a>
+</li> <li> <a href="/bin/view/Documentation/Release3/InstallCertAuth#Managing_Certificate_Revocation" class="twikiAnchorLink">Managing Certificate Revocation Lists</a>
+</li></ul> 
+<p />
+<strong>Install xrootd-lcmaps</strong>
+<p />
+<pre class="rootscreen">
+yum install xrootd-lcmaps
+</pre>
+Note that the xrootd-lcmaps is usually coupled to a specific version of xrootd, so make sure that you install xrootd-lcmaps from the same repository that you install xrootd from.  Otherwise, you may have dependency issues due to differing versions of shared libraries.
+<p />
+<p />
+<strong>Create host certificates</strong>
+<p />
+You will need to have a X509 certificate to talk to GUMS.  If you already have a host certificate, you can use a copy of that:
+<pre class="rootscreen">
+ mkdir /etc/grid-security/xrd
+ cp /etc/grid-security/hostkey.pem /etc/grid-security/xrd/xrdkey.pem
+ cp /etc/grid-security/hostcert.pem /etc/grid-security/xrd/xrdcert.pem
+ chown -R xrootd:xrootd /etc/grid-security/xrd/
+ chmod 400 /etc/grid-security/xrd/xrdkey.pem
+</pre>
+This certificate should be owned by xrootd and located in <code>/etc/grid-security/xrd</code>.
+<p />
+<strong>Authorization File</strong>
+<p />
+Next, create <code>/etc/xrootd/auth_file</code> using the example in the above section.
+<p />
+<strong>Modify /etc/xrootd/lcmaps.cfg</strong>
+<p />
+Edit <code>/etc/xrootd/lcmaps.cfg</code> to point to your authorization server (replace
+the hostname in red):
+<pre class="file">
+scasclient = "lcmaps_scas_client.mod"
+             "-resourcetype wn"
+             "-actiontype execute-now"
+             "-capath /etc/grid-security/certificates"
+             "-cert   /etc/grid-security/xrd/xrdcert.pem"
+             "-key    /etc/grid-security/xrd/xrdkey.pem"
+             "--endpoint https://<font color="#ff0000">gums.fnal.gov</font>:8443/gums/services/GUMSXACMLAuthorizationServicePort"
+</pre>
+<p />
+<strong>Modify /etc/xrootd/xrootd-clustered.cfg</strong>
+<p />
+You will need to add the security plugins to <code>/etc/xrootd/xrootd-clustered.cfg</code>.
+Add the following lines to the <code>/etc/xrootd/xrootd-clustered.cfg</code>.  This will
+need to be added to all data nodes in the section relevant to the data node
+server.  (For instance, in the above example(s), this should be placed in the
+last "else" clause after "all.role server".  See the section above on Unix
+security for an example of where the security commands should go).
+<!--
+LINE OF DOOM -- original:
+<p />
+<pre class="file">
+xrootd.seclib /usr/lib64/libXrdSec.so
+sec.protocol /usr/lib64 gsi -certdir:/etc/grid-security/certificates -cert:/etc/grid-security/xrd/xrdcert.pem -key:/etc/grid-security/xrd/xrdkey.pem -crl:3 -authzfun:libXrdLcmaps.so -authzfunparms:--osg,--lcmapscfg,/etc/xrootd/lcmaps.cfg,--loglevel,0|useglobals --gmapopt:2 --gmapto:0
+acc.authdb /etc/xrootd/auth_file
+ofs.authorize
+</pre>
+-->
+<p />
+<!--
+LINE OF DOOM -- split up into chunks
+Variable names can't contain underscores, so these are a bit less descriptive
+than I'd like.
+-->
+<p />
+<pre class="file">
+xrootd.seclib /usr/lib64/libXrdSec.so
+
+set CERTDIR=-certdir:/etc/grid-security/certificates
+set CERT=-cert:/etc/grid-security/xrd/xrdcert.pem
+set KEY=-key:/etc/grid-security/xrd/xrdkey.pem
+set AUTHZFUN=-authzfun:libXrdLcmaps.so
+set AUTHZFUNPARMS=-authzfunparms:--osg,--lcmapscfg,/etc/xrootd/lcmaps.cfg,--loglevel,0|useglobals
+
+sec.protocol /usr/lib64 gsi $CERTDIR $CERT $KEY -crl:3 $AUTHZFUN $AUTHZFUNPARMS --gmapopt:2 --gmapto:0
+acc.authdb /etc/xrootd/auth_file
+ofs.authorize
+</pre>
+<p />
+<p />
+<strong>Restart xrootd and cmsd</strong>
+<p />
+<pre class="rootscreen">
+service xrootd restart
+service cmsd restart
+</pre>
+<p />
+<strong>lcmaps notes</strong>
+<p />
+For recent versions of lcmaps (1.5+), VOMS signature verification is enabled by default.
+You may need to either disable it or install the <code>vo-client</code>.
+<p />
+Installing vo-client:
+<pre class="rootscreen">
+yum install vo-client
+</pre>
+<p />
+Disabling vo verification can be done by adding a line to <code>/etc/sysconfig/xrootd</code>:
+<pre class="file">
+export LLGT_VOMS_DISABLE_CREDENTIAL_CHECK=1
+</pre>
+<p />
+This feature is evolving, so stay tuned for updates.
+<p />
+<h4><a name="Testing_an_XRootd_Cluster_with_L"></a> Testing an XRootd Cluster with LCMAPS security enabled </h4>
+<p />
+From any machine with the <code>xrootd-client</code> installed, you can test with xrdcp.
+With a user that has no grid certificate installed, you should get an error:
+<p />
+<pre class="screen">
+[user@client ~]$ xrdcp /bin/bash root://HOSTNAME/tmp/lcmaps_test
+120327 14:31:52 10509 secgsi_InitProxy: cannot access private key file: /home/dstrain/.globus/userkey.pem
+XrdSec: No authentication protocols are available.
+Last server error 3010 ('cannot obtain credentials for protocol: Secgsi: ErrParseBuffer: error getting user proxies: kXGS_init: unable to get protocol object.')
+Error accessing path/file for root://fermicloud121.fnal.gov/tmp/test2
+</pre>
+<p />
+After running <code>voms-proxy-init</code> or <code>grid-proxy-init</code> to initialize your x509 certificate (usually found in <code>/tmp/x509up_uUID</code>), the <code>xrdcp</code> command should execute cleanly.  For instance, the following shows an example of a user creating a voms certificate and copying to the xrootd client and then re-executing the xrdcp command.
+<pre class="screen">
+[user@client ~]$ voms-proxy-init -voms Engage -valid 999:0
+Your identity: /DC=org/DC=doegrids/OU=People/CN=Doug Strain 834323
+Creating temporary proxy ..................................................... Done
+Contacting  osg-engage.renci.org:15001 [/DC=org/DC=doegrids/OU=Services/CN=osg-engage.renci.org] "Engage" Done
+Creating proxy .......................... Done
+
+Your proxy is valid until Tue May  8 05:34:40 2012
+[user@client ~]$ scp /tmp/x509up_u44678 CLIENT_HOSTNAME:/tmp/x509up_u44678
+</pre>
+On the <code>xrootd-client</code> node,
+<pre class="screen">
+[user@client ~]$ xrdcp /bin/bash root://fermicloud121.fnal.gov//tmp/lcmaps_test
+[xrootd] Total 0.73 MB  |====================| 100.00 % [inf MB/s]
+</pre>
+In the above examples, make sure to change "/tmp" to a directory allowed by the <code>/etc/xrootd/auth_file</code> created in a previous section.
+<p />
+<h3><a name="Optional_Adding_CMS_TFC_support"></a> (Optional) Adding CMS TFC support to XRootD (CMS sites only) </h3>
+<p />
+For CMS users, there is a package available to integrate rule-based name lookup
+using a <code>storage.xml</code> file. If you are not setting up a CMS site, you can skip
+this section.
+<p />
+<pre class="rootscreen">
+yum install --enablerepo=osg-contrib xrootd-cmstfc
+</pre>
+<p />
+You will need to add your <code>storage.xml</code> to <code>/etc/xrootd/storage.xml</code> and then add the following
+line to your xrootd configuration:
+<p />
+<pre class="file">
+# Integrate with CMS TFC, placed in /etc/xrootd/storage.xml
+oss.namelib /usr/lib64/libXrdCmsTfc.so file:/etc/xrootd/storage.xml<font color="#ff6600">?protocol=hadoop</font>
+</pre>
+Add the orange text only if you are running hadoop (see below).
+<p />
+See the CMS TWiki for more information:
+<p /> <ul>
+<li> <a href="https://twiki.cern.ch/twiki/bin/view/Main/XrootdTfcChanges" target="_top">https://twiki.cern.ch/twiki/bin/view/Main/XrootdTfcChanges</a>
+</li> <li> <a href="https://twiki.cern.ch/twiki/bin/view/Main/HdfsXrootdInstall" target="_top">https://twiki.cern.ch/twiki/bin/view/Main/HdfsXrootdInstall</a>
+</li></ul> 
+<p />
+<h3><a name="Optional_Adding_Hadoop_support_t"></a> (Optional) Adding Hadoop support to XRootD </h3>
+<p />
+Users with Hadoop-based storage under their XRootD installation have extra steps
+to configure more efficient access to Hadoop Stroage
+<p />
+<pre class="rootscreen">
+[root@server ~]# yum install xrootd-hdfs
+</pre>
+<p />
+You will then need to add the following lines to your
+<code>/etc/xrootd/xrootd-clustered.cfg</code>:
+<pre class="file">
+xrootd.fslib /usr/lib64/libXrdOfs.so
+ofs.osslib /usr/lib64/libXrdHdfs.so
+</pre>
+<p />
+For more information, see <a href="/bin/view/Storage/HadoopXrootd" class="twikiLink">Storage.HadoopXrootd</a>.
+<p />
+<p />
+<h3><a name="Optional_Adding_File_Residency_M"></a> (Optional) Adding File Residency Manager (FRM) to an XRootd cluster </h3>
+<p />
+If you have a multi-tiered storage system (e.g. some data is stored on SSDs and
+some on disks or tapes), then install the File Residency Manager (FRM), so you
+can move data between tiers more easily. If you do not have a multi-tiered
+storage system, then you do not need FRM and you can skip this section.
+<p />
+The FRM deals with two major mechanisms: <ul>
+<li> local disk
+</li> <li> remote servers
+</li></ul> 
+<p />
+The description of fully functional multiple xrootd clusters is beyond the
+scope of this document. In order to have this fully functional system you will
+need a global redirector and at least one remote xrootd cluster from where
+files could be moved to the local cluster.
+<p />
+Below are the modifications you should make in order to enable FRM on your local cluster: <ol>
+<li> Make sure that FRM is enabled in <code>/etc/sysconfig/xrootd</code> on your data sever:<pre class="file">
+ROOTD_USER=xrootd
+XROOTD_GROUP=xrootd
+XROOTD_DEFAULT_OPTIONS="-l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-clustered.cfg"
+CMSD_DEFAULT_OPTIONS="-l /var/log/xrootd/cmsd.log -c /etc/xrootd/xrootd-clustered.cfg"
+FRMD_DEFAULT_OPTIONS="-l /var/log/xrootd/frmd.log -c /etc/xrootd/xrootd-clustered.cfg"
+XROOTD_INSTANCES="default"
+CMSD_INSTANCES="default"
+FRMD_INSTANCES="default"
+</pre>
+</li> <li> Modify <code>/etc/xrootd/xrootd-clustered.cfg</code> on both nodes to specify options for <code>frm_xfrd</code> (File Transfer Daemon) and <code>frm_purged</code> (File Purging Daemon).  For more information, you can visit the <a href="http://xrootd.org/doc/prod/frm_config.htm" target="_top">FRM Documentation</a> in the <a href="http://xrootd.org/doc/prod/frm_config.htm#_Toc298165607" target="_top">frm_xfrd section</a> and the <a href="http://xrootd.org/doc/prod/frm_config.htm#_Toc298165601" target="_top">frm_purged section</a>
+</li> <li> Start frm daemons on data server: <pre class="rootscreen">
+[root@server ~]# service frm_xfrd start
+[root@server ~]# service frm_purged start
+</pre>
+</li></ol> 
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Using_XRootD"></a> Using XRootD </span></h2>
+<p />
+<a name="ManagingServices"></a>
+<h3><a name="Managing_XRootD_services"></a> Managing XRootD services </h3>
+<p />
+Start services on the redirector node before starting any services on the data nodes. If you installed only XRootD itself, you will only need to start the <code>xrootd</code> service. However, if you installed cluster management services, you will need to start <code>cmsd</code> as well.
+<p />
+The instructions for starting and stopping an XRootD service depend on whether the service is installed on an EL 6 or EL 7 machine, and whether you are using a standalone or clustered configuration.
+<p />
+On EL 6, which config to use is set in the file <code>/etc/sysconfig/xrootd</code>. For example, to have <code>xrootd</code> use the clustered config, you would have a line such as this:
+<p />
+<pre class="file">
+XROOTD_DEFAULT_OPTIONS="-l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-<font color="#ff0000">clustered</font>.cfg -k fifo"
+</pre>
+<p />
+To use the standalone config instead, you would use:
+<p />
+<pre class="file">
+XROOTD_DEFAULT_OPTIONS="-l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-<font color="#ff0000">standalone</font>.cfg -k fifo"
+</pre>
+<p />
+On EL 7, which config to use is determined by the service name given to <code>systemctl</code>. For example, to have <code>xrootd</code> use the clustered config, you would
+start up <code>xrootd</code> with this line:
+<p />
+<pre class="rootscreen">
+[root@server ~]# systemctl start xrootd@<font color="#ff0000">clustered</font>
+</pre>
+<p />
+To use the standalone config instead, you would use:
+<p />
+<pre class="rootscreen">
+[root@server ~]# systemctl start xrootd@<font color="#ff0000">standalone</font>
+</pre>
+<p />
+The services are:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table3" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">Service</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <font color="#252b37">EL 6 service name</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <font color="#252b37">EL 7 service name</font> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> XRootD (standalone config) </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> <code>xrootd</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>xrootd@standalone</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> XRootD (clustered config) </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> <code>xrootd</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> <code>xrootd@clustered</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> CMSD (clustered config) </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> <code>cmsd</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <code>cmsd@clustered</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<!-- you don't run cmsd on standalone configs -->
+<p />
+As a reminder, here are common service commands (all run as <code>root</code>):
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table4" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">To &hellip;</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <font color="#252b37">On EL&nbsp;6, run the command&hellip;</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <font color="#252b37">On EL&nbsp;7, run the command&hellip;</font> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Start a service </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> <code>service <em>SERVICE-NAME</em> start</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>systemctl start <em>SERVICE-NAME</em></code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Stop a service </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> <code>service <em>SERVICE-NAME</em> stop</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> <code>systemctl start <em>SERVICE-NAME</em></code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Enable a service to start during boot </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> <code>chkconfig <em>SERVICE-NAME</em> on</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>systemctl enable <em>SERVICE-NAME</em></code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Disable a service from starting during boot </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> <code>chkconfig <em>SERVICE-NAME</em> off</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <code>systemctl disable <em>SERVICE-NAME</em></code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Getting_Help"></a> Getting Help </span></h2>
+<p />
+To get assistance. please use the <a href="/bin/view/Documentation/Release3/HelpProcedure" class="twikiLink">Help Procedure</a> page.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Reference"></a> Reference </span></h2>
+<p />
+<h3><a name="File_locations"></a> File locations </h3>
+<p />
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table5" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallXrootd_draft?cover=print;sortcol=0;table=5;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Service/Process</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallXrootd_draft?cover=print;sortcol=1;table=5;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Configuration File</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallXrootd_draft?cover=print;sortcol=2;table=5;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Description</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" rowspan="2" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>xrootd</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> <code>/etc/xrootd/xrootd-clustered.cfg</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Main clustered mode XRootD configuration </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> <code>/etc/xrootd/auth_file</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Authorized users file </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table6" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallXrootd_draft?cover=print;sortcol=0;table=6;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Service/Process</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallXrootd_draft?cover=print;sortcol=1;table=6;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Log File</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/InstallXrootd_draft?cover=print;sortcol=2;table=6;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Description</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>xrootd</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> <code>/var/log/xrootd/xrootd.log</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> XRootD server daemon log </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>cmsd</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> <code>/var/log/xrootd/cmsd.log</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Cluster management log </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>cns</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> <code>/var/log/xrootd/cns/xrootd.log</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Server inventory (composite name space) log </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>frm_xfrd</code>, <code>frm_purged</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> <code>/var/log/xrootd/frmd.log</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> File Residency Manager log </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Links"></a> Links </span></h2>
+<p /> <ul>
+<li> <a href="http://xrootd.slac.stanford.edu/doc" target="_top">XRootD documentation</a>
+</li></ul> </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation/Release3<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>InstallXrootd_draft</span> <br />    
+Topic revision: r6 - 06 Dec 2016 - 18:12:42 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

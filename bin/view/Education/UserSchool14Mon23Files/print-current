@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> UserSchool14Mon23Files &lt; Education &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Education/UserSchool14Mon23Files?_T=16 Feb 2017" type="application/x-wiki" title="edit UserSchool14Mon23Files" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Education/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Education/UserSchool14Mon23Files"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+@import url('/pub/Documentation/Tools/exercises.css ');
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <style type="text/css">
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+</style>
+<p />
+<h1><a name="Monday_Exercise_2_3_Work_With_In"></a> Monday Exercise 2.3: Work With Input and Output Files </h1>
+<p />
+The goal of this exercise is make input files available to your job on the execute machine, and return output files back. This small change significantly adds to the kinds of jobs that you can run.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Viewing_a_Job_Sandbox"></a> Viewing a Job Sandbox </span></h2>
+<p />
+Before you learn to transfer files to and from your job, it is good to understand a bit more about the environment in which your job runs. When the HTCondor <code>starter</code> process prepares to run your job, it creates a new directory for your job and all of its files. We call this directory the <em>job sandbox</em>, because it is your job’s private space to play. Let’s see what is in the job sandbox for a very simple job with no special input or output files.
+<p /> <ol>
+<li> Save the script below in a file named <code>sandbox.sh</code>:       <pre class="file">#!/bin/sh
+echo 'Date:    ' `date`
+echo 'Host:    ' `hostname`
+echo 'System:  ' `uname -spo`
+echo 'OS info: ' `cat /etc/redhat-release`
+echo 'Sandbox: ' `pwd`
+echo
+ls -alF</pre>
+</li> <li> Create a submit file for this script and submit it
+</li> <li> When the job finishes, look at the contents of the output file
+</li></ol> 
+<p />
+In the output file, note the <code>Sandbox:</code> line: That is the full path to your job sandbox for the run. It was created just for your job, and it was removed as soon as your job was complete.
+<p />
+Next, look at the output that appears after the <code>Sandbox:</code> line; it is the output from the <code>ls</code> command in the script. It shows all of the files in your job sandbox, just after running the script itself. The files are:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>.job.ad</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> The job ClassAd </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>.machine.ad</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> The machine ClassAd </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>_condor_stderr</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> Saved standard error from the job </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>_condor_stdout</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> Saved standard output from the job </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>condor_exec.exe</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> The executable, renamed from <code>sandbox.sh</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+So, HTCondor wrote copies of the job and machine ads (for use by the job, if desired), transferred your executable (<code>sandbox.sh</code>), renamed it (<code>condor_exec.exe</code>), ran it, and saved its standard output and standard error into files. Notice that your submit file, which was in the same directory on the submit machine as your executable, was <strong>not</strong> transferred, nor were any other files that happened to be in directory with the submit file.
+<p />
+Now that we know something about the sandbox, we can transfer more files to and from it.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Running_a_Job_With_Input_Files"></a> Running a Job With Input Files </span></h2>
+<p />
+Next, you will run a job that requires an input file. As with all previous examples, you will tell HTCondor to transfer files to the sandbox (<code>should_transfer_files = YES</code>). Remember, the initial job sandbox contains only the renamed job executable and nothing else from your directory on the submit machine. You must tell HTCondor explicitly about every other file to transfer to the sandbox. Fortunately, this is easy.
+<p />
+Here is a simple Python script that takes the name of an input file (containing one word per line) from the command line, counts the number of times each (lowercased) word occurs in the text, and prints out the final list of words and their counts.
+<p />
+<pre class="file">
+#!/usr/bin/env python
+
+import os
+import sys
+
+if len(sys.argv) != 2:
+    print 'Usage: %s DATA' % (os.path.basename(sys.argv[0]))
+    sys.exit(1)
+input_filename = sys.argv[1]
+
+words = {}
+
+my_file = open(input_filename, 'r')
+for line in my_file:
+    word = line.strip().lower()
+    if word in words:
+        words[word] += 1
+    else:
+        words[word] = 1
+my_file.close()
+
+for word in sorted(words.keys()):
+    print '%8d %s' % (words[word], word)
+</pre>
+<p /> <ol>
+<li> Save the Python script in a file named <code>freq.py</code>
+</li> <li> Download the input file for the script (263K lines, ~1.4 MB) and save it in your submit directory:       <pre class="screen">$> <strong>cp /mnt/gluster/osg-ss/monday-2.3/freq-input.txt .</strong></pre>       or       <pre class="screen">$> <strong>curl -LO http://vdt.cs.wisc.edu/osgus-2014/materials/freq-input.txt</strong></pre>
+</li> <li> Create a basic submit file for the <code>freq.py</code> executable
+</li> <li> Add a line to tell HTCondor to transfer the input file:       <pre class="file">transfer_input_files = freq-input.txt</pre>       <p>As with all submit file commands, it does not matter where this line goes. I usually group it with the other file transfer commands.</p>
+</li> <li> Do not forget to add a line to name the input file as the argument to the Python script
+</li> <li> Submit the job, wait for it to finish, and check the output!
+</li></ol> 
+<p />
+If things do not work the first time, keep trying! At this point in the exercises, we are telling you less and less explicitly how to do steps that you have done before. If you get stuck, ask a neighbor or one of the instructors.
+<p />
+<strong>Note:</strong> If you want to transfer more than one input file, list all of them on a single <code>transfer_input_files</code> command, separated by commas. For example, if there are three input files:
+<p />
+<pre class="file">
+transfer_input_files = a.txt, b.txt, c.txt
+</pre>
+<p />
+<h3><a name="Extra_Challenge"></a> Extra Challenge </h3>
+<p />
+Many standard command-line program operate on input files. For example, the <code>cat</code> command can takes one or more input files as arguments, printing to standard output each file in order. Other common commands that take input files as arguments are <code>grep</code>, <code>diff</code>, and <code>sort</code>.
+<p />
+Using commands like these, or others that you know and that are readily available, create one or more submit files that take input files and produce output. If you are using a command that is <strong>not</strong> contained in your submit directory, be sure to put its complete path in your <code>executable</code> line; use the <code>which</code> command to find the paths of standard programs. Also be sure to set the <code>arguments</code> line correctly for each program.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Transferring_Output_Files"></a> Transferring Output Files </span></h2>
+<p />
+So far, we have relied on programs that send their output to the standard output and error streams, which HTCondor captures, saves, and returns back to the submit directory. But what if your program writes one or more files for its output? How do you tell HTCondor to bring them back?
+<p />
+Let’s start by exploring what happens to files that a jobs creates in the sandbox. We will use a very simple method for creating a new file: We will copy an input file to another name.
+<p /> <ol>
+<li> Find or create a small input file (it is fine to use any small file from a previous exercise)
+</li> <li> Create a submit file that transfers the input file and copies it to another name (as if doing <code>/bin/cp input.txt output.txt</code> on the command line) <ul>
+<li> Make the output filename different than any filenames that are in your submit directory
+</li> <li> What is the <code>executable</code> line?
+</li> <li> What is the <code>arguments</code> line?
+</li> <li> How do you tell HTCondor to transfer the input file?
+</li> <li> As always, use <code>output</code>, <code>error</code>, and <code>log</code> filenames that are different from previous exercises
+</li></ul> 
+</li> <li> Submit the job and wait for it to finish
+</li></ol> 
+<p />
+What happened? Can you tell what HTCondor did with your output file, after it was created in the job sandbox? Look carefully at the list of files in your submit directory now&hellip;
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Transferring_Specific_Output_Fil"></a> Transferring Specific Output Files </span></h2>
+<p />
+As you saw in the last exercise, by default HTCondor transfers files that are created in the job sandbox back to the submit directory when the job finishes. In fact, HTCondor will also transfer back <strong>changed</strong> input files, too. But, this only works for files that are in the top-level sandbox directory, and <strong>not</strong> for ones contained in subdirectories.
+<p />
+What if you want to bring back only <strong>some</strong> output files, or output files contained in subdirectories?
+<p />
+Here is a simple shell script that creates several files, including a copy of an input file in a new subdirectory:
+<p />
+<pre class="file">
+#!/bin/sh
+if [ $# -ne 1 ]; then echo "Usage: $0 INPUT"; exit 1; fi
+date > output-timestamp.txt
+cal > output-calendar.txt
+mkdir subdirectory
+cp $1 subdirectory/backup-$1
+</pre>
+<p />
+First, let’s confirm that HTCondor does not bring back the output file in the subdirectory:
+<p /> <ol>
+<li> Save the shell script in a file named <code>output.sh</code>
+</li> <li> Write a submit file that transfers an input file and runs <code>output.sh</code> on it
+</li> <li> Submit the job, wait for it to finish, and examine the contents of your submit directory
+</li></ol> 
+<p />
+Suppose you decide that you want only the timestamp output file and all files in the subdirectory, but not the calendar output file. You can tell HTCondor to transfer these specific files:
+<p />
+<pre class="file">
+transfer_output_files = output-timestamp.txt, subdirectory/
+</pre>
+<p />
+<strong>Note:</strong> See the trailing slash (<code>/</code>) on the subdirectory? That tells HTCondor to transfer back <strong>the files</strong> contained in the subdirectory, but not the directory itself; the files will be written directly into the submit directory itself. If you want HTCondor to transfer back an entire directory, leave off the trailing slash.
+<p /> <ol>
+<li> Remove all output files from the previous run, including <code>output-timestamp.txt</code> and <code>output-calendar.txt</code>
+</li> <li> Copy the previous submit file that ran <code>output.sh</code> and add the <code>transfer_output_files</code> line from above
+</li> <li> Submit the job, wait for it to finish, and examine the contents of your submit directory
+</li></ol> 
+<p />
+Did it work as you expected?
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Thinking_About_Progress_So_Far"></a> Thinking About Progress So Far </span></h2>
+<p />
+At this point, you can do just about everything that you need in order to run jobs on a local HTC pool. You can identify the executable, arguments, and input files, and you can get output back from the job. This is a big achievement!
+<p />
+In some ways, everything after this exercise just makes it easier to run certain kinds of jobs and deal with certain kinds of situations.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="References"></a> References </span></h2>
+<p />
+There are many more details about HTCondor’s file transfer mechanism not covered here. For more information, read section 2.5.4 of the HTCondor Manual.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Education<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Education/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/Education/OSGUserSchool2014" class="twikiLink">OSGUserSchool2014</a> &gt; <a href="/bin/view/Education/UserSchool14Materials" class="twikiLink">UserSchool14Materials</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>UserSchool14Mon23Files</span> <br />    
+Topic revision: r1 - 03 Jul 2014 - 16:17:17 - <a href="/bin/view/Main/TimCartwright" class="twikiLink">TimCartwright</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> DCacheKPWDScipt &lt; Main &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Main/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Main/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Main/DCacheKPWDScipt?_T=16 Feb 2017" type="application/x-wiki" title="edit DCacheKPWDScipt" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Main/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Main/DCacheKPWDScipt"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFEFA6;
+	}
+	.patternBookView {
+		border-color:#FFEFA6;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <pre>
+
+#!/usr/bin/perl -w
+
+use strict;
+use Getopt::Std;
+
+# Looks at the gridmapfile located from /etc/sysconfig/edg
+# and also uses the host certificate
+# to create a dcache.kpwd file from the grid-mapfile.
+#
+# -c hostcert can be used to give the location of the host cert.
+# -o output can be used to create the file in a different location.
+# -u user can be used to map the host cert to the named user.
+
+my &#37;opts;
+getopts(&#39;c:o:u:&#39;, \&#37;opts);
+
+my $hostcert   &#61; $opts{c} &#124;&#124; &#34;/etc/grid-security/hostcert.pem&#34;;
+my $hostuser   &#61; $opts{u} &#124;&#124; &#34;edginfo&#34;;
+my $dcacheKpwd &#61; $opts{o} &#124;&#124; &#34;/opt/d-cache/etc/dcache.kpwd&#34;;
+my $tmp &#61; &#34;$dcacheKpwd.tmp&#34;;
+my ($uid, $gid) &#61; (getpwnam($hostuser))&#91;2, 3];
+my $hostdn;
+
+open(HOSTDN, &#34;openssl x509 -subject -noout &#60; $hostcert &#124;&#34;);
+
+while (&#60;HOSTDN&#62;) {
+    if (/^subject&#61;\s&#42;(.&#42;CN&#61;.&#42;)/) {
+   $hostdn &#61; $1;
+   last;
+    }
+}
+close(HOSTDN);
+
+die &#34;Could not determine host DN\n&#34; unless $hostdn;
+die &#34;Could not find user &#39;$hostuser&#39; in passwd file\n&#34; unless
+    defined($uid) &#38;&#38; defined($gid);
+
+my $globuscfg &#61; &#39;/etc/sysconfig/edg&#39;;
+open(GLOBUSCFG, &#34;&#60;$globuscfg&#34;) or die &#34;Could not open $globuscfg: $!\n&#34;;
+my $gridmap &#61; &#39;/etc/grid-security/grid-mapfile&#39;;
+
+while (&#60;GLOBUSCFG&#62;) {
+    $gridmap &#61; $1 if (/^GRIDMAP\s&#42;&#61;\s&#42;(\S&#42;)\s&#42;/);
+}
+close(GLOBUSCFG);
+
+open(GRIDMAP, &#34;&#60;$gridmap&#34;) or die &#34;Could not open $gridmap: $!\n&#34;;
+
+my &#37;map;
+my &#37;ac4gid;
+my &#37;uid4ac;
+
+while (&#60;GRIDMAP&#62;) {
+    if (/^&#34;(.&#42;CN&#61;.&#42;)&#34;\s+(\S+)\s&#42;$/) {
+   my $dn &#61; $1;
+   my $ac &#61; $2;
+
+   push( &#64;{$map{$ac}} , $dn );
+
+   # Something changes Email&#61; to E&#61; somewhere
+   # If we have a DN with Email&#61; change it to E&#61; and add it also
+
+   if ($dn &#61;~ s/Email&#61;/E&#61;/) {
+      push( &#64;{$map{$ac}} , $dn );
+   }
+    }
+}
+
+open(DCACHE, &#34;&#62;$tmp&#34;) &#124;&#124; die &#34;Could not open $tmp: $!\n&#34;;
+
+print DCACHE &#34;# This was created by the grid-mapfile2dcache-kpwd command\n&#34;;
+print DCACHE &#34;# from the grid-mapfile\n\n&#34;;
+print DCACHE &#34;version 2.1\n\n&#34;;
+
+if ($hostdn) {
+    print DCACHE &#39;mapping &#34;&#39;.$hostdn.&#39;&#34; &#39;.&#34;$hostuser\n&#34;
+          . &#34;\n&#34;
+               . &#34;login $hostuser read-write $uid $gid / / /\n&#34;
+          . &#34;\t$hostdn\n\n&#34;;
+}
+if ($hostdn &#61;~ s/Email&#61;/E&#61;/) {
+    print DCACHE &#39;mapping &#34;&#39;.$hostdn.&#39;&#34; &#39;.&#34;$hostuser\n&#34;
+          . &#34;\n&#34;
+               . &#34;login $hostuser read-write $uid $gid / / /\n&#34;
+          . &#34;\t$hostdn\n\n&#34;;
+}
+
+for (sort keys &#37;map) {
+    my $ac &#61; $&#95;;
+    my ($uid, $gid);
+
+    if ($ac &#61;~ s/^\.//) {
+   # pool account
+
+   $ac .&#61; &#34;001&#34;;
+   ($uid, $gid) &#61; (getpwnam($ac))&#91;2, 3];
+
+   if (defined($gid)) {
+       $ac4gid{$gid} &#61; $ac;
+       $uid4ac{$ac} &#61; $uid;
+   } else {
+       warn &#34;$0: cannot find user &#39;$ac&#39;\n&#34;;
+   }
+
+    } else {
+   # static account: use corresponding pool account if needed
+
+   ($uid, $gid) &#61; (getpwnam($ac))&#91;2, 3];
+
+   if (defined($gid)) {
+       if (exists $ac4gid{$gid}) {
+      $ac &#61; $ac4gid{$gid};
+      $uid &#61; $uid4ac{$ac};
+       }
+   } else {
+       warn &#34;$0: cannot find user &#39;$ac&#39;\n&#34;;
+   }
+    }
+
+    next unless defined $gid;
+
+    my &#64;grp &#61; sort &#64;{$map{$&#95;}};
+
+    print DCACHE &#34;# Mappings for &#39;$&#95;&#39; users\n&#34;;
+
+    for (&#64;grp) {
+   print DCACHE &#34;mapping \&#34;$&#95;\&#34; $ac\n&#34;;
+    }
+
+    print DCACHE &#34;\n&#34;;
+    print DCACHE  &#34;# Login for &#39;$&#95;&#39; users\n&#34;;
+    print DCACHE  &#34;login $ac read-write $uid $gid / / /\n&#34;;
+
+    for (&#64;grp) {
+   print DCACHE &#34;\t$&#95;\n&#34;;
+    }
+
+    print DCACHE &#34;\n&#34;;
+}
+
+close(DCACHE);
+rename($tmp, $dcacheKpwd) or die &#34;Error: cannot rename $tmp to $dcacheKpwd: $!\n&#34;;
+
+
+</pre></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Main<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Main/TWikiUsers" class="twikiLink">TWikiUsers</a> &gt; <a href="/bin/view/Main/TedHesselroth" class="twikiLink">TedHesselroth</a> &gt; <a href="/bin/view/Main/DCacheStorageElementInstallNotes" class="twikiLink">DCacheStorageElementInstallNotes</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>DCacheKPWDScipt</span> <br />    
+Topic revision: r1 - 17 Nov 2005 - 19:35:35 - <a href="/bin/view/Main/TedHesselroth" class="twikiLink">TedHesselroth</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

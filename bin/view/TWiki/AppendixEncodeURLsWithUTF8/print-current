@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> AppendixEncodeURLsWithUTF8 &lt; TWiki &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/TWiki/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/TWiki/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/TWiki/AppendixEncodeURLsWithUTF8?_T=16 Feb 2017" type="application/x-wiki" title="edit AppendixEncodeURLsWithUTF8" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/TWiki/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/TWiki/AppendixEncodeURLsWithUTF8"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFD8AA ;
+	}
+	.patternBookView {
+		border-color:#FFD8AA ;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <div class="twikiToc"> <ul>
+<li> <a href="?cover=print#1_Appendix_B_Encode_URLs_With_UT">1  Appendix B: Encode URLs With UTF8 </a> <ul>
+<li> <a href="?cover=print#Current_Status"> Current Status</a>
+</li> <li> <a href="?cover=print#Details_of_Implementation"> Details of Implementation</a>
+</li> <li> <a href="?cover=print#Testing_and_Limitation"> Testing and Limitation</a>
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<a name="EncodeURLsUTF8"></a>
+<h1><a name="1_Appendix_B_Encode_URLs_With_UT"></a> 1  Appendix B: Encode URLs With UTF8 </h1>
+<p />
+<em>Use internationalised characters within WikiWords and attachment names</em>
+<p />
+This topic addresses implemented UTF-8 support for URLs only. The overall plan for UTF-8 support for TWiki is described in <a href="http://twiki.org/cgi-bin/view/Codev.ProposedUTF8SupportForI18N" title="'Codev.ProposedUTF8SupportForI18N' on TWiki.org">TWiki:Codev.ProposedUTF8SupportForI18N</a>.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Current_Status"></a> Current Status </span></h2>
+<p />
+To simplify use of internationalised characters within <a href="/bin/view/TWiki/WikiWord" class="twikiLink">WikiWords</a> and attachment names, TWiki now supports UTF-8 URLs, converting on-the-fly to virtually any character set, including ISO-8859-*, KOI8-R, EUC-JP, and so on.
+<p />
+Support for UTF-8 URL encoding avoids having to configure the browser to turn off this encoding in URLs (the default in Internet Explorer, Opera Browser and some Mozilla Browser URLs) and enables support of browsers where only this mode is supported (e.g. Opera Browser for Symbian smartphones).  A non-UTF-8 site character set (e.g. ISO-8859-*) is still used within TWiki, and in fact pages are stored and viewed entirely in the site character set - the browser dynamically converts URLs from the site character set into UTF-8, and TWiki converts them back again.
+<p />
+System requirements are updated as follows: <ul>
+<li> ASCII or ISO-8859-1-only sites do not require any additional CPAN modules to be installed.
+</li> <li> Perl 5.8 sites using any character set do not require additional modules, since <a href="http://search.cpan.org/perldoc?Encode" title="CPAN perl repository">CPAN:Encode</a> is installed as part of Perl. 
+</li> <li> This feature still works on Perl 5.005_03 as per <a href="/bin/view/TWiki/TWikiSystemRequirements" class="twikiLink">TWikiSystemRequirements</a>, or Perl 5.6, as long as <a href="http://search.cpan.org/perldoc?Unicode::MapUTF8" title="CPAN perl repository">CPAN:Unicode::MapUTF8</a> is installed.  
+</li></ul> 
+<p />
+The following 'non-ASCII-safe' character encodings are now excluded from use as the site character set, since they interfere with TWiki markup: ISO-2022-*, HZ-*, Shift-JIS, MS-Kanji, GB2312, GBK, GB18030, Johab and UHC. However, many multi-byte character sets work fine, e.g. EUC-JP, EUC-KR, EUC-TW, and EUC-CN. In addition, UTF-8 can already be used, with some limitations, for East Asian languages where EUC character encodings are not acceptable - see <a href="http://twiki.org/cgi-bin/view/Codev.ProposedUTF8SupportForI18N" title="'Codev.ProposedUTF8SupportForI18N' on TWiki.org">TWiki:Codev.ProposedUTF8SupportForI18N</a>.
+<p />
+It's now possible to override the site character set defined in the <code>{SiteLocale}</code> setting in <a href="/bin/configure" target="_top">configure</a> - this enables you to have a slightly different spelling of the character set in the server locale (e.g. 'eucjp') and the HTTP header sent to the browser (e.g. 'euc-jp').
+<p />
+This feature should also support use of Mozilla Browser with <a href="http://twiki.org/cgi-bin/view/Codev.TWikiOnMainframe" title="'Codev.TWikiOnMainframe' on TWiki.org">TWiki:Codev.TWikiOnMainframe</a> (as long as mainframe web server can convert or pass through UTF-8 URLs) - however, this specific combination is not tested.  Other browser-server combinations should not have any problems.
+<p />
+Please note that use of UTF-8 as the site character set is not yet supported - see Phase 2 of <a href="http://twiki.org/cgi-bin/view/Codev.ProposedUTF8SupportForI18N" title="'Codev.ProposedUTF8SupportForI18N' on TWiki.org">TWiki:Codev.ProposedUTF8SupportForI18N</a> for plans and work to date in this area.
+<p />
+This feature is complete in TWiki releases newer than February 2004.
+<p />
+Note for skin developers:  is no longer required (<a href="http://twiki.org/cgi-bin/view/Plugins.InternationalisingYourSkin" title="'Plugins.InternationalisingYourSkin' on TWiki.org">TWiki:Plugins.InternationalisingYourSkin</a>).
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Details_of_Implementation"></a> Details of Implementation </span></h2>
+<p />
+URLs are not allowed to contain non-ASCII (8th bit set) characters:
+<a href="http://www.w3.org/TR/html4/appendix/notes.html#non-ascii-chars" target="_top">http://www.w3.org/TR/html4/appendix/notes.html#non-ascii-chars</a>
+<p />
+The overall plan for UTF-8 support for TWiki is described in two phases in <a href="http://twiki.org/cgi-bin/view//Codev.ProposedUTF8SupportForI18N" title="'/Codev.ProposedUTF8SupportForI18N' on TWiki.org">TWiki:/Codev.ProposedUTF8SupportForI18N</a> - this page addresses the first phase, in which UTF-8 is supported for URLs only.
+<p />
+UTF-8 URL translation to virtually any character set is supported as of TWiki Release 01 Sep 2004, but full UTF-8 support (e.g. pages in UTF-8) is not supported yet - this will be phase 2.
+<p />
+The code automatically detects whether a URL is UTF-8 or not, taking care to avoid over-long and illegal UTF-8 encodings that could introduce <a href="http://twiki.org/cgi-bin/view/Codev.MajorSecurityProblemWithIncludeFileProcessing" title="'Codev.MajorSecurityProblemWithIncludeFileProcessing' on TWiki.org">TWiki:Codev.MajorSecurityProblemWithIncludeFileProcessing</a> (tested against a comprehensive <a href="http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt" target="_top">UTF-8 test file</a>, which IE 5.5 fails quite dangerously, and Opera Browser passes).  Any non-ASCII URLs that are <em>not</em> valid UTF-8 are then assumed to be directly URL-encoded as a single-byte or multi-byte character set (as now), e.g. EUC-JP.  
+<p />
+The main point is that you can use TWiki with international characters in <a href="/bin/view/TWiki/WikiWord" class="twikiLink">WikiWords</a> without changing your browser setup from the default, and you can also still use TWiki using non-UTF-8 URLs.  This works on any Perl version from 5.005_03 onwards and corresponds to Phase 1 of <a href="http://twiki.org/cgi-bin/view/Codev.ProposedUTF8SupportForI18N" title="'Codev.ProposedUTF8SupportForI18N' on TWiki.org">TWiki:Codev.ProposedUTF8SupportForI18N</a>.  You can have different users using different URL formats transparently on the same server.
+<p />
+UTF-8 URLs are automatically converted to the current <a href="/bin/configure#Localisation" target="_top">{Site}{Charset}</a>, using modules such as <a href="http://search.cpan.org/perldoc?Encode" title="CPAN perl repository">CPAN:Encode</a> if needed.
+<p />
+TWiki generates the whole page in the site charset, e.g. ISO-8859-1 or EUC-JP, but the browser dynamically UTF-8 encodes the attachment's URL when it's used.  Since Apache serves attachment downloads without TWiki being involved, TWiki's code can't do its UTF-8 decoding trick, so TWiki URL-encodes such URLs in ISO-8859-1 or whatever when generating the page, to bypass this URL encoding, ensuring that the URLs and filenames seen by Apache remain in the site charset.  
+<p />
+<a href="http://twiki.org/cgi-bin/view/Codev.TWikiOnMainframe" title="'Codev.TWikiOnMainframe' on TWiki.org">TWiki:Codev.TWikiOnMainframe</a> uses EBCDIC web servers that typically translate their output to ASCII, UTF-8 or ISO-8859-1 (and URLs in the other direction) since there are so few EBCDIC web browsers.  Such web servers don't work with even ISO-8859-1 URLs if they are URL encoded, since the automated translation is bypassed for URL-encoded characters. For TWiki on Mainframe, TWiki assumes that the web server will automatically translate UTF-8 URLs into EBCDIC URLs, as long as URL encoding is turned off in TWiki pages.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Testing_and_Limitation"></a> Testing and Limitation </span></h2>
+<p />
+It should work with <a href="http://twiki.org/cgi-bin/view/Codev.TWikiOnMainframe" title="'Codev.TWikiOnMainframe' on TWiki.org">TWiki:Codev.TWikiOnMainframe</a>.  Tested with IE 5.5, Opera 7.11 and Mozilla (Firebird 0.7). 
+<p />
+Opera Browser on the P800 smartphone is working for page viewing but leads to corrupt page names when editing pages.
+<p />
+For up to date information see <a href="http://twiki.org/cgi-bin/view/Codev.EncodeURLsWithUTF8" title="'Codev.EncodeURLsWithUTF8' on TWiki.org">TWiki:Codev.EncodeURLsWithUTF8</a>
+<p />
+<p />
+<p />
+<strong><em>Related Topics:</em></strong> <a href="/bin/view/TWiki/AdminDocumentationCategory" class="twikiLink">AdminDocumentationCategory</a></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: TWiki<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>AppendixEncodeURLsWithUTF8</span> <br />    
+Topic revision: r3 - 27 Mar 2005 - 13:14:15 - <a href="/bin/view/Main/TWikiContributor" class="twikiLink">TWikiContributor</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> ComponentOverview &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/ComponentOverview?_T=16 Feb 2017" type="application/x-wiki" title="edit ComponentOverview" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/ComponentOverview"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="A_Guide_to_the_Major_Components"></a> A Guide to the Major Components in the OSG Software Stack </h1>
+<p />
+Originally written by Alain Roy in September 2012; since modified by Tim Cartwright et al.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Software_at_a_Site"></a> Software at a Site </span></h2>
+<p />
+<img src="/twiki/pub/SoftwareTeam/ComponentOverview/osg-software-component-diagram.png" alt="OSG Software Component Diagram" width="800"/>
+<p />
+<h3><a name="Component_Gatekeeper_Jobmanager"></a> Component: Gatekeeper/Jobmanager </h3>
+<p />
+The Globus gatekeeper and jobmanager (GRAM for short) are provided by the Globus Team, www.globus.org. We have a meeting with them (attended by the OSG Software Coordinator and the Project Manager) every six to eight weeks to make sure they understand our needs and we understand their progress. 
+<p />
+It allows jobs to be submitted from remote clients to the local batch system. The gatekeeper is a long-running process that does authentication and authorization. Assuming the user is acceptable, the request is given to the long-running jobmanager process (one per remote user), which submits it to the batch system, monitors it, and returns results to the user.
+<p />
+Most users do not use the gatekeeper/jobmanager directly, but instead submit jobs via glidein. The glidein factory (which is invisible to users) will submit jobs to GRAM as needed.
+<p />
+We have had scalability and reliability issues with GRAM, some of them due to the (new as of Globus 5) fact that the gatekeeper and jobmanager are now long-running processes instead of short-lived processes.
+<p />
+For authorization, GRAM either relies on built-in access to the grid-mapfile (which is usually created with edg-mkgridmap) or a plugin called LCMAPS which communicates with GUMS.
+<p />
+An alternative to Globus GRAM is the HTCondor-CE software.
+<p />
+BrianB knows a ton about GRAM, even at the code level. Suchandra is fairly comfortable with GRAM, particularly the various job managers. Mat is very comfortable with our packaging of GRAM.
+<p />
+<h3><a name="Component_GridFTP"></a> Component: GridFTP </h3>
+<p />
+GridFTP also comes from Globus and uses the same authorization mechanisms, so see above.
+<p />
+GridFTP on the CE is used primarily to stage applications to OSG_APP (a shared filesystem mounted on the CE and the worker nodes) or to stage large datasets (also a shared filesystem mounted on the CE and the worker nodes).
+<p />
+GridFTP is very stable and works well. We have no particular concerns about it. Because it is used by Globus Online (a funded service run by the Globus Project), it is likely to have a long-term future.
+<p />
+BrianB knows quite a bit about the GridFTP software itself, and Mat knows about how it is packaged.
+<p />
+<h3><a name="Gratia_Probes"></a> Gratia Probes </h3>
+<p />
+Gratia is an accounting system. It record information about every job that is run and every data transfer that is made. There is a special Gratia protocol that is used to upload the data to a Gratia service. Most sites upload directly to a Gratia service located at Fermilab, but a few sites run a local Gratia service for local accounting purposes that forwards the data to our centralized Gratia service.
+<p />
+Gratia helps us understand the activity on OSG. For example:  <ul>
+<li> <a href="http://display.grid.iu.edu/" target="_top">http://display.grid.iu.edu/</a>
+</li> <li> <a href="http://gratia-osg-prod-reports.opensciencegrid.org/gratia-reporting/" target="_top">http://gratia-osg-prod-reports.opensciencegrid.org/gratia-reporting/</a>
+</li></ul> 
+<p />
+The Gratia probes are written in Python. There are separate probes for each activity that can be probed. For instance, there are separate probes for Condor, PBS, and Grid Engine. They share some common functionality, particularly the reliable upload functionality. 
+<p />
+<h3><a name="CEMon_GIP"></a> CEMon/GIP </h3>
+<p />
+Conceptually you can think of CEMon as being a cron plus a script that periodically pushes a file to a web server, but it is actually a giant Tomcat webapp that implements that functionality. It is a bit more because it expects the file to be in a certain format (LDIF) and can convert it to other formats (such as <span class="twikiNewLink">ClassAds<a href="/bin/edit/SoftwareTeam/ClassAds?topicparent=SoftwareTeam.ComponentOverview" rel="nofollow" title="ClassAds (this topic does not yet exist; you can create it)">?</a></span>).
+<p />
+CEMon invokes the GIP every 5–10 minutes. The GIP gathers information about the current state of the CE. This is information like “The site is running OSG 3.1.8, uses Condor, has 1000 batch slots of which 959 are in use”. Of course, there is a ton more data than that. You can think of it as describing what a site offers.
+<p />
+CEMon comes from EMI while the GIP comes from CMS. Our main contacts for the GIP are Burt Holzman and Tony Tiradani at Fermilab. The GIP is pretty straightforward Python code. BrianB used to hack on GIP and knows a lot about it. Parag Mhashilkar from Fermilab used to work with CEMon and knows a lot about it.
+<p />
+Both CEMon and GIP are stable and reliable, but people aren’t real happy with the setup. There is an alternative to CEMon called “osg-info-services” which is a relatively simple Python script. It’s never been hardened for production but is in use by a few brave sites. 
+<p />
+<h3><a name="RSV"></a> RSV </h3>
+<p />
+RSV tests a site to see if it is working and shares the results with a central server at the GOC so everyone can see. It primarily tests fork jobs, basic data transfers, and a few CE characteristics like “are the CA certificates up to date?” It might sound similar to CEMon/GIP, so you can think of it this way:
+<p /> <ul>
+<li> CEMon/GIP publishes information about what functionality a site claims to be offering
+</li> <li> RSV publishes information about whether or not a site is actually functioning correctly
+</li></ul> 
+<p />
+We used to always run RSV on the CE, but these days it is just as easy to install it on a separate computer. That might be slightly more realistic of a test than running on the CE.
+<p />
+RSV tends to be the public face of failures. That is, people will say “RSV is failing, why?” and the answer is that RSV is correctly reporting the existence of a problem. So helping people on a ticket about an RSV problem is sort of the “OSG-complete” problem: an RSV ticket could require knowledge about GRAM or <span class="twikiNewLink">GridFTP<a href="/bin/edit/SoftwareTeam/GridFTP?topicparent=SoftwareTeam.ComponentOverview" rel="nofollow" title="GridFTP (this topic does not yet exist; you can create it)">?</a></span> or CA certificate distribution or GUMS or … 
+<p />
+One confusing thing: RSV uploads its test results using the same protocol as Gratia. In fact, there is a “Gratia metric probe” that uploads the data. (The word “metric” comes from the fact that a single RSV test is called an “RSV metric”.) To confuse the issue, RSV can do some basic tests that Gratia is working, so there is an “RSV Gratia metric”, but sometimes people call it a “probe”. The names will confuse you for a while. 
+<p />
+<h3><a name="GUMS"></a> GUMS </h3>
+<p />
+GUMS is a service used to authorize and map users from their global identity to their local (unix id) identity. It is not a required service (some sites use the simple edg-mkgridmap to construct a grid-mapfile instead) but it is commonly used. It’s helpful when you have more than one resource (compute element, storage element, etc) because they can share authorization and mapping data. It is particularly helpful when using glexec at a site, because glexec runs on every worker node and needs authorization and mapping information. 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Worker_Node"></a> Worker Node </span></h2>
+<p />
+The worker node software can best be thought in two categories:
+<p /> <ul>
+<li> Software to be used on-demand by end-user applications. These are hard to keep a handle on. People will say things like “Oh, I wish Microsoft <span class="twikiNewLink">PowerPoint<a href="/bin/edit/SoftwareTeam/PowerPoint?topicparent=SoftwareTeam.ComponentOverview" rel="nofollow" title="PowerPoint (this topic does not yet exist; you can create it)">?</a></span> could be installed on all worker nodes”, so we add it to the worker node package. Three years later they stop using it but we still maintain and ship it. These utilities are things like globus-url-copy (to copy files from a <span class="twikiNewLink">GridFTP<a href="/bin/edit/SoftwareTeam/GridFTP?topicparent=SoftwareTeam.ComponentOverview" rel="nofollow" title="GridFTP (this topic does not yet exist; you can create it)">?</a></span> server), grid-proxy-info and voms-proxy-info, and lcg-utils (to copy files from an SE). 
+</li> <li> Software and data to maintain a worker node. This includes the CA certificates and the fetch-crl utility to install CRLs.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Software_for_a_VO"></a> Software for a VO </span></h2>
+<p />
+A VO may run various bits of software. These include:
+<p />
+<h3><a name="VOMS"></a> VOMS </h3>
+<p />
+VOMS maintains membership lists for VOs and can produce signed certificates stating the membership. These signed certificates are included in a grid proxy certificate and are made with voms-proxy-init. 
+<p />
+VOMS is two pieces of software: VOMS itself is a C++ program that maintains the database of members and can generate the signed certificates. VOMS Admin is the web interface used to manage VOMS. 
+<p />
+Some VOs run their own VOMS servers, but OSG and Fermilab run a few VOMS servers on behalf of smaller VOs. You can see the list of VOMS servers because we ship this list: in an install of the osg-client, just look in /etc/vomses. This file comes from the vo-client RPM. 
+<p />
+We don't have any really deep experts with VOMS and VOMS Admin. Tanya knows a lot about VOMS Admin because she used to maintain the VOMRS web service on top of VOMS Admin. (Most of the VOMRS functionality has been rolled into VOMS Admin.) Mat has done some packaging and updates. BrianB has some familiarity with it.
+<p />
+<h3><a name="Glideinwms_VO_Front_End"></a> Glideinwms VO Front-End </h3>
+<p />
+Think of this as a Condor submit host (that is, it runs the condor_schedd). Through magic (the glidein factory, below), it can create a HTCondor pool using various worker nodes in OSG sites. Quite a few VOs now use glideinwms. We ship the glideinwms front end as an RPM.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Part_3_OSG_run_software"></a> Part 3: OSG-run software </span></h2>
+<p />
+OSG runs a bunch of software. In theory the OSG Software team owns most or all of it, but in practice we have a mostly hands-off relationship. 
+<p />
+<h3><a name="Gratia_Collector"></a> Gratia Collector </h3>
+<p />
+Fermilab runs the central Gratia collector. This collects accounting data from all the Gratia probes at all OSG sites. (In some cases, a few sites run their own collectors, in which case the local collector summarizes and forwards the data to the central collector.)
+<p />
+We ship the collector. Tanya Levshina maintains it. We don’t have a lot of OSG Software Team experience with it.
+<p />
+<h3><a name="RSV_Collector"></a> RSV Collector </h3>
+<p />
+The Gratia collector is also used to collect RSV results from all over OSG. It’s run at the GOC in Indiana. I don’t know much about it, except that it exists.
+<p />
+<h3><a name="CEMon_Collector"></a> CEMon Collector </h3>
+<p />
+The GOC runs a CEMon Collector. This collects CEMon data from all CEs in OSG. They procure the software independently and we have nothing to do with it. They know everything about their deployment.
+<p />
+<h3><a name="Glidein_Factory"></a> Glidein Factory </h3>
+<p />
+The OSG runs a glidein factory, based at UCSD. There’s a small time (2 or 3 people?) who run it. The factory will make Condor pools for each glideinwms front-end. It’s a complicated piece of software to install and run, and we know nothing about it. Igor is a good contact for it.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/ComponentHome" class="twikiLink">ComponentHome</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>ComponentOverview</span> <br />    
+Topic revision: r1 - 16 Aug 2013 - 14:29:25 - <a href="/bin/view/Main/TimCartwright" class="twikiLink">TimCartwright</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> HowToInstallXrootdFS &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/HowToInstallXrootdFS?_T=16 Feb 2017" type="application/x-wiki" title="edit HowToInstallXrootdFS" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/HowToInstallXrootdFS"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <div class="twikiToc"> <ul>
+<li> <a href="?cover=print#How_to_install_and_test_XrootdFS"> How to install and test XrootdFS rpm</a>
+</li> <li> <a href="?cover=print#Configuring_secured_xrootdfs"> Configuring secured xrootdfs</a>
+</li></ul> 
+</div>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="How_to_install_and_test_XrootdFS"></a> How to install and test XrootdFS rpm </span></h2> <ol>
+<li> login as <em>root</em> on a host you want to install xrootdFS server.
+</li> <li> create <code><b>/etc/yum.repos.d/vdt.repo</b></code> :<pre class="rootscreen">
+[vdt-development]
+name = VDT RPM repository - development versions for Redhat Enterprise Linux 5 and compatible
+baseurl = http://vdt.cs.wisc.edu/native/rpm/development/rh5/$basearch
+gpgcheck = 0
+enabled = 1
+</pre>
+</li> <li> Install xrootdfs and dependent rpms:<pre class="rootscreen">
+$ yum install xrootd-fuse
+</pre>The following rpms will be installed:<pre class="rootscreen">
+Installing:
+ xrootd-fuse                       x86_64                     1:3.0.4-X.xu                      vdt-development                      15 k
+Installing for dependencies:
+ xrootd-client                     x86_64                     1:3.0.4-X.xu                      vdt-development                     1.5 M
+ xrootd-libs                       x86_64                     1:3.0.4-X.xu                      vdt-development                     1.9 M
+</pre>
+</li> <li> <img width="16" alt="warning" align="top" src="/twiki/pub/TWiki/TWikiDocGraphics/warning.gif" height="16" border="0" /> If you are installing xrootdfs on the redirector node only xrootd-fuse rpm will be installed.
+</li> <li> Modify <code><b>/etc/fstab</b></code> by adding the following entries:<pre class="file">
+....
+xrootdfs                <font color="#ff0000">/mnt/local</font>              fuse    rdr=xroot://<font color="#ff0000">redirector1.domain.com</font>:1094/<font color="#ff0000">/path/redirector1</font>,uid=xrootd 0 0
+xrootdfs                <font color="#ff0000">/mnt/remote</font>          fuse    rdr=xroot://<font color="#ff0000">redirector2.domain.com</font>:1094/<font color="#ff0000">/path/redirector2</font>,uid=xrootd 0 0
+</pre>This configuration assumes that you have two redirectors running on host <font color="#ff0000">redirector1,2.domain.com</font> listening on port 1094 with the storage_path <font color="#ff0000">/path/redirector1,2</font> and that local mount point for xrootdfs will be <font color="#ff0000">/mnt/local</font>, <font color="#ff0000">/mnt/remote</font>. 
+</li> <li>  If you are installing xrootdfs on a separate node you have to create <code><b>xrootd</b></code> user manually.  
+</li> <li> Create mount point directories and set permission: <pre>
+$ mkdir -p <font color="#ff0000">/mnt/local /mnt/remote</font>
+$ chown xrootd.xrootd <font color="#ff0000">/mnt/local /mnt/remote</font>
+</pre> 
+</li> <li> Mount xrootd: <pre class="rootscreen">
+$ mount <font color="#ff0000">/mnt/local</font>
+$ mount <font color="#ff0000">/mnt/remote</font>
+</pre>
+</li> <li> Verify that xrootdfs is running and mount points exist:<pre class="rootscreen">
+$ ps auxww|grep xrootdfs
+xrootd    1881  0.0  0.4 122388 10204 ?        Ssl  12:52   0:00 xrootdfs /mnt/local -o rw,rdr=xroot://fermicloud061.fnal.gov:1094//data/xrootdfs,uid=100
+xrootd    1893  0.0  0.4 122388 10204 ?        Ssl  12:53   0:00 xrootdfs /mnt/remote -o rw,rdr=xroot://gw016k0.fnal.gov:1094//data/xrootdfs/public,uid=100
+$ df  -t fuse
+xrootdfs              19825120   4185456  15639664  22% /mnt/local
+xrootdfs             706938732  42587384 664351348   7% /mnt/remote
+</pre> Replace <font color="#ff0000">/mnt/local</font> with the local mount point you have specified in <code><b>/etc/fstab</b></code>.
+</li> <li> Test your installation by executing basic unix file commands, e.g: <pre class="rootscreen">
+$ ls <font color="#ff0000">/mnt/remote</font>
+file_name_1
+$ cat <font color="#ff0000">/mnt/remote/file_name_1</font>
+$ cp <font color="#ff0000">/mnt/remote/file_name_1</font> <font color="#ff0000">/mnt/remote/file_name_2</font>
+$ ls <font color="#ff0000">/mnt/remote</font>
+file_name_1 file_name_2
+</pre>
+</li> <li> Dismount xrootd :<pre class="rootscreen">
+$ umount  <font color="#ff0000">/mnt/local</font>
+</pre>
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuring_secured_xrootdfs"></a> Configuring secured xrootdfs </span></h2>
+If you want to enable security for access to xrootd via xrootdfs you will need to modify xrootd  configuration and perform several steps to make xrootdfs secured. <ol>
+<li> On the node where you have installed xrootd-server rpm execute the following command:<pre class="rootscreen">
+$ xrdsssadmin -k  <font color="#ff0000">my_key_name</font> -u anybody -g usrgroup add <font color="#ff0000">keyfile</font> 
+</pre> e.g:<pre class="rootscreen">xrdsssadmin -k top_secret  -u anybody -g usrgroup add /etc/xrootd/xrootd.key</pre>
+</li> <li> Set ownership<pre class="rootscreen">chown xrootd.xrootd /etc/xrootd/xrootd.key</pre> 
+</li> <li> On the node where xrootdfs is installed modify <code><b>/etc/fstab</b></code> add security information:<pre class="rootscreen">
+xrootdfs                <font color="#ff0000">/mnt/local</font>              fuse    rdr=xroot://<font color="#ff0000">redirector1.domain.com</font>:1094/<font color="#ff0000">/path/redirector1</font>,uid=xrootd,sss=<font color="#ff0000">keyfile</font>  0 0</pre>
+</li> <li> Modify xrootd configuration (<code><b>/etc/xrootd/xrootd-clustered.cfg</b></code>) on every data server by adding the following segment: <pre class="file">
+     # ENABLE_SECURITY_BEGIN
+        xrootd.seclib /usr/lib64/libXrdSec.so
+        #the line below should be before "sec.protocol ... unix"
+        <font color="#ff0000">sec.protocol /usr/lib64  sss -s keyfile</font>
+        sec.protocol /usr/lib64 unix
+        # this specify that we use the 'unix' authentication module, additional one can be specified.
+        # this is the authorization file
+        acc.authdb /etc/xrootd/auth_file
+        ofs.authorize
+        # ENABLE_SECURITY_END
+</pre>
+</li> <li> Copy  <font color="#ff0000">keyfile</font>  on every data server node. Restart xrootd cluster by following <a href="https://twiki.grid.iu.edu/bin/view/SoftwareTeam/HowToInstallXrootd" target="_top">these instructions</a>
+</li> <li> on xroodfs node execute mount:<pre class="rootscreen">
+$ mount <font color="#ff0000">/mnt/local</font>
+</pre>
+</li> <li> Verify that you can access the mount point (df,ls) and can not write into unauthorized path, e.g:<pre class="rootscreen">
+$ cp /bin/sh /mnt/loca/tlevshin/test1
+cp: cannot create regular file `/mnt/local/tlevshin/test1': Permission denied
+</pre> Login as yourself and try, e.g:<pre class="rootscreen">
+$ su - tlevshin
+$ cp /bin/sh /mnt/loca/tlevshin/test1
+</pre>
+</li></ol> 
+<p />
+<p />
+<p />
+<p />
+<p />
+-- <a href="/bin/view/Main/TanyaLevshina" class="twikiLink">TanyaLevshina</a> - 18 Apr 2011</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/Projects" class="twikiLink">Projects</a> &gt; <a href="/bin/view/SoftwareTeam/XrootdRPMPhase1" class="twikiLink">XrootdRPMPhase1</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>HowToInstallXrootdFS</span> <br />    
+Topic revision: r7 - 20 Jun 2011 - 14:21:48 - <a href="/bin/view/Main/TanyaLevshina" class="twikiLink">TanyaLevshina</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

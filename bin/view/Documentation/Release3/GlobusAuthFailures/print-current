@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> GlobusAuthFailures &lt; Documentation/Release3 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/Release3/GlobusAuthFailures?_T=16 Feb 2017" type="application/x-wiki" title="edit GlobusAuthFailures" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/Release3/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/GlobusAuthFailures"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFFFF;
+	}
+	.patternBookView {
+		border-color:#FFFFFF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Authentication_Issues"></a> Authentication Issues </h1>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Proxy"></a> Proxy </span></h2>
+<h3><a name="Syntax"></a> Syntax: </h3>
+<p />
+<pre>
+ERROR: Couldn&#39;t find a valid proxy. 
+Use -debug for further information.
+ERROR: proxy does not exists
+</pre>
+<p />
+<h3><a name="Known_causes"></a> Known causes: </h3>
+<p />
+The gatekeeper cannot find a valid proxy for the user who is attempting to submit a job.  This generally indicates a proxy hasn't been obtained or has expired.
+<p />
+<h3><a name="Recommendations"></a> Recommendations: </h3>
+<p /> <ul>
+<li> Obtain a proxy using:
+</li></ul> 
+<pre class="screen">
+$> grid-proxy-init
+</pre>
+or
+<pre class="screen">
+$> voms-proxy-init
+</pre>
+<p /> <ul>
+<li> Submit the job to the grid as the same user whose certificate was authenticated with grid-proxy-init
+</li></ul> 
+<p />
+i.e. <font color="#ff0000">*do not do*</font>:
+<pre class="screen">
+$> grid-proxy-init
+$> su
+$> globus-job-run <site> <job>
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="GRAM_Authentication_to_Job_Manag"></a> GRAM Authentication to Job Manager </span></h2>
+<h3><a name="Syntax_AN1"></a> Syntax </h3>
+<p />
+<code>GRAM Authentication test failure: connecting to the job manager failed.</code>
+<p />
+<h3><a name="Known_Causes"></a> Known Causes </h3>
+<p />
+The gatekeeper could not be contacted because of network problems or a mistake in the hostname.
+<p />
+<h3><a name="Recommendation"></a> Recommendation </h3>
+<p />
+Try to ping the host to make sure you can reach it.  If you can it is possible that the gatekeeper is not running or is not on an expected port.  Contact the host administrator and ask them to make certain the gatekeeper is running and properly launched via inetd/xinetd.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="GRAM_Authentication_with_Remote"></a> GRAM Authentication with Remote Server </span></h2>
+<h3><a name="Syntax_AN2"></a> Syntax </h3>
+<p />
+<code>GRAM Authentication test failure: authentication with the remote server failed</code>
+<p />
+<h3><a name="Known_Causes_AN1"></a> Known Causes </h3>
+<p />
+The gatekeeper did not accept your certificate.  You may be a member of a VO that the site does not support.
+<p />
+<h3><a name="Recommendations_AN1"></a> Recommendations </h3>
+<p />
+Ask the site admin if your VO is supported or if they are willing to support your VO.
+<p />
+-- <a href="/bin/view/Main/AnandPadmanabhan" class="twikiLink">AnandPadmanabhan</a> - 05 Dec 2006</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation/Release3<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Documentation/Release3/TroubleshootingGuide" class="twikiLink">TroubleshootingGuide</a> &gt; <a href="/bin/view/Documentation/Release3/GlobusErrors" class="twikiLink">GlobusErrors</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>GlobusAuthFailures</span> <br />    
+Topic revision: r6 - 31 Jan 2012 - 16:10:00 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

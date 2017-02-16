@@ -1,0 +1,977 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> NPTransition &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/NPTransition?_T=16 Feb 2017" type="application/x-wiki" title="edit NPTransition" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/NPTransition"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="The_transition_for_the_OSG_Softw"></a>  The transition for the OSG Software Stack from Pacman to RPMs. </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="0_0_Executive_Summary"></a>  0.0 Executive Summary </span></h2>
+<p />
+Summary: This document contains the details of how we will transition away from Pacman to native packages (RPMs and debs). It covers many details, particularly:
+<p /> <ul>
+<li> Our plan to drop new development of Pacman packages as soon as possible while adding RPM packaging as soon as possible.
+</li> <li> The set of packages that will be in the VDT, with notes about whether we need to package them or not and what order we'd work on them.
+</li> <li> Implications for our end-user community
+</li> <li> Implications for our testing (internal and ITB)
+</li> <li> Implications for our documentation
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="0_1_Known_issues_that_will_be_ad"></a>  0.1 Known issues that will be addressed in future versions of this document. </span></h2>
+<p /> <ul>
+<li> CA Certs: only from GOC? Also from VDT? IGTF vs. non-IGTF? Different packaging so you can choose subset? (Note from BB: I integrated these below).
+</li> <li> How do LIGO's requests for SL6 and Debian 6 support mesh?
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="0_2_Open_questions_for_readers"></a>  0.2 Open questions for readers </span></h2>
+<p /> <ul>
+<li> Sysadmins: how do you feel about the requirement that we depend on EPEL? 
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Table_of_Contents"></a>  Table of Contents </span></h2>
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#1_0_General_Approach"> 1.0 General Approach</a>
+</li> <li> <a href="?cover=print#2_0_Outline_of_timeline"> 2.0 Outline of timeline</a> <ul>
+<li> <a href="?cover=print#2_1_Finish_pending_work_on_Pacma"> 2.1 Finish pending work on Pacman-based releases.</a>
+</li> <li> <a href="?cover=print#2_2_Immediately_begin_work_on_RP"> 2.2 Immediately begin work on RPMs for RHEL 5</a>
+</li> <li> <a href="?cover=print#2_2_1_Order_of_packages_to_relea"> 2.2.1 Order of packages to release</a>
+</li> <li> <a href="?cover=print#2_2_2_Supported_operating_system"> 2.2.2 Supported operating systems</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#3_0_Packages_What_can_we_borrow"> 3.0 Packages: What can we borrow, what do we have to create?</a>
+</li> <li> <a href="?cover=print#4_0_Implications_for_end_user_sy"> 4.0 Implications for end-user system administrators</a> <ul>
+<li> <a href="?cover=print#4_1_Migration_from_Pacman_to_RPM"> 4.1 Migration from Pacman to RPM</a>
+</li> <li> <a href="?cover=print#4_2_Non_root_installations_multi"> 4.2 Non-root installations &amp; multiple installations</a>
+</li> <li> <a href="?cover=print#4_3_Backups_of_previous_installa"> 4.3 Backups of previous installations (for rollback)</a>
+</li> <li> <a href="?cover=print#4_4_Retraining"> 4.4 Retraining</a>
+</li> <li> <a href="?cover=print#4_5_Site_customization"> 4.5 Site customization</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#5_0_Implications_on_configuratio"> 5.0 Implications on configuration management</a>
+</li> <li> <a href="?cover=print#6_0_Implications_for_internal_VD"> 6.0 Implications for internal VDT testing</a> <ul>
+<li> <a href="?cover=print#6_1_Need_to_publish_test_results"> 6.1 Need to publish test results against latest system updates</a>
+</li> <li> <a href="?cover=print#6_2_Need_to_update_installation"> 6.2 Need to update installation process</a>
+</li> <li> <a href="?cover=print#6_3_Update_existing_tests"> 6.3 Update existing tests</a>
+</li> <li> <a href="?cover=print#6_4_Internal_learning"> 6.4 Internal learning</a>
+</li> <li> <a href="?cover=print#6_5_Possible_improvement_new_tes"> 6.5 Possible improvement: new test framework</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#7_0_Implications_for_integration"> 7.0 Implications for integration testbed testing</a> <ul>
+<li> <a href="?cover=print#7_1_Impacts_on_ITB_testing"> 7.1 Impacts on ITB testing</a>
+</li> <li> <a href="?cover=print#7_2_Possibilities_for_improving"> 7.2 Possibilities for improving the ITB</a> <ul>
+<li> <a href="?cover=print#7_2_1_Testing_smaller_changes"> 7.2.1 Testing smaller changes </a>
+</li> <li> <a href="?cover=print#7_2_2_Automated_testing"> 7.2.2 Automated testing</a>
+</li></ul> 
+</li></ul> 
+</li> <li> <a href="?cover=print#8_0_Implications_for_Documentati"> 8.0 Implications for Documentation</a>
+</li> <li> <a href="?cover=print#9_0_Versioning"> 9.0 Versioning</a> <ul>
+<li> <a href="?cover=print#9_1_Major_version_number"> 9.1 Major version number</a>
+</li> <li> <a href="?cover=print#9_2_Minor_version_number"> 9.2 Minor version number</a>
+</li> <li> <a href="?cover=print#9_3_Patch_levels"> 9.3 Patch-levels</a>
+</li> <li> <a href="?cover=print#9_4_Exceptions"> 9.4 Exceptions</a>
+</li> <li> <a href="?cover=print#9_5_Repository_Content_Examples"> 9.5 Repository Content Examples</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#10_0_RPM_Development_guide"> 10.0 RPM Development guide</a>
+</li></ul> 
+</div>
+<p />
+<h1><a name="1_0_General_Approach"></a> 1.0 General Approach </h1>
+<p />
+Our general approach is documented in our <a href="/bin/view/SoftwareTeam/CommunityPackagingProposal" class="twikiLink">Community Packaging Proposal</a>. 
+<p />
+Here is a brief summary of our approach, as quoted from that document:
+<p />
+<blockquote>
+<strong>Proposed Principle of Community Packaging:</strong> <br>
+The OSG Software Team should be a good community citizen when it comes to packaging: When possible, we should use packages from existing and/or broader communities; when that is not possible, we should make our own packaging but contribute them back to the broader communities. Therefore, we should package software only when one of the following is true:
+<p /> <ol>
+<li> The software is not already packaged; or 
+</li> <li> The software is packaged but needs significant changes to be acceptable to our users. (Different version, extra patches, etc...)
+</li></ol> 
+<p />
+Otherwise we should use the existing packaging provided by external developers or software repositories.
+</blockquote>
+<p />
+While this does not mention native packages, that is the implication: we can only use packages from a larger community effectively if we are using the same packaging mechanism with the same standards. 
+<p />
+<h1><a name="2_0_Outline_of_timeline"></a> 2.0 Outline of timeline </h1>
+<p />
+There are two portions to our current timeline. 
+<p /> <ol>
+<li> Finish pending work on Pacman-based releases, then stop any non-critical work on the Pacman-based releases.
+</li> <li> Immediately begin work on transitioning our infrastructure and products to RPMs for Red Hat Enterprise Linux 5. 
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="2_1_Finish_pending_work_on_Pacma"></a> 2.1 Finish pending work on Pacman-based releases. </span></h2>
+<p />
+We want to stop new work on Pacman packages as soon as possible, but we have some lingering work to finish up to ensure that we are well-positioned to provide our users with a working VDT while we make the transition to RPMs. We plan for the following.
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/NPTransition?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Date</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/SoftwareTeam/NPTransition?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Effort</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/NPTransition?cover=print;sortcol=2;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">What</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> June 10 </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> &nbsp; </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> As of June 10, we won't accept any new requests for changes to the Pacman cache. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> June </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> 2-3 FTE Days </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Release <a href="http://vdt.cs.wisc.edu/releases/2.0.0/release-p27.html" target="_top">OSG 1.2.20 (VDT 2.0.0.p27)</a>, which is currently in testing in the ITB. This provides some long-requested changes to GRAM for CMS, among other minor updates. This release will not require much effort from the OSG Software Team: perhaps a day or two to deal with minor problems and the release process. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> July </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1 twikiLast"> 1 FTE Week </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Minor update to address low priority security issues and a GIP update from CMS. While the security updates are low priority, we want to ensure they are addressed because some of our users may be using the Pacman-based releases for a long time, and it's best to have these resolved. (To be precise, we need to update Squid, MySQL-JDBC.) This should take less than a week of one person in the OSG Software Team. </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+After these releases, we will not make any plans to do updates to the Pacman-based packaging of the VDT unless there are critical updates. By "critical update", we mean a moderate or high priority security update, or anything approved by the OSG Executive Team. 
+<p />
+<strong>Please note:</strong> This means that the requested VOMS/VOMS-Admin upgrade will not be provided in Pacman-based packaging. 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="2_2_Immediately_begin_work_on_RP"></a> 2.2 Immediately begin work on RPMs for RHEL 5 </span></h2>
+<p />
+We will immediately begin the transition to producing the OSG Software Stack as RPMs for Red Hat Enterprise Linux 5 and variants (especially Scientific Linux 5). VDT installations will depend on EPEL (a trusted third-party software repository). <strong>Please Note:</strong> Because we are relying on EPEL, this implies a transition to Globus 5. 
+<p />
+Rough timeline:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/NPTransition?cover=print;sortcol=0;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Date</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/SoftwareTeam/NPTransition?cover=print;sortcol=1;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Effort</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/NPTransition?cover=print;sortcol=2;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">What</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> mid-August </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> ?? </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2 twikiLastCol"> glexec + worker node + osg-client + VOMS server, ready for OSG site admin meeting </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> December </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1 twikiLast"> ?? </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Complete CE installation, ready for LHC downtime </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="2_2_1_Order_of_packages_to_relea"></a> 2.2.1 Order of packages to release </span></h2>
+<p /> <ol>
+<li> <strong>vdt-system-profiler</strong>: We will first ship an updated version of the <code>vdt-system-profiler</code>. This is a simple script that allows users to collect debugging information to be sent to VDT support when help is needed. This is our first target because the package itself is simple, but it will allow us to make sure our infrastructure is in place. (Building RPMs, yum repositories, etc.)
+</li> <li> <strong>Xrootd</strong>: Xrootd (without the DSI Plugin) will be our next target. This is already mostly done, so the goal is to make sure that our infrastructure works properly.
+</li> <li> <strong>Xrootd DSI Plugin</strong>: This will require us to use Globus. <ul>
+<li> Note from BB: We have already done this for the Hadoop DSI plugin.
+</li></ul> 
+</li> <li> <strong>glexec</strong>: CMS wants an upgraded version of glexec. While it is not difficult to build, there are several dependencies (lcas, lcmaps, VOMS, and Globus) that need to be addressed. <ul>
+<li> Note from BB: VOMS is an interesting issue, as (last I checked) the VOMS in EPEL doesn't have the "--dont-verify" flag.  This is possibly the first place where we'll have to decide between "copy and maintain a patch" versus "work with upstream".  This is based on 9-month-old information; may have changed.
+</li></ul> 
+</li> <li> <strong>Worker Node Client</strong>: This is "low-hanging fruit". Many of these packages have already been done by CMS and we can use the results. They also require minimum configuration to get working. <ul>
+<li> Note from BB: We have proof of concept source packages for all of the WN-client <strong>except</strong> Fermi-SRM-Client.
+</li></ul> 
+</li> <li> <strong>OSG Client</strong>: Probably falls under the "starter" package category in complexity, but it does possibly affect end-users.  (Added by BB)
+</li> <li> <strong>VOMS Admin</strong>: This is the first Tomcat+MySQL application we'll need to support.  This would be the first test of our ability to port complex configuration scripts over.
+</li> <li> <strong>OSG-CE</strong>: This is the most complex software we offer.  It's going to be necessary to start very early, as it will take much longer than any other software, and will require coordination with several pieces of software that have never had native packaging.  (Added by BB)
+</li> <li> <strong>CREAM</strong>: EMI is also doing source packages for this; it might benefit to let them shake-out bugs. <ul>
+<li> Note from BB: The following software will be in both OSG-CE and <a href="/bin/view/SoftwareTeam/CREAM" class="twikiLink">CREAM</a>, and have never had native packages made: Gratia probes, GIP, OSG-RSV, Configure-OSG, Fermi-SRM-Client.
+</li></ul> 
+</li></ol> 
+<p />
+TBD: <ol>
+<li> Gratia Collector.  Small user base (5-6).  Requires <span class="twikiNewLink">MySQL<a href="/bin/edit/SoftwareTeam/MySQL?topicparent=SoftwareTeam.NPTransition" rel="nofollow" title="MySQL (this topic does not yet exist; you can create it)">?</a></span>+Tomcat; might be easy after VOMS Admin.  (Added by BB)
+</li> <li> VDT-CA-Manage.  This is to manage the set of CAs; while we have RPMs for CAs right now, they're far less powerful than VDT-CA-Manage.  We probably don't want to regress on these capabilities, as they were strongly desired by the OSG Technical Director.  (Added by BB)
+</li> <li> Mostly-unused-packages: dccp, bwctl, ndt, npad, <span class="twikiNewLink">MonaLisa<a href="/bin/edit/SoftwareTeam/MonaLisa?topicparent=SoftwareTeam.NPTransition" rel="nofollow" title="MonaLisa (this topic does not yet exist; you can create it)">?</a></span>, owamp.  These packages all provide some level of functionality to a small crowd.  I don't think we should consider removing them (for now), but we might want to state they won't happen for the initial release. (Added by BB)
+</li> <li> Pegasus client: Last I checked with the Pegasus folks, they now glide-in their own client.  We should check to see if this is still necessary.  (Added by BB)
+</li> <li> CA certs.  Who defines the starting set of CA certs?  Can it be only GOC?
+</li></ol> 
+<p />
+What do we say about timeline? Goal of X, Y, and Z by... August 31? 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="2_2_2_Supported_operating_system"></a> 2.2.2 Supported operating systems </span></h2>
+<p />
+Initially we plan to support Red Hat Enterprise Linux 5 and variants (particularly Scientific Linux 5) in both 32 and 64-bit architectures. 
+<p />
+Note the absence of other platforms, at least initially: No RHEL 4, no <span class="twikiNewLink">SuSE<a href="/bin/edit/SoftwareTeam/SuSE?topicparent=SoftwareTeam.NPTransition" rel="nofollow" title="SuSE (this topic does not yet exist; you can create it)">?</a></span>, no Debian. More will come later, but unspecified as to what and when. (The software we provide to LIGO on Debian will continue to exist.)
+<p />
+<h1><a name="3_0_Packages_What_can_we_borrow"></a> 3.0 Packages: What can we borrow, what do we have to create? </h1>
+<p />
+This is a list of packages from the VDT. For each package we say if it will be in the VDT RPM repository and where the package is packaged. 
+<p />
+<font color="#ff0000">*Please Note*:</font> This is not the complete set of RPMs, not even close. In many cases, there are multiple RPMs for each package (perhaps server, client and library RPMs) and there are many dependencies (lcg-utils depends on GFAL and cgsi-gsoap). In addition, some will be rather complicated to package. Therefore you cannot easily derive effort from this table, but you can get a feeling for how much needs to be packaged just for the VDT and how much we can borrow from other sources. 
+<p />
+(Click on a header name to sort by that column. In particular, "Order/Bundle" is a good sort order.)
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table3" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/NPTransition?cover=print;sortcol=0;table=3;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Name</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/SoftwareTeam/NPTransition?cover=print;sortcol=1;table=3;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Will be in VDT repo?</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol2"> <a rel="nofollow" href="/bin/view/SoftwareTeam/NPTransition?cover=print;sortcol=2;table=3;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Packaging Source</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol3"> <a rel="nofollow" href="/bin/view/SoftwareTeam/NPTransition?cover=print;sortcol=3;table=3;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Order/Bundle</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol4 twikiLastCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/NPTransition?cover=print;sortcol=4;table=3;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Dependencies</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Ant </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> OS </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Apache </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> OS </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> BC-Provider </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> EPEL </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> BDII </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> N/A </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Berkeley-DB </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> N/A </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Bestman </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> blahp </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> EMI </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #9: <a href="/bin/view/SoftwareTeam/CREAM" class="twikiLink">CREAM</a> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> BWCTL </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #6: OSG-Client </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> CA-Certificates-Manager </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #3: Xrootd-DSI </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> CA-Certificates-Updater </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #3: Xrootd-DSI </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> CA-Certificates </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> OSG </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #3: Xrootd-DSI </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> CEMon-Server </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> EMI </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Condor-Cron </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Condor </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> Condor </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> CREAM </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> EMI </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #9: <a href="/bin/view/SoftwareTeam/CREAM" class="twikiLink">CREAM</a> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> VDT/OSG Configuration </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Curl </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> OS </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Dccp </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> EPEL </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> EDG-GridFTP-Client </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT? </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> EDG-Make-Gridmap </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> EMI </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Expat </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> OS </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Fetch-CRL </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> EPEL </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Generic-Information-Provider </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> EPEL </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Glexec </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> EMI or glexec </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #4: glexec </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> GlideinWMSVOFrontEnd </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> GlideinWMS </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> gLite-FTS-Client </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> EMI </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Globus 5 </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Mixed </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> EPEL/VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #3: Xrootd-DSI </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Globus Condor NFSlite Jobmanager </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Globus-Trash.ReleaseDocumentationManagedFork-Setup </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Gratia Probes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Gratia Server </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> GSIOpenSSH </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #6: OSG-Client </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> GUMS </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Java 1.6 </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> OS </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #7: VOMS-Admin </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> KX509 </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> LCG-Info </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> EMI </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #6: OSG-Client </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> LCG-Infosites </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> EMI </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #6: OSG-Client </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> LCG-Utils </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT? </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> LFC-Client </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT? </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Logrotate </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> OS </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Metronome </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> N/A </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> MonaLisa </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> N/A </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> MyProxy </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> EPEL </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> MySQL </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> OS </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #7: VOMS-Admin </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> NDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #6: OSG-Client </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Nmap </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #6: OSG-Client </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> NPAD-Client </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #6: OSG-Client </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> OpenLDAP </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> OS </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> OSG-Discovery </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #6: OSG-Client </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> OSG-Match-Maker </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes? </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> OSG-RSV </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> OSG-Site-Verify </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> N/A </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> OSG-Site-Web-Page </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> OSG-VO-Map </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> OWAMP </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #6: OSG-Client </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Pegasus </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> Pegasus? </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Perl-Modules </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> EPEL/OS </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Pigeon-Tools </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> PPDG-Cert-Scripts </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #6: OSG-Client </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> PRIMA-GT4 </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> N/A </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> PRIMA </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #8: OSG-CE </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Procd </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> PyGlobus </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No? </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> N/A </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> PyGridWare </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No? </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> N/A </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Python </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> OS/EPEL </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Squid </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> OS </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> SRM-Client-Fermi </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> SRM-Client-LBNL </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Tomcat-5.5 </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> OS </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #7: VOMS-Admin </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> UberFTP </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> VDT-System-Profiler </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> VDT </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> #1: vdt-system-profiler </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> VOMRS </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> N/A </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> VOMS-Admin </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> EMI </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #7: VOMS-Admin </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> VOMS </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> EMI </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #4: glexec </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Wget </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2"> OS </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #5: Worker-Node </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> Xrootd </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2"> Xrootd </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol3 twikiLastCol"> #2: Xrootd </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Xrootd-DSI </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1 twikiLast"> Yes </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2 twikiLast"> VDT </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol3 twikiLastCol twikiLast"> #3: Xrootd-DSI </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h1><a name="4_0_Implications_for_end_user_sy"></a> 4.0 Implications for end-user system administrators </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="4_1_Migration_from_Pacman_to_RPM"></a> 4.1 Migration from Pacman to RPM </span></h2>
+<p />
+We will need to provide assistance for our users to migrate their existing Pacman installations to RPM installations. This will be some combination of documentation and or utilities to assist with the migration. In some cases (such as preserving contents of databases for things like VOMS), this will be significant work.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="4_2_Non_root_installations_multi"></a> 4.2 Non-root installations &amp; multiple installations </span></h2>
+<p />
+RPMs do not naturally support non-root installs or multiple installations on a single computer. These are possible, but they are not the common, standard procedures for using RPM. Some VDT users, particularly ATLAS (which installs client software multiple times as non-root on a shared filesystem) will need a solution for installing in these scenarios. There are at least two solutions:
+<p /> <ul>
+<li> Provide relocatable RPMs (this is extra work in addition to simply making standard RPMs), then provide tools to install those RPMs as non-root. 
+</li> <li> Provide the VDT (or the necessary subset) in an alternative packaging format. Tarballs may be sufficient here, but we do not yet have a complete understanding of how people would maintain an installation based off of tarballs.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="4_3_Backups_of_previous_installa"></a> 4.3 Backups of previous installations (for rollback) </span></h2>
+<p />
+One benefit of Pacman's capability for doing installations in multiple locations on disk is that it is very easy to back up a VDT installation to another directory. This is because the Pacman-based VDT installation is in a directory that is separate from all other installed software and not combined into standard FHS locations. Because it is easy to backup, system administrators have the ability to roll-back to previous installations in case there are problems with an upgrade. This is much harder (impossible?) to do with RPM: it is not easy to do rollbacks in general. To some extent we can help administrators by sharing best practices for upgrading systems (testing on separate computers, etc.), but we also have to accept the loss of rolling back an installation.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="4_4_Retraining"></a> 4.4 Retraining </span></h2>
+<p />
+The transition to RPMs will require retraining for OSG site administrators. This is unlikely to be a significant problem for larger sites that already have considerable experience with RPMs, but it will be a problem for smaller sites such as Tier-3s that may be run by graduate students with limited time for system administrations.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="4_5_Site_customization"></a> 4.5 Site customization </span></h2>
+<p />
+From Steve Timm: "Heavily customized sites such as <span class="twikiNewLink">FermiGrid<a href="/bin/edit/SoftwareTeam/FermiGrid?topicparent=SoftwareTeam.NPTransition" rel="nofollow" title="FermiGrid (this topic does not yet exist; you can create it)">?</a></span> would have to redo much of the customization that we have done, both in modification to job managers and in our internal monitoring.  This would be amplified if the "community" version of Globus shifts to GT5.x as part of this process. (GT5 is something that Fermilab dearly wants to see deployed but it will take us work to adapt to it when it is deployed.)"
+<p />
+From Steve Timm: "A transition to RPMS which locate their files in standard Linux locations such as /usr and /var would necessitate a OS reconfiguration of many OSG head nodes which are currently configured to have their VDT installed in a separate partition like /opt or /usr/local."
+<p />
+<h1><a name="5_0_Implications_on_configuratio"></a> 5.0 Implications on configuration management </h1>
+<p />
+Our existing configuration tools (<code>configure-osg</code> and the host of underlying scripts used by <code>configure-osg</code>) will need significant porting and/or rewriting to be usable with RPMs. The existing scripts rely on many characteristics of Pacman-based installations and specific installation choices we made. The scripts also blend two kinds of configuration. These are:
+<p /> <ol>
+<li> <strong>Install-time configuration</strong> These are things like making the initial version of a configuration file, initializing a database table, creating a user, and making an init script. These are tasks that are appropriate to do during the installation of an RPM. This kind of configuration will be done as part of our RPMs. That is, the work of creating the RPMs for the VDT will involve rewriting our existing configuration scripts and melding them with the RPMs. (Of course, pre-existing RPMs from other packaging sources will likely already have this work completed.)
+</li> <li> <strong>Post-install configuration</strong> These are scripts (like configure-osg) that allow system administrators to change the configuration of the software after the installation. <strong>We do not yet have a story on what we will do for this kind of configuration</strong>. Should we merely document what needs to be done? Should we port our existing configure-osg? Switch to YAIM? Suggest that all sites use a configuration management system like cfengine and provide tools that work with one or more of these configuration management systems?
+</li></ol> 
+<p />
+<h1><a name="6_0_Implications_for_internal_VD"></a> 6.0 Implications for internal VDT testing </h1>
+<p />
+The VDT team uses an internal test suite. It's used to verify that our Pacman installations work correctly. It verifies many aspects of the VDT installation process and the functionality of the software. It is not used outside the UW-Madison. In particular, it's not used by the ITB. It's tuned for the needs of our pre-release testing. We cannot use this existing internal test suite for the VDT without significant updates
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="6_1_Need_to_publish_test_results"></a> 6.1 Need to publish test results against latest system updates </span></h2>
+<p />
+Today the VDT only does internal testing against un-updated versions of the OS. We need to add a new class of tests, to verify that our existing releases work correctly with updated versions of the OS. The test results should be published publicly so that both we and our users know if OS updates work correctly with the VDT. These tests are similar or identical to our pre-release tests, but we will need to extend our set of tests, work with updated platforms, and publish the results. We may need a variety of OSes to test with (RHEL5, <span class="twikiNewLink">CentOS<a href="/bin/edit/SoftwareTeam/CentOS?topicparent=SoftwareTeam.NPTransition" rel="nofollow" title="CentOS (this topic does not yet exist; you can create it)">?</a></span> and Scientific Linux?)
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="6_2_Need_to_update_installation"></a> 6.2 Need to update installation process </span></h2>
+<p />
+Replace our installation process, which currently uses Pacman. There are a couple of options for this:
+<p /> <ul>
+<li> Write new scripts to do RPM installations to directly replace scripts that do Pacman installations.  If we just wanted to hack our existing scripts we could probably replace the Pacman installation with RPM installation in a day or two.  Then it would probably take a few more days to figure out how to properly remove RPMs and validate that they
+</li></ul> 
+are removed. <ul>
+<li> This would be a good opportunity to significantly overhaul our testing suite and start using virtual machines (likely in the Batlab). This would take a lot more investigation.  It would probably take a few days to investigate the problem and form an effort estimate for completion. This would allow us to always do our RPM installations in a known environment (no problems caused by earlier VDT installations).
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="6_3_Update_existing_tests"></a> 6.3 Update existing tests </span></h2>
+Almost all of our existing tests will need to be modified because they rely on hardcoded paths within a Pacman installation.  For example, 33 out of 38 test files contain $VDT_LOCATION.  We believe that the changes are mostly straightforward, but it will take significant time to update the tests.
+<p />
+Some of the tests in our test suite no longer make sense because they are tied to the Pacman infrastructure. We would consider doing similar appropriate tests (such as verifying we can remove VDT RPMs correctly) but they would be written from scratch.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="6_4_Internal_learning"></a> 6.4 Internal learning </span></h2>
+<p />
+The VDT team needs training and infrastructure to support manual testing. When we need to do testing during development, how do we do it? Will we use virtual machines? How will we make those virtual machines?
+<p />
+We also need to write/update documentation for our new testing framework
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="6_5_Possible_improvement_new_tes"></a> 6.5 Possible improvement: new test framework </span></h2>
+<p />
+We should consider updating our existing test framework (Perl::More). It is a dated framework that has been supplanted by new, improved, shiny frameworks. That doesn't mean it's bad, but this is the right time to consider if we should move to an alternative.
+<p />
+<h1><a name="7_0_Implications_for_integration"></a> 7.0 Implications for integration testbed testing </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="7_1_Impacts_on_ITB_testing"></a> 7.1 Impacts on ITB testing </span></h2>
+<p /> <ul>
+<li> So ITB sites have to test both Pacman and RPM? In general, this might imply double the effort, or at least double the knowledge.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="7_2_Possibilities_for_improving"></a> 7.2 Possibilities for improving the ITB </span></h2>
+<p />
+The change in the packaging infrastructure provides the opportunity for changing the testing infrastructure to make it more responsive and allow for quicker more targeted releases.  In addition, a switch to an RPM based packaging allows for testing that previous would have been difficult to conduct.
+<p />
+<h3><a name="7_2_1_Testing_smaller_changes"></a> 7.2.1 Testing smaller changes </h3>
+With RPMs we should be able to have more granularity in which components can be updated at a given point in time because it is easier and more reliable to install specific sets of software with RPM than with Pacman. This allows for testing of specific components instead of monolithic releases that update components en masse.  For example, just Gratia probes could be tested for a release.  Although this implies that testing would be a more continual process rather than the cyclical ITB testing process, it would also allow for quicker releases of packages and better responsiveness to stakeholder requests.
+<p />
+That said, there is a potential downside to this: more frequent testing will lead to steadier demands on our limited ITB effort and may lead to ITB tester fatigue--people might just get sick of constant ITB testing.  The current test cycles have downtimes between test cycles which let ITB resource admins the opportunity to work on other things.  With ongoing releases, effort will probably be needed more frequently although the effort levels may remain the same.  Some of the new effort requirements may be mitigated by the having ad-hoc groups of ITB admins that are interested in a given change do the testing allowing admins that are not affected by the change to work on other things.
+<p />
+<h3><a name="7_2_2_Automated_testing"></a> 7.2.2 Automated testing </h3>
+Given the infrastructure available for handling RPM installation and configuration, the switch to RPM based packaging allows for the establishment of automated installation and test stands for testing.  With the addition of a configuration management system (like cfengine or puppet), it would be possible to setup infrastructure that does daily installation and configuration of the VDT RPM packages and runs simple tests after software has been setup.  With the addition of ITB robot jobs, quite a bit more functionality can be exercised on a daily basis.
+<p />
+<h1><a name="8_0_Implications_for_Documentati"></a> 8.0 Implications for Documentation </h1>
+<p />
+All of our existing documentation assumes that installations are being done with Pacman and that end-users can install the VDT in any disk location they like. The documentation is littered with references to Pacman and $VDT_LOCATION. 
+<p />
+It will be a significant effort to create new documentation for the new RPM-based VDT installation. It is difficult to estimate the effort, but historically speaking, documentation has been slow to write. That said, we assume that the documentation can be gradually written over time. 
+<p />
+We should note that Robert Engel is leaving OSG at the end of September and may be unavailable for help with the creation of the documentation.
+<p />
+<h1><a name="9_0_Versioning"></a> 9.0 Versioning </h1>
+<p />
+<font color="#ff0000">Warning:</font> This whole section was added by Brian Bockelman and not yet agreed to by Alain.
+<p />
+We've previously said the minor version number transitions (as in, OSG 1.2 -&gt; 1.3) are only incremented when upgrades aren't possible.  This makes the major version number mostly meaningless, and leads to a very large patch-level (1.2.19) and major changes happen between patch levels.  I'd like to fix this while we are doing a clean sweep.
+<p />
+The point of making versioning changes is to communicate <strong>within the version number</strong> the amount of risk one takes in performing the upgrade.
+<p />
+We use the traditional MAJOR.MINOR.PATCH numbering scheme.  By "version number", we are referring to the version number of any OSG meta-package RPMs. 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="9_1_Major_version_number"></a> 9.1 Major version number </span></h2>
+<p /> <ul>
+<li> Significant new services will only be added on major releases.
+</li> <li> We don't guarantee configuration file compatibility across major releases (although we will keep the existing policy of making configuration files as backward compatible as possible).  We are allowed to obsolete, remove, or semantically change configuration options.  We will avoid semantic changes if at all possible.
+</li> <li> We don't guarantee ABI compatibility across major releases.
+</li> <li> We don't guarantee protocol compatibility across major releases.
+</li> <li> Major version changes will be ITB-tested.
+</li> <li> We support the previous two major versions (i.e., about 18 months of support for a release).
+</li> <li> Each major release will have a separate repository to prevent inadvertent upgrades.  To upgrade across a release, we can use yum plugins to do something like "yum updateosg 3" to switch to the OSG 3.0 repository.  We expect the upgrade process to be: <ol>
+<li> Switch yum repository using custom yum command.
+</li> <li> Run "yum update".
+</li> <li> Edit configuration files.   The average major release is thus far, far simpler than major release in the past.
+</li></ol> 
+</li> <li> The contents of the MAJOR release repository will contain version MAJOR.0.0 of the RPMs.
+</li></ul> 
+<p />
+Note that, while we have a significant leeway for change at each major release, we aren't necessarily going to change things.  We will continue to be conservative in breaking things - but this will provide a predefined point when we need to.
+<p />
+Also note that previous minor releases would now be considered major releases due to the configuration option changes.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="9_2_Minor_version_number"></a> 9.2 Minor version number </span></h2> <ul>
+<li> Configuration files will be backward, but not necessarily forward compatible.  A configuration file working with minor version X will work with minor version Y if X&lt;Y.
+</li> <li> Minor version changes will be ITB-tested.  We may change this item in the future if ITB effort is reduced.
+</li> <li> Minor updates will be available in an -updates repo.
+</li> <li> We expect updating across minor version numbers to be "safe", but admins are advised to not do them automatically.
+</li> <li> Forward and backward ABI and protocol compatibility is expected.
+</li> <li> Services may have new capabilities or versions in minor releases. <ul>
+<li> New packages may be added in a minor release if the upgrade of an existing service requires it.
+</li></ul> 
+</li> <li> Releases will happen on the 1st or 3rd Tuesday of the month (TODO: check to verify this jives with the current policy)
+</li> <li> Packages in the MAJOR updates repository will contain the RPMs corresponding to the latest MAJOR.MINOR.VERSION.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="9_3_Patch_levels"></a> 9.3 Patch-levels </span></h2> <ul>
+<li> Configuration variables may not change.
+</li> <li> Reserved only for bugfixes or security fixes.
+</li> <li> ABI compatibility is guaranteed.
+</li> <li> Patch-level fixes may skip ITB if necessary.
+</li> <li> It is expected to patch-level upgrades to be completely safe.
+</li> <li> We expect updates should be safe to be done automatically.
+</li> <li> Patch-level fixes will go into the -updates repo.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="9_4_Exceptions"></a> 9.4 Exceptions </span></h2>
+<p />
+There cases where we make exceptions to the versioning and release policy outlined above. <ul>
+<li> If we find a compelling reason to break the above process, the OSG-ET must approve it.  It will be noted in the release nodes, and separately emailed to osg-sites.
+</li> <li> The OSG 2.0 release cycle will be special because we will not transition all OSG 1.2 services in one release. OSG 2.0 might start with only the worker node client (or less). <ul>
+<li> Services existing in OSG 1.2 will be added in minor releases of OSG 2.0.  The new services will go into the <strong>release</strong>, not the <strong>updates</strong> repository.  Compatibility guarantees are unchanged. The minor updates of OSG 2.0 will be tested by ITB.
+</li> <li> Services not in OSG 1.2 will wait for OSG 3.0.
+</li></ul> 
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="9_5_Repository_Content_Examples"></a> 9.5 Repository Content Examples </span></h2>
+<p />
+Suppose OSG 2.0 has an RPM called foo.  OSG 2.0.0 released with foo-4.0.3, OSG 2.1.0 released foo-4.0.4, and OSG 2.1.1 released foo-4.0.5.  According to the above policy, the OSG2 release repo will contain foo-4.0.3 and the OSG2 updates repo will contain foo-4.0.5.  foo-4.0.4 will be available from Koji, but not from the release or updates repository.
+<p />
+<h1><a name="10_0_RPM_Development_guide"></a> 10.0 RPM Development guide </h1>
+<p />
+There are many technical details about how we will maintain our RPMs, and they are documented on a separate page, the <a href="/bin/view/SoftwareTeam/RPMDevelopmentGuide" class="twikiLink">RPM Development Guide</a>. Ultimately, the guide will likely outlive this transition document and become a key document for the OSG Software Team and external contributors alike.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/Projects" class="twikiLink">Projects</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>NPTransition</span> <br />    
+Topic revision: r25 - 07 Feb 2017 - 19:19:20 - <a href="/bin/view/Main/BrianBockelman" class="twikiLink">BrianBockelman</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

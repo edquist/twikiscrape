@@ -1,0 +1,444 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> KojiHubSetup &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/KojiHubSetup?_T=16 Feb 2017" type="application/x-wiki" title="edit KojiHubSetup" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><meta name="robots" content="noindex,nofollow">
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/KojiHubSetup"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Notes_on_Koji_Hub_Setup"></a>  Notes on Koji-Hub Setup </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Tags"> Tags</a> <ul>
+<li> <a href="?cover=print#Base_tags"> Base tags</a> <ul>
+<li> <a href="?cover=print#dist_el_567_build"> dist-el[567]-build</a>
+</li> <li> <a href="?cover=print#osg_el_567"> osg-el[567]</a>
+</li> <li> <a href="?cover=print#kojira_fake"> kojira-fake</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Main_OSG_tags"> Main OSG tags</a> <ul>
+<li> <a href="?cover=print#osg_3_123_el_567_build"> osg-3.[123]-el[567]-build</a>
+</li> <li> <a href="?cover=print#osg_upcoming_el_567_build"> osg-upcoming-el[567]-build</a>
+</li> <li> <a href="?cover=print#osg_el_567_development"> osg-*-el[567]-development</a>
+</li> <li> <a href="?cover=print#osg_el_567_testing"> osg-*-el[567]-testing</a>
+</li> <li> <a href="?cover=print#osg_el_567_prerelease"> osg-*-el[567]-prerelease</a>
+</li> <li> <a href="?cover=print#osg_el_567_release"> osg-*-el[567]-release</a>
+</li> <li> <a href="?cover=print#osg_3_123_el_567_release_build"> osg-3.[123]-el[567]-release-build</a>
+</li> <li> <a href="?cover=print#osg_3_123_el_567_contrib"> osg-3.[123]-el[567]-contrib</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Specialized_tags"> Specialized tags</a> <ul>
+<li> <a href="?cover=print#el5_pegasus_and_el5_pegasus_buil"> el5-pegasus and el5-pegasus-build</a>
+</li> <li> <a href="?cover=print#el5_lcmaps_upgrade_and_el5_lcmap"> el5-lcmaps-upgrade and el5-lcmaps-upgrade-build</a>
+</li> <li> <a href="?cover=print#el_56_condor_unified_development"> el[56]-condor-unified-development and el[56]-condor-unified-development-build</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Collaborator_Tags"> Collaborator Tags</a> <ul>
+<li> <a href="?cover=print#hcc"> hcc-*</a>
+</li> <li> <a href="?cover=print#uscms"> uscms-*</a>
+</li></ul> 
+</li></ul> 
+</li> <li> <a href="?cover=print#Build_Targets"> Build Targets</a> <ul>
+<li> <a href="?cover=print#osg_el_567_AN1"> osg-el[567]</a>
+</li> <li> <a href="?cover=print#osg_3_123_el_567"> osg-3.[123]-el[567]</a>
+</li> <li> <a href="?cover=print#osg_upcoming_el_567"> osg-upcoming-el[567]</a>
+</li> <li> <a href="?cover=print#dist_el_567_build_AN1"> dist-el[567]-build</a>
+</li> <li> <a href="?cover=print#kojira_fake_AN1"> kojira-fake-*</a>
+</li> <li> <a href="?cover=print#hcc_el_567_perfsonar_el_56_uscms"> hcc-el[567], perfsonar-el[56], uscms-el[56], panda-el6</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Signing_plugin"> Signing plugin</a>
+</li> <li> <a href="?cover=print#Tweaks"> Tweaks</a> <ul>
+<li> <a href="?cover=print#Using_proxy_certs"> Using proxy certs</a>
+</li> <li> <a href="?cover=print#Git_builds"> Git builds</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Procedures"> Procedures</a> <ul>
+<li> <a href="?cover=print#User_cert_switch"> User cert switch</a>
+</li> <li> <a href="?cover=print#Adding_CAs_for_user_authenticati"> Adding CAs for user authentication</a>
+</li> <li> <a href="?cover=print#Koji_Permissions"> Koji Permissions</a>
+</li></ul> 
+</li></ul> 
+</div>
+<a href="https://docs.pagure.org/koji/" target="_top">Current Koji documentation</a> may be of use,
+though as of 2016-10-05, it is for a newer version of Koji than we host.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Tags"></a> Tags </span></h2>
+<p />
+<h3><a name="Base_tags"></a> Base tags </h3>
+<p />
+<h4><a name="dist_el_567_build"></a> dist-el[567]-build </h4>
+<a href="https://koji.chtc.wisc.edu/koji/search?match=glob&amp;type=tag&amp;terms=dist-el%3F-build" target="_top">Tag list</a>
+<p />
+These tags contains 3 external repos each, hosted locally under <a href="http://mirror.batlab.org/pub/linux" target="_top">http://mirror.batlab.org/pub/linux</a>: <dl>
+<dt> <code>dist-el[567]-epel</code> </dt><dd> A mirror of the EPEL 5/6/7 repositories
+</dd> <dt> <code>dist-el[567]-centos*</code> </dt><dd> A mirror of the base CentOS repositories
+</dd> <dt> <code>dist-el[567]-centos-updates</code> </dt><dd> A mirror of the CentOS Updates repositories
+</dd></dl> 
+<p />
+We don't put any packages in them (except for ones required for building, like
+<code>buildsys-macros</code> and <code>fetch-sources</code>), and generally don't build from them
+directly, but use tag inheritance.
+<p />
+<h4><a name="osg_el_567"></a> osg-el[567] </h4>
+<a href="https://koji.chtc.wisc.edu/koji/search?match=glob&amp;type=tag&amp;terms=osg-el%3F" target="_top">Tag list</a>
+<p />
+These tags contains all the <em>package names</em> that we put into OSG; =koji
+add-pkg= adds to them. <code>osg-build</code> does this automatically.
+The tags do not actually contain any builds (i.e. packages with version-release).
+All the other <code>osg-*</code> tags inherit from these (either directly or indirectly).
+The purpose of this is to make promoting builds easier, since it keeps you from
+having to run <code>add-pkg</code> when you promote.
+<p />
+<h4><a name="kojira_fake"></a> kojira-fake </h4>
+<a href="https://koji.chtc.wisc.edu/koji/taginfo?tagID=10" target="_top">Tag</a>
+<p />
+This tag (and targets building to it) were created because <code>kojira</code> does not
+automatically regenerate a repo unless it's the source of another repo.
+Without this, the osg-development tags (for example) wouldn't get regenerated
+automatically after a build.
+<p />
+<h3><a name="Main_OSG_tags"></a> Main OSG tags </h3>
+<p />
+<h4><a name="osg_3_123_el_567_build"></a> osg-3.[123]-el[567]-build </h4>
+<a href="https://koji.chtc.wisc.edu/koji/search?match=glob&amp;type=tag&amp;terms=osg-3.%3F-el%3F-build" target="_top">Tag list</a>
+<p />
+These are used to initialize the buildroot of most packages we make.
+They inherit from their respective dist-build and osg-development tags.
+The EL5 and EL6 tags also contain the <code>jpackage[56]-bin</code> external repos under
+<a href="http://mirror.batlab.org/pub/jpackage/" target="_top">http://mirror.batlab.org/pub/jpackage/</a> since we use those for some builds.
+<p />
+<strong>Note</strong> that the JPackage external repos must have a better priority than the OS
+and EPEL external repos to avoid build problems for Java packages.
+<p />
+<h4><a name="osg_upcoming_el_567_build"></a> osg-upcoming-el[567]-build </h4>
+<a href="https://koji.chtc.wisc.edu/koji/search?match=glob&amp;type=tag&amp;terms=osg-upcoming-el%3F-build" target="_top">Tag list</a>
+<p />
+These tags are special in that they also need to inherit from the
+latest mainline osg-build repo (that is, if trunk is 3.3, then
+<code>osg-upcoming-el6-build</code> should inherit from <code>osg-3.3-el6-build</code>).
+<p />
+<h4><a name="osg_el_567_development"></a> osg-*-el[567]-development </h4>
+<a href="https://koji.chtc.wisc.edu/koji/search?match=glob&amp;type=tag&amp;terms=osg-*-el%3F-development" target="_top">Tag list</a>
+<p />
+These contain the builds in the <code>osg-minefield</code> repos. The <code>osg-development</code>
+repos hosted by the GOC take packages from this, so <code>osg-development</code> is pretty
+much <code>osg-minefield</code> after a 1-hour delay.  They inherit from osg-testing (and
+occasionally from the more specialized branches like el5-gt52-experimental,
+though that is now discouraged).  Builds that are made using the <code>osg-el[567]</code>
+targets (default if you're using <code>osg-build</code>) get their buildroots from the
+newest osg-build tags and put their results in the newest osg-development tags.
+<p />
+<h4><a name="osg_el_567_testing"></a> osg-*-el[567]-testing </h4>
+<a href="https://koji.chtc.wisc.edu/koji/search?match=glob&amp;type=tag&amp;terms=osg-*-el%3F-testing" target="_top">Tag list</a>
+<p />
+These contain the builds in the <code>osg-testing</code> repos.
+They inherit from the respective <code>osg-release</code> tags.
+<p />
+<h4><a name="osg_el_567_prerelease"></a> osg-*-el[567]-prerelease </h4>
+<a href="https://koji.chtc.wisc.edu/koji/search?match=glob&amp;type=tag&amp;terms=osg-*-el%3F-prerelease" target="_top">Tag list</a>
+<p />
+These are a staging are for packages that we are <em>certain</em> will be released in
+the next release.  They are otherwise empty.  These are used for testing and
+for building the tarball clients.
+<p />
+<h4><a name="osg_el_567_release"></a> osg-*-el[567]-release </h4>
+<a href="https://koji.chtc.wisc.edu/koji/search?match=glob&amp;type=tag&amp;terms=osg-*-el%3F-release" target="_top">Tag list</a>
+<p />
+These contain the builds in the <code>osg-release</code> repos.  They should be locked
+except for when moving packages from the <code>osg-prerelease</code> repos to the
+<code>osg-release</code> repos.  They inherit from <code>osg-el[567]</code>.
+<p />
+<h4><a name="osg_3_123_el_567_release_build"></a> osg-3.[123]-el[567]-release-build </h4>
+<a href="https://koji.chtc.wisc.edu/koji/search?match=glob&amp;type=tag&amp;terms=osg-3.%3F-el%3F-release-build" target="_top">Tag list</a>
+<p />
+These inherit the <code>dist-*-build</code> tags and the <code>osg-*-release</code> tags, putting a
+base OS along with OSG packages in a single repo, without the need for yum
+priorities. It is used, along with <code>osg-*-prerelease</code>, for building the tarball
+client. Note that there are no <code>release-build</code> repos for upcoming.
+<p />
+<h4><a name="osg_3_123_el_567_contrib"></a> osg-3.[123]-el[567]-contrib </h4>
+<a href="https://koji.chtc.wisc.edu/koji/search?match=glob&amp;type=tag&amp;terms=osg-*-contrib" target="_top">Tag list</a>
+<p />
+These contain the builds in the <code>osg-contrib</code> repos.
+Note that there are no <code>osg-upcoming-contrib</code> repos.
+<p />
+<h3><a name="Specialized_tags"></a> Specialized tags </h3>
+<p />
+These tags are generally made for long projects which may be in an unstable state and should not interfere with the main development of OSG packages.
+An example is a full-scale Globus update, where many packages have to be built, using each other as dependencies, and the whole system is not considered usable until all the updates are done.
+They should generally be removed after the work is done.
+<p />
+<h4><a name="el5_pegasus_and_el5_pegasus_buil"></a> el5-pegasus and el5-pegasus-build </h4>
+These tags were made for Mats Rynge of the Pegasus project to build into.
+<p />
+<h4><a name="el5_lcmaps_upgrade_and_el5_lcmap"></a> el5-lcmaps-upgrade and el5-lcmaps-upgrade-build </h4>
+These tags were made for Dave Dykstra to build into.
+<p />
+<h4><a name="el_56_condor_unified_development"></a> el[56]-condor-unified-development and el[56]-condor-unified-development-build </h4>
+These tags were made for Carl Edquist's work on the unified HTCondor RPM.
+<p />
+<h3><a name="Collaborator_Tags"></a> Collaborator Tags </h3>
+<p />
+<h4><a name="hcc"></a> hcc-* </h4>
+For use by the Holland Computing Center at UNL.
+<p />
+<h4><a name="uscms"></a> uscms-* </h4>
+For use by US CMS.
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Build_Targets"></a> Build Targets </span></h2>
+A koji <em>target</em> pairs a build tag (which contains packages needed to build
+software) and a destination tag (which the software will be tagged into once it
+is built).
+<p />
+<h3><a name="osg_el_567_AN1"></a> osg-el[567] </h3>
+These build from the osg-*-el[567]-build tags for the current release series
+into the osg-*-el[567]-development tags and are the primary targets used for
+building OSG software.
+<p />
+<h3><a name="osg_3_123_el_567"></a> osg-3.[123]-el[567] </h3>
+These build from the osg-*-el[567]-build tags into the
+osg-*-el[567]-development tags and are used for building to releases other
+than the current one.
+<p />
+<h3><a name="osg_upcoming_el_567"></a> osg-upcoming-el[567] </h3>
+These build from the osg-upcoming-el[567]-build tags into the
+osg-upcoming-el[567]-development tags and are used for building to upcoming.
+<p />
+<h3><a name="dist_el_567_build_AN1"></a> dist-el[567]-build </h3>
+These build from the <code>dist-el*-build</code> tag directly into the <code>dist-el*-build</code>
+tag. It is used for making builds that should be in every buildroot.
+<p />
+<h3><a name="kojira_fake_AN1"></a> kojira-fake-* </h3>
+These fool kojira into regenerating their build tags as repos we can yum
+install from. Without this, the osg-development tags (for example) wouldn't
+get regenerated and osg-minefield wouldn't work.
+<p />
+<h3><a name="hcc_el_567_perfsonar_el_56_uscms"></a> hcc-el[567], perfsonar-el[56], uscms-el[56], panda-el6 </h3>
+These were made for builds made for our collaborators to build into their tags.
+<p />
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Signing_plugin"></a> Signing plugin </span></h2>
+The signing plugin is used to sign packages right after they are built. We
+give it a GPG signing key and corresponding passphrase. It is configured per
+build tag. The current default is to use the OSG key to sign if a
+configuration is not specified. This is because it's very difficult to sign
+packages after the fact, so it's better to erroneously sign some of them with
+the wrong key than to not sign them.
+<p />
+It is therefore important that whenever a new build tag is created, a
+corresponding config section for the signing plugin is added, too.
+<p />
+This comes from the package <code>koji-plugin-sign</code> and has configs in
+<code>/etc/koji-sign-plugin</code> and <code>/etc/koji-hub/plugins</code>. There is a script called
+<code>fix-permissions</code> in both directories that will make sure the plugin can read
+the config.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Tweaks"></a> Tweaks </span></h2>
+These are local config changes we needed to make to get certain features to
+work.
+<p />
+<h3><a name="Using_proxy_certs"></a> Using proxy certs </h3>
+<p />
+<code>/etc/sysconfig/httpd</code> needed to be changed to include the following lines:
+<pre>
+OPENSSL&#95;ALLOW&#95;PROXY&#61;1
+OPENSSL&#95;ALLOW&#95;PROXY&#95;CERTS&#61;1
+
+export OPENSSL&#95;ALLOW&#95;PROXY
+export OPENSSL&#95;ALLOW&#95;PROXY&#95;CERTS
+</pre>
+<p />
+The user must use RFC proxies and must have a version of the koji client of 1.6.0-6.osg or newer.
+<p />
+<h3><a name="Git_builds"></a> Git builds </h3>
+<p />
+On EL5 only, we needed to run the following to allow Git builds from github:
+<code>git config --system http.sslVerify false</code>
+This is to avoid server cert verification failures against github.com
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Procedures"></a> Procedures </span></h2>
+<p />
+<h3><a name="User_cert_switch"></a> User cert switch </h3>
+<p />
+The following steps need to be taken for someone replacing their user cert: <ul>
+<li> An admin should log in to the database and update the <code>users</code> table with their new CN.
+</li> <li> The user should import their new cert into their browser and rerun <code>osg-koji setup</code> to fix their <code>client.crt</code>.
+</li> <li> If the user gets a Python stack trace when connecting to <code>koji.chtc.wisc.edu</code> via their browser, they should clear their cookies.
+</li></ul> 
+<p />
+<h3><a name="Adding_CAs_for_user_authenticati"></a> Adding CAs for user authentication </h3>
+<p />
+Since our Koji instance uses certs for auth, we specify which CAs we trust for signing user certs.
+The CA certs for user auth are concatenated together in the file <code>/etc/pki/tls/certs/allowed-cas-for-users.crt</code>.
+A comment line before the "BEGIN CERTIFICATE" line is used to name the file the cert comes from.
+We take the certs from the <code>osg-ca-certs</code> repository.
+<p />
+For example, when I added the CERN CAs to the bundle, I installed osg-ca-certs
+onto a Fermicloud VM, copied <code>/etc/grid-security/certificates/CERN-TCA.pem</code>
+(which signed user certs) and <code>CERN-Root.pem</code> (which signed <code>CERN-TCA.pem</code>) to
+<code>koji.chtc.wisc.edu</code>, catted them to the end of the <code>allowed-cas-for-users.crt</code> file, edited
+the file to add comments before the certs, and restarted <code>httpd</code>.
+<p />
+<p />
+A few tidbits of knowledge for administrators of our Koji server: <ul>
+<li> Three services need to be running for koji-hub to be functioning: kojira, kojid, and the Apache web server.  To restart these: <ul>
+<li> service kojid restart
+</li> <li> service kojira restart
+</li> <li> service httpd restart
+</li></ul> 
+</li> <li> Logfiles can be found here: <ul>
+<li> /var/log/kojid.log
+</li> <li> /var/log/kojira.log
+</li> <li> /var/log/messages
+</li></ul> 
+</li> <li> kojid is configured to stop starting new tasks if it has less than 8GB free.
+</li> <li> Failed build roots are kept for 4 hours, and each build root is about 1GB currently.  Hence, if too many tasks fail, the kojid might stop accepting new tasks for 4 hours. <ul>
+<li> Manually clean these out.
+</li></ul> 
+</li></ul> 
+<p />
+<h3><a name="Koji_Permissions"></a> Koji Permissions </h3>
+<p />
+To add a new user to Koji for someone with a given DN, first extract the CN. For example, Alain has the DN "/DC=org/DC=doegrids/OU=People/CN=Alain Roy 424511", and the CN is just "Alain Roy 424511". The commands below use just the CN.
+<p />
+<pre class="screen">
+$> osg-koji add-user "<font color="#ff0000">CN</font>"
+$> osg-koji grant-permission build "<font color="#ff0000">CN</font>"
+$> osg-koji grant-permission repo "<font color="#ff0000">CN</font>"
+</pre>
+<p />
+If you want to see the set of possible permissions:
+<p />
+<pre class="screen">
+$> koji list-permissions 
+Enter PEM pass phrase: 
+admin
+build
+repo
+livecd
+maven-import
+win-import
+win-admin
+appliance
+</pre>
+<p />
+If you want to see someone's permissions:
+<pre class="screen">
+$> koji list-permissions --user "Alain Roy 424511"
+Enter PEM pass phrase: 
+admin
+</pre>
+<p />
+If you want to see your own permissions:
+<pre class="screen">
+$> koji list-permissions --mine
+Enter PEM pass phrase: 
+admin
+</pre>
+<p />
+To see the list of users, go to the <a href="https://koji.chtc.wisc.edu/koji/users" target="_top">Koji web site</a>.
+<p />
+<p />
+<!-- vim:ft=twiki:tw=0
+<p /> <ul>
+<li>  Set HTTP_EQUIV_ON_VIEW = <meta name="robots" content="noindex,nofollow">
+</li></ul> 
+--></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/InternalDocs" class="twikiLink">InternalDocs</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>KojiHubSetup</span> <br />    
+Topic revision: r28 - 28 Oct 2016 - 18:05:37 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

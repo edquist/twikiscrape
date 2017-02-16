@@ -1,0 +1,753 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> PbsSetup &lt; Education &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Education/PbsSetup?_T=16 Feb 2017" type="application/x-wiki" title="edit PbsSetup" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Education/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Education/PbsSetup"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+@import url('/pub/Documentation/Tools/exercises.css ');
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <!-- deprecated -->
+<p />
+<h1><a name="Portable_Batch_System_PBS_Setup"></a>  Portable Batch System (PBS) Setup for OSG </h1>
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Flavors_of_PBS"> Flavors of PBS</a>
+</li> <li> <a href="?cover=print#Obtaining_Torque">Obtaining Torque</a>
+</li> <li> <a href="?cover=print#Using_RPMs_to_install_Torque"> Using RPMs to install Torque</a>
+</li> <li> <a href="?cover=print#Building_Torque">Building Torque</a> <ul>
+<li> <a href="?cover=print#Some_words_about_build_dependenc"> Some words about build dependencies</a>
+</li> <li> <a href="?cover=print#Configuring_the_source_tree"> Configuring the source tree</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Installing_Torque_on_the_Head_No">Installing Torque on the Head Node</a>
+</li> <li> <a href="?cover=print#Installing_Torque_on_the_Compute"> Installing Torque on the Compute Nodes</a>
+</li> <li> <a href="?cover=print#Configuring_SSH_for_PBS"> Configuring SSH for PBS</a>
+</li> <li> <a href="?cover=print#Configuring_the_Head_Node"> Configuring the Head Node </a> <ul>
+<li> <a href="?cover=print#PBS_Server"> PBS Server</a>
+</li> <li> <a href="?cover=print#PBS_Scheduler"> PBS Scheduler</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Configuring_the_Compute_Nodes"> Configuring the Compute Nodes</a>
+</li> <li> <a href="?cover=print#Adding_Compute_Nodes_to_PBS"> Adding Compute Nodes to PBS</a>
+</li> <li> <a href="?cover=print#Testing_the_Installation"> Testing the Installation</a> <ul>
+<li> <a href="?cover=print#Query_the_Server_and_Queue_Confi"> Query the Server and Queue Configuration</a>
+</li> <li> <a href="?cover=print#Querying_Node_Status"> Querying Node Status</a>
+</li> <li> <a href="?cover=print#Creating_and_Submitting_a_Job"> Creating and Submitting a Job</a>
+</li> <li> <a href="?cover=print#Querying_Job_and_Queue_Status"> Querying Job and Queue Status</a>
+</li> <li> <a href="?cover=print#Job_Output_and_Summary"> Job Output and Summary</a>
+</li> <li> <a href="?cover=print#Job_Post_Mortem_and_Accounting"> Job Post-Mortem and Accounting</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Final_Words"> Final Words</a>
+</li> <li> <a href="?cover=print#Useful_Links"> Useful Links</a>
+</li></ul> 
+</div>
+<p />
+<p />
+<p />
+The <firstterm>Portable Batch System (PBS)</firstterm> is a popular networked subsystem for submitting, monitoring, and controlling a work load of batch jobs on one or more systems. 
+<p />
+In this document, I will specifically describe deployment and configuration of Torque and its FIFO scheduler as the batch system backing an an OSG computing element.  The configuration steps outlined below, however, should apply nearly equally well to OpenPBS or PBS Pro.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Flavors_of_PBS"></a> Flavors of PBS </span></h2>
+PBS has a long history, and is currently available in three flavors:  <ul>
+<li> <em>OpenPBS</em>: the original PBS developed for NASA in the early to mid-1990s, available as open source
+</li> <li> <em>PBS Pro</em>: a commercial version of PBS from Altair Engineering
+</li> <li> <em>Torque</em>: the open source successor to OpenPBS
+</li></ul> 
+<p />
+OpenPBS still works, and you can use it, but you should be aware that the focus of the open source development effort has moved on to Torque for some time now. If you want to run OpenPBS and support is important to you, you may purchase it from <a href="http://www.altair.com/" target="_top">Altair Engineering</a>.  Personally, I am not aware of a technical argument to prefer OpenPBS to Torque.
+<p />
+<firstterm>PBS Pro</firstterm> is a fine product. It is reasonably priced compared to competing commercial batch systems and has dedicated support from Altair Engineering should you desire it.  We use it where I work, and I have no serious complaints.  The most recent releases of PBS Pro (versions 7.x and later) have features that OpenPBS and Torque do not, as well as a more flexible resource specification than its open source counterparts.  If I recall correctly, you should be able to get a trial version of PBS Pro before you buy - contact Altair for info.  Prior to versions 7.x, you could plug in the MAUI scheduler in place of the FIFO scheduler that is included with PBS Pro.  With versions 7.x and later, this no longer seems to work.
+<p />
+As mentioned previously, Torque is the open source PBS project which in active development.  In its current 2.x versions, it has also matured into a quality product and should be more than capable of scaling to typical Trash/Tier3 cluster sizes. In addition, you have the option of using the more flexible and open source MAUI scheduler in place of the FIFO scheduler included with Torque.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Obtaining_Torque"></a> Obtaining Torque </span></h2>
+<p />
+<a href="http://www.clusterresources.com/pages/products/torque-resource-manager.php" target="_top">Torque</a> is distributed as source files packaged as a tarball that you unpack and build yourself. You can download the Torque tarball from the <a href="http://clusterresources.com/downloads/torque" target="_top">Cluster Resources site</a>. Select the most recent version and save it to a file, (At the time of this writing, version 2.1.7 is the latest release). Copy the tarball to the node you intend to use as your OSG computing element headnode.
+<p />
+<div name="TextBoxWithBorder" style="margin: 0; padding: 0; position: relative; border: medium solid orange; margin-right: 10%; margin-left: 10%; padding-left: 1em; padding-right: 1em; font-family: Georgia, Times New Roman, Times, Sans Serif" > 
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Using_RPMs_to_install_Torque"></a> Using RPMs to install Torque </span></h2>
+If your head node runs an RPM-based Linux distribution and you don't want to build Torque yourself, you can skip the above step and the "Building Torque" section and use some pre-built RPM packages I have prepared.  They should work on any RHEL4-compatible machine and <em>may</em> also work on other distributions:  <ul>
+<li> <a href="http://lorien.phys.ufl.edu/~prescott/centos/4.3/contrib/i386/" target="_top">i386 RPMs</a>
+</li> <li> <a href="http://lorien.phys.ufl.edu/~prescott/centos/4.4/contrib/x86_64/" target="_top">x86_64 RPMs</a>
+</li></ul> 
+As implied by the URLs, I built the i386 packages on a CentOS 4.3 machine, and the x86_64 packages on CentOS 4.4.  Download the packages appropriate for your architecture, copy them to your head node, and skip to "Installing Torque on the Head Node".
+<p />
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Building_Torque"></a> Building Torque </span></h2>
+<p />
+We have a couple of options in ways to build Torque: you can either build binaries as one normally does from a tarball, or you can build RPMs.  
+<p />
+on      In my opinion, if you are running a Red Hat/RPM-based Linux distribution, you should build the RPMs. Having RPMs makes deploying Torque components on multiple machines easy, and the RPMs can likely be integrated into a cluster management tool like Rocks very trivially.
+<p />
+Unpack the tarball and change directory to the top level of the source tree.  You may do this as a normal user.    
+<p />
+<pre class="screen">
+$ <userinput>tar xvzf torque-2.1.7.tar.gz </userinput>
+$ <userinput>cd torque-2.1.7 </userinput>
+</pre>
+<p />
+on      If you are <strong>not</strong> going to make RPMs, you will find it convenient later to do this in an NFS-shared area.  If you are going to make RPMs, it doesn't matter where you do this.
+<p />
+You may wish to glance at the <code>README.torque</code> and <code>README.configure</code> files at this point. If you have built open source software before, you may also wish to examine the myriad of configuration options of the build: 
+<p />
+<pre class="screen">
+$ <userinput>./configure --help </userinput>
+</pre>
+<p />
+But you don't have to if you aren't too curious!
+<p />
+<h3><a name="Some_words_about_build_dependenc"></a> Some words about build dependencies </h3>
+You will need a basic development environment installed in order to build Torque.  The GNU compiler collection is just what the doctor ordered; you need the C, C++, and Fortran 77 compilers installed to build everything.  Specifically, make sure you have the following installed:  <ul>
+<li> <code>gcc</code>
+</li> <li> =g++
+</li> <li> <code>g77</code>
+</li></ul> 
+<p />
+You should have SSH clients installed (does anyone use <code>rsh</code> anymore?). The configuration step prior to compilation will check to see if <code>scp</code> is available. If so, it will be used as the "remote copy program" used to relay job stdout and stderr back to the user from the compute nodes.  
+<p />
+Torque comes with Tcl/Tk-based GUI programs monitor jobs and batch system status. To build these, you will need a Tcl/Tk development environment, as well.
+<p />
+On an Red Hat-based machine, everything will be built if you have these packages (and their associated dependencies) installed: <ul>
+<li> make
+</li> <li> gcc
+</li> <li> gcc-g++
+</li> <li> gcc-g77
+</li> <li> gawk
+</li> <li> glibc-devel
+</li> <li> bison
+</li> <li> flex
+</li> <li> groff
+</li> <li> openssh-clients
+</li> <li> tcl
+</li> <li> tcl-devel
+</li> <li> tclx
+</li> <li> tclx-devel
+</li> <li> tk
+</li> <li> tk-devel
+</li> <li> xorg-x11-xauth
+</li></ul> 
+<p />
+More than likely, you have most of these installed already.
+<p />
+<p />
+<h3><a name="Configuring_the_source_tree"></a> Configuring the source tree </h3>
+Now we configure the source tree to prepare for building the package.  I want the installation path to be <code>/usr</code>. You can control it with the <code>--prefix=...</code> option:
+<p />
+<pre class="screen">
+$ <userinput>./configure --prefix=/usr </userinput>
+</pre>
+<p />
+on      If you are building on a 64-bit OS with the above command, you should to add the option <code>--libdir=/usr/lib64</code>.  If you don't do this, the applications linked against Torque shared libraries (such as MPI apps) may need help to find them at run time.
+<p />
+A bunch of test output will spew forth.  Ultimately, this step generates all the <em>Makefiles</em> needed to build the package.  
+<p />
+Next, make:
+<p />
+<pre class="screen">
+$ <userinput>make</userinput>
+</pre>
+<p />
+This will simply build binaries.  
+<p />
+If we are on a Red Hat-based machine, you should run <code>make</code> <strong>as root</strong> with the <code>rpm</code> option:
+<p />
+<pre class="screen">
+[root@hostname ~]$ <userinput>make rpm </userinput>
+</pre>
+<p />
+<p />
+This will build binary RPM packages.  
+<p />
+I am on a Red Hat-based machine, so I use <code>make rpm</code>.  
+<p />
+On any modern machine, this will take a few minutes at most. In the end, I am left with the following files:
+<p />
+<pre class="programlisting">
+/usr/src/redhat/RPMS/i386/torque-2.1.7-1cri.i386.rpm
+/usr/src/redhat/RPMS/i386/torque-debuginfo-2.1.7-1cri.i386.rpm
+/usr/src/redhat/RPMS/i386/torque-docs-2.1.7-1cri.i386.rpm
+/usr/src/redhat/RPMS/i386/torque-scheduler-2.1.7-1cri.i386.rpm
+/usr/src/redhat/RPMS/i386/torque-server-2.1.7-1cri.i386.rpm
+/usr/src/redhat/RPMS/i386/torque-mom-2.1.7-1cri.i386.rpm
+/usr/src/redhat/RPMS/i386/torque-client-2.1.7-1cri.i386.rpm
+/usr/src/redhat/RPMS/i386/torque-gui-2.1.7-1cri.i386.rpm
+/usr/src/redhat/RPMS/i386/torque-localhost-2.1.7-1cri.i386.rpm
+/usr/src/redhat/RPMS/i386/torque-devel-2.1.7-1cri.i386.rpm
+/usr/src/redhat/RPMS/i386/torque-pam-2.1.7-1cri.i386.rpm
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Installing_Torque_on_the_Head_No"></a> Installing Torque on the Head Node </span></h2>
+<p />
+Now we are ready to deploy some packages on our head node.  If you didn't create RPMs in the steps above, you need to <strong>become root</strong> on the head node and type <code>make install</code> from the top level of the Torque source tree.  Everything will be installed into <code>/usr/local</code> unless you specified an alternate installation path at <code>configure</code> time.
+<p />
+On the other hand, if you have RPMs read on.  On our head node, we at least want to install the Torque server and scheduler, and have commands available to submit, monitor, and remove jobs.  If you want your head node to be able to run batch jobs, you will also need to install the "MOM" package here.  You may also like to install the documentation and GUI tools.  To do all this, <strong>become root</strong>, go to the directory where the RPMs reside, and type:
+<p />
+<pre class="screen">
+[root@hostname ~]$ <userinput>rpm -Uvh torque-server-2.1.7-1cri.i386.rpm &#92;
+    torque-scheduler-2.1.7-1cri.i386.rpm  &#92;
+    torque-mom-2.1.7-1cri.i386.rpm   &#92;
+    torque-client-2.1.7-1cri.i386.rpm  &#92;
+    torque-docs-2.1.7-1cri.i386.rpm  &#92;
+    torque-gui-2.1.7-1cri.i386.rpm  &#92;
+    torque-devel-2.1.7-1cri.i386.rpm  &#92;
+    torque-2.1.7-1cri.i386.rpm </userinput>
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Installing_Torque_on_the_Compute"></a> Installing Torque on the Compute Nodes </span></h2>
+<p />
+On the compute nodes, we need to be able to run jobs.  As an administrator, I also find it occasionally convenient to query the batch system from compute nodes, so installing client tools would be handy, too.
+<p />
+If you <strong>don't</strong> have RPMs, <strong>become root</strong> on one of your compute nodes, go to the top level directory of your NFS-shared Torque source tree, and type <code>make install</code>.  Repeat this step for every compute node you want to add to the batch system.
+<p />
+If you <strong>do</strong> have RPMs, go to the directory where they reside (copy them over if you need to), and say:
+<p />
+<pre class="screen">
+[root@hostname ~]$ <userinput>rpm -Uvh torque-mom-2.1.7-1cri.i386.rpm  &#92;
+   torque-client-2.1.7-1cri.i386.rpm  &#92;
+   torque-2.1.7-1cri.i386.rpm </userinput>
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuring_SSH_for_PBS"></a> Configuring SSH for PBS </span></h2>
+<p />
+The above Torque packages will use <code>ssh</code> for process transport and <code>scp</code> for copying of output files.  Torque must be able to use these tools with password-less authentication between the head node and the compute nodes.  There are two means of accomplishing this with OpenSSH: hostbased authentication, and user public key authentication.  While using individual user public keys certainly works, it is a pain to manage in my opinion, and error prone for any local users.  So in this section. I will describe how to set up hostbased authentication for OpenSSH in order to satisfy PBS's requirements.
+<p />
+Let's start on the head node.  First, create the <code>/etc/hosts.equiv</code> file and populate it with fully qualified domain names corresponding to your head node's LAN interface and all your compute nodes:
+<p />
+<pre class="programlisting">
+headnode.internal.domain
+computenode1.internal.domain
+computenode2.internal.domain
+...
+</pre>
+<p />
+In the <code>/etc/ssh/ssh_config</code> file, make sure the following are on so ssh clients can try hostbased authentications:
+<p />
+<pre class="programlisting">
+HostbasedAuthentication yes
+EnableSSHKeysign yes
+</pre>
+<p />
+In the <code>/etc/ssh/sshd_config</code>, we want the server to permit hostbased authentication attempts (only from hosts in our <code>/etc/hosts.equiv</code>):
+<p />
+<pre class="programlisting">
+HostbasedAuthentication yes
+IgnoreRhosts yes
+IgnoreUserKnownHosts yes
+</pre>
+<p />
+Hostbased authentications will succeed for hosts whose public keys are in the <code>/etc/ssh/ssh_known_hosts</code> file.  So you will have to collect the keys for every host you intend to put in the batch system.  One way to to that is to use the <code>hosts.equiv</code> file you just populated:
+<p />
+<pre class="screen">
+[root@hostname ~]$ <userinput>ssh-keyscan -t rsa,rsa1,dsa -f /etc/hosts.equiv > /etc/ssh/ssh_known_hosts </userinput>
+</pre>
+<p />
+Now restart sshd with <code>/etc/init.d/sshd restart</code>.  Copy the following files to each of your compute nodes and restart sshd on each: <ul>
+<li> <code>/etc/ssh/ssh_config</code>
+</li> <li> <code>/etc/ssh/sshd_config</code>
+</li> <li> <code>/etc/ssh/ssh_known_hosts</code>
+</li> <li> <code>/etc/hosts.equiv</code>
+</li></ul> 
+<p />
+You should now be able to authenticate as a normal user between hosts across your cluster without having to enter a password.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuring_the_Head_Node"></a> Configuring the Head Node </span></h2>
+<p />
+Here, we will initialize the server and create some queues.  You will need to do these steps <strong>as root</strong>.  My recommendation is to create a routing queue which can submit jobs to one or more execution queues, where the jobs will actually run.  The presence of the routing queue will allow some flexibility in the case you wish to have multiple execution queues.
+In the "usual" case, where a dual-homed head node has a public interface exposed to the WAN and a private interface dedicated for LAN traffic, it makes sense to configure Torque to use the LAN interface.  I will assume this is the case.  
+<p />
+There are three PBS services currently deployed and enabled on your head node: <ul>
+<li> <code>pbs_server</code> runs the show, so to speak &mdash; it instanciates the batch system on your cluster.
+</li> <li> <code>pbs_sched</code> is the scheduler &mdash; it makes the decisions of which jobs to run.
+</li> <li> <code>pbs_mom</code> actually runs the jobs. (<firstterm>MOM: Machine Oriented Mini-server</firstterm>) 
+</li></ul> 
+<p />
+You will need to run the server and scheduler services.  In my experience, MOM is not usually run on the head node, as head nodes usually have plenty to do already.  They typically offer lots of key cluster infrastructure services like NFS, DNS, LDAP/NIS, etcetera; allowing compute and memory-intensive jobs to run on the head node can have adverse effects upon the entire cluster.  So feel free to simply turn MOM off on the head node:
+<p />
+<pre class="screen">
+[root@hostname ~]$ <userinput>chkconfig pbs_mom off</userinput>
+</pre>
+<p />
+If you wish to allow your head node to run jobs, you should make sure the <code>/var/spool/torque/server_name</code> file contains the hostname corresponding the LAN address of your head node.
+<p />
+The Torque configuration files live underneath <code>/var/spool/torque</code> by default.  On the head node, you will see the following files and subdirectories underneath <code>/var/spool/torque</code>:
+<p />
+<pre class="screen">
+aux/         mom_logs/  pbs_environment  sched_priv/   server_name   spool/
+checkpoint/  mom_priv/  sched_logs/      server_logs/  server_priv/  undelivered/
+</pre>
+<p />
+In the configuration steps which follow, we will be poking around this area on the head and compute nodes.
+<p />
+<h3><a name="PBS_Server"></a> PBS Server </h3>
+<p />
+We can initialize the batch system thusly:
+<p />
+<pre>
+pbs&#95;server -t create &#91;-h &#60;hostname&#62;] &#91;-S &#60;hostname&#62;] &#91;-M &#60;hostname&#62;]
+</pre>
+<p />
+The <code>-h &lt;hostname&gt;</code>, <code>-M &lt;hostname&gt;</code> and <code>-S &lt;hostname&gt;</code> options are only useful if the hostname corresponding to your head node's LAN address is <strong>not</strong> the same as the output of the <code>hostname</code> command; these options tell the server to use the supplied <code>&lt;hostname&gt;</code> for server, scheduler, and MOM communications, respectively.  In this case, you will also want to create <code>/etc/sysconfig/pbs_server</code> with the following contents:
+<p />
+<pre class="programlisting">
+PBS_DAEMON="/usr/sbin/pbs_server -h <replaceable>&lt;hostname&gt;</replaceable> -S <replaceable>&lt;hostname&gt;</replaceable> -M <replaceable>&lt;hostname&gt;</replaceable>"
+</pre>
+<p />
+where <code>&lt;hostname&gt;</code> is the same hostname you used when you created the server instance.
+<p />
+We can now configure the server.  This is done with the <code>qmgr</code> command.  If <code>qmgr</code> is executed without any options, it will put you in an interactive shell from which you can just type in PBS commands.  But you can also feed commands to <code>qmgr</code> with the <code>-c</code> option.  Let's turn on scheduling, create a routing queue and an execution queue, and take care of some defaults:
+<p />
+<pre>
+   &#42; &#61;qmgr -c &#39;set server scheduling&#61;true&#39;&#61;
+   &#42; &#61;qmgr -c &#39;create queue defaultq&#39;&#61;
+   &#42; &#61;qmgr -c &#39;set queue defaultq queue&#95;type &#61; route&#39;&#61;
+   &#42; &#61;qmgr -c &#39;create queue batchq&#39;&#61;
+   &#42; &#61;qmgr -c &#39;set queue batchq queue&#95;type &#61; execution&#39;&#61;
+   &#42; &#61;qmgr -c &#39;set queue defaultq started &#61; true&#39;&#61;
+   &#42; &#61;qmgr -c &#39;set queue defaultq route&#95;destinations &#61; batchq&#39;&#61;
+   &#42; &#61;qmgr -c &#39;set queue defaultq enabled &#61; true&#39;&#61;
+   &#42; &#61;qmgr -c &#39;set server default&#95;queue &#61; defaultq&#39;&#61;
+   &#42; &#61;qmgr -c &#39;set queue batchq started &#61; true&#39;&#61;
+   &#42; &#61;qmgr -c &#39;set queue batchq enabled &#61; true&#39;&#61;
+   &#42; &#61;qmgr -c &#39;set server resources&#95;default.ncpus &#61; 1&#39;&#61;
+   &#42; &#61;qmgr -c &#39;set server resources&#95;default.nodes &#61; 1&#39;&#61;
+</pre>
+<p />
+Once this is done, you can restart the <code>pbs_server</code> from the <code>init.d</code> script:
+<p />
+<pre class="screen">
+[root@hostname ~]$ <userinput>/etc/init.d/pbs_server restart </userinput>
+</pre>
+<p />
+<h3><a name="PBS_Scheduler"></a> PBS Scheduler </h3>
+<p />
+The scheduler configuration file can be found at <code>/var/spool/torque/sched_priv/sched_config</code>.  It is documented.  There is no need to change any of the values at this time, though.  If you ever do change them, be sure to restart the scheduler.
+<p />
+If you wish to bind the scheduler to an interface that resolves to a hostname other than the output of the <code>hostname</code>, as you may have  create the file <code>/etc/sysconfig/pbs_sched</code> with the following contents:
+<p />
+<pre class="programlisting">
+PBS_DAEMON="/bin/sh -c 'h=`hostname`; hostname &lt;hostname> ; /usr/sbin/pbs_sched; hostname \$h'"
+</pre>
+<p />
+where <code>&lt;hostname&gt;</code> is the same hostname you used for the <code>pbs_server</code> setup.  This is a dirty trick.  But the fact is that the built-in Torque scheduler will only listen on the interface that corresponds to the output of <code>gethostname</code>, so the gloves may have to come off.
+<p />
+Start the scheduler <strong>as root</strong>:
+<pre class="screen">
+[root@hostname ~]$ <userinput>/etc/init.d/pbs_sched start </userinput>.
+</pre>
+<p />
+The scheduler logs will go to <code>/var/spool/torque/sched_logs/&lt;yyyymmdd&gt;</code>; each day will have its own scheduler log.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuring_the_Compute_Nodes"></a> Configuring the Compute Nodes </span></h2>
+<p />
+As mentioned above, <code>/var/spool/torque/server_name</code> on each compute node needs to contain the correct value for the PBS server hostname.  Additional MOM configuration directives can be entered into <code>/var/spool/torque/mom_priv/config</code>.  For now, we will not put anything into the MOM config file, but we do need to create it or the MOM startup will complain.  
+<p />
+<strong>As root</strong>, do the following:
+<p />
+<pre class="screen">
+[root@hostname ~]$ <userinput>touch /var/spool/torque/mom_priv/config </userinput>
+[root@hostname ~]$ <userinput>/etc/init.d/pbs_mom start </userinput>
+</pre>
+<p />
+The MOM logs will go to <code>/var/spool/torque/mom_logs/&lt;yyyymmdd&gt;</code> (one log file per day).
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Adding_Compute_Nodes_to_PBS"></a> Adding Compute Nodes to PBS </span></h2>
+<p />
+Now we are ready to add compute nodes to the batch system.  Go back to the head node, and <strong>as root</strong> add compute nodes via <code>qmgr</code>:
+<p />
+<pre class="screen">
+[root@hostname ~]$ <userinput>qmgr -c 'create node &lt;fqdn> np=&lt;ncpus>' </userinput>
+</pre>
+<p />
+where <code>&lt;fqdn&gt;</code> is the fully qualified domain name of your compute node and <code>&lt;ncpus&gt;</code> is the number of processors it has.  Do this for each compute node you want to add to PBS.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Testing_the_Installation"></a> Testing the Installation </span></h2>
+<h3><a name="Query_the_Server_and_Queue_Confi"></a> Query the Server and Queue Configuration </h3>
+<p />
+The following command will dump the server and queue configuration to stdout:
+<p />
+<pre class="screen">
+$ <userinput>qmgr -c 'print server' </userinput>
+</pre>
+<p />
+You should see something similar to:
+<p />
+<pre class="programlisting">
+#
+# Create queues and set their attributes.
+#
+#
+# Create and define queue defaultq
+#
+create queue defaultq
+set queue defaultq queue_type = Route
+set queue defaultq route_destinations = batchq
+set queue defaultq enabled = True
+set queue defaultq started = True
+#
+# Create and define queue batchq
+#
+create queue batchq
+set queue batchq queue_type = Execution
+set queue batchq enabled = True
+set queue batchq started = True
+#
+# Set server attributes.
+#
+set server scheduling = True
+set server default_queue = defaultq
+set server log_events = 511
+set server mail_from = adm
+set server resources_default.ncpus = 1
+set server resources_default.nodes = 1
+set server scheduler_iteration = 600
+set server node_check_rate = 150
+set server tcp_timeout = 6
+set server pbs_version = 2.1.7
+</pre>
+<p />
+<h3><a name="Querying_Node_Status"></a> Querying Node Status </h3>
+<p />
+You can query node status with the <code>pbsnodes</code> command.  <code>pbsnodes -a</code> will show node status for all compute nodes in the batch system.  You should see something like the following for each node in your batch system:
+<p />
+<pre class="screen">>
+invigo.local
+     state = free
+     np = 4
+     ntype = cluster
+     status = opsys=linux,uname=Linux invigo.local 2.6.9-34.ELsmp #1 SMP 
+                  Wed Mar 8 00:27:03 CST 2006 i686,sessions=? 0,nsessions=? 0, 
+                  nusers=0,idletime=535854,totmem=5223572kb,availmem=5036844kb, 
+                  physmem=2074840kb,ncpus=4,loadave=0.00,netload=3206850556, 
+                  state=free,jobs=? 0,rectime=1172691859
+</pre>
+<p />
+The state <strong>free</strong> means that the machine has capacity to run jobs, and <strong>np</strong> signifies the number of processors offerered.  
+<p />
+<h3><a name="Creating_and_Submitting_a_Job"></a> Creating and Submitting a Job </h3>
+<p />
+A PBS job is just a script - typically, a shell script.  In each job script, you can tell things to PBS with special shell comments.  As a <strong>normal user</strong>, fire up your favorite editor and let's create a job script with the following contents:
+<p />
+<pre class="programlisting">
+#! /bin/sh
+#PBS -N testjob
+#PBS -o testjob.out
+#PBS -e testjob.err
+#PBS -M <replaceable>&lt;your_email_here></replaceable>
+#PBS -l walltime=00:01:00
+
+date
+hostname
+sleep 20
+date
+</pre>
+<p />
+I saved the above into a file called <code>testjob.job</code>.  As you can see, the job just runs the <code>date</code> command, the <code>hostname</code> command, sleeps for 20 seconds, and runs the <code>date</code> command again.  The funny <code>#PBS</code> comments at the top of the script are directives for PBS.  <code>#PBS -N</code> sets the job name.  <code>#PBS -o</code> sets the job <code>stdout</code> file, and <code>#PBS -e</code> option sets filename for the <code>stderr</code> output.  The <code>#PBS -M</code> directive sets the email address to use for job summary reports.  Finally, the <code>#PBS -l walltime=00:01:00</code> is a resource request that asks PBS for one minute of walltime for the job.  There are many types of resource requests you can make - the job will be killed by PBS if it does not complete before that resource is exhausted.
+<p />
+You use the <code>qsub</code> command to submit the job to the batch system; just give qsub the name of your job script, like so:
+<p />
+<pre>
+qsub testjob.job
+</pre>
+<p />
+The PBS id of the job will return to you on standard output.
+<p />
+<h3><a name="Querying_Job_and_Queue_Status"></a> Querying Job and Queue Status </h3>
+<p />
+The <code>qstat</code> program is used to query jobs and queue status.  If we just type <code>qstat</code>, we will see the job we just submitted (submit it again if it is already finished):
+<p />
+<pre class="screen">
+$ <userinput>qstat</userinput>
+Job id              Name             User            Time Use S Queue
+------------------- ---------------- --------------- -------- - -----
+0.osg               testjob          prescott               0 R batchq
+</pre>
+<p />
+We see its full job ID, job name, user who submitted the job, how much time it has used, the state of the job (<code>R</code> means "running") and what queue it is running in.  In our setup, the job was routed by the routing queue into the "batchq" execution queue, where it currently runs.
+<p />
+We can get oodles of information about a job with <code>qstat -f &lt;job_id&gt;</code>:
+<p />
+<pre class="screen">
+$ <userinput>qstat -f 0</userinput>
+  Job Id: 0.osg.local
+    Job_Name = testjob
+    Job_Owner = prescott@osg.local
+    job_state = R
+    queue = batchq
+    server = osg.local
+    Checkpoint = u
+    ctime = Wed Feb 28 20:37:21 2007
+    Error_Path = osg.hpc.ufl.edu:/home/prescott/testjob.err
+    exec_host = invigo.local/0
+    Hold_Types = n
+    Join_Path = n
+    Keep_Files = n
+    Mail_Points = a
+    Mail_Users = prescott@hpc.ufl.edu
+    mtime = Wed Feb 28 20:37:21 2007
+    Output_Path = osg.hpc.ufl.edu:/home/prescott/testjob.out
+    Priority = 0
+    qtime = Wed Feb 28 20:37:21 2007
+    Rerunable = True
+    Resource_List.ncpus = 1
+    Resource_List.nodect = 1
+    Resource_List.nodes = 1
+    Resource_List.walltime = 00:01:00
+    session_id = 1325
+    Variable_List = PBS_O_HOME=/home/prescott,PBS_O_LANG=en_US.UTF-8,
+        PBS_O_LOGNAME=prescott,
+        PBS_O_PATH=/usr/kerberos/bin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/
+        bin,PBS_O_MAIL=/var/spool/mail/prescott,PBS_O_SHELL=/bin/bash,
+        PBS_O_HOST=osg.hpc.ufl.edu,PBS_O_WORKDIR=/home/prescott,
+        PBS_O_QUEUE=defaultq
+    comment = Job started on Wed Feb 28 at 20:37
+    etime = Wed Feb 28 20:37:21 2007
+</pre>
+<p />
+<h3><a name="Job_Output_and_Summary"></a> Job Output and Summary </h3>
+<p />
+Our example job executed a few simple programs that wrote to stdout.  In our job script, we specified the filename that contains our job's standard output as <code>testjob.out</code>.
+<p />
+<pre class="screen">
+$ <userinput>cat testjob.out</userinput>
+Wed Feb 28 20:37:21 EST 2007 
+invigo.local
+Wed Feb 28 20:37:41 EST 2007
+</pre>
+<p />
+We also can see that there was no standard error output from the job; our standard error output file has zero length.  Finally, we asked PBS to send us an email with a job summary when our job completed &mdash; if you set up mail delivery, it should be waiting for you.
+<p />
+<h3><a name="Job_Post_Mortem_and_Accounting"></a> Job Post-Mortem and Accounting </h3>
+<p />
+Torque's accouting logs are located in <code>/var/spool/torque/server_priv/accounting</code>; there is one file per day with filenames just like for the PBS server, scheduler, and MOM.   This is the definitive source of accounting info from PBS.  You can use the <a href="http://pbsaccounting.sourceforge.net/" target="_top">pbsaccounting package</a> to generate reports and graphs from these logs.  There are other packages you can find to do this, as well, and it is even not too difficult to write your own accounting log processor to generate custom reports.
+<p />
+Sometimes, you may want to query what PBS did with an already completed job ID &mdash; you can use the <code>tracejob</code> command.  It will pick through the PBS accounting logs and give you a timeline for the job in question.  For example, <code>tracejob 0</code> (<code>0</code> was the job ID for our test job) yields:
+<p />
+<pre class="programlisting">
+Job: 0.osg.local
+
+02/28/2007 17:31:43  A    queue=defaultq
+02/28/2007 17:31:43  A    queue=batchq
+02/28/2007 17:39:12  A    requestor=root@osg.local
+02/28/2007 20:37:21  S    enqueuing into defaultq, state 1 hop 1
+02/28/2007 20:37:21  S    dequeuing from defaultq, state QUEUED
+02/28/2007 20:37:21  S    enqueuing into batchq, state 1 hop 1
+02/28/2007 20:37:21  S    Job Queued at request of prescott@osg.local, owner =
+                          prescott@osg.local, job name = testjob, queue =
+                          batchq
+02/28/2007 20:37:21  S    Job Modified at request of Scheduler@osg.local
+02/28/2007 20:37:21  L    Job Run
+02/28/2007 20:37:21  S    Job Run at request of Scheduler@osg.local
+02/28/2007 20:37:21  A    queue=defaultq
+02/28/2007 20:37:21  A    queue=batchq
+02/28/2007 20:37:21  A    user=prescott group=hpcadmin jobname=testjob
+                          queue=batchq ctime=1172713041 qtime=1172713041
+                          etime=1172713041 start=1172713041
+                          exec_host=invigo.local/0 Resource_List.ncpus=1
+                          Resource_List.neednodes=1 Resource_List.nodect=1
+                          Resource_List.nodes=1
+02/28/2007 20:37:41  S    Exit_status=0 resources_used.cput=00:00:00
+                          resources_used.mem=3304kb resources_used.vmem=16848kb
+                          resources_used.walltime=00:00:20
+02/28/2007 20:37:41  S    dequeuing from batchq, state COMPLETE
+02/28/2007 20:37:41  A    user=prescott group=hpcadmin jobname=testjob
+                          queue=batchq ctime=1172713041 qtime=1172713041
+                          etime=1172713041 start=1172713041
+                          exec_host=invigo.local/0 Resource_List.ncpus=1
+                          Resource_List.neednodes=1 Resource_List.nodect=1
+                          Resource_List.nodes=1 session=1325 end=1172713061
+                          Exit_status=0 resources_used.cput=00:00:00
+                          resources_used.mem=3304kb resources_used.vmem=16848kb
+                          resources_used.walltime=00:00:20
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Final_Words"></a> Final Words </span></h2>
+<p />
+Hopefully this note will help you get your Torque batch system up and running, and give you a bit of familiarity with the typical procedures and tools available.  If you have further questions, I highly recommend to look at the Admin Manual and numerous man pages included with the Torque packages, and to consult the <code>torqueuser</code> mailing list (or the <a href="http://www.supercluster.org/pipermail/torqueusers/" target="_top">torqueuser list archives</a>). 
+<p />
+Torque is highly configurable; in this short tutorial, we have only done enough to get you started. While what we've done so far may be perfectly adequate for many environments, you should be aware that configuration options exist to: <ul>
+<li> add user and group ACLs
+</li> <li> resource attributes handy for heterogenous environments
+</li> <li> optimizations for job output relay
+</li> <li> multiple execution queues with their own scheduling priorities
+</li> <li> considerations for running parallel jobs
+</li> <li> dropping in of powerful third party schedulers such as Maui
+</li> <li> et cetera  
+</li></ul> 
+Good luck!
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Useful_Links"></a> Useful Links </span></h2>
+It is always handy to have a few reference links at your fingertips, so I enclose a few here.  As always, Google is your friend and a wealth of information.
+<p /> <ul>
+<li> <a href="http://www.clusterresources.com/pages/products/torque-resource-manager.php" target="_top">Cluster Resource's Torque page</a>
+</li> <li> <a href="http://www.clusterresources.com/wiki/doku.php?id=torque:torque_wiki" target="_top">Torque Admin Manual</a>
+</li> <li> <a href="http://www.clusterresources.com/wiki/doku.php?id=torque:appendix:l_torque_quickstart_guide" target="_top">Torque Quickstart Manual</a>
+</li> <li> <a href="http://www.altair.com/software/pbspro.htm" target="_top">Altair PBS Pro</a>
+</li> <li> <a href="http://www.openpbs.org/which_pbs.html" target="_top">OpenPBS versus PBS Pro - Which PBS is for you?</a>
+</li> <li> <a href="http://dcwww.camp.dtu.dk/pbs.html" target="_top">OpenPBS Mini-HOWTO</a>
+</li></ul> 
+<p />
+<p />
+<hr />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Backlinks"></a>  Backlinks </span></h2>
+<p />
+<hr/>
+Twiki topics in <a href="/bin/view/Education/WebHome" class="twikiCurrentWebHomeLink twikiLink">Education</a> web containing an "INCLUDE" of this page: <br />     
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Section </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> Topic </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Last Updated by </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<div class="patternSearchResultCount">Number of topics: <span class="twikiSearchResultCount">0</span></div><!--/patternSearchResultCount--><p />
+<p />
+<p />
+Twiki topics in all others webs containing an "INCLUDE" of this page: <br />     
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Section </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> Topic </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Last Updated by </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<p />
+<p />
+<a href="/twiki/bin/oops/Education/PbsSetup?template=backlinksweb" target="_top">All references to this document in the <strong>Education</strong> web only</a>  <br />      <a href="/twiki/bin/oops/Education/PbsSetup?template=backlinksallwebs" target="_top">All references to this document in <strong>all</strong> webs</a>
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Child_Topics"></a>  Child Topics </span></h2>
+<p />
+<strong><em>Immediate children of this topic include the following:</em></strong>
+<ul></ul>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Major_Updates"></a>  Major Updates </span></h2>
+<p />
+-- <a href="/bin/view/Main/CraigPrescott" class="twikiLink">CraigPrescott</a> - 2007 Mar 03 <br />    
+-- <a href="/bin/view/Main/ForrestChristian" class="twikiLink">ForrestChristian</a> - 2007 Mar 08 <br />    </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Education<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Education/TierThreePrerequisiteDocument" class="twikiLink">TierThreePrerequisiteDocument</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>PbsSetup</span> <br />    
+Topic revision: r24 - 18 Oct 2016 - 15:21:42 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

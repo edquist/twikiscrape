@@ -1,0 +1,468 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> SubmittingHTCondorCE &lt; Documentation/Release3 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/Release3/SubmittingHTCondorCE?_T=16 Feb 2017" type="application/x-wiki" title="edit SubmittingHTCondorCE" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/Release3/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/SubmittingHTCondorCE"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFFFF;
+	}
+	.patternBookView {
+		border-color:#FFFFFF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Submitting_Jobs_to_an_HTCondor_C"></a> Submitting Jobs to an HTCondor-CE </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Submitting_Jobs_to_an_HTCondor_C"> Submitting Jobs to an HTCondor-CE</a> <ul>
+<li> <a href="?cover=print#About_This_Guide"> About This Guide</a>
+</li> <li> <a href="?cover=print#Submitting_Jobs"> Submitting Jobs...</a> <ul>
+<li> <a href="?cover=print#Using_HTCondor_CE_tools"> Using HTCondor-CE tools</a>
+</li> <li> <a href="?cover=print#Using_a_submit_file"> Using a submit file...</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#How_Job_Routes_Affect_Your_Job"> How Job Routes Affect Your Job</a> <ul>
+<li> <a href="?cover=print#Matching"> Matching</a>
+</li> <li> <a href="?cover=print#Route_defaults"> Route defaults</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Reference"> Reference</a> <ul>
+<li> <a href="?cover=print#Job_attributes"> Job attributes</a>
+</li></ul> 
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="About_This_Guide"></a> About This Guide </span></h2>
+<p />
+This document outlines methods of manual submission to an HTCondor-CE. It is intended for site administrators wishing to verify the functionality of their HTCondor-CE installation and developers writing software to submit jobs to an HTCondor-CE (e.g., pilot jobs). 
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  Most incoming jobs are pilots from factories and that manual submission does not reflect the standard method that jobs are submitted to OSG CE&rsquo;s. 
+</dd></dl> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Submitting_Jobs"></a> Submitting Jobs... </span></h2>
+<p />
+There are two main methods for submitting files to an HTCondor-CE: using the tools bundled with the <code>htcondor-ce-client</code> package and using the <code>condor_submit</code> command with a submit file. Both methods will test end-to-end job submission but the former method is simpler while the latter will walk you through writing your own submit file. 
+<p />
+Before attempting to submit jobs, you will need to generate a proxy from a user certificate before running any jobs. To generate a proxy, run the following command on the host you plan on submitting from:
+<p />
+<pre class="screen">[user@client ~]$ voms-proxy-init</pre>
+<p />
+<h3><a name="Using_HTCondor_CE_tools"></a> Using HTCondor-CE tools </h3>
+<p />
+There are two HTCondor-CE tools that allow users to test the functionality of their HTCondor-CE: <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#condor_ce_trace" class="twikiAnchorLink">condor_ce_trace</a> and <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#condor_ce_run" class="twikiAnchorLink">condor_ce_run</a>. The former is the preferred tool as it provides useful feedback if failure occurs while the latter is simply an automated submission tool. These commands may be run from any host that has <code>htcondor-ce-client</code> installed, which you may wish to do if you are testing availability of your CE from an external source.
+<p />
+<h4><a name="condor_ce_trace"></a> condor_ce_trace </h4>
+<p />
+<code>condor_ce_trace</code> is a Python script that uses HTCondor's Python bindings to run diagnostics, including job submission, against your HTCondor-CE. To submit a job with <code>condor_ce_trace</code>, run the following command:
+<p />
+<pre class="screen">[user@client ~]$ condor_ce_trace --debug <span style="background-color: #D1CAF2;">condorce.example.com</span></pre>
+<p />
+Replacing the <span style="background-color: #D1CAF2;">highlighted</span> text with the hostname of the CE. On success, you will see <code>Job status: Completed</code> and the environment of the job on the worker node it landed on. If you do not get the expected output, refer to the <a href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#condor_ce_trace" target="_top">troubleshooting guide</a>.
+<p />
+<h5><a name="Requesting_resources"></a> Requesting resources </h5>
+<p />
+<code>condor_ce_trace</code> doesn't make any specific resource requests so its jobs are only given the default resources by the CE. To request specific resources (or other job attributes), you can specify the <code>--attribute</code> option on the command line:
+<p />
+<pre class="screen">[user@client ~]$ condor_ce_trace --debug --attribute='+resource1=value1'...--attribute='+resourceN=valueN' <span style="background-color: #D1CAF2;">condorce.example.com</span></pre>
+<p />
+To submit a job that requests 4 cores, 4 GB of RAM, a wall clock time of 2 hours, and the 'osg' queue, run the following command:
+<p />
+<pre class="screen">[user@client ~]$ condor_ce_trace --debug --attribute='+xcount=4' --attribute='+maxMemory=4000' --attribute='+maxWallTime=120' --attribute='+remote_queue=osg' <span style="background-color: #D1CAF2;">condorce.example.com</span></pre>
+<p />
+For a list of other attributes that can be set with the <code>--attribute</code> option, consult <a href="/bin/view/Documentation/Release3/SubmittingHTCondorCE#JobAttributes" class="twikiCurrentTopicLink twikiAnchorLink">this</a> section.
+<p />
+<h4><a name="condor_ce_run"></a> condor_ce_run </h4>
+<p />
+<code>condor_ce_run</code> is a Python script that calls <code>condor_submit</code> on a generated submit file and tracks its progress with <code>condor_q</code>. To submit a job with <code>condor_ce_run</code>, run the following command:
+<p />
+<pre class="screen">[user@client ~]$ condor_ce_run -r <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619 /bin/env</pre>
+<p />
+Replacing the <span style="background-color: #D1CAF2;">highlighted</span> text with the hostname of the CE. The command will not return any output until it completes: When it does you will see the environment of the job on the worker noded it landed on. If you do not get the expected output, refer to the <a href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#condor_ce_run" target="_top">troubleshooting guide</a>.
+<p />
+<h3><a name="Using_a_submit_file"></a> Using a submit file... </h3>
+<p />
+If you are familiar with HTCondor, submitting a job to an HTCondor-CE using a submit file follows the same procedure as submitting a job to an HTCondor batch system: Write a submit file and use <code>condor_submit</code> (or in one of our cases, <code>condor_ce_submit</code>) to submit the job. This is by virtue of the fact that HTCondor-CE is just a special configuration of HTCondor. The major differences occur in the specific attributes for the submit files outlined below.
+<p />
+<h4><a name="From_the_CE_host"></a> From the CE host </h4>
+<p />
+This method uses <code>condor_ce_submit</code> to submit directly to an HTCondor-CE. The only reason we use <code>condor_ce_submit</code> in this case is to take advantage of the already running daemons on the CE host.
+<p /> <ol>
+<li> Write a submit file, <code>ce_test.sub</code>:    <pre class="file">
+# Required for local HTCondor-CE submission
+universe = vanilla
+use_x509userproxy = true
++Owner = undefined
+
+# Files
+executable = <span style="background-color: #FFCCFF;">ce_test.sh</span>
+output = ce_test.out
+error = ce_test.err
+log = ce_test.log
+
+# File transfer behavior
+ShouldTransferFiles = YES
+WhenToTransferOutput = ON_EXIT
+
+# Optional resource requests
+#+xcount = 4            # Request 4 cores
+#+maxMemory = 4000      # Request 4GB of RAM
+#+maxWallTime = 120     # Request 2 hrs of wall clock time
+#+remote_queue = "osg"  # Request the OSG queue
+
+# Run job once
+queue</pre>    <p>Replacing the <span style="background-color: #FFCCFF;">highlighted</span> text with the path to the executable you wish to run.</p> <ol>
+<li type="i"> You can use any executable you choose for the <code>executable</code> field. If you don't have one in mind, you may use the following example test script:      <pre class="file">
+#!/bin/bash
+
+date
+hostname
+env </pre>
+</li> <li type="i"> Mark the test script as executable:    <pre class="screen">[user@client ~]$ chmod +x ce_test.sh</pre>
+</li></ol> 
+</li> <li> Submit the job:    <pre class="screen">[user@client ~]$ condor_ce_submit ce_test.sub</pre>
+</li></ol> 
+<p />
+<h4><a name="From_another_host"></a> From another host </h4>
+<p />
+For this method, you will need a functional HTCondor submit node. If you do not have one readily available, you can install the <code>condor</code> package from the OSG repository to get a simple submit node:
+<p /> <ol>
+<li> Follow <a href="/bin/view/Documentation/Release3/InstallCondor#5_Installation_Procedure" class="twikiAnchorLink">these instructions</a> to install HTCondor
+</li> <li> Start the <code>condor</code> service:    <pre class="rootscreen">[root@client ~]$ service condor start</pre>
+</li></ol> 
+<p /> <ol>
+<li> Write a submit file, <code>ce_test.sub</code>:    <pre class="file">
+# Required for remote HTCondor-CE submission
+universe = grid 
+use_x509userproxy = true
+grid_resource = condor <font color="#ff0000">condorce.example.com condorce.example.com</font>:9619
+
+# Files
+executable = <span style="background-color: #FFCCFF;">ce_test.sh</span>
+output = ce_test.out
+error = ce_test.err
+log = ce_test.log
+
+# File transfer behavior
+ShouldTransferFiles = YES
+WhenToTransferOutput = ON_EXIT
+
+# Optional resource requests
+#+xcount = 4            # Request 4 cores
+#+maxMemory = 4000      # Request 4GB of RAM
+#+maxWallTime = 120     # Request 2 hrs of wall clock time
+#+remote_queue = "osg"  # Request the OSG queue
+
+# Run job once
+queue</pre>    <p>Replacing the <span style="background-color: #FFCCFF;">highlighted</span> text with the path to the executable you wish to run and the <font color="#ff0000">red</font> text with the hostname of the CE you wish to test.</p>   <p><b>NOTE:</b> the <code>grid_resource</code> line should start with <code>condor</code> and is not related to which batch system you are using.</p> <ol>
+<li type="i"> You can use any executable you choose for the <code>executable</code> field. If you don't have one in mind, you may use the following example test script:      <pre class="file">
+#!/bin/bash
+
+date
+hostname
+env </pre>
+</li> <li type="i"> Mark the test script as executable:    <pre class="screen">[user@client ~]$ chmod +x ce_test.sh</pre>
+</li></ol> 
+</li> <li> Submit the job:    <pre class="screen">[user@client ~]$ condor_submit ce_test.sub</pre>
+</li></ol> 
+<p />
+<h4><a name="Tracking_job_progress"></a> Tracking job progress </h4>
+<p />
+When the job completes, stdout will be placed into <code>ce_test.out</code>, stderr will be placed into <code>ce_test.err</code>, and HTCondor logging information will be placed in <code>ce_test.log</code>. You can track job progress by looking at the condor queue by running the following command on the CE host:
+<p />
+<pre class="screen">[user@client ~]$ condor_ce_q</pre>
+<p />
+Using the following table to determine job status:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/SubmittingHTCondorCE?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">This value in the <code>ST</code> column...</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1 twikiLastCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/SubmittingHTCondorCE?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Means that the job is...</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> I </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> idle </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> C </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> complete </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> X </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> being removed </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> H </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> held </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> &lt; </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> transferring input </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> &gt; </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> transferring output </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<a name="JobRoutes"></a>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="How_Job_Routes_Affect_Your_Job"></a> How Job Routes Affect Your Job </span></h2>
+<p />
+Upon successful submission of your job, the Job Router takes control of your job by matching it to routes and submitting a transformed job to your batch system. 
+<p />
+<h3><a name="Matching"></a> Matching </h3>
+<p />
+First, the Job Router checks if your job <a href="/bin/view/Documentation/Release3/JobRouterRecipes#Filtering_jobs_based_on" class="twikiAnchorLink">matches any routes</a>. It does this by checking the routes <code>Requirements</code> expression against the job and selecting the first match. If your job does not match any routes, the job will be put on hold and eventually removed from the CE queue without completing.
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  The JobRouter matches jobs to routes in a round-robin fashion. This means that if a job can match to multiple routes, it can be routed by any of them! So when writing job routes, make sure that they are exclusive to each other and that your jobs can only match to a single route. 
+</dd></dl> 
+<p />
+<strong>Examples</strong>
+<p />
+The following three routes only perform filtering and submission of routed jobs to an HTCondor batch system. The only differences are in the types of jobs that they match:
+<p /> <ul>
+<li> <strong>Route 1:</strong> Matches jobs whose attribute <code>foo</code> is equal to <code>bar</code>.
+</li> <li> <strong>Route 2:</strong> Matches jobs whose attribute <code>foo</code> is equal to <code>baz</code>.
+</li> <li> <strong>Route 3:</strong> Matches jobs whose attribute <code>foo</code> is neither equal to <code>bar</code> nor <code>baz</code>.
+</li></ul> 
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  Setting a custom attribute for submission requires the <code>+</code> prefix but it is unnecessary in the job routes.
+</dd></dl> 
+<p />
+<pre class="file">
+JOB_ROUTER_ENTRIES = [ \
+     TargetUniverse = 5; \
+     name = "Route 1"; \
+     Requirements = (TARGET.foo =?= "bar"); \
+] \
+[ \
+     TargetUniverse = 5; \
+     name = "Route 2"; \
+     Requirements = (TARGET.foo =?= "baz"); \
+] \
+[ \
+     TargetUniverse = 5; \
+     name = "Route 3"; \
+     Requirements = (TARGET.foo =!= "bar") && (TARGET.foo =!= "baz"); \
+]
+</pre>
+<p />
+If a user could submitted their job with <code>+foo=bar</code>, the job would match <code>Route 1</code>.
+<p />
+<h3><a name="Route_defaults"></a> Route defaults </h3>
+<p />
+<a href="/bin/view/Documentation/Release3/JobRouterRecipes#Setting_a_default" class="twikiAnchorLink">Route defaults</a> can be set for batch system queue, maximum memory, number of cores to request, and maximum walltime. The submitting user can override any of these by setting the corresponding <a href="/bin/view/Documentation/Release3/SubmittingHTCondorCE#JobAttributes" class="twikiCurrentTopicLink twikiAnchorLink">attribute</a> in their job.
+<p />
+<strong>Examples</strong>
+<p />
+The following route takes all incoming jobs and submits them to an HTCondor batch system requesting 1GB of memory.
+<p />
+<pre class="file">
+JOB_ROUTER_ENTRIES = [ \
+     TargetUniverse = 5; \
+     name = "Route 1"; \
+     set_default_maxMemory = 1000; \
+] 
+</pre>
+<p />
+A user could submit their job with the attribute <code>+maxMemory=2000</code> and that job would be submitted requesting 2GB memory instead of the default of 1GB.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Reference"></a> Reference </span></h2>
+<p />
+Here are some other HTCondor-CE documents that might be helpful:
+<p /> <ul>
+<li> HTCondor-CE overview and architecture (coming soon)
+</li> <li> <a href="/bin/view/Documentation/Release3/InstallHTCondorCE" class="twikiLink">Installing HTCondor-CE</a>
+</li> <li> <a href="/bin/view/Documentation/Release3/InstallHTCondorBosco" class="twikiLink">Installing and maintaining HTCondor-CE-Bosco</a>
+</li> <li> <a href="/bin/view/Documentation/Release3/JobRouterRecipes" class="twikiLink">Configuring HTCondor-CE job routes</a>
+</li> <li> <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE" class="twikiLink">The HTCondor-CE troubleshooting guide</a>
+</li></ul> 
+<p />
+<a name="JobAttributes"></a>
+<h3><a name="Job_attributes"></a> Job attributes </h3>
+<p />
+The following table is a reference of job attributes that can be included in HTCondor submit files and their GlobusRSL equivalents. A more comprehensive list of submit file attributes specific to HTCondor-CE can be found in the <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_submit.html#SECTION0012554000000000000000" target="_top">HTCondor manual</a>.
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/SubmittingHTCondorCE?cover=print;sortcol=0;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">HTCondor Attribute</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/Documentation/Release3/SubmittingHTCondorCE?cover=print;sortcol=1;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Globus RSL</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/Documentation/Release3/SubmittingHTCondorCE?cover=print;sortcol=2;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Summary</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_submit.html#82586" target="_top">arguments</a> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> arguments </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Arguments that will be provided to the executable for the job. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_submit.html#82635" target="_top">error</a> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> stderr </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Path to the file on the client machine that stores stderr from the job. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_submit.html#82641" target="_top">executable</a> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> executable </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Path to the file on the client machine that the job will execute. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_submit.html#82660" target="_top">input</a> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> stdin </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Path to the file on the client machine that stores input to be piped into the stdin of the job. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> +maxMemory </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> maxMemory </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> The amount of memory in MB that you wish to allocate to the job. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> +maxWallTime </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> maxWallTime </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> The maximum walltime (in minutes) the job is allowed to run before it is removed. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_submit.html#82696" target="_top">output</a> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> stdout </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Path to the file on the client machine that stores stdout from the job. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> +remote_queue </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> queue </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Assign job to the target queue in the scheduler. Note that the queue name should be in quotes. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_submit.html#82911" target="_top">transfer_input_files</a> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> file_stage_in </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> A comma-delimited list of all the files and directories to be transferred into the working directory for the job, before the job is started. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_submit.html#82919" target="_top">transfer_output_files</a> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> transfer_output_files </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> A comma-delimited list of all the files and directories to be transferred back to the client, after the job completes. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> +xcount </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> xcount </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> The number of cores to allocate for the job. </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+If you are setting an attribute to a string value, make sure enclose the string in double-quotes (<code>"</code>), otherwise HTCondor-CE will try to find an attribute by that name.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation/Release3<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Documentation/Release3/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>SubmittingHTCondorCE</span> <br />    
+Topic revision: r16 - 07 Dec 2016 - 22:54:27 - <a href="/bin/view/Main/BrianLin" class="twikiLink">BrianLin</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

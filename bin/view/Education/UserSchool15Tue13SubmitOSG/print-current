@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> UserSchool15Tue13SubmitOSG &lt; Education &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Education/UserSchool15Tue13SubmitOSG?_T=16 Feb 2017" type="application/x-wiki" title="edit UserSchool15Tue13SubmitOSG" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Education/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Education/UserSchool15Tue13SubmitOSG"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+@import url('/pub/Documentation/Tools/exercises.css ');
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Tuesday_Exercise_1_3_Running_job"></a> Tuesday Exercise 1.3: Running jobs in the OSG </h1>
+<p />
+The goal of this exercise is to have your jobs running on the OSG and map their geographical locations. 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Where_in_the_World_Are_My_Jobs_P"></a> Where in the World Are My Jobs? Pt 2 </span></h2>
+<p />
+In this version of the geolocating exercise, you will be submitting jobs to the OSG from <code>osg-ss-glidein-submit</code> and hopefully getting back much more interesting results! Due to some differences between the machines in the OSG and our local cluster here at UW-Madison, you will be using a slightly different payload and then performing the geolocation on the results from the submit host.
+<p />
+<strong>NOTE:</strong> We are bending a rule about running jobs locally on the submit host because this host is a closed environment only utilized by the class and this exercise is designed for low load. Normally you should NOT run jobs on your submit host.
+<p />
+<h3><a name="Hostname_fetching_code"></a> Hostname fetching code </h3>
+<p />
+The following Python script finds the ClassAd of the machine it's running on and finds a network identity that can be used to perform lookups:
+<p />
+<pre class="file">
+#!/bin/env python
+
+import re
+import os
+import socket
+
+machine_ad_file_name = os.getenv('_CONDOR_MACHINE_AD')
+try:
+    machine_ad_file = open(machine_ad_file_name, 'r')
+    machine_ad = machine_ad_file.readlines()
+    machine_ad_file.close()
+except TypeError:
+    print socket.getfqdn()
+    exit(1)
+
+gram_gk_regex = r'GLIDEIN_Gatekeeper = "(.*):\d*/jobmanager-\w*"'
+htcondor_ce_regex = r'GLIDEIN_Gatekeeper = "(\S+) \S+:9619"'
+
+for line in machine_ad:
+    gram_match = re.match(gram_gk_regex, line)
+    htcondor_ce_match = re.match(htcondor_ce_regex, line)
+    if gram_match:
+        print gram_match.group(1)
+    elif htcondor_ce_match:
+        print htcondor_ce_match.group(1)
+</pre>
+<p />
+<h3><a name="Gathering_network_information_fr"></a> Gathering network information from the OSG </h3>
+<p />
+Now to create submit files and that will run in the OSG!
+<p /> <ol>
+<li> If not already logged in, <code>ssh</code> into <code>osg-ss-glidein-submit</code>
+</li> <li> Make a new directory for this exercise, <code>tuesday-1.3</code> and change into it
+</li> <li> Save the above Python script to a file and call it <code>ce_hostname.py</code>
+</li> <li> Create a submit file that runs <code>ce_hostname.py</code> twenty times and uses the $(Process) macro to write different <code>output</code>, <code>error</code> and <code>log</code> files
+</li> <li> Submit your file and wait for the results
+</li></ol> 
+<p />
+<h3><a name="Geolocating_machines_in_the_OSG"></a> Geolocating machines in the OSG </h3>
+<p />
+You will be re-using the Python script from the the last exercise to perform the geolocation except instead of submitting it as a job, you will run it manually. Copy it over from <code>osg-ss-submit</code> using <code>scp</code> with the following command:
+<p />
+<pre class='screen'>
+$> scp osg-ss-submit:tuesday-1.1/location.py ~/tuesday-1.3/
+</pre>
+<p />
+<code>location.py</code> takes your list of output files as its arguments, so the easiest way to run it against your output files is to use the <code>*</code> wildcard from last exercise. If your output files are named <code>ce_hostname-0.out...ce_hostname-19.out</code>, your command would look like:
+<p />
+<pre class='screen'>
+$> ./location.py ce_hostname-*.out
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Mapping_Your_Jobs"></a> Mapping Your Jobs </span></h2>
+<p />
+As before, you will be using <a href="http://www.mapcustomizer.com/" target="_top">http://www.mapcustomizer.com/</a> to visualize where your jobs have landed in the OSG. Copy and paste the results from the Python script into the bulk creation text box at the bottom of the screen. Where did your jobs end up?
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Bonus_Challenge_Running_it_all_a"></a> Bonus Challenge: Running it all as a DAG </span></h2>
+<p />
+Yesterday, you learned about DAGs. You could make this exercise into a simple, linear DAG with the hostname fetching submit file followed by a locally running (Hint: use <code>scheduler</code> universe) job that runs the geolocation code. Or even a 'wide' DAG that separates out the initial submit file and then runs the geolocation code on the output from the different nodes.
+<p />
+How will you handle the arguments of the geolocation code (Hint: <code>*</code> doesn't work as arguments in a submit file)? </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Education<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Education/OSGUserSchool2015" class="twikiLink">OSGUserSchool2015</a> &gt; <a href="/bin/view/Education/UserSchool15Materials" class="twikiLink">UserSchool15Materials</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>UserSchool15Tue13SubmitOSG</span> <br />    
+Topic revision: r11 - 28 Jul 2015 - 21:14:25 - <a href="/bin/view/Main/BrianLin" class="twikiLink">BrianLin</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

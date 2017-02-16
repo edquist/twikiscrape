@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> OSGSS2011CondorDAGVARS &lt; Education/ASP2016 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Education/ASP2016/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Education/ASP2016/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Education/ASP2016/OSGSS2011CondorDAGVARS?_T=16 Feb 2017" type="application/x-wiki" title="edit OSGSS2011CondorDAGVARS" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Education/ASP2016/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Education/ASP2016/OSGSS2011CondorDAGVARS"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+@import url('/pub/Documentation/Tools/exercises.css ');
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Simpler_DAGs_with_variable_subst"></a> Simpler DAGs with variable substitutions </h1>
+<p />
+<div style="margin-left: 1em; margin-right: 1em; border: 1px solid black; padding: 0.5em;">
+<h3><a name="Objective_of_this_exercise"></a> Objective of this exercise </h3>
+The objective of this exercise is to help you write simpler DAGs by using variable substitutions in your submit files.
+</div>
+<p />
+If you look at the DAG we made, you might find it a bit tedious because each goatbrot job has a separate Condor submit file. They're nearly identical except for a couple of parameters. Can we make it simpler?
+<p />
+Yes, we can!
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Declare_your_variables"></a> Declare your variables </span></h2>
+<p />
+First you need to declare your variables in your submit file. Make one submit file for all of your goatbrot jobs. Here's what it looks like. Call it goatbrot.sub:
+<p />
+<pre style="margin-left:4em" class="screen">
+executable              = /opt/goatbrot/goatbrot
+arguments               = -i 100000 -c $(CENTERX),$(CENTERY) -w 1.5 -s 500,500 -o tile_$(TILEY)_$(TILEX).ppm
+log                     = goatbrot.log
+output                  = goatbrot.out.$(TILEY).$(TILEX)
+error                   = goatbrot.err.$(TILEY).$(TILEX)
+should_transfer_files   = YES
+when_to_transfer_output = ONEXIT
+queue
+</pre> 
+<p />
+Then you need to change your DAG to use VARS for variable substitution. Here's what one of the jobs would look like:
+<p />
+<pre style="margin-left:4em" class="screen">
+JOB g1 goatbrot.sub
+VARS g1 CENTERX="-0.75"
+VARS g1 CENTERY="0.75"
+VARS g1 TILEX="0"
+VARS g1 TILEY="0"
+</pre>
+<p />
+Edit your DAG similarly for all of your goatbrot jobs. If you need help, check the Condor manual for <a href="http://www.cs.wisc.edu/condor/manual/v7.6/2_10DAGMan_Applications.html#4635" target="_top">for a description of how to use VARS</a>. What happens? </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Education/ASP2016<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Education/ASP2016/GridWorkshops" class="twikiLink">GridWorkshops</a> &gt; <a href="/bin/view/Education/ASP2016/OSGSummerSchool2011" class="twikiLink">OSGSummerSchool2011</a> &gt; <a href="/bin/view/Education/ASP2016/OSGSS2011Materials" class="twikiLink">OSGSS2011Materials</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>OSGSS2011CondorDAGVARS</span> <br />    
+Topic revision: r3 - 27 Jun 2011 - 20:41:56 - <a href="/bin/view/Main/IgorSfiligoi" class="twikiLink">IgorSfiligoi</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

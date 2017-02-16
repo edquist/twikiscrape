@@ -1,0 +1,395 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> HadoopDebug &lt; Storage &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Storage/HadoopDebug?_T=16 Feb 2017" type="application/x-wiki" title="edit HadoopDebug" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Storage/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Storage/HadoopDebug"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#0000FF;
+	}
+	.patternBookView {
+		border-color:#0000FF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Hadoop_Debug"></a>  <strong><noop>Hadoop Debug</strong> </h1>
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Debugging_your_Hadoop_Instance"> Debugging your Hadoop Instance</a>
+</li> <li> <a href="?cover=print#Running_the_FUSE_mount_in_Debug"> Running the FUSE mount in Debug mode</a>
+</li> <li> <a href="?cover=print#Running_the_Gridftp_server_in_st"> Running the Gridftp server in standalone mode</a>
+</li> <li> <a href="?cover=print#Errors_and_Their_Solutions"> Errors and Their Solutions</a> <ul>
+<li> <a href="?cover=print#Error_message_Superuser_privileg"> Error message: "Superuser privilege is required"</a>
+</li> <li> <a href="?cover=print#Incompatible_Versions_between_th"> Incompatible Versions between the Datanode and Namenode</a> <ul>
+<li> <a href="?cover=print#Problem"> Problem</a>
+</li> <li> <a href="?cover=print#Solution"> Solution</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Incompatible_Storage_IDs_on_the"> Incompatible Storage IDs on the Data Node</a> <ul>
+<li> <a href="?cover=print#Problem_AN1"> Problem</a>
+</li> <li> <a href="?cover=print#Solution_AN1"> Solution</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Resource_Issues"> Resource Issues</a> <ul>
+<li> <a href="?cover=print#File_descriptor_exhaustion"> File descriptor exhaustion</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#FUSE_Issues"> FUSE Issues</a> <ul>
+<li> <a href="?cover=print#Strange_filenames_with_random_ch"> Strange filenames with random characters in the FUSE mount</a>
+</li> <li> <a href="?cover=print#Group_permissions_issues"> Group permissions issues</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Gftp_Client_Errors"> Gftp Client Errors </a> <ul>
+<li> <a href="?cover=print#500_Failed_to_open_file_in_HDFS"> 500-Failed to open file in HDFS.</a>
+</li> <li> <a href="?cover=print#500_Failed_to_close_file_in_HDFS"> 500-Failed to close file in HDFS.</a>
+</li> <li> <a href="?cover=print#530_Login_incorrect_an_unknown_e"> 530 Login incorrect. : an unknown error occurred</a>
+</li> <li> <a href="?cover=print#Solution_s"> Solution(s)</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#GFTP_Server_Errors"> GFTP Server Errors</a> <ul>
+<li> <a href="?cover=print#500_Allocated_all_200_memory_buf">  500-Allocated all 200 memory buffers; aborting transfer.</a>
+</li> <li> <a href="?cover=print#an_end_of_file_was_reached_globu">  an end-of-file was reached globus_xio: An end of file occurred (possibly the destination disk is full)</a>
+</li> <li> <a href="?cover=print#Mkdirs_failed_to_create"> Mkdirs failed to create</a>
+</li> <li> <a href="?cover=print#Internal_error"> Internal error</a>
+</li></ul> 
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Debugging_your_Hadoop_Instance"></a> Debugging your Hadoop Instance </span></h2>
+<p />
+This twiki is setup to help diagnose and solve some typical Hadoop issues. 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Running_the_FUSE_mount_in_Debug"></a> Running the FUSE mount in Debug mode </span></h2>
+<p />
+It is often useful to run the FUSE mount in debug mode to identify specific errors and problems with the FUSE mount.
+<p />
+<pre>
+/usr/bin/hdfs -o server&#61;namenode.fqdn,port&#61;9000,rdbuffer&#61;131072,allow&#95;other -d /mnt/hadoop/
+</pre>
+<p />
+Note the use of the -d switch to put the mount in debug mode. CTRL-C to quit the mount after testing. 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Running_the_Gridftp_server_in_st"></a> Running the Gridftp server in standalone mode </span></h2>
+<p />
+Sometimes diagnosing gridftp server or hadoop errors require you to run the standalone gridftp server which runs in a debug mode. 
+<p />
+<strong>On the Server</strong> 
+<p />
+<pre>
+gridftp-hdfs-standalone
+</pre>
+<p />
+This will start a new server in the terminal's foreground; it should also include Hadoop-level errors.
+<p />
+<strong>On the Client, note the use of port 5002</strong>
+<p />
+<pre>
+source  $VDT&#95;LOCATION/setup.sh
+dd if&#61;/dev/zero of&#61;testfile.zero count&#61;10000 bs&#61;1024
+globus-url-copy file://localhost/`pwd`/testfile.zero gsiftp://gridftpserver.fqdn:5002/your/path/testfile.zero
+</pre>
+<p />
+After running the command on the client check the console on the server for any error messages in the transfer that could help diagnose your gridftp server problem. 
+<p />
+gridftp-hdfs buffers log messages before writing them to the log file.  If the server crashes, important log messages indicating the cause of the crash may get lost.  To disable the buffering, set the following in <strong>/etc/gridftp-hdfs/gridftp-inetd.conf</strong>
+<pre>
+log&#95;module stdio:buffer&#61;0
+</pre>
+<p />
+To debug authorization errors, it is also sometimes useful to add the following to <strong>/etc/gridftp-hdfs/gridftp-hdfs-local.conf</strong>:
+<p />
+<pre>
+export LCMAPS&#95;DEBUG&#95;LEVEL&#61;4
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Errors_and_Their_Solutions"></a> Errors and Their Solutions </span></h2>
+<p />
+<h3><a name="Error_message_Superuser_privileg"></a> Error message: "Superuser privilege is required" </h3>
+<p />
+If you encounter this message while administrating your cluster (i.e., executing "hadoop fsck" or "hadoop dfsadmin"), then check the following: <ul>
+<li> You are running the command from the namenode
+</li> <li> Your current user is the same user that the Hadoop daemons are running as.  If you run the daemons as "root", then you must run administrative commands as "root".  If you run it as "daemon", you must perform these commands as "daemon".
+</li></ul> 
+<p />
+<h3><a name="Incompatible_Versions_between_th"></a> Incompatible Versions between the Datanode and Namenode </h3>
+<p />
+<h4><a name="Problem"></a> Problem </h4>
+<p />
+Hadoop is very sensitive about the versions and build tags between the different parts of the system. When upgrading hadoop you may get errors of the form.
+<p />
+<pre>
+2009-03-23 14:06:50,120 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: STARTUP&#95;MSG:
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;
+STARTUP&#95;MSG: Starting DataNode
+STARTUP&#95;MSG:   host &#61; cabinet-7-7-28.t2.ucsd.edu/169.228.130.190
+STARTUP&#95;MSG:   args &#61; &#91;]
+STARTUP&#95;MSG:   version &#61; 0.19.2-dev
+STARTUP&#95;MSG:   build &#61;  -r ; compiled by &#39;mockbuild&#39; on Mon Mar 23 15:50:31 EDT 2009
+&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+2009-03-23 14:06:50,263 FATAL org.apache.hadoop.hdfs.server.datanode.DataNode: Incompatible build versions: namenode BV &#61; 748415; datanode BV &#61;
+2009-03-23 14:06:50,370 ERROR org.apache.hadoop.hdfs.server.datanode.DataNode: java.io.IOException: Incompatible build versions: namenode BV &#61; 748415; datanode BV&#61;
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.handshake(DataNode.java:416)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.startDataNode(DataNode.java:265)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.&#60;init&#62;(DataNode.java:206)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.makeInstance(DataNode.java:1239)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.instantiateDataNode(DataNode.java:1194)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.createDataNode(DataNode.java:1202)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.main(DataNode.java:1324)
+
+2009-03-23 14:06:50,370 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: SHUTDOWN&#95;MSG:
+</pre>
+<p />
+<h4><a name="Solution"></a> Solution </h4>
+<p />
+Generally you want to upgrade the name node and data nodes at the same time to limit these kinds of version problems. Check the versions of your namenode and datanode to make sure you are running the same build tag of hadoop. 
+<p />
+<h3><a name="Incompatible_Storage_IDs_on_the"></a> Incompatible Storage IDs on the Data Node </h3>
+<p />
+<h4><a name="Problem_AN1"></a> Problem </h4>
+When you start up the data node, it immediately shuts down with the following error:
+<pre>
+/&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;
+STARTUP&#95;MSG: Starting DataNode
+STARTUP&#95;MSG:   host &#61; cdfsrv6.mit.edu/18.77.0.180
+STARTUP&#95;MSG:   args &#61; &#91;]
+STARTUP&#95;MSG:   version &#61; 0.19.2-dev
+STARTUP&#95;MSG:   build &#61; http://svn.apache.org/repos/asf/hadoop/core/tags/release-0.19.1 -r 748415; compiled by &#39;wart&#39; on Mon Mar 23 15:21:37 PDT 2009
+&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;&#42;/
+2010-03-30 16:46:18,456 ERROR datanode.DataNode (DataNode.java:main(1331)) - org.apache.hadoop.hdfs.server.common.InconsistentFSStateException: Directory /export/06a/hadoop/data is in an inconsistent state: has incompatible storage Id.
+        at org.apache.hadoop.hdfs.server.datanode.DataStorage.getFields(DataStorage.java:183)
+        at org.apache.hadoop.hdfs.server.common.Storage$StorageDirectory.read(Storage.java:227)
+        at org.apache.hadoop.hdfs.server.common.Storage$StorageDirectory.read(Storage.java:216)
+        at org.apache.hadoop.hdfs.server.datanode.DataStorage.doTransition(DataStorage.java:228)
+        at org.apache.hadoop.hdfs.server.datanode.DataStorage.recoverTransitionRead(DataStorage.java:148)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.startDataNode(DataNode.java:291)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.&#60;init&#62;(DataNode.java:209)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.makeInstance(DataNode.java:1242)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.instantiateDataNode(DataNode.java:1197)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.createDataNode(DataNode.java:1205)
+        at org.apache.hadoop.hdfs.server.datanode.DataNode.main(DataNode.java:1327)
+</pre>
+<p />
+This is caused if one of the data directories gets reformatted.  This causes the VERSION file (i.e., /path/to/hadoop/data/current/VERSION) to get regenerated.  If there are multiple data directories, and at least one has a different VERSION file, you will get this message.
+<p />
+<h4><a name="Solution_AN1"></a> Solution </h4>
+<p />
+Take the following actions: <ol>
+<li> Verify there is no datanode java process on the node currently running.
+</li> <li> Create a backup of all the VERSION files.
+</li> <li> Copy one of the VERSION files into all the data directories in the correct place ($PREFIX/current/VERSION).
+</li> <li> Start the data node.  If the error does not go away, contact osg-hadoop support.
+</li></ol> 
+<p />
+<h3><a name="Resource_Issues"></a> Resource Issues </h3>
+<p />
+<h4><a name="File_descriptor_exhaustion"></a> File descriptor exhaustion </h4>
+<p />
+Many of the components of a HDFS cluster require many open files.  With the default limit, datanodes may report <code>java.io.IOException</code> errors like <code>Bad connect ack with firstBadLink</code> and fail to stage files.  In order to prevent this error, increase the limits in one of the shell scripts sourced by HDFS (for example, <code>hadoop-env.sh</code>) by adding a line like <code>ulimit -n 2048</code>.
+<p />
+<h3><a name="FUSE_Issues"></a> FUSE Issues </h3>
+<p />
+<h4><a name="Strange_filenames_with_random_ch"></a> Strange filenames with random characters in the FUSE mount </h4>
+<p />
+This happens when fs.default.name in your hadoop-site.xml uses the default port (i.e., says hdfs://hostname/ instead of hdfs://hostname:9000/).  This can also happen if you use the hostname in hadoop-site.xml but use the namenode ip address for fuse_dfs (such as in the /etc/fstab  entry).  Be consistent with the hostname/ip address usage for the namenode.  Add the port explicitly to the hadoop-site.xml entry and remount FUSE.
+<p />
+<h4><a name="Group_permissions_issues"></a> Group permissions issues </h4>
+<p />
+Generally, group permission issues fall into one of two categories: <ul>
+<li> Non-existent group name.  If you don't have a group name in /etc/groups or have a system that adds the user to random groups (Condor can do this if you have some rare options turned on, as well as <span class="twikiNewLink">OpenAFS<a href="/bin/edit/Storage/OpenAFS?topicparent=Storage.HadoopDebug" rel="nofollow" title="OpenAFS (this topic does not yet exist; you can create it)">?</a></span>) that aren't mapped to group names.  You can check for this by typing "groups <username>" and verifying it has an exit code 0. Try updating your /etc/groups and/or turn off the software that injects extra group IDs.  It is possible to do this in <span class="twikiNewLink">OpenAFS<a href="/bin/edit/Storage/OpenAFS?topicparent=Storage.HadoopDebug" rel="nofollow" title="OpenAFS (this topic does not yet exist; you can create it)">?</a></span> and Condor and still have a functional install.
+</li> <li> FUSE/HDFS only looks up a user's group membership the first time you use the file system.  If you're running into group permission issues and you just recently added that user to a group, try remounting the FUSE filesystem
+</li></ul> 
+<p />
+<h3><a name="Gftp_Client_Errors"></a> Gftp Client Errors </h3>
+<p />
+<h4><a name="500_Failed_to_open_file_in_HDFS"></a> 500-Failed to open file in HDFS. </h4>
+<p />
+<pre>
+Source URL for copy: file:/data/sam2/.same/SRMv2/testFile.txt
+Destination URL:
+gsiftp://cithep250.ultralight.org:5000//mnt/hadoop/store/user/test/SAM-cit-itb-se.ultralight.org/lcg-util/testfile-user-20090325-222131.txt
+# streams: 1
+# set timeout to  0 (seconds)
+            0 bytes      0.00 KB/sec avg      0.00 KB/sec
+instglobus&#95;ftp&#95;client: the server responded with an error
+500 500-Command failed. :
+globus&#95;gridftp&#95;server&#95;hdfs.c:globus&#95;l&#95;gfs&#95;hdfs&#95;recv:916:
+500-Failed to open file in HDFS.
+500 End.
+</pre>
+<p />
+<strong>Solution:</strong> These errors can be a bit vague, more information may be available however in the gridftp log itself. For example the above may be a permissions problem that can be verified in the Gridftp log. 
+<p />
+If the log is not helpful it might be necessary to run the gridftp server on standalone mode on port 5002. 
+<p />
+<h4><a name="500_Failed_to_close_file_in_HDFS"></a> 500-Failed to close file in HDFS. </h4>
+<p />
+<pre>
+      41472 bytes      8.21 KB/sec avg      8.21 KB/sec instglobus&#95;ftp&#95;client: the server responded with an error
+500 500-Command failed. : globus&#95;gridftp&#95;server&#95;hdfs.c:globus&#95;l&#95;gfs&#95;hdfs&#95;write&#95;to&#95;storage&#95;cb:926:
+500-Failed to close file in HDFS.
+500 End.
+</pre>
+<p />
+<strong>Solution:</strong> Check to make sure the HDFS file system is not full as a full HDFS can cause this issue.
+<p />
+<h4><a name="530_Login_incorrect_an_unknown_e"></a> 530 Login incorrect. : an unknown error occurred </h4>
+<p />
+Sometimes a client error is really a problem on the server side.  If globus-url-copy works against another known-working gridftp server, then you should try starting the gridftp server in standalone mode to find the real cause of the problem.
+<p />
+<h4><a name="Solution_s"></a> Solution(s) </h4>
+<p />
+Some possibilities that you may find in the output of the standalone gridftp server are:  The gridftp server does not have CLASSPATH set to point to the Hadoop jar files, or the gridftp server is using a jvm version that is incompatible with the Hadoop jars.
+<p />
+<h3><a name="GFTP_Server_Errors"></a> GFTP Server Errors </h3>
+<p />
+<h4><a name="500_Allocated_all_200_memory_buf"></a> 500-Allocated all 200 memory buffers; aborting transfer. </h4>
+<p />
+This error which may appear in the gftp/srmcp client or the server is caused by clients that use multiple streams consuming all of the 200 available GFTP server buffers. The default is 200 which is a bit low. To help alleviate this problem you can add the following environment variable to the gridftp server. 
+<p />
+In file <strong>/etc/gridftp-hdfs/gridftp-hdfs-local.conf</strong>
+<p />
+add the following line
+<p />
+<pre>
+export VDT&#95;GRIDFTP&#95;BUFFER&#95;COUNT&#61;500
+</pre>
+<p />
+This increases the available buffers to 500 which should allow more flexibility in how many streams the gftp server will support before it drops the connection to save memory. 
+<p />
+Note: In more recent versions of Hadoop a disk cache is also used to help deal with long transfers
+<p />
+<h4><a name="an_end_of_file_was_reached_globu"></a> an end-of-file was reached globus_xio: An end of file occurred (possibly the destination disk is full) </h4>
+<p />
+This often shows up in the phedex error logs with the full message as:
+<p />
+<pre>
+SOURCE error during TRANSFER phase: &#91;GRIDFTP&#95;ERROR] an end-of-file was reached globus&#95;xio: An end of file occurred (possibly the destination disk is full)
+</pre>
+<p />
+Contrary to the error message, this most often occurs when there is plenty of disk space in Hadoop.  This is likely caused by xinetd refusing incoming gridftp connections due to various throttles that can be set in the xinetd configuration, or a crash in the gridftp-hdfs process.  Some settings in <code>/etc/xinetd.conf</code> and <code>/etc/xinetd.d/gridftp-hdfs</code> that you will want to check for are:
+<p />
+<pre>
+instances &#61; UNLIMITED
+per&#95;source &#61; UNLIMITED
+</pre>
+<p />
+If these two settings are set to small integers (on the order of 20), then it's likely that you're reaching these limits and xinetd is refusing to allow any more incoming connections.  The recommendation is to set these to <code>UNLIMITED</code>, or to a larger value that your gridftp server can handle.
+<p />
+This error can also be caused by a crash of the gridftp-hdfs process.  To ensure that log messages immediately before the crash get flushed, set the following in <strong>/etc/gridftp-hdfs/gridftp-inetd.conf</strong>
+<pre>
+log&#95;module stdio:buffer&#61;0
+</pre>
+<p />
+<h4><a name="Mkdirs_failed_to_create"></a> Mkdirs failed to create </h4>
+<p />
+<pre>
+Exception in thread &#34;main&#34; java.io.IOException: Mkdirs failed to create /cms/store/user/tmartin                        
+        at org.apache.hadoop.fs.ChecksumFileSystem.create(ChecksumFileSystem.java:358)                                 
+        at org.apache.hadoop.fs.FileSystem.create(FileSystem.java:487)                                                 
+        at org.apache.hadoop.fs.FileSystem.create(FileSystem.java:468)                                                 
+Call to org.apache.hadoop.conf.FileSystem::
+create((Lorg/apache/hadoop/fs/Path;ZISJ)Lorg/apache/hadoop/fs/FSDataOutputStream;) failed!                 
+</pre>
+<p />
+Check to make sure the hadoop-site.xml is properly configured, or the CLASSPATH is set correctly.
+<p />
+<h4><a name="Internal_error"></a> Internal error </h4>
+<p />
+<pre>
+&#91;3429] Wed May 27 14
+:10:18 2009 :: uaf-4.t2.ucsd.edu:41449: &#91;SERVER]: 500-Command failed. : globus&#95;gridftp&#95;server&#95;hdfs.c:globus&#95;l&#95;gfs&#95;hdfs&#95;recv:1085:
+500-System error in Failed to open file /cms/store/user/tmartin/testfile-5035.zero in HDFS for user tmartin due to an internal error in HDFS on server cabinet-7-7-14.t2.ucsd.edu; could be a misconfiguration or bad installation at the site: Unknown error 255
+500-A system call failed: Unknown error 255
+500 End.
+</pre>
+<p />
+<p />
+Check to make sure the hadoop-site.xml is properly configured, or the CLASSPATH is set correctly.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Storage<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Storage/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/Storage/Hadoop" class="twikiLink">Hadoop</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>HadoopDebug</span> <br />    
+Topic revision: r19 - 25 Apr 2011 - 13:22:21 - <a href="/bin/view/Main/WillMaier" class="twikiLink">WillMaier</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

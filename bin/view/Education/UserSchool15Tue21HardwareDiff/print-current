@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> UserSchool15Tue21HardwareDiff &lt; Education &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Education/UserSchool15Tue21HardwareDiff?_T=16 Feb 2017" type="application/x-wiki" title="edit UserSchool15Tue21HardwareDiff" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Education/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Education/UserSchool15Tue21HardwareDiff"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+@import url('/pub/Documentation/Tools/exercises.css ');
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Tuesday_Exercise_2_1_Hardware_Di"></a> Tuesday Exercise 2.1: Hardware Differences in the OSG </h1>
+<p />
+The goal of this exercise is to compare hardware differences between our local cluster (CHTC here at UW–Madison) and an OSG glidein pool. Specifically, we will look at how easy it is to get access to resources in terms of the amount of memory that is requested. This will not be a very careful study, but should give you some idea of one way in which the pools are different.
+<p />
+In the first two parts of the exercise, you will submit a bunch of jobs that differ only in how much memory each one requests; we call this a <em>parameter sweep</em>, in that we are testing many possible values of a parameter. We will request memory from 1&ndash;16 GB, doubling the memory each time. One set of jobs will be submitted locally, and the other, identical set of jobs will be submitted to OSG. You will check the queue periodically to see how many jobs have completed and how many are still waiting to run.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Part_1_Checking_on_the_Availabil"></a> Part 1: Checking on the Availability of Memory, Locally </span></h2>
+<p />
+In this first part, you will create the submit file for both the local and OSG jobs, then submit the local set.
+<p />
+<h3><a name="Create_the_submit_files"></a> Create the submit files </h3>
+<p />
+To create our parameter sweep, we will create one submit file with multiple queue statements and change the value of our parameter (<code>request_memory</code>) for each batch of jobs.
+<p /> <ol>
+<li> If not already, log on to <code>osg-ss-submit</code>
+</li> <li> Create and change into a new subdirectory called <code>tuesday-2.1</code> &ndash; doing things this way will make Part 2 much easier
+</li> <li> Create a submit file that is named <code>sleep.sub</code> and that executes the command <code>/bin/sleep 10</code>       <p>If you do not remember all of the submit statements to write this file, or just to go faster, find a similar submit file from yesterday, copy and rename it here, and make sure the argument to <code>sleep</code> is <code>10</code> (although the exact value does not matter for the test).</p>
+</li> <li> Request exactly 1 gigabyte (GB) of memory:       <pre class="file">request_memory = 1GB</pre>
+</li> <li> Set the submit file to run 5 instances of this job:       <pre class="file">queue 5</pre>
+</li> <li> Repeat steps 4 and 5 for requests of memory 2GB, 4GB, 8GB, and 16GB. You should have 5 different values of <code>request_memory</code>, 5 different queue statements in your <strong>single</strong> submit file.
+</li> <li> Save the submit file and exit your editor
+</li> <li> Submit your jobs
+</li></ol> 
+<p />
+<h3><a name="Monitoring_the_local_jobs"></a> Monitoring the local jobs </h3>
+<p />
+Every few minutes, run <code>condor_q</code> and see how your sleep jobs are doing. To easily see how many jobs of each type you have left, run the following command:
+<p />
+<pre class="screen">
+$> condor_q -format '%d\n' RequestMemory <span style="background-color: #D1CAF2;">&lt;username&gt;</span> | sort | uniq -c
+</pre>
+<p />
+The numbers in the left column are the number of jobs left of that type and the number on the right is the amount of memory you requested in MB.  Consider making a little table like the one below to track progress.
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Education/UserSchool15Tue21HardwareDiff?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Memory</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/Education/UserSchool15Tue21HardwareDiff?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Done #1</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2"> <a rel="nofollow" href="/bin/view/Education/UserSchool15Tue21HardwareDiff?cover=print;sortcol=2;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Done #2</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol3 twikiLastCol"> <a rel="nofollow" href="/bin/view/Education/UserSchool15Tue21HardwareDiff?cover=print;sortcol=3;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Done #3</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> 1 GB </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> 0 </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2"> 4 </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> 2 GB </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> 0 </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2"> 3 </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> 4 GB </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> 1 </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2"> 4 </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> 8 GB </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> 0 </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2"> 5 </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol3 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> 16 GB </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> 1 </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLast"> 4 </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol3 twikiLastCol twikiLast"> &nbsp; </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+In the meantime, between checking on your local jobs, start Part 2 &ndash; taking a break every few minutes to record progress on your local jobs.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Part_2_Checking_on_the_Availabil"></a> Part 2: Checking on the Availability of Memory, Remotely </span></h2>
+<p />
+For the second part of the exercise, you will just copy over the directory from part 1 on <code>osg-ss-submit</code> to <code>osg-ss-glidein-submit</code> and resubmit your jobs to the OSG. You should have plenty of experience copying over files with <code>scp</code> and submitting them to the OSG so I won't provide instructions here. If you get stuck at any point in this process, refer to <a href="/bin/view/Education/UserSchool15Tue12LoginScp" class="twikiLink">exercise 1.2</a>.
+<p />
+<h3><a name="Monitoring_the_remote_jobs"></a> Monitoring the remote jobs </h3>
+<p />
+As you did in part 1, use <code>condor_q</code> to track how your sleep jobs are doing. You can move onto the next exercise but keep tracking the status of your jobs. After you are done with the rest of the exercises, come back to this exercise, and move onto part 3
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Part_3_Analyzing_the_Results"></a> Part 3: Analyzing the Results </span></h2>
+<p />
+Now that you've finished the other exercise, how many jobs have completed locally? How many have completed remotely? 
+<p />
+Due to the dynamic nature of the remote pool, the OSG may have noticed the demand for higher memory jobs and leased more high memory slots for our pool. That being said, 8GB+ slots are a high-demand, low-availability resource in the OSG so it's unlikely that all of your 8GB+ jobs matched and ran to completion. On the other hand, the local cluster has plenty of 8GB+ slots so all your jobs have a high chance of running.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Education<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Education/OSGUserSchool2015" class="twikiLink">OSGUserSchool2015</a> &gt; <a href="/bin/view/Education/UserSchool15Materials" class="twikiLink">UserSchool15Materials</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>UserSchool15Tue21HardwareDiff</span> <br />    
+Topic revision: r11 - 28 Jul 2015 - 21:06:09 - <a href="/bin/view/Main/BrianLin" class="twikiLink">BrianLin</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> OSGSS2014TueExCondorG &lt; Education &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Education/OSGSS2014TueExCondorG?_T=16 Feb 2017" type="application/x-wiki" title="edit OSGSS2014TueExCondorG" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Education/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Education/OSGSS2014TueExCondorG"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+@import url('/pub/Documentation/Tools/exercises.css ');
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="2014_OSG_User_School_Using_direc"></a> 2014 OSG User School - Using directly the Grid </h1>
+<p />
+Node to use: Same as <a href="/bin/view/Education/OSGSS2014TueExOSGSec" class="twikiLink">the previous exercise</a>.
+<p />
+In this session, we will submit jobs directly to the Grid using HTCondor-G.
+<p />
+HTCondor-G jobs are very similar to <em>normal</em> HTCondor jobs,
+in the sense that you use the standard HTCondor tools, like <em>condor_submit</em>  and <em>condor_q</em>.
+<p />
+The main difference is that you use the <strong>grid</strong> universe, instead of the <strong>vanilla</strong> one.
+<p />
+Moreover, HTCondor does not really schedule the jobs end-to-end;
+it merely <em>throws them over the fence</em> and <em>keeps a look on what's going on there</em>.
+<p />
+To better understand what I mean by this, we will submit a few test jobs with HTCondor-G,
+and monitor what happens.
+<p />
+Pick any compute problem you like, and replace the 
+<pre class="screen">
+universe = vanilla
+</pre>
+line with
+<pre class="screen">
+universe = grid
+grid_resource=gt5 osg-ss-ce.chtc.wisc.edu/jobmanager-condor
+</pre>
+<p />
+Set
+<pre class="screen">
+export X509_USER_PROXY=~/.globus/proxy.pem
+</pre>
+and you are now ready to submit a HTCondor-G job with <em>condor_submit</em>.<br>
+<strong>Note:</strong> HTCondor-G cannot determine what output files you want back, so if you need anything past stdout and stderr, you will have to explicitly list them.
+<p />
+You have login access to osg-ss-ce. Please do log into it, and run <em>condor_q</em> there.<br>
+What you will see is another HTCondor pool, and it now has your job queued there!<br>
+(Note: it may be hard to find, due to the Grid interface mangling the arguments)
+<p />
+What has happened is that <strong>our</strong> HTCondor-G just re-submitted your jobs to the HTCondor running on osg-ss-ce.<br>
+osg-ss-ce now has full ownership of your jobs, and will run them to completion (if at all possible).<br>
+Our HTCondor-G just monitors the remote HTCondor-G and periodically updates its internal status.
+<p />
+If you have submitted a job that takes a significant time to complete, please monitor the status of your job both through <em>condor_q</em> / <em>condor_history</em> and by parsing the job log.<br>
+You should notice that you get way less information on the HTCondor-G side, than when logged directly into osg-ss-ce.<br>
+Take some time understanding what are the differences.
+<p />
+<strong>Note:</strong> For most real-life Grid resources you have no direct login access to the remote scheduler (which, BTW, may not be HTCondor-based), so you will have to rely on HTCondor-G monitoring alone.
+<p />
+-- <a href="/bin/view/Main/IgorSfiligoi" class="twikiLink">IgorSfiligoi</a> - 08 Jul 2014</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Education<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Education/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/Education/OSGUserSchool2014" class="twikiLink">OSGUserSchool2014</a> &gt; <a href="/bin/view/Education/UserSchool14Materials" class="twikiLink">UserSchool14Materials</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>OSGSS2014TueExCondorG</span> <br />    
+Topic revision: r2 - 08 Jul 2014 - 19:38:43 - <a href="/bin/view/Main/IgorSfiligoi" class="twikiLink">IgorSfiligoi</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> HadoopSRMValidation &lt; Storage &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Storage/HadoopSRMValidation?_T=16 Feb 2017" type="application/x-wiki" title="edit HadoopSRMValidation" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Storage/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Storage/HadoopSRMValidation"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#0000FF;
+	}
+	.patternBookView {
+		border-color:#0000FF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Hadoop_SRMValidation"></a>  <strong><noop>Hadoop SRMValidation</strong> </h1>
+<p />
+<p />
+<font color="#ff0000">
+WARNING! This page is for an older version of Hadoop.
+For newer versions, please visit <a href="/bin/view/Documentation/Release3/InstallHadoopSE" class="twikiLink">Hadoop Release 3 Installation</a>
+</font>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Reading_files_from_SRM"> Reading files from SRM</a>
+</li> <li> <a href="?cover=print#Writing_files_to_SRM"> Writing files to SRM</a>
+</li></ul> 
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Reading_files_from_SRM"></a> Reading files from SRM </span></h2>
+<p />
+Testing a SRM endpoint is fairly straight forward. You'll need to know the SE path endpoint on the hadoop door and you'll have to have a valid gridcert that is permitted to move files in and out of your site.
+<p />
+First generate a proxy certificate with grid-proxy-init or voms-proxy-init.  Now attempt to pull from your srm door. The command will look something like:
+<p />
+<pre>
+# srmcp -2 -debug srm://cit-se2.ultralight.org:8443/srm/v2/server?SFN&#61;/mnt/hadoop/junk.txt file:////tmp/junk.txt
+&#91;some debug output omitted]
+Tue Aug 18 22:42:11 PDT 2009: starting SRMGetClient
+Tue Aug 18 22:42:11 PDT 2009: In SRMClient ExpectedName: host
+Tue Aug 18 22:42:11 PDT 2009: SRMClient(https,srm/managerv2,true)
+SRMClientV2 : user credentials are: /DC&#61;ch/DC&#61;cern/OU&#61;Organic Units/OU&#61;Users/CN&#61;dkcira/CN&#61;655958/CN&#61;Dorian Kcira
+SRMClientV2 : WEBSERVICE&#95;PATH srm/managerv2
+SRMClientV2 : connecting to srm at httpg://cithep250.ultralight.org:8443/srm/v2/server
+copy&#95;jobs is empty
+Tue Aug 18 22:42:12 PDT 2009: calling srmPrepareToGet
+SRMClientV2 :  srmPrepareToGet, contacting service httpg://cithep250.ultralight.org:8443/srm/v2/server
+Tue Aug 18 22:42:13 PDT 2009: received responce
+Tue Aug 18 22:42:13 PDT 2009:  srm returned requestToken &#61; get:1318
+copy&#95;jobs is not empty
+copying CopyJob, source &#61; gsiftp://cithep230.ultralight.org:2811//mnt/hadoop/junk.txt destination &#61; file:////tmp/junk.txt
+GridftpClient: memory buffer size is set to 1048576
+GridftpClient: tcp buffer size is set to 1048576
+GridftpClient: connecting to cithep230.ultralight.org on port 2811
+Tue Aug 18 22:42:13 PDT 2009: no more pending transfers, breaking the loop
+GridftpClient: gridFTPClient tcp buffer size is set to 1048576
+GridftpClient: gridFTPRead started
+GridftpClient: set local data channel authentication mode to None
+GridftpClient: parallelism: 10
+GridftpClient: starting a transfer from /mnt/hadoop/junk.txt
+GridftpClient: waiting for completion of transfer
+GridftpClient: DiskDataSink.close() called
+GridftpClient: gridFTPWrite() wrote 234bytes
+GridftpClient: closing client : org.dcache.srm.util.GridftpClient$FnalGridFTPClient&#64;39a2f02e
+GridftpClient: closed client
+execution of CopyJob, source &#61; gsiftp://cithep230.ultralight.org:2811//mnt/hadoop/junk.txt destination &#61; file:////tmp/junk.txt completed
+SRMClientV2 :  srmReleaseFiles, contacting service httpg://cithep250.ultralight.org:8443/srm/v2/server
+srmReleaseFilesResponse status code&#61;SRM&#95;SUCCESS
+copy&#95;jobs is empty
+stopping copier
+</pre>
+<p />
+The line <code>srmReleaseFilesResponse status code=SRM_SUCCESS</code> is your indication that the transfer was successful.  You should manually check the contents of the local file <code>/tmp/junk.txt</code> and verify that the contents are correct.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Writing_files_to_SRM"></a> Writing files to SRM </span></h2>
+<p />
+To write files to SRM, you must first generate a proxy certificate with grid-proxy-init or voms-proxy-init.  Now attempt to write to your srm door. The command will look something like:
+<p />
+<pre>
+# srmcp -2 -debug file:////tmp/junk.txt srm://cit-se2.ultralight.org:8443/srm/v2/server?SFN&#61;/mnt/hadoop/store/user/wart/junk.txt
+&#91;some debug output omitted]
+Tue Aug 18 22:45:20 PDT 2009: starting SRMPutClient
+Tue Aug 18 22:45:20 PDT 2009: In SRMClient ExpectedName: host
+Tue Aug 18 22:45:20 PDT 2009: SRMClient(https,srm/managerv2,true)
+SRMClientV2 : user credentials are: /DC&#61;ch/DC&#61;cern/OU&#61;Organic Units/OU&#61;Users/CN&#61;dkcira/CN&#61;655958/CN&#61;Dorian Kcira
+SRMClientV2 : WEBSERVICE&#95;PATH srm/managerv2
+SRMClientV2 : connecting to srm at httpg://cithep250.ultralight.org:8443/srm/v2/server
+copy&#95;jobs is empty
+SRMClientV2 :  srmPrepareToPut, contacting service httpg://cithep250.ultralight.org:8443/srm/v2/server
+Tue Aug 18 22:45:21 PDT 2009:  srm returned requestToken &#61; put:1351
+Tue Aug 18 22:45:21 PDT 2009: no more pending transfers, breaking the loop
+copy&#95;jobs is not empty
+copying CopyJob, source &#61; file:////tmp/junk.txt destination &#61; gsiftp://cithep230.ultralight.org:2811//mnt/hadoop/store/user/wart/junk.txt
+GridftpClient: memory buffer size is set to 1048576
+GridftpClient: tcp buffer size is set to 1048576
+GridftpClient: connecting to cithep230.ultralight.org on port 2811
+GridftpClient: gridFTPClient tcp buffer size is set to 1048576
+GridftpClient: gridFTPWrite started, source file is java.io.RandomAccessFile&#64;307b4703 destination path is /mnt/hadoop/store/user/wart/junk.txt
+GridftpClient: gridFTPWrite started, destination path is /mnt/hadoop/store/user/wart/junk.txt
+GridftpClient: set local data channel authentication mode to None
+GridftpClient: parallelism: 10
+GridftpClient: adler32 for file java.io.RandomAccessFile&#64;307b4703 is 3cec4db3
+GridftpClient: Was not able to send checksum value:org.globus.ftp.exception.ServerException: Server refused performing the request. Custom message:  (error code 1) &#91;Nested exception message:  Custom message: Unexpected reply: 500 Invalid command.] &#91;Nested exception is org.globus.ftp.exception.UnexpectedReplyCodeException:  Custom message: Unexpected reply: 500 Invalid command.]
+GridftpClient: waiting for completion of transfer
+GridftpClient: starting a transfer to /mnt/hadoop/store/user/wart/junk.txt
+GridftpClient: DiskDataSink.close() called
+GridftpClient: gridFTPWrite() wrote 234bytes
+GridftpClient: closing client : org.dcache.srm.util.GridftpClient$FnalGridFTPClient&#64;168e4805
+GridftpClient: closed client
+execution of CopyJob, source &#61; file:////tmp/junk.txt destination &#61; gsiftp://cithep230.ultralight.org:2811//mnt/hadoop/store/user/wart/junk.txt completed
+srmPutDone status code&#61;SRM&#95;SUCCESS
+copy&#95;jobs is empty
+stopping copier
+</pre>
+<p />
+The line <code>srmReleaseFilesResponse status code=SRM_SUCCESS</code> is your indication that the transfer was successful.  You should manually check the contents or checksum of the file in hdfs and verify that the contents are correct.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Storage<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Storage/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/Storage/Hadoop" class="twikiLink">Hadoop</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>HadoopSRMValidation</span> <br />    
+Topic revision: r4 - 25 Oct 2011 - 21:22:10 - <span class="twikiNewLink">DouglasStrain<a href="/bin/edit/Storage/DouglasStrain?topicparent=Storage.HadoopSRMValidation" rel="nofollow" title="DouglasStrain (this topic does not yet exist; you can create it)">?</a></span>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

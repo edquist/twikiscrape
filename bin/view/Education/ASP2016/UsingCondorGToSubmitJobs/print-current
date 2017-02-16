@@ -1,0 +1,470 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> UsingCondorGToSubmitJobs &lt; Education/ASP2016 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Education/ASP2016/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Education/ASP2016/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Education/ASP2016/UsingCondorGToSubmitJobs?_T=16 Feb 2017" type="application/x-wiki" title="edit UsingCondorGToSubmitJobs" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Education/ASP2016/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Education/ASP2016/UsingCondorGToSubmitJobs"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+@import url('/pub/Documentation/Tools/exercises.css ');
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <!-- deprecated -->
+<p />
+<h1><a name="Using_Condor_G_to_Submit_Jobs_to"></a>  Using Condor-G to Submit Jobs to OSG and TeraGrid </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Submitting_a_single_job_using_Co"> Submitting a single job using Condor-G</a>
+</li> <li> <a href="?cover=print#Checking_output"> Checking output</a>
+</li> <li> <a href="?cover=print#Submitting_multiple_jobs_to_mult"> Submitting multiple jobs to multiple sites using Condor-G</a>
+</li> <li> <a href="?cover=print#Inspecting_the_output"> Inspecting the output</a>
+</li> <li> <a href="?cover=print#Clean_up"> Clean-up</a>
+</li></ul> 
+</div>
+<p />
+<p />
+<form name="EDITTHIS" action="/bin/edit/Education/ASP2016/UsingCondorGToSubmitJobs" method="get"><input type="submit" value="Edit section" alt="Edit this section" title="Click to edit this section" class="twikiButton" style="font-size:.5em;"><input type="hidden" value="1487215589" name="t"></form>
+<p />
+<em>Condor-G</em> allows one to use Condor tools to submit jobs to Globus resources. You can think of it as a sophisticated <code>globus-job-run</code>. One
+of the useful features is the ability to submit and monitor multiple jobs to grid resources.
+<p />
+<a name="ajob" />
+<h3><a name="Submitting_a_single_job_using_Co"></a> Submitting a single job using Condor-G </h3>
+In the Condor world, one has to write a submission file that describes the application your are submitting. A sample submission file is below.
+<p />
+<pre class="programlisting">
+<font color="#008000">########################################
+#                       
+#  A sample condor submission file
+#                                        
+########################################</font>
+                                         
+executable =  prime
+universe = <b>vanilla</b>
+
+output  = prime.out                
+error   = prime.error             
+log     = prime.log  
+arguments = 107 2 107
+
+queue
+</pre>
+<p />
+<p />
+Note the universe variable. If the universe used is vanilla, the job is infact executed on the submitting site itself. The condor on <code>workshop1.lac.uic.edu</code> is configured to run jobs locally.
+<p />
+To submit jobs to a remote resource, the universe should be set to <code>grid</code>. Let's see a submission file for the grid universe.
+<p />
+<pre class="programlisting">
+<font color="#008000">########################################
+#                       
+#  A sample Condor-G submission file
+#                                        
+########################################</font>
+
+executable = <replaceable>APPDIR</replaceable>/<replaceable>YOURUSERNAME</replaceable>/prime
+
+transfer_executable = false
+universe       = <b>grid</b>
+grid_resource = <b>gt2 <replaceable>SITE</replaceable>/jobmanager</b>
+log            = prime.log
+arguments      = 100 2 100
+output = prime.out
+
+queue
+</pre>
+<p />
+<p />
+Submit your prime application using this submission file to a site. You can monitor your application using <code>condor_q</code>
+<p />
+<p />
+<pre class="screen">
+[train99@workshop1.lac.uic.edu ~]$ <userinput>condor_submit example.sub</userinput>
+Submitting job(s).
+Logging submit event(s).
+1 job(s) submitted to cluster 33.
+
+[train99@workshop1.lac.uic.edu ~]$ <userinput>condor_q</userinput>
+
+-- Submitter: workshop1.lac.uic.edu : &lt;206.76.233.104:36236&gt; : workshop1.lac.uic.edu
+ ID      OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD               
+   9.0   train99      7/10 23:39   0+00:00:00 I  0   0.0  prime             
+
+1 jobs; 1 idle, 0 running, 0 held
+</pre>
+<p /> <dl>
+<dt> <strong><font color="#008000"> TIP </font></strong> </dt><dd> If condor_q lists too many entries, you can use the <code>job-id</code> to refer your job. In the above example, this is <code>33</code> in the line <code>1 job(s) submitted to cluster 33</code> returned by <code>condor_submit</code>. Now you can just do <code>condor_q <replaceable>XXX</replaceable></code>. You can also try using <code>condor_q train99</code> to enlist jobs submitted by user train99.
+</dd></dl> 
+<p />
+<p />
+You can try various options like <code>-long</code> and <code>-globus</code> with condor_q to see more details.
+<p />
+<p />
+<!-- <strong>*</strong>  Comments plugin to create comments table for section   <strong>*</strong>    -->
+<p />
+<span class="educationWebAddComment">ADD A COMMENT</span>
+<span id="twid_1show" class="twistyMakeVisible">
+       <a href="#" class="twistyTrigger"><em><strong>Show...</strong></em></a>
+     </span>
+     <span id="twid_1hide" class="twistyHidden">
+       <a href="#" class="twistyTrigger"><em><strong>Hide</strong></em></a>
+     </span>
+     <div id="twid_1toggle" class="twistyMakeHidden">
+<p />
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <a rel="nofollow" href="/bin/view/Education/ASP2016/UsingCondorGToSubmitJobs?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">COMMENT</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol1 twikiLast"> <a rel="nofollow" href="/bin/view/Education/ASP2016/UsingCondorGToSubmitJobs?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">NAME</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <a rel="nofollow" href="/bin/view/Education/ASP2016/UsingCondorGToSubmitJobs?cover=print;sortcol=2;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">DATE</font></a> </th>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<form method="post" action="https://twiki.opensciencegrid.org/bin/save/Education/ASP2016/UsingCondorGToSubmitJobs" enctype="multipart/form-data" name="tableappend0" id="tableappend0">
+<p />
+<div class="commentPlugin commentPluginPromptBox">
+<table><tr valign="middle"><td><textarea  rows="3" cols="70" name="comment" wrap="soft" onfocus="if(this.value=='')this.value=''" onblur="if(this.value=='')this.value=''"></textarea></td><td><input  type="submit" value="Add comment" /></td></tr></table>
+</div><!--/commentPlugin-->
+<p />
+<input type="hidden" name="comment_action" value="save"  />
+<input type="hidden" name="comment_type" value="tableappend"  />
+<input type="hidden" name="comment_index" value="0"  /></form>
+<p />
+</div>
+<!-- <strong>*</strong>  End Comment                                            <strong>*</strong>    -->
+<p />
+<p />
+<p />
+<h3><a name="Checking_output"></a> Checking output </h3>
+Check the output file <code>prime.out</code>.
+<p />
+<a name="multiple" />
+<h3><a name="Submitting_multiple_jobs_to_mult"></a> Submitting multiple jobs to multiple sites using Condor-G </h3>
+<p />
+There are various ways to use Condor-G to submit multiple jobs to multiple sites: <ul>
+<li> Write multiple submission files and changes attributes manually or using a script. This is clumsy and difficult to manage.
+</li> <li> Write a single common submission file and dynamically change only the attributes that need to be changed
+</li></ul> 
+<p />
+First, we must identify the attributes that need to be changed for different instantiations of the application: <ul>
+<li> range of divisors
+</li> <li> site names
+</li> <li> application directories
+</li> <li> output file names
+</li></ul> 
+<p />
+How do we do this? By passing parameters to <code>condor_submit</code>:
+<p />
+<p />
+<tt>condor_submit -a "arguments = $num $start $end" -a "grid_resource = gt2 $site/jobmanager" ...</tt>
+<p />
+The strings that you specify with <code>-a</code> option get added to the submission file you specify.
+<p />
+<p />
+Write a common submission file and submit three instantiations of your prime application to three sites. Note that you have to use different output file names for each instantiation. 
+<p />
+Create a submission file named <code>example.sub</code> with following contents
+<pre class="programlisting">
+<font color="#008000">####################
+#
+# Submission file for prime number finder
+#
+####################</font>
+
+transfer_executable = false
+universe       = grid
+log            = prime.log
+queue
+</pre>
+<p />
+Note that we do not specify the site and arguments.
+<p />
+Create a directory for the output files:
+<p />
+<pre class="screen">
+[train99@workshop1.lac.uic.edu dprime]$ <userinput>mkdir output</userinput>
+</pre>
+<p />
+Submit a job using the submission file by passing arguments to <code>condor_submit</code>:
+<p />
+<pre class="screen">
+[train99@workshop1.lac.uic.edu dprime]$ <replaceable>condor_submit -a "arguments = 1000 2 1000" -a "output = output/1.out" -a "grid_resource = gt2 ufgrid05.phys.ufl.edu/jobmanager" -a "executable = APPDIR/YOURUSERNAME/prime" example.sub</replaceable>
+</pre>
+<p />
+Submit multiple jobs to multiple sites. Note that you have to copy your executables to the site, if it doesn't have it already. Use GridCat to find the APP variables.
+<p />
+<p />
+<h3><a name="Inspecting_the_output"></a> Inspecting the output </h3>
+<p />
+A simple grep through all your output files should tell whether the number is a prime or not.
+<p />
+<pre class="screen">
+[train99@workshop1.lac.uic.edu dprime]$ <userinput>grep NO output/*</userinput>
+</pre>
+<p />
+<p />
+<h3><a name="Clean_up"></a> Clean-up </h3>
+<p />
+If you no longer plan to use the executable you (globus-url-)copied to the remote-site(s), please go ahead and clean up your workspace(s):
+<p />
+<pre class="screen">
+[train99@workshop1.lac.uic.edu dprime]$ <userinput>globus-job-run <replaceable>SITE</replaceable> /bin/rm -rf <replaceable>APPDIR</replaceable>/<replaceable>YOURUSERNAME</replaceable></userinput>
+</pre>
+<p />
+<p />
+<!-- <strong>*</strong>  Comments plugin to create comments table for section   <strong>*</strong>    -->
+<p />
+<span class="educationWebAddComment">ADD A COMMENT</span>
+<span id="twid_2show" class="twistyMakeVisible">
+       <a href="#" class="twistyTrigger"><em><strong>Show...</strong></em></a>
+     </span>
+     <span id="twid_2hide" class="twistyHidden">
+       <a href="#" class="twistyTrigger"><em><strong>Hide</strong></em></a>
+     </span>
+     <div id="twid_2toggle" class="twistyMakeHidden">
+<p />
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <a rel="nofollow" href="/bin/view/Education/ASP2016/UsingCondorGToSubmitJobs?cover=print;sortcol=0;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">COMMENT</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol1 twikiLast"> <a rel="nofollow" href="/bin/view/Education/ASP2016/UsingCondorGToSubmitJobs?cover=print;sortcol=1;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">NAME</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <a rel="nofollow" href="/bin/view/Education/ASP2016/UsingCondorGToSubmitJobs?cover=print;sortcol=2;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">DATE</font></a> </th>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<form method="post" action="https://twiki.opensciencegrid.org/bin/save/Education/ASP2016/UsingCondorGToSubmitJobs" enctype="multipart/form-data" name="tableappend1" id="tableappend1">
+<p />
+<div class="commentPlugin commentPluginPromptBox">
+<table><tr valign="middle"><td><textarea  rows="3" cols="70" name="comment" wrap="soft" onfocus="if(this.value=='')this.value=''" onblur="if(this.value=='')this.value=''"></textarea></td><td><input  type="submit" value="Add comment" /></td></tr></table>
+</div><!--/commentPlugin-->
+<p />
+<input type="hidden" name="comment_action" value="save"  />
+<input type="hidden" name="comment_type" value="tableappend"  />
+<input type="hidden" name="comment_index" value="1"  /></form>
+<p />
+</div>
+<!-- <strong>*</strong>  End Comment                                            <strong>*</strong>    -->
+<p />
+<p />
+<p />
+<p />
+<p />
+<p />
+<!--                                                                             <ul>
+ <li>
+ <ul>
+<li> Set LOGINHOST = workshop1.lac.uic.edu
+</li> <li> Set LOGINIP = 131.193.181.56
+</li> <li> Set GRIDHOST = tg-login.sdsc.teragrid.org
+</li> <li> Set OTHERHOST = workshop2.lac.uic.edu
+</li> <li> Set CERTSUBJECT = /O=Grid/OU=OSG/CN=Training User 99
+</li> <li> Set LOGINNAME = train99
+</li> <li> Set HOMEDIR = /home/train99
+</li></ul> 
+</li></ul> 
+--> 
+<p />
+<!--
+<a href="/bin/view/Main/ForrestChristian" class="twikiLink">ForrestChristian</a> - 24 Mar 2007 - Added VARIABLES
+-->
+<p />
+<p />
+<hr />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Backlinks"></a>  Backlinks </span></h2>
+<p />
+<hr/>
+Twiki topics in <a href="/bin/view/Education/ASP2016/WebHome" class="twikiCurrentWebHomeLink twikiLink">Education.ASP2016</a> web containing an "INCLUDE" of this page: <br />     
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table3" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Section </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Topic </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Last Updated by </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <a href="/bin/view/Education/ASP2016/WebHome" class="twikiCurrentWebHomeLink twikiLink">Education.ASP2016</a> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> <a href="/bin/view/Education/ASP2016/LectureSevenTutorial" class="twikiLink">LectureSevenTutorial</a> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> <a href="/bin/view/Main/BrianBockelman" class="twikiLink">BrianBockelman - 07 Feb 2017 - 19:16</a> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <a href="/bin/view/Education/ASP2016/WebHome" class="twikiCurrentWebHomeLink twikiLink">Education.ASP2016</a> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> <a href="/bin/view/Education/ASP2016/MidwestWSNatGridLab" class="twikiLink">MidwestWSNatGridLab</a> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <a href="/bin/view/Main/BrianBockelman" class="twikiLink">BrianBockelman - 07 Feb 2017 - 19:16</a> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <a href="/bin/view/Education/ASP2016/WebHome" class="twikiCurrentWebHomeLink twikiLink">Education.ASP2016</a> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> <a href="/bin/view/Education/ASP2016/RGGSNatGridLab" class="twikiLink">RGGSNatGridLab</a> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <a href="/bin/view/Main/BrianBockelman" class="twikiLink">BrianBockelman - 07 Feb 2017 - 19:16</a> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<div class="patternSearchResultCount">Number of topics: <span class="twikiSearchResultCount">3</span></div><!--/patternSearchResultCount--><p />
+<p />
+<p />
+Twiki topics in all others webs containing an "INCLUDE" of this page: <br />     
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table4" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Section </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> Topic </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Last Updated by </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<p />
+<p />
+<a href="/twiki/bin/oops/Education/ASP2016/UsingCondorGToSubmitJobs?template=backlinksweb" target="_top">All references to this document in the <strong>Education/ASP2016</strong> web only</a>  <br />      <a href="/twiki/bin/oops/Education/ASP2016/UsingCondorGToSubmitJobs?template=backlinksallwebs" target="_top">All references to this document in <strong>all</strong> webs</a>
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Child_Topics"></a>  Child Topics </span></h2>
+<p />
+<strong><em>Immediate children of this topic include the following:</em></strong>
+<ul></ul>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Major_Updates"></a>  Major Updates </span></h2>
+<p />
+-- <a href="/bin/view/Main/ForrestChristian" class="twikiLink">ForrestChristian</a> 2007 Jan 29: pulled from <a href="/bin/view/Education/ASP2016/LectureSevenTutorial" class="twikiLink">LectureSevenTutorial</a> <br />    
+-- <a href="/bin/view/Main/ForrestChristian" class="twikiLink">ForrestChristian</a> 2007 Mar 24: adding VARs <br />     </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Education/ASP2016<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><span class="twikiNewLink">SecurityTeamWorkingArea<a href="/bin/edit/Security/SecurityTeamWorkingArea?topicparent=Education/ASP2016.UsingCondorGToSubmitJobs" rel="nofollow" title="SecurityTeamWorkingArea (this topic does not yet exist; you can create it)">?</a></span> &gt; <a href="/bin/view/Education/ASP2016/WorkshopTutorialModules" class="twikiLink">WorkshopTutorialModules</a> &gt; <a href="/bin/view/Education/ASP2016/LectureSevenTutorial" class="twikiLink">LectureSevenTutorial</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>UsingCondorGToSubmitJobs</span> <br />    
+Topic revision: r3 - 03 May 2007 - 20:18:22 - <span class="twikiNewLink">ForrestChristian<a href="/bin/edit/Education/ASP2016/ForrestChristian?topicparent=Education/ASP2016.UsingCondorGToSubmitJobs" rel="nofollow" title="ForrestChristian (this topic does not yet exist; you can create it)">?</a></span>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

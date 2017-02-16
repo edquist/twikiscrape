@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> AcceptanceTestingHTCondorCE &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/AcceptanceTestingHTCondorCE?_T=16 Feb 2017" type="application/x-wiki" title="edit AcceptanceTestingHTCondorCE" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/AcceptanceTestingHTCondorCE"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Acceptance_Testing_for_HTCondor"></a> Acceptance Testing for HTCondor-CE (WIP) </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Testing_the_CE_Collector"></a> Testing the CE Collector </span></h2>
+<p />
+The CE Collector is a stripped-down version of HTCondor-CE that contains mostly just the collector daemon and configs.
+It was introduced in htcondor-ce-1.6.
+The production CE Collectors run at the GOC, but you may want to set up your own for testing.
+<p /> <ol>
+<li> Make 2 VMs with the EPEL/OSG repos installed: one for the collector, and one for the CE
+</li></ol> 
+<p />
+<h3><a name="Setting_Up_the_Collector"></a> Setting Up the Collector </h3>
+<p /> <ol>
+<li> Install <code>htcondor-ce-collector</code>
+</li> <li> Create a file called <code>/etc/condor-ce/config.d/99-local.conf</code> that contains this line:<pre class='file'>
+COLLECTOR.ALLOW_ADVERTISE_SCHEDD = $(COLLECTOR.ALLOW_ADVERTISE_SCHEDD), your_htcondor_ce_host.example.net</pre><br />          (with your_htcondor_ce_host replaced by the hostname the HTCondor-CE VM)<br />          For HTCondor 8.2.3, the 'COLLECTOR.' prefix was not necessary (since COLLECTOR.ALLOW_ADVERTISE_SCHEDD was not defined by default), but by 8.2.6 it is
+</li> <li> Run <code>service condor-ce-collector start</code>
+</li></ol> 
+<p />
+<h3><a name="Setting_Up_the_CE"></a> Setting Up the CE </h3>
+<p /> <ol>
+<li> Install <code>osg-htcondor-ce-condor</code> (replace condor with the batch system of your choice)
+</li> <li> Ensure osg-configure &gt;= 1.0.60-2 is installed
+</li> <li> Configure your CE using osg-configure <ol>
+<li> You should use the <a href="/bin/view/Documentation/Release3/InstallHTCondorCE" class="twikiLink">HTCondor-CE Install Docs</a> as a reference, although you can skip several of the steps
+</li> <li> You can skip setting up Squid: set <code>enabled</code> to <code>True</code> and <code>location</code> to <code>UNAVAILABLE</code> in <code>01-squid.ini</code>
+</li> <li> Set <code>htcondor_gateway_enabled</code> to <code>True</code> in <code>10-gateway.ini</code>
+</li> <li> You probably don't need GUMS, but if you want it, use the Fermi GUMS server (set <code>gums_host</code> to <code>gums.fnal.gov</code> and <code>authorization_method</code> to <code>xacml</code> in 10-misc.ini)
+</li> <li> To keep osg-configure from complaining about storage, edit <code>10-storage.ini</code>: <ul>
+<li> Set <code>se_available</code> to <code>False</code>
+</li> <li> Set <code>app_dir</code> to <code>/osg/app_dir</code>
+</li> <li> Set <code>data_dir</code> to <code>/osg/data_dir</code>
+</li> <li> Do <code>mkdir -p /osg/app_dir/etc; mkdir -p /osg/data_dir; chmod 1777 /osg/app_dir{,/etc}</code>
+</li></ul> 
+</li> <li> Enable your batch system by setting <code>enabled</code> to <code>True</code> in <code>20-&lt;batch system&gt;.ini</code>
+</li> <li> Set up the site info in <code>40-siteinfo.ini</code> ;  in particular, you'll need to set the <code>resource</code> and <code>resource_group</code> settings<br />             (you just need to pick a name; I concatenate my login name with the short host name and use that, e.g. matyasfermicloud001).<br />             You can also use the following settings: <ul>
+<li> <code>group=OSG-ITB</code>
+</li> <li> <code>sponsor=local</code>
+</li> <li> <code>city=Batavia, IL</code>
+</li> <li> <code>country=US</code>
+</li> <li> <code>longitude=-88</code>
+</li> <li> <code>latitude=41</code>
+</li></ul> 
+</li></ol> 
+</li> <li> Edit the file <code>/etc/osg/config.d/30-infoservices.ini</code> and set <code>ce_collectors</code> to the collector host
+</li> <li> Run <code>osg-configure -dc</code>
+</li> <li> Start up your batch system
+</li> <li> Run <code>service condor-ce start</code>
+</li></ol> 
+<p />
+The CE will report to the collector host every five minutes.
+If you want to force it to send now, run <code>condor_ce_reconfig</code>.
+You should see your CE if you run <code>condor_ce_status -schedd</code> on the collector host.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/InternalDocs" class="twikiLink">InternalDocs</a> &gt; <a href="/bin/view/SoftwareTeam/AcceptanceTestingHome" class="twikiLink">AcceptanceTestingHome</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>AcceptanceTestingHTCondorCE</span> <br />    
+Topic revision: r4 - 04 Feb 2015 - 20:18:40 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

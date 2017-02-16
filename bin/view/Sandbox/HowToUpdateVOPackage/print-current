@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> HowToUpdateVOPackage &lt; Sandbox &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Sandbox/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Sandbox/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Sandbox/HowToUpdateVOPackage?_T=16 Feb 2017" type="application/x-wiki" title="edit HowToUpdateVOPackage" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><meta name="robots" content="noindex,nofollow"> 
+<base href="https://twiki.opensciencegrid.org/bin/view/Sandbox/HowToUpdateVOPackage"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="How_do_I_update_the_VO_package"></a> How do I update the VO package? </h1>
+<p />
+<h3><a name="Login_to_funafuti_uits_indiana_e"></a> Login to funafuti.uits.indiana.edu. </h3>
+<p />
+   <pre>$ cd /home/wwws/OSG/pacman/tarballs/vo-version</pre>
+<p />
+<h3><a name="Copy_current_files_to_previous_v"></a> Copy current files to previous version files. </h3>
+<p />
+   <pre>$ cp edg-mkgridmap.osg edg-mkgridmap.osg.prev</pre>
+   <pre>$ cp gums.template gums.template.prev</pre>
+<p />
+<h3><a name="Update_the_three_files_that_will"></a> Update the three files that will require updates/additions (<strong>How? Are there 'gotchas'?</strong>) </h3>
+<p /> <ul>
+<li> edg-mkgridmap.osg
+</li> <li> gums.template
+</li> <li> vomses
+</li></ul> 
+<p />
+Make sure the <strong>install-vo.sh</strong> file is set to permissions of 775.
+<p />
+<h3><a name="Create_diff_files_for_review"></a> Create diff files for review </h3>
+<p />
+<pre>$ diff edg-mkgridmap.osg edg-mkgridmap.osg.prev &#62; edg-mkgridmap.osg.diff</pre>
+<pre>$ diff gums.template gums.template.prev &#62; gums.template.diff</pre>
+<p />
+<h3><a name="Communicate_with_the_VO_Admins"></a> Communicate with the VO-Admins </h3>
+<p />
+Make sure they have seen and agree to the new package. The mail should include a link to the new VO package directory and provide a time line for feedback. Here is an example from the SBGrid VO Addition.
+<p />
+<pre>
+VO Admins,
+
+There is a new VO Package to be release on Wednesday that includes
+the new SBGrid VO. Please review the files at http://software.grid.iu.edu/
+pacman/tarballs/vo-version/ for comment.
+
+Thanks,
+Rob
+</pre>
+<p />
+<h3><a name="Copy_the_vomses_file_to_the_clie"></a> Copy the vomses file to the client VO package </h3>
+<p />
+<pre>$ cd home/wwws/OSG/pacman/tarballs</pre>
+<p />
+<pre>$ cp vo-version/vomses vo-client/vomses</pre> 
+<p />
+<h3><a name="Create_the_new_tarballs"></a> Create the new tarballs </h3>
+<p />
+The # in the below commands can be determined by looking at the previous version of the tarballs being used in /home/wwws/OSG/pacman/vo-package and /home/wwws/OSG/pacman/vo-client.
+<p />
+<pre>$ tar czvf vo-package-&#60;#&#62;.tar.gz vo-versions/</pre> 
+<pre>$ tar czvf vo-client-0.6-&#60;#&#62;.tar.gz vo-client-0.6/</pre> 
+<p />
+<h3><a name="Update_the_pacman_files_to_point"></a> Update the pacman files to point at the new tarballs. </h3>
+<p />
+<pre>$ cd /home/wwws/OSG/pacman</pre>
+<p />
+<h3><a name="Edit_vo_package_pacman_and_vo_cl"></a> Edit <em>vo-package.pacman</em> and <em>vo-client.pacman</em> to refer to the new tarball version number. </h3>
+<p /> <ol>
+<li> In <em>vo-package.pacman</em> you will update this line:
+</li></ol> 
+<p />
+<pre>download    &#61; { &#39;unix&#39;: &#39;vo-package-7.tar.gz&#39; }</pre>  (In this case 7 is the version number that will be updated.)
+<p /> <ol>
+<li> In <em>vo-client</em> you will update the following lines. (In this case 11 is the version number that will be updated.) (<strong>Again, change the version number to the next in the sequence.</strong>)
+</li></ol> 
+<p />
+<pre>description (&#39;OSG VO Client v0.6.0-11&#39;)
+downloadUntar (&#39;http://software.grid.iu.edu/pacman/tarballs/vo-client-0.6-11.tar.gz&#39;
+, &#39;VO&#39;)</pre>
+<p />
+<h3><a name="Test_the_package"></a> Test the package </h3>
+<p />
+Install the package on your ITB node:
+<p />
+<pre>pacman -update OSG:vo-package</pre>
+<p />
+<h3><a name="Send_announcement"></a> Send announcement </h3>
+<p />
+<pre>
+Support Centers,
+
+There is a new VO package which includes removals of the VOMS instances of iVDGL, GROW, and GADU.
+
+All OSG resources and GUMS administrators are encouraged to upgrade as soon as possible to remove these no longer used VOMS.
+
+For resources OSG Version 0.8.0 and higher:
+
+pacman -update OSG:vo-package
+
+For OSG Client users please use (Note: This works for both 0.8 and 1.0 releases.):
+
+pacman -update OSG:vo-client-0.6
+
+Please contact the GOC with any questions.
+</pre>
+<p />
+<p />
+-- <a href="/bin/view/Main/TimSilvers" class="twikiLink">TimSilvers</a> - 17 Oct 2008</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Sandbox<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Main/TWikiUsers" class="twikiLink">TWikiUsers</a> &gt; <a href="/bin/view/Main/TimSilvers" class="twikiLink">TimSilvers</a> &gt; <a href="/bin/view/Sandbox/TimSilversSandbox" class="twikiLink">TimSilversSandbox</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>HowToUpdateVOPackage</span> <br />    
+Topic revision: r6 - 16 Dec 2008 - 16:37:44 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

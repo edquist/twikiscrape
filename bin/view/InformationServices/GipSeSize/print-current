@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> GipSeSize &lt; InformationServices &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/InformationServices/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/InformationServices/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/InformationServices/GipSeSize?_T=16 Feb 2017" type="application/x-wiki" title="edit GipSeSize" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/InformationServices/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/InformationServices/GipSeSize"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="The_GLUE_Storage_Element"></a> The GLUE Storage Element </span></h2>
+<p />
+The GLUE storage element entity is used to advertise information about the storage element at your site.  This information is used for several reasons:
+<p />
+  * Resource matching (it advertises the VOs supported by this storage element so resource matching/brokering can answer questions like "What sites have storage elements which support our site?)
+  * Path discovery - allowing supported VOs to discover which paths they can write into
+  * Space token discovery - allowing VOs to know which "spaces" they can write into and what sort of resources (tape or disk-only) back each space
+  * Accounting - giving the central grid a mechanism to determine the amount of space available and used at the site.  This is what this page will focus on.
+<p />
+<h3><a name="A_note_about_units"></a> A note about units </h3>
+<p />
+Most units for the GLUE schema are in GB; this page won't even cover GLUE entities which use KB.  However, for completeness, here is the list of exceptions to the "everything is in GB" rule:
+<p /> <ul>
+<li> GLUE StorageArea entity: <ul>
+<li> Policy.Quota: KB (Deprecated)
+</li> <li> Policy.!MinFileSize: B (Deprecated)
+</li> <li> Policy.!MaxFileSize: B (Deprecated)
+</li> <li> Policy.!MaxData: B (Deprecated)
+</li> <li> State.!UsedSpace: KB (Deprecated)
+</li> <li> State.!AvailableSpace: KB (Deprecated)
+</li></ul> 
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Static_Space_advertising"></a> Static Space advertising </span></h2>
+<p />
+To do this, we will edit the following file (OSG 0.8.0):
+<p />
+<pre>
+$VDT&#95;LOCATION/lcg/etc/alter-attributes.conf
+</pre>
+<p />
+For OSG 0.9.0 and OSG 1.0.0:
+<p />
+<pre>
+$VDT&#95;LOCATION/gip/etc/alter-attributes.conf
+</pre>
+<p />
+Determine the DN of the storage element you want to edit. You can find your GIP data here:
+<p />
+<a href="http://is.grid.iu.edu/cgi-bin/status.cgi" target="_top">http://is.grid.iu.edu/cgi-bin/status.cgi</a>
+<p />
+For example, BNL_ATLAS_1 will want to look here:
+<p />
+<a href="http://is.grid.iu.edu/cgi-bin/show_source_data?which=BNL_ATLAS_1&amp;source=served" target="_top">http://is.grid.iu.edu/cgi-bin/show_source_data?which=BNL_ATLAS_1&amp;source=served</a>
+<p />
+Search through the data for the word "GlueSETop" Here's a sample DN for a storage element of BNL_ATLAS_1 which we will use for the example:
+<p />
+<pre>
+dn: GlueSEUniqueID&#61;gridgk01.racf.bnl.gov,mds-vo-name&#61;BNL&#95;ATLAS&#95;1,o&#61;grid
+</pre>
+<p />
+When we change this DN for the GIP, we will replace the mds-vo-name with <code>mds-vo-name=local</code>.  
+<p />
+Determine the total amount of space at your site; we will advertise this using the <code>GlueSESizeTotal:</code> attribute; suppose it currently has 1000 GB.  Then, add the following attribute to your <code>alter-attributes.conf</code> file:
+<p />
+<pre>
+dn: GlueSEUniqueID&#61;gridgk01.racf.bnl.gov,mds-vo-name&#61;local,o&#61;grid
+GlueSESizeTotal: 1000
+</pre>
+<p />
+Make sure there is a single empty line separating each entry in the <code>alter-attributes.conf</code> file.
+<p />
+It should take about 15 minutes for the change to be reflected in the GOC monitoring webpage.
+<p />
+If you want to fill in more data (such as the current amount of free space), <strong>do not</strong> write a script to dynamically change the values in this file.  Instead, use the methods of the next section.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Dynamic_Space_advertising"></a> Dynamic Space advertising </span></h2>
+<p />
+This section focuses on dynamic space advertising.  For more detailed, generic information on writing modules for the GIP, see <a href="/bin/view/InformationServices/GipSiteAdmin" class="twikiLink">GipSiteAdmin</a>.
+<p />
+Dynamic space advertising for dCache will be available as a piece of the stock install in OSG 0.9.0 / OSG 1.0.  Until then, adventurous site admins can try to install the OSG 1.0 GIP on any version of the OSG using the instructions in <a href="/bin/view/InformationServices/GipInstall" class="twikiLink">GipInstall</a> and configuration description in <a href="/bin/view/InformationServices/DcacheGip" class="twikiLink">DcacheGip</a>.
+<p />
+However, not all sites are using dCache, and some sites might have exceptional circumstances which prevents them from running the dynamic space advertising for dCache.  They can write their own modules for the GIP which will allow them to advertise dynamic data.
+<p />
+Create a script which will output the correct space data for your site; use the same LDIF format as in the static case.  The stdout of your script may look something like this:
+<p />
+<pre>
+dn: GlueSEUniqueID&#61;gridgk01.racf.bnl.gov,mds-vo-name&#61;local,o&#61;grid
+GlueSESizeTotal: 1000
+GlueSESizeFree: 500
+
+dn: GlueSALocalID&#61;atlas,GlueSEUniqueID&#61;gridgk01.racf.bnl.gov,mds-vo-name&#61;local,o&#61;grid
+GlueSATotalOnlineSize: 800
+GlueSAUsedOnlineSize: 400
+GlueSAFreeOnlineSize: 400
+GlueSATotalNearlineSize: 10000
+GlueSAUsedNearlineSize: 2000
+GlueSAFreeNearlineSize: 8000
+</pre>
+<p />
+Here, we've also filled in information about the storage area (SA) for atlas.  The SA attributes are data for specifically this area within the storage element; so, the total space should always be less than the SE total size.  Again, the units are GB.  The entries for "Online" space refer to dedicated disk space; the entries for "Nearline" space refer to dedicated tape space.
+<p />
+Place the script in (OSG 0.8.0):
+<p />
+<pre>
+$VDT&#95;LOCATION/lcg/var/gip/plugin
+</pre>
+<p />
+For OSG 0.9.0 / 1.0.0:
+<p />
+<pre>
+$VDT&#95;LOCATION/gip/plugins
+</pre>
+<p />
+Make sure that it is executable and that the daemon user has sufficient permissions to execute it.  Data from this script should start to appear in the GOC webpages in about 15 minutes.
+<p />
+-- <a href="/bin/view/Main/BrianBockelman" class="twikiLink">BrianBockelman</a> - 12 May 2008</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: InformationServices<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/InformationServices/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>GipSeSize</span> <br />    
+Topic revision: r1 - 12 May 2008 - 13:24:31 - <a href="/bin/view/Main/BrianBockelman" class="twikiLink">BrianBockelman</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

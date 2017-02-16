@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> SoftwarePostMaintenanceDocument &lt; Operations &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Operations/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Operations/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Operations/SoftwarePostMaintenanceDocument?_T=16 Feb 2017" type="application/x-wiki" title="edit SoftwarePostMaintenanceDocument" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Operations/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Operations/SoftwarePostMaintenanceDocument"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> -- <a href="/bin/view/Main/ScottTeige" class="twikiLink">ScottTeige</a> - 29 Jun 2011
+<p />
+<font color="#ff0000"> This document is in Draft Status </font>
+<p />
+<h1><a name="Post_Upgrade_Functionality_Check"></a> Post Upgrade Functionality Checks </h1>
+<p />
+This document is to provide a list of checks that will test the functionality of the Software service after an upgrade has been done. It is assumed the DNS round robin (RR) mechanism was used during the maintenance period and these checks should be performed before an instance is returned to round robin.
+<p />
+If the RR mechanism was not used, you may skip this part but must perform the other checks on both instances.
+<p /> <ul>
+<li> Verify which instance has been removed from RR with dig.  <ul>
+<li> software1.grid.iu.edu is 129.79.14.161
+</li> <li> software2.grid.iu.edu is 134.68.22.138
+</li> <li> dig, for example, returns this:
+</li></ul> 
+</li></ul> 
+<pre>
+2011-06-29 14:12:53 UTC [steige@jump:~]$ dig software.grid.iu.edu
+
+; <<>> DiG 9.3.6-P1-RedHat-9.3.6-16.P1.el5 <<>> software.grid.iu.edu
+;; global options:  printcmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 12383
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;software.grid.iu.edu.          IN      A
+
+;; ANSWER SECTION:
+software.grid.iu.edu.   2877    IN      A       129.79.14.161
+
+;; Query time: 18 msec
+;; SERVER: 192.168.96.4#53(192.168.96.4)
+;; WHEN: Wed Jun 29 14:13:04 2011
+;; MSG SIZE  rcvd: 70
+</pre>
+<p /> <ul>
+<li> Note that 134.68.22.138 is not in the "ANSWER SECTION" returned from dig. This means software2.grid.iu.edu is the instance removed for maintenance and is the instance to be checked.
+</li></ul> 
+<p />
+<h3><a name="Functionality"></a> Functionality </h3> <ul>
+<li> Verify the availability of the distributions. Pages should load in a reasonable time and contain content. Compare the content from software1 and software2. If the maintenance was a version change the content will not be identical but should be similar. 
+</li> <li> For software1: <ul>
+<li> <a href="http://software1.grid.iu.edu/osg-1.2/" target="_top">Index of software</a> <ul>
+<li> open a few of the items seen here and verify they point to software.grid.iu.edu
+</li></ul> 
+</li> <li> <a href="http://software1.grid.iu.edu/osg-1.2/cadist/" target="_top">Contents of CAdist</a>
+</li> <li> <a href="http://software1.grid.iu.edu/osg-1.2/cadist/CHANGES" target="_top">Change log</a>
+</li> <li> <a href="http://software1.grid.iu.edu/osg-1.2/cadist/ca-certs-version" target="_top">Version information</a>
+</li> <li> <a href="http://software1.grid.iu.edu/osg-1.2/cadist/cacerts_md5sum.txt" target="_top">md5sums</a>
+</li></ul> 
+</li> <li> For software2: <ul>
+<li> <a href="http://software2.grid.iu.edu/osg-1.2/" target="_top">Index of software</a> <ul>
+<li> open a few of the items seen here and verify they point to software.grid.iu.edu
+</li></ul> 
+</li> <li> <a href="http://software2.grid.iu.edu/osg-1.2/cadist/" target="_top">Contents of CAdist</a>
+</li> <li> <a href="http://software2.grid.iu.edu/osg-1.2/cadist/CHANGES" target="_top">Change log</a>
+</li> <li> <a href="http://software2.grid.iu.edu/osg-1.2/cadist/ca-certs-version" target="_top">Version information</a>
+</li> <li> <a href="http://software2.grid.iu.edu/osg-1.2/cadist/cacerts_md5sum.txt" target="_top">md5sums</a>
+</li></ul> 
+</li></ul> </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Operations<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>SoftwarePostMaintenanceDocument</span> <br />    
+Topic revision: r2 - 10 Aug 2011 - 21:46:13 - <a href="/bin/view/Main/ScottTeige" class="twikiLink">ScottTeige</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

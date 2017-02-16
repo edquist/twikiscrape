@@ -1,0 +1,451 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> UpgradeHadoop &lt; Documentation/Release3 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/Release3/UpgradeHadoop?_T=16 Feb 2017" type="application/x-wiki" title="edit UpgradeHadoop" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/Release3/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/UpgradeHadoop"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFFFF;
+	}
+	.patternBookView {
+		border-color:#FFFFFF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> 
+<h1><a name="Instructions_for_Upgrading_Hadoo"></a>  Instructions for Upgrading Hadoop </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#About_This_Document"> About This Document</a>
+</li> <li> <a href="?cover=print#Applicable_Versions"> Applicable Versions</a>
+</li> <li> <a href="?cover=print#Upgrade_Procedure"> Upgrade Procedure</a> <ul>
+<li> <a href="?cover=print#Initializing_the_YUM_Repository"> Initializing the YUM Repository</a>
+</li> <li> <a href="?cover=print#Stop_Running_Services"> Stop Running Services</a>
+</li> <li> <a href="?cover=print#Special_GridFTP_Pre_Upgrade_Inst"> Special GridFTP Pre-Upgrade Instructions</a>
+</li> <li> <a href="?cover=print#Perform_Yum_Update"> Perform Yum Update</a>
+</li> <li> <a href="?cover=print#Special_Hadoop_Post_Upgrade_Inst"> Special Hadoop Post-Upgrade Instructions</a>
+</li> <li> <a href="?cover=print#Install_GridFTP"> Install GridFTP</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Configuration_Procedure"> Configuration Procedure</a> <ul>
+<li> <a href="?cover=print#Update_Config_Files_as_Needed"> Update Config Files as Needed</a>
+</li> <li> <a href="?cover=print#Notable_Changes_for_Hadoop"> Notable Changes for Hadoop</a>
+</li> <li> <a href="?cover=print#Notable_Changes_for_GridFTP"> Notable Changes for GridFTP</a>
+</li> <li> <a href="?cover=print#Notable_Changes_for_Gratia_Trans"> Notable Changes for Gratia Transfer Probe</a>
+</li> <li> <a href="?cover=print#Notable_Changes_for_Hadoop_Stora"> Notable Changes for Hadoop Storage Probe</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Service_Activation"> Service Activation</a> <ul>
+<li> <a href="?cover=print#Starting_Hadoop"> Starting Hadoop</a>
+</li> <li> <a href="?cover=print#Starting_GridFTP"> Starting GridFTP</a>
+</li> <li> <a href="?cover=print#Starting_BeStMan2"> Starting BeStMan2</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Comments"> Comments</a>
+</li></ul> 
+</div>
+<p />
+<h1><a name="About_This_Document"></a> About This Document </h1>
+<p />
+<img width="16" alt="hand" align="top" src="/twiki/pub/TWiki/TWikiDocGraphics/hand.gif" height="16" border="0" /> This document is intended for System Administrators that want to upgrade their Hadoop install to the new OSG hosted rpms.
+<p />
+on    
+on    
+<p />
+<h1><a name="Applicable_Versions"></a> Applicable Versions </h1>
+<p />
+This document is intended for those upgrading from  <font color="#ff0000">Hadoop Version 0.20</font> hosted by Caltech to  <font color="#ff0000">Hadoop Version 0.20</font> hosted by the new OSG repositories.  It does <strong>NOT</strong> cover upgrading from  <font color="#ff0000">Hadoop Version 0.19</font> to <font color="#ff0000">Hadoop Version 0.20</font>.
+<p />
+<h1><a name="Upgrade_Procedure"></a> Upgrade Procedure </h1>
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  Throughout this document it will be stated which node the relevant instructions apply to.  It can apply to one of the following:
+</dd>  </dl><ul>
+<li> <strong>Namenode</strong>
+</li> <li> <strong>Datanode</strong>
+</li> <li> <strong>Secondary Namenode</strong>
+</li> <li> <strong>GridFTP node</strong>
+</li> <li>  <strong>SRM node</strong>
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Initializing_the_YUM_Repository"></a> Initializing the YUM Repository </span></h2>
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  This must be done on <strong>all nodes</strong>
+</dd></dl> 
+<p />
+<p />
+<p />
+The OSG RPMs currently support Red Hat Enterprise Linux 5 and variants (Scientific Linux 5 and CentOS 5). Currently most of our testing has been done on Scientific Linux 5: your mileage may vary.
+<p />
+OSG RPMs are distributed via the OSG yum repositories. Some packages depend on packages distributed via the <a href="http://fedoraproject.org/wiki/EPEL" target="_top">EPEL</a> repositories. So both repositories must be enabled. <ol>
+<li> If not already present, install EPEL: <pre class="rootscreen">
+[root@client ~]$ wget http://download.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+[root@client ~]$ rpm -i epel-release-5-4.noarch.rpm </pre>
+</li> <li> Install the <code>yum-priorities</code> plugin: <pre class="rootscreen">
+[root@client ~]$ yum install yum-priorities</pre>
+</li> <li> Install the OSG repositories: <pre class="rootscreen">
+[root@client ~]$ rpm -Uvh http://repo.grid.iu.edu/osg-release-latest.rpm</pre>       <strong>WARNING</strong>: if you have your own mirror or configuration of the EPEL repository, you <strong>MUST</strong> verify that the OSG repository has a better yum priority than EPEL.  Otherwise, you will have strange depsolving issues.<br />           <strong>COMMENT: Please provide detailed syntax for how to do this. -Horst</strong>
+</li></ol> 
+<p />
+<p />
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  To reduce later confusion and conflicts, you may want to disable the Caltech repository.
+</dd></dl> 
+To do this, either remove the previous osg-hadoop rpm or go into /etc/yum.repos.d and disable all entries in osg-hadoop.repo
+by changing "enabled=1" to "enabled=0".
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Stop_Running_Services"></a> Stop Running Services </span></h2>
+<p />
+<h3><a name="Stopping_BeStMan2"></a> Stopping BeStMan2 </h3>
+<p />
+On your <strong>SRM Node</strong> run:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ service bestman2 stop
+</pre>
+<p />
+<h3><a name="Stopping_Hadoop"></a> Stopping Hadoop </h3>
+<p />
+On your <strong>Namenode</strong>, <strong>Secondary Namenode</strong>, and <strong>Datanodes</strong> run:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ service hadoop stop
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Special_GridFTP_Pre_Upgrade_Inst"></a> Special GridFTP Pre-Upgrade Instructions </span></h2>
+<p />
+Upgrading your <strong>GridFTP Node</strong> first requires an extra manual step due to version collisions of the <code>lcas</code> and <code>lcas-lcmaps-gt4-interface</code> rpms between repos.  To avoid depsolving issues first remove these packages before proceeding with the rest of the upgrade instructions:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ yum remove lcas lcas-lcmaps-gt4-interface
+</pre>
+<p />
+Choose "y" when asked to remove packages that depend on these.  Also make note of any warning messages regarding backups of config files, e.g.:
+<p />
+<pre class="file">
+warning: /etc/lcmaps/lcmaps.db saved as /etc/lcmaps/lcmaps.db.rpmsave
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Perform_Yum_Update"></a> Perform Yum Update </span></h2>
+<p />
+On <strong>all nodes</strong> run:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ yum update
+</pre>
+<p />
+Be sure to make note of any warning messages regarding backups of config files saved to <code>*.rpmsave</code> and <code>*.rpmnew</code> locations.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Special_Hadoop_Post_Upgrade_Inst"></a> Special Hadoop Post-Upgrade Instructions </span></h2>
+<p />
+The caltech version of <code>hadoop-0.20-osg</code> rpm mistakenly takes ownership of the directory symlink <code>/var/log/hadoop</code>.  Running the update will cause the symlink to break.  Before starting <code>hadoop</code> services back up be sure to repair it manually on <strong>all nodes</strong>:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ ln -sf /etc/alternatives/hadoop-log /var/log/hadoop
+</pre>
+<p />
+The osg versions of <code>hadoop-0.20</code> and <code>hadoop-0.20-osg</code> rpms no longer run as user <code>hadoop</code> but instead run as user <code>hdfs</code>.  If your installation uses the old <code>hadoop</code> user you will have to chown $HADOOP_DATADIR to user <code>hdfs</code> on your <strong>Datanodes</strong>:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ chown -R hdfs:hadoop <font color="#ff0000">$HADOOP_DATADIR</font>
+</pre>
+<p />
+where $HADOOP_DATADIR is defined in <code>/etc/sysconfig/hadoop</code>.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Install_GridFTP"></a> Install GridFTP </span></h2>
+<p />
+You must manually install the new version of GridFTP since it was removed in the previous steps above.
+<p />
+<pre class="rootscreen">
+[root@client ~]$ yum install osg-gridftp-hdfs
+</pre>
+<p />
+<h1><a name="Configuration_Procedure"></a> Configuration Procedure </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Update_Config_Files_as_Needed"></a> Update Config Files as Needed </span></h2>
+<p />
+Review any <code>*.rpmsave</code> and <code>*.rpmnew</code>  files reported in the <code>yum update</code> and edit as needed.  A few of these locations have been changed for the new rpms.  The most relevant changes are listed here:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Service </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Old Location </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> New Location </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> GridFTP </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> /etc/lcmaps/lcmaps.db </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> /etc/lcmaps.db </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Gratia Transfer Probe </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> /opt/vdt/gratia/probe/gridftp-transfer/ProbeConfig </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> /etc/gratia/gridftp-transfer/ProbeConfig </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Hadoop Storage Probe </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> /opt/vdt/gratia/probe/hadoop-storage/ProbeConfig </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> /etc/gratia/hadoop-storage/ProbeConfig </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Hadoop Storage Probe </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> /opt/vdt/gratia/probe/hadoop-storage/storage.cfg </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> /etc/gratia/hadoop-storage/storage.cfg </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Notable_Changes_for_Hadoop"></a> Notable Changes for Hadoop </span></h2>
+<p />
+As stated above the new default hadoop user is <code>hdfs</code>.  Ensure this is set in <code>/etc/sysconfig/hadoop</code>:
+<p />
+<pre class="file">
+HADOOP_USER=hdfs
+</pre>
+<p />
+ and reconfigure if needed:
+<pre class="rootscreen">
+[root@client ~]$ service hadoop-firstboot start
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Notable_Changes_for_GridFTP"></a> Notable Changes for GridFTP </span></h2>
+<p />
+Note the change in location of the <code>lcmaps.db</code> file listed above; review and edit as needed.  Once you update the new file you need to perform this additional step:
+<p />
+Edit <code>/etc/grid-security/gsi-authz.conf</code> and uncomment the globus callout:
+<p />
+<pre class="file">
+globus_mapping /usr/lib64/liblcas_lcmaps_gt4_mapping.so lcmaps_callout
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Notable_Changes_for_Gratia_Trans"></a> Notable Changes for Gratia Transfer Probe </span></h2>
+<p />
+Note the change in location of the <code>ProbeConfig</code> file listed above; review and edit as needed.  In addition, the Transfer Probe no longer uses <code>osg-user-vo-map-cron</code> to generate the <code>user-vo-map</code> file.  Instead <code>gums-host-cron</code> is used.  To ensure the file gets generated, run it first by hand:
+<p />
+<pre class="rootscreen">
+[root@client ~]$  gums-host-cron
+</pre>
+<p />
+<code>user-vo-map</code> should be created in the following location:
+<p />
+<code>/var/lib/osg/user-vo-map</code>
+<p />
+Ensure <code>ProbeConfig</code> is updated to point to the new location of this file in the <code>UserVOMapFile</code> field.
+<p />
+To have cron regularly update this file start the following service:
+<p />
+<pre class="rootscreen">
+[root@client ~]$  service gums-client-cron start
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Notable_Changes_for_Hadoop_Stora"></a> Notable Changes for Hadoop Storage Probe </span></h2>
+<p />
+Note the config file location changes listed above; review and edit as needed.  Please ensure the following lines are correct in <code>storage.cfg</code>:
+<p />
+<pre class="file">
+gratia_location = /etc/gratia
+ProbeConfig = %(gratia_location)s/hadoop-storage/ProbeConfig
+</pre>
+<p />
+<h1><a name="Service_Activation"></a> Service Activation </h1>
+<p />
+Assuming you finished updating the config files needed you can start up the services.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Starting_Hadoop"></a> Starting Hadoop </span></h2>
+<p />
+On your <strong>Namenode</strong>, <strong>Secondary Namenode</strong>, and <strong>Datanodes</strong> run:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ service hadoop start
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Starting_GridFTP"></a> Starting GridFTP </span></h2>
+<p />
+GridFTP is no longer controlled by xinetd but is now controlled by a startup daemon.  To start it, on your <strong>GridFTP Node</strong> run:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ service globus-gridftp-server start
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Starting_BeStMan2"></a> Starting BeStMan2 </span></h2>
+<p />
+On your <strong>SRM Node</strong> run:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ service bestman2 start
+</pre>
+<p />
+<h1><a name="Comments"></a> Comments </h1>
+<form method="post" action="https://twiki.opensciencegrid.org/bin/save/Documentation/Release3/UpgradeHadoop" enctype="multipart/form-data" name="tableappend0" id="tableappend0">
+<p />
+<div class="commentPlugin commentPluginPromptBox">
+<table><tr valign="middle"><td><textarea  rows="3" cols="70" name="comment" wrap="soft" onfocus="if(this.value=='')this.value=''" onblur="if(this.value=='')this.value=''"></textarea></td><td><input  type="submit" value="Add comment" /></td></tr></table>
+</div><!--/commentPlugin-->
+<p />
+<input type="hidden" name="comment_action" value="save"  />
+<input type="hidden" name="comment_type" value="tableappend"  />
+<input type="hidden" name="comment_index" value="0"  /></form>
+<p />
+<!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ <code><b>===============</b></code>
+<p />
+ Thank you for claiming ownership for this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Documentation/Release3/FirstLast?topicparent=Documentation/Release3.UpgradeHadoop" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local OWNER = <span class="twikiNewLink">DouglasStrain<a href="/bin/edit/Documentation/Release3/DouglasStrain?topicparent=Documentation/Release3.UpgradeHadoop" rel="nofollow" title="DouglasStrain (this topic does not yet exist; you can create it)">?</a></span>
+</li></ul> 
+<p />
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (<span class="twikiNewLink">ComputeElement<a href="/bin/edit/Documentation/Release3/ComputeElement?topicparent=Documentation/Release3.UpgradeHadoop" rel="nofollow" title="ComputeElement (this topic does not yet exist; you can create it)">?</a></span>|General|Trash/Trash/Integration|Monitoring|Operations|Security|Storage|Trash/Tier3|User|VO) <ul>
+<li> Local DOC_AREA       = Storage
+</li></ul> 
+<p />
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (Developer|Documenter|Scientist|Student|SysAdmin|VOManager) <ul>
+<li> Local DOC_ROLE       = <span class="twikiNewLink">SysAdmin<a href="/bin/edit/Documentation/Release3/SysAdmin?topicparent=Documentation/Release3.UpgradeHadoop" rel="nofollow" title="SysAdmin (this topic does not yet exist; you can create it)">?</a></span>
+</li></ul> 
+<p />
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (<span class="twikiNewLink">HowTo<a href="/bin/edit/Documentation/Release3/HowTo?topicparent=Documentation/Release3.UpgradeHadoop" rel="nofollow" title="HowTo (this topic does not yet exist; you can create it)">?</a></span>|Installation|Knowledge|Navigation|Planning|Training|Troubleshooting) <ul>
+<li> Local DOC_TYPE       = Installation  Please define if this document in general needs to be reviewed before release ( 1 | 0 )
+</li> <li> Local INCLUDE_REVIEW = 1
+</li></ul> 
+<p />
+ Please define if this document in general needs to be tested before release ( 1 | 0 ) <ul>
+<li> Local INCLUDE_TEST   = 1
+</li></ul> 
+<p />
+ change to 1 once the document is ready to be reviewed and back to 0 if that is not the case <ul>
+<li> Local REVIEW_READY   = 1
+</li></ul> 
+<p />
+ change to 1 once the document is ready to be tested and back to 0 if that is not the case <ul>
+<li> Local TEST_READY     = 1
+</li></ul> 
+<p />
+ change to 1 only if the document has passed the review and the test (if applicable) and is ready for release <ul>
+<li> Local RELEASE_READY  = 1
+</li></ul> 
+<p />
+<p />
+ DEAR DOCUMENT REVIEWER
+ <code><b>==================</b></code>
+<p />
+ Thank for reviewing this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Documentation/Release3/FirstLast?topicparent=Documentation/Release3.UpgradeHadoop" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local REVIEWER       = <span class="twikiNewLink">NehaSharma<a href="/bin/edit/Documentation/Release3/NehaSharma?topicparent=Documentation/Release3.UpgradeHadoop" rel="nofollow" title="NehaSharma (this topic does not yet exist; you can create it)">?</a></span> Please define the review status for this document to be in progress ( 2 ), failed ( 0 ) or passed ( 1 )
+</li> <li> Local REVIEW_PASSED  = 1
+</li></ul> 
+<p />
+<p />
+ DEAR DOCUMENT TESTER
+ <code><b>================</b></code>
+<p />
+ Thank for testing this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Documentation/Release3/FirstLast?topicparent=Documentation/Release3.UpgradeHadoop" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local TESTER         = <span class="twikiNewLink">NehaSharma<a href="/bin/edit/Documentation/Release3/NehaSharma?topicparent=Documentation/Release3.UpgradeHadoop" rel="nofollow" title="NehaSharma (this topic does not yet exist; you can create it)">?</a></span> Please define the test status for this document to be in progress ( 2 ), failed ( 0 ) or passed ( 1 )
+</li> <li> Local TEST_PASSED    = 1
+</li></ul> 
+############################################################################################################
+-->
+-- <a href="/bin/view/Main/JamesWeichel" class="twikiLink">JamesWeichel</a> - 03 Feb 2010</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation/Release3<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>UpgradeHadoop</span> <br />    
+Topic revision: r12 - 06 Dec 2016 - 18:12:45 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

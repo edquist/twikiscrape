@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> HadoopRecovery &lt; Storage &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Storage/HadoopRecovery?_T=16 Feb 2017" type="application/x-wiki" title="edit HadoopRecovery" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Storage/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Storage/HadoopRecovery"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#0000FF;
+	}
+	.patternBookView {
+		border-color:#0000FF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Hadoop_Recovery"></a>  <strong><noop>Hadoop Recovery</strong> </h1>
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Detecting_filesystem_corruption"> Detecting filesystem corruption</a>
+</li> <li> <a href="?cover=print#Causes_of_corruption"> Causes of corruption</a>
+</li> <li> <a href="?cover=print#Locating_and_repairing_corruptio"> Locating and repairing corruptions</a>
+</li> <li> <a href="?cover=print#Recovering_a_working_drive"> Recovering a working drive</a>
+</li> <li> <a href="?cover=print#Unrecoverable_files"> Unrecoverable files</a>
+</li> <li> <a href="?cover=print#Namenode_Recovery"> Namenode Recovery</a>
+</li></ul> 
+</div>
+<p />
+Note: This page has been moved to <a href="/bin/view/Documentation/Release3/HadoopRecovery" class="twikiLink">HadoopRecovery</a>.  Refer to that for more recent updates.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Detecting_filesystem_corruption"></a> Detecting filesystem corruption </span></h2>
+<p />
+Hadoop's fsck utility will show Status: CORRUPT in its output whenever a file is corrupt. The following command will display the status for your entire filesystem namespace.
+<p />
+<code># hadoop fsck /</code>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Causes_of_corruption"></a> Causes of corruption </span></h2>
+<p />
+When one or more blocks of a file become corrupt or missing and there are no more 'good' replicas of that block the filesystem is considered CORRUPT. It is often possible to recover from this depending on the cause. Take for example the following scenarios:
+<p />
+* Two or more datanodes crash on your normally 2x replicated filesystem. Files with blocks replicated on those two nodes will become corrupt as there are no replicas available for some of blocks and you cannot retrieve the file in full.
+<p />
+* A datanode crashes, and during replication a hard drive in another datanode starts showing errors and is unable to provide certain blocks. Those blocks now have no 'good' replicas and the filesystem is CORRUPT.
+<p />
+* ... etc. Site admins know there are many other 'unlikely' scenarios that will inevitably occur resulting in blocks being lost.
+<p />
+<em>The key thing to remember</em> is that if you can recover the blocks which make up a file, you can recover the file. Blocks and their associated metadata are simply files on some underlying filesystem (ext3, xfs, reiser, etc...) and you can treat them as such. You can go to great extents to recover the blocks if you need, such as using undelete tools or copying blocks from a bad datanode to another working datanode. So long as you can get the problematic blocks to a working datanode, which in turn can report them to the namenode, you can recover the file.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Locating_and_repairing_corruptio"></a> Locating and repairing corruptions </span></h2>
+When you encounter corruptions, use Hadoop's fsck utility to obtain a list of affected files <strong>[should we suggest a parser like my hfscker.py here?]</strong>
+<p />
+Using the <code>-files</code>, <code>-locations</code>, and <code>-blocks</code> parameters you can use fsck to find out which blocks are missing and where they are supposed to be. Sometimes you will find a block simply marked as <code>MISSING</code> with no locations given, and other times you will find a single replica with location listed where there should in fact be more.
+<p />
+<pre># hadoop fsck /user/gattebury/test.iso -files -locations -blocks
+/user/gattebury/test.iso 4613701632 bytes, 35 block(s):  OK
+0. blk&#95;-6574099661639162407&#95;21831 len&#61;134217728 repl&#61;3 &#91;172.16.1.115:50010, 172.16.1.128:50010, 129.93.239.178:50010]
+1. blk&#95;-8603098634897134795&#95;21831 len&#61;134217728 repl&#61;3 MISSING!
+2. ...</pre>
+<p />
+In the first case, all possible sources of the second block are gone and the namenode has no knowledge of any host with it. This can happen when nodes are completely off or have no network connection to the namenode. In this case, the easiest solution is to <code>grep</code> for the block ID "8603098634897134795" in the namenode logs in hopes of seeing the last place that block lived. Providing you keep namenode logs around and the logging level is set high enough <strong>[what is high enough anyway?]</strong> you will hopefully find a datanode containing the block. If you are able to bring the datanode back up and the blocks are readable from the hard drive(s) the namenode will replicate it back to the appropriate amount and the file corruption will be gone.
+<p />
+<p />
+<pre># hadoop fsck /user/gattebury/test.iso -files -locations -blocks
+/user/gattebury/test.iso 4613701632 bytes, 35 block(s):  OK
+0. blk&#95;-6574099661639162407&#95;21831 len&#61;134217728 repl&#61;3 &#91;172.16.1.115:50010, 172.16.1.128:50010, 129.93.239.178:50010]
+1. blk&#95;-8603098634897134795&#95;21831 len&#61;134217728 repl&#61;3 &#91;172.16.1.83:50010]
+2. ...</pre>
+<p />
+In the second case you may see a single replica listed for the block where you know there should be more. Under normal operation, this block would eventually (within a few minutes) be replicated back to the replication level of 3. In very rare cases the replication may never happen. This has occurred at Nebraska a few times when a datanode is 'alive' but unable to send the block due to hard drive errors (especially in the cases where the ext3 journal drops and the host enters a rather unpredictable state). This also happens with stuck / under replicated blocks (see Fixing Stuck and Under Replicated Files in <a href="/bin/view/Storage/HadoopOperations" class="twikiLink">HadoopOperations</a>). You should first try to recover the host with the single block listed. If that is possible, the namenode will replicate as needed and the corruption will be gone. If you are unable to recover that host, you can again try greping through the namenode logs (or datanode logs in desparation) to find another replica of that block and recover that host instead. If you find another host with a good copy of the block and bring it up, make sure to disable/decommission the 'stuck' one until you can fix that host as well.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Recovering_a_working_drive"></a> Recovering a working drive </span></h2>
+<p />
+One special case scenerio is when a datanode that contains multiple data disks becomes unbootable, but one or more of the disks are still good.  In this situation, it is possible to remount the working drives on another datanode in order to recover the blocks.  If you have space on the second datanode, you can simply attach the disk to the second datanode then copy the contents of the /data1/hadoop/data/current directory (omitting the VERSION file) from the working disk into the equivalent directory on the second datanode.
+<p />
+If you don't have enough space on the second datanode, then you can temporarily attach the disk to the second datanode and decommission the second datanode to ensure the blocks are all copied elsewhere in the cluster.  The step by step procedure for doing this is:
+<p /> <ol>
+<li> Shut down the datanode process with <code>service hadoop stop</code>
+</li> <li> Attach the disk to the working datanode using a spare SATA port or convenient SATA -&gt; USB converter device
+</li> <li> Mount the disk in a temporary location, such as <code>/mnt/tmp</code>
+</li> <li> Copy the <code>VERSION</code> file from another datanode partition, such as <code>/data1/hadoop/data/current/VERSION</code> and overwrite the one on the temporarily mounted datanode partition at <code>/mnt/tmp/hadoop/data/current/VERSION</code>.  This is necessary because each datanode service tags the directory as its own by creating this VERSION file.  By overwriting the VERSION file we can trick the datanode into thinking that this directory belongs to it.
+</li> <li> Update <code>/etc/sysconfig/hadoop</code> and add the temporary directory to the list of datanode partitions in HADOOP_DATA
+</li> <li> Run <code>service hadoop-firstboot start</code> to regenerate the hadoop configuration files in <code>/etc/hadoop</code>
+</li> <li> Start the datanode process again with <code>service hadoop start</code>
+</li> <li> Decommission the datanode according to the procedure in <a href="https://twiki.grid.iu.edu/bin/view/Storage/HadoopOperations#Decommissioning_Data_Nodes" target="_top">https://twiki.grid.iu.edu/bin/view/Storage/HadoopOperations#Decommissioning_Data_Nodes</a>
+</li> <li> After the decommission process has finished, stop the hadoop service with <code>service hadoop stop</code>
+</li> <li> Remove the temporary directory from <code>/etc/sysconfig/hadoop</code> and re-run <code>service hadoop-firstboot stop</code>
+</li> <li> De-decommission the datanode by removing its entry from <code>hosts_exclude</code> and running <code>hadoop dfsadmin -refreshNodes</code>
+</li> <li> Detach the disk from the datanode and restart the datanode service with <code>service hadoop start</code>
+</li></ol> 
+<p />
+An important point here is that the <code>VERSION</code> file contains a unique id for the datanode that created this directory.  You want to make sure that the <code>VERSION</code> file on a working datanode does not get removed, and the <code>VERSION</code> file on a working disk is updated before adding it to a new physical datanode host.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Unrecoverable_files"></a> Unrecoverable files </span></h2>
+If you are unable to recover at least one datanode containing the missing/corrupt blocks the file is lost as there is no way to retrieve the full file anymore. You can use the <code>-move</code> parameter to fsck to move the remaining parts of a file to /lost+found/. <strong>[Not 100% sure, but I believe the missing sections will be zeros leaving the filesize correct]</strong>. 
+<p />
+<code># hadoop fsck -move</code>
+<p />
+<p />
+<em>Reminder: having more replicas of 'critical' files such as user data greatly reduces the chance of you losing all replicas of that file's blocks. Nothing prevents you from having 10 replicas on critical files but only one replica of data that is recoverable by another means to save space.</em>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Namenode_Recovery"></a> Namenode Recovery </span></h2>
+<p />
+The <span class="twikiNewLink">FsImage<a href="/bin/edit/Storage/FsImage?topicparent=Storage.HadoopRecovery" rel="nofollow" title="FsImage (this topic does not yet exist; you can create it)">?</a></span> (<code>fsimage</code>) and <span class="twikiNewLink">EditLog<a href="/bin/edit/Storage/EditLog?topicparent=Storage.HadoopRecovery" rel="nofollow" title="EditLog (this topic does not yet exist; you can create it)">?</a></span> (<code>edits</code>) are the two critical elements of the namenode. Ideally you will have set up your <code>fs.checkpoint.dir</code> to point at both local disk on your namenode as well as another physical disk or network mounted server (NFS for instance). This is where checkpoints will be stored. You should also have set <code>dfs.name.dir</code> which is where the namenode will keep the current running <span class="twikiNewLink">FsIimage<a href="/bin/edit/Storage/FsIimage?topicparent=Storage.HadoopRecovery" rel="nofollow" title="FsIimage (this topic does not yet exist; you can create it)">?</a></span> and <span class="twikiNewLink">EditLog<a href="/bin/edit/Storage/EditLog?topicparent=Storage.HadoopRecovery" rel="nofollow" title="EditLog (this topic does not yet exist; you can create it)">?</a></span>. In addition, you should have a secondarynamenode specified with <code>dfs.secondary.http.address</code> which will receive and store a copy of the these on its local disk. The secondarynamenode will also periodically merge the <span class="twikiNewLink">EditLog<a href="/bin/edit/Storage/EditLog?topicparent=Storage.HadoopRecovery" rel="nofollow" title="EditLog (this topic does not yet exist; you can create it)">?</a></span> and <span class="twikiNewLink">FsImage<a href="/bin/edit/Storage/FsImage?topicparent=Storage.HadoopRecovery" rel="nofollow" title="FsImage (this topic does not yet exist; you can create it)">?</a></span> and return that to the namenode. In the end you should be aware of the following important files:
+<p />
+<pre>
+namenode: (dfs.name.dir &#61; ${hadoop.tmp.dir}/dfs/name by default)
+   ./dfs/name/current/edits   --- the EditLog
+   ./dfs/name/current/fsimage   --- the FsImage
+   ./dfs/name/current/fstime
+   ./dfs/name/current/VERSION
+   ./dfs/name/image/fsimage
+
+secondarynamenode:
+   ./dfs/current/edits   --- the EditLog
+   ./dfs/current/fsimage   --- the FsImage
+   ./dfs/current/fstime
+   ./dfs/current/VERSION
+   ./dfs/image/fsimage
+   ./dfs/previous.checkpoint/   --- the previous copy of ./dfs/current/
+</pre>
+<p />
+You will also have these /current/ data structures on the additional locations you specify in <code>fs.checkpoint.dir</code>
+<p />
+<p />
+In the event of a namenode failure you have a few options:
+<p />
+* If the namenode simply crashed, you may be able to recover and simply restart the namenode service. If the <span class="twikiNewLink">FsImage<a href="/bin/edit/Storage/FsImage?topicparent=Storage.HadoopRecovery" rel="nofollow" title="FsImage (this topic does not yet exist; you can create it)">?</a></span> <code>dfs.name.dir</code> is not corrupt in any way, the namenode will start and after all your datanodes report in your filesystem will be functioning normally.
+<p />
+* If the <span class="twikiNewLink">FsImage<a href="/bin/edit/Storage/FsImage?topicparent=Storage.HadoopRecovery" rel="nofollow" title="FsImage (this topic does not yet exist; you can create it)">?</a></span> is corrupt, or your namenode's physical hardware is unrecoverable, you will need to start a new namenode with the last good <span class="twikiNewLink">FsImage<a href="/bin/edit/Storage/FsImage?topicparent=Storage.HadoopRecovery" rel="nofollow" title="FsImage (this topic does not yet exist; you can create it)">?</a></span> you have. It may be the case that only the copy on your original namenode's local disk is corrupt, but the copy on the network mounted server is fine. The appropriate way to recover from the checkpoint copies is to do the following:
+<p /> <ol>
+<li> Create <code>dfs.name.dir</code> on your new namenode (it must be empty)
+</li> <li> Make sure <code>fs.checkpoint.dir</code> is pointed at your last known good copy
+</li> <li> Start the namenode with the <code>-importCheckpoint</code> option
+</li></ol> 
+<p />
+The namenode will verify that the files in <code>fs.checkpoint.dir</code> are consistent and create a new copy of the <span class="twikiNewLink">FsImage<a href="/bin/edit/Storage/FsImage?topicparent=Storage.HadoopRecovery" rel="nofollow" title="FsImage (this topic does not yet exist; you can create it)">?</a></span> and <span class="twikiNewLink">EditLog<a href="/bin/edit/Storage/EditLog?topicparent=Storage.HadoopRecovery" rel="nofollow" title="EditLog (this topic does not yet exist; you can create it)">?</a></span> in <code>dfs.name.dir.</code> Your namenode should start functioning again and will exit safemode once the appropriate number of blocks have been reported. <strong>[does -importCheckpoint only do the import, or does it continue to run afterwards???]</strong> The namenode will not alter the files in <code>fs.checkpoint.dir</code>. 
+<p />
+For more information on the secondarynamenode functions see: <a href="http://hadoop.apache.org/common/docs/current/hdfs_user_guide.html#Secondary+NameNode" target="_top">http://hadoop.apache.org/common/docs/current/hdfs_user_guide.html#Secondary+NameNode</a></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Storage<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Storage/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/Storage/Hadoop" class="twikiLink">Hadoop</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>HadoopRecovery</span> <br />    
+Topic revision: r7 - 25 Oct 2011 - 21:32:22 - <span class="twikiNewLink">DouglasStrain<a href="/bin/edit/Storage/DouglasStrain?topicparent=Storage.HadoopRecovery" rel="nofollow" title="DouglasStrain (this topic does not yet exist; you can create it)">?</a></span>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> InstallGenericXrootd &lt; Main &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Main/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Main/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Main/InstallGenericXrootd?_T=16 Feb 2017" type="application/x-wiki" title="edit InstallGenericXrootd" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Main/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Main/InstallGenericXrootd"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFEFA6;
+	}
+	.patternBookView {
+		border-color:#FFEFA6;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--TABLEPLUGIN_table1--><style type="text/css" media="all">
+.tableSortIcon img {padding-left:.3em; vertical-align:text-bottom;}
+</style>
+<!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <div class="twikiToc"> <ul>
+ <li>
+ <ul>
+<li> <a href="?cover=print#About_This_Guide"> About This Guide</a>
+</li> <li> <a href="?cover=print#Before_Starting"> Before Starting</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Install_the_Yum_Repositories_req"> Install the Yum Repositories required by OSG</a> <ul>
+<li> <a href="?cover=print#Install_EPEL"> Install EPEL</a>
+</li> <li> <a href="?cover=print#Install_the_Yum_priorities_packa"> Install the Yum priorities package</a>
+</li> <li> <a href="?cover=print#Install_OSG_Repositories"> Install OSG Repositories</a>
+</li> <li> <a href="?cover=print#Install_XrootD_Server"> Install XrootD Server</a>
+</li> <li> <a href="?cover=print#Configuring_the_XRootD_Server"> Configuring the XRootD Server</a>
+</li> <li> <a href="?cover=print#Start_the_XrootD_Service"> Start the XrootD Service</a>
+</li> <li> <a href="?cover=print#Testing_XrootD"> Testing XrootD</a>
+</li> <li> <a href="?cover=print#Debugging_Failures"> Debugging Failures</a>
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="About_This_Guide"></a> About This Guide </span></h2>
+<p />
+<a href="http://xrootd.org/" target="_top">XRootD</a> is a hierarchical storage system that can be used in a variety of ways to access data, typically distributed among actual storage resources. One way to use XRootD is to have it refer to many data resources at a single site, and another way to use it is to refer to many storage systems, most likely distributed among sites. An XRootD system includes a <em>redirector</em>, which accepts requests for data and finds a storage repository&nbsp;&mdash; locally or otherwise&nbsp;&mdash; that can provide the data to the requestor.
+<p />
+Use this page to learn how to install, configure, and use an XRootD storage server for anonymous read-only access to a filesystem.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Before_Starting"></a> Before Starting </span></h2>
+<p />
+Before starting the installation process, consider the following points:
+<p /> <ul>
+<li> <strong>User IDs:</strong> If it does not exist already, the installation will create the Linux user ID <code>xrootd</code> <!-- no fixed UID -->
+</li> <li> <strong>Networking:</strong> The XRootD service uses port 1094 by default
+</li></ul> 
+<p />
+<p />
+<p />
+<p />
+<h1><a name="Install_the_Yum_Repositories_req"></a> Install the Yum Repositories required by OSG </h1>
+<p />
+The OSG RPMs currently support %SUPPORTED_OS%.
+<p />
+OSG RPMs are distributed via the OSG yum repositories. Some packages depend on packages distributed via the <a href="http://fedoraproject.org/wiki/EPEL" target="_top">EPEL</a> repositories. So both repositories must be enabled.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Install_EPEL"></a> Install EPEL </span></h2>
+<p /> <ul>
+<li> Install the EPEL repository, if not already present. <strong>Note:</strong> This enables EPEL by default. Choose the right version to match your OS version. <pre class="rootscreen">
+<font color="#ff0000"># EPEL 5 (For RHEL 5, Documentation/Release3.CentOS 5, and SL 5) </font>
+[root@client ~]$ curl -O https://dl.fedoraproject.org/pub/epel/epel-release-latest-5.noarch.rpm
+[root@client ~]$ rpm -Uvh epel-release-latest-5.noarch.rpm
+<font color="#ff0000"># EPEL 6 (For RHEL 6, Documentation/Release3.CentOS 6, and SL 6) </font>
+[root@client ~]$ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+<font color="#ff0000"># EPEL 7 (For RHEL 7, Documentation/Release3.CentOS 7, and SL 7) </font>
+[root@client ~]$ rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</pre>       <strong>WARNING</strong>: if you have your own mirror or configuration of the EPEL repository, you <strong>MUST</strong> verify that the OSG repository has a better yum priority than EPEL (<a href="/bin/view/Documentation/Release3/InstallBestPractices#YumPriorities" class="twikiAnchorLink">details</a>). Otherwise, you will have strange dependency resolution (<em>depsolving</em>) issues.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Install_the_Yum_priorities_packa"></a> Install the Yum priorities package </span></h2>
+<p />
+For packages that exist in both OSG and EPEL repositories, it is important to prefer the OSG ones or else OSG software installs may fail. Installing the Yum priorities package enables the repository priority system to work.
+<p /> <ol>
+<li> <p>Choose the correct package name based on your operating system’s major version:</p> <ul>
+<li> For EL&nbsp;5 systems, use <code>yum-priorities</code>
+</li> <li> For EL&nbsp;6 and EL&nbsp;7 systems, use <code>yum-plugin-priorities</code>
+</li></ul> 
+</li> <li> <p>Install the Yum priorities package:</p>       <pre class="rootscreen">[root@client ~]$ yum install <em>PACKAGE</em></pre>       <p>Replace <em><code>PACKAGE</code></em> with the package name from the previous step.</p>
+</li> <li> <p>Ensure that <code>/etc/yum.conf</code> has the following line in the <code>[main]</code> section (particularly when using ROCKS), thereby enabling Yum plugins, including the priorities one:</p>       <pre class="file">plugins=1</pre>       <strong>NOTE</strong>: If you do not have a required key you can force the installation using <code>--nogpgcheck</code>; e.g., <code>yum install --nogpgcheck yum-priorities</code>.
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Install_OSG_Repositories"></a> Install OSG Repositories </span></h2>
+<p />
+<!--   1. <p>First, determine which OSG series you will be installing; 3.1 or 3.2.  The OSG 3.1 and 3.2 series are each well tested and contain the entire OSG software stack.  The 3.1 series continues to support all packages that have been released throughout its lifetime, while the 3.2 series contains newer versions of software (including HTCondor, Hadoop, glideinWMS) and removes support for obsolete packages (including CEMonitor).  Initially, most packages are identical between 3.1 and 3.2, but we expect the new series to diverge over time. <br/><br/>Note that some packages (eg, Hadoop) do not inter-operate between 3.1 and 3.2, and therefore require all nodes to use the same series.</p> -->
+<p />
+<ol>
+   <li>
+      <p>If you are upgrading from OSG 3.1 (or 3.2) to OSG 3.2 (or 3.3), remove the old OSG repository definition files and clean the Yum cache:</p>         <pre class="rootscreen">[root@client ~]$ yum clean all
+[root@client ~]$ rpm -e osg-release</pre>       <p>This step ensures that local changes to <code>*.repo</code> files will not block the installation of the new OSG repositories. After this step, <code>*.repo</code> files that have been changed will exist in <code>/etc/yum.repos.d/</code> with the <code>*.rpmsave</code> extension. After installing the new OSG repositories (the next step) you may want to apply any changes made in the <code>*.rpmsave</code> files to the new <code>*.repo</code> files.</p>
+   </li>
+   <li>
+      <p>Install the OSG repositories using one of the following methods depending on your EL version:</p>      <ol>
+         <li>
+            <p>For EL versions greater than EL5, install the files directly from <code>repo.grid.iu.edu</code>:</p>            <pre class="rootscreen">[root@client ~]$ rpm -Uvh <font color="#ff0000">URL</font></pre>            <p>Where <code><font color="#ff0000">URL</font></code> is one of the following:</p><table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Main/InstallGenericXrootd?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Series</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/Main/InstallGenericXrootd?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">EL6 URL (for RHEL 6, CentOS 6, or SL 6)</font></a> </th>
+			<th bgcolor="#d8dde4" align="center" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/Main/InstallGenericXrootd?cover=print;sortcol=2;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">EL7 URL (for RHEL 7, CentOS 7, or SL 7)</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">OSG 3.2</font> </th>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol1"> <code>https://repo.grid.iu.edu/osg/3.2/osg-3.2-el6-release-latest.rpm</code> </td>
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol2 twikiLastCol"> N/A </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <font color="#252b37">OSG 3.3</font> </th>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol1 twikiLast"> <code>https://repo.grid.iu.edu/osg/3.3/osg-3.3-el6-release-latest.rpm</code> </td>
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <code>https://repo.grid.iu.edu/osg/3.3/osg-3.3-el7-release-latest.rpm</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+         </li>
+         <li>
+            <p>For EL5, download the repo file and install it using the following:</p>
+            <pre class="rootscreen">[root@client ~]$ curl -O https://repo.grid.iu.edu/osg/3.2/osg-3.2-el5-release-latest.rpm
+[root@client ~]$ rpm -Uvh osg-3.2-el5-release-latest.rpm</pre>
+         </li>
+      </ol>
+   </li>
+</ol>
+<p />
+For more details, please see our <a href="/bin/view/Documentation/Release3/YumRepositories" class="twikiLink">yum repository documentation</a>.
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Install_XrootD_Server"></a> Install XrootD Server </span></h2>
+<p />
+An installation of the XRootD server consists of the server itself and its dependencies. Install these with Yum:
+<p />
+<pre class="rootscreen">[root@client ~]$ yum install xrootd</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuring_the_XRootD_Server"></a> Configuring the XRootD Server </span></h2>
+<p />
+The default configuration of XrootD from the OSG is designed for a clustered xrootd system.  Since we are installing a <strong>standalone</strong> XrootD server, we have to change the configuration.
+<p />
+In the file <code>/etc/sysconfig/xrootd</code>, uncomment the following line:
+<p />
+<pre class="file">XROOTD_DEFAULT_OPTIONS="-l /var/log/xrootd/xrootd.log -c /etc/xrootd/xrootd-standalone.cfg -k fifo"</pre>
+<p />
+Next, we have to specify what directory to share, and what permissions are available on that directory.  In the file <code>/etc/xrootd/xrootd-standalone.cfg</code>, locate the line:
+<p />
+<pre class="file">all.export <font color="#ff0000">/tmp</font></pre>
+<p />
+Replace the <code><font color="#ff0000">/tmp</font></code> with the directory you wish to give others access.  Further, add the option <code>readonly</code> after the directory to enforce read-only access of the shared directory.
+<p />
+As an example, if we are sharing the directory <code>/store</code>, the option would look like:
+<p />
+<pre class="file">all.export /store readonly</pre>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Start_the_XrootD_Service"></a> Start the XrootD Service </span></h2>
+<p />
+Starting the XrootD service is through the usual <code>service</code> command:
+<p />
+<pre class="rootscreen">service xrootd start</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Testing_XrootD"></a> Testing XrootD </span></h2>
+<p />
+To test our new XrootD server, we must:
+<p /> <ol>
+<li> Install the <code>xrootd-client</code> package.   <pre class="rootscreen">yum install xrootd-client</pre>
+</li> <li> Create a test file in the directory we configured to share above.   <pre class="rootscreen">dd if=/dev/urandom of=/store/random.big bs=1M count=20</pre>
+</li> <li> Run the <code>xrdcp</code> command to test copy that file.   <pre class="rootscreen">xrdcp root://localhost:1094//store/random.big ./</pre>
+</li> <li> Confirm that both files are the same   <pre class="rootscreen">md5sum /store/random.big ./random.big</pre>
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Debugging_Failures"></a> Debugging Failures </span></h2>
+<p />
+If any failures occur during testing or otherwise, it can always be useful to look at the XrootD logs located in <code>/var/log/xrootd</code>.  Further, the <code>xrdcp</code> command can increase the debugging and verbosity with the <code>-d3</code> option.
+<p />
+<pre class="rootscreen">xrdcp <font color="#ff0000">-d3</font> root://localhost:1094//store/random.big ./</pre>  </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Main<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Main/TWikiUsers" class="twikiLink">TWikiUsers</a> &gt; <a href="/bin/view/Main/DerekWeitzel" class="twikiLink">DerekWeitzel</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>InstallGenericXrootd</span> <br />    
+Topic revision: r1 - 17 Aug 2016 - 21:51:21 - <a href="/bin/view/Main/DerekWeitzel" class="twikiLink">DerekWeitzel</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> RemoveOSGComponents &lt; Documentation/Release3 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/Release3/RemoveOSGComponents?_T=16 Feb 2017" type="application/x-wiki" title="edit RemoveOSGComponents" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/Release3/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/RemoveOSGComponents"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFFFF;
+	}
+	.patternBookView {
+		border-color:#FFFFFF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Removing_OSG_Software"></a> Removing OSG Software </h1>
+<p />
+While <code>yum</code> is excellent at installing software, it's not very good at removing unused software.  As most OSG functional units are spread across many RPMs, it is difficult to remove each RPM individually.
+<p />
+OSG provides a plugin, <code>yum-remove-osg</code>, to assist sysadmins in removing our software.  It has two design goals:
+<p /> <ul>
+<li> Remove as many unnecessary RPM packages as possible when one of the top-level packages are removed.
+</li> <li> Provide strong guarantees that removing OSG software will not damage the rest of the system.
+</li></ul> 
+<p />
+The <code>yum-remove-osg</code> plugin is a fork of the standard <code>remove-leaves</code> plugins, except it will only remove packages if they are only available from a repository considered as part of OSG.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Pitfalls_Gotchas"></a> Pitfalls / Gotchas </span></h2>
+<p />
+Please read this section before first using this plugin!
+<p /> <ul>
+<li> The plugin will only remove packages if the corresponding <code>.repo</code> file in <code>/etc/yum.repos.d</code> contains <code>consider_as_osg=yes</code>. <ul>
+<li> All OSG repos have this by default.
+</li> <li> Packages from EPEL will <strong>not</strong> be removed by default.  OSG uses quite a few packages from EPEL.  If you want to remove EPEL packages that got brought in by OSG, add <code>consider_as_osg=yes</code> to the [epel] section in <code>/etc/yum.repos.d/epel.repo</code>.
+</li></ul> 
+</li> <li> The plugin will only remove packages if they are from an "OSG" repo, <strong>and that repo is enabled</strong>.  If the OSG repo isn't enabled by default, you'll want to add <code>--enablerepo=osg</code> to your <code>yum remove</code> command line.
+</li> <li> If you remove a package <code>foo</code>, yum will first try to remove all packages that depend on <code>foo</code>, then remove all unused packages. <ul>
+<li> Suppose you have package <code>bar</code> depending on <code>foo</code> and <code>foo</code> depends on <code>baz</code> (and nothing else on the system needs <code>baz</code>).  Then, <code>yum remove --osg foo</code> will first remove <code>bar</code>, then <code>foo</code>, then <code>baz</code>.
+</li></ul> 
+</li> <li> <code>osg-ce</code> depends on <code>osg-client</code>, which depends on <code>osg-wn-client</code>.  Hence, if you remove <code>osg-client</code> or <code>osg-wn-client</code> on a CE, <strong>then this will remove the CE</strong> also.
+</li> <li> Even with this plugin, <code>yum remove</code> is not the perfect reversal of a <code>yum install</code> command.  If you need a perfect reversal, restore from backup.  This plugin will be acceptable for many, but not all, sites. <ul>
+<li> For example, if an RPM package installed a Unix user named <code>glexec</code>, the user will remain on the system after the package removal. 
+</li></ul> 
+</li></ul> 
+<p />
+Before any action happens, <code>yum</code> will print out the list of packages it will remove.  <strong>Please review this</strong> list before you confirm!
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Installing_and_Using"></a> Installing and Using </span></h2>
+<p />
+To install the plugin, do the following with the appropriate <code>osg</code> repo enabled:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ yum install yum-remove-osg
+</pre>
+<p />
+Then, to remove a package (such as <code>osg-ce</code>):
+<p />
+<pre class="rootscreen">
+[root@client ~]$ yum remove --osg osg-ce
+</pre>
+<p />
+The two prompts above assume that the <code>osg</code> repo is enabled (<code>osg-testing</code> if you are an ITB site).</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation/Release3<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Documentation/Release3/InstallBestPractices" class="twikiLink">InstallBestPractices</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>RemoveOSGComponents</span> <br />    
+Topic revision: r3 - 17 Nov 2011 - 19:01:41 - <span class="twikiNewLink">AlainRoy<a href="/bin/edit/Documentation/Release3/AlainRoy?topicparent=Documentation/Release3.RemoveOSGComponents" rel="nofollow" title="AlainRoy (this topic does not yet exist; you can create it)">?</a></span>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> Hadoop20Gratia &lt; Storage &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Storage/Hadoop20Gratia?_T=16 Feb 2017" type="application/x-wiki" title="edit Hadoop20Gratia" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Storage/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Storage/Hadoop20Gratia"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#0000FF;
+	}
+	.patternBookView {
+		border-color:#0000FF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Hadoop_20_Gratia"></a>  <strong><noop>Hadoop 20 Gratia</strong> </h1>
+<p />
+<font color="#ff0000">
+WARNING! This page is for an older version of Hadoop.
+For newer versions, please visit <a href="/bin/view/Documentation/Release3/InstallHadoopSE" class="twikiLink">Hadoop Release 3 Installation</a>
+</font>
+<p />
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Prerequisites"> Prerequisites</a>
+</li> <li> <a href="?cover=print#YUM_Installation"> YUM Installation</a>
+</li> <li> <a href="?cover=print#Configuration"> Configuration</a> <ul>
+<li> <a href="?cover=print#Selecting_a_collector_host"> Selecting a collector host</a>
+</li> <li> <a href="?cover=print#Generating_osg_user_vo_map_txt"> Generating osg-user-vo-map.txt</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Validation"> Validation</a>
+</li></ul> 
+</div>
+<p />
+The grid-enabled Hadoop DFS utilizes normal Globus GridFTP servers with a specialized plugin in order to do transfers.  Because it uses this server software, we are able to take advantage of the OSG's accounting system.  The system, Gratia, has a plugin which monitors the Globus GridFTP logs and reports any transfer data to a central collector.  The version of Gratia probe covered in this guide is compatible with Hadoop 0.20.2. 
+<p />
+The instructions on this page must be followed for every GridFTP server on Hadoop.
+<p />
+<h1><a name="Prerequisites"></a> Prerequisites </h1>
+<p />
+This page assumes:
+<p /> <ol>
+<li> You have a working Hadoop install as documented in <a href="/bin/view/Storage/Hadoop20Installation" class="twikiLink">this guide</a>.
+</li> <li> You have a working GridFTP install on top of Hadoop, <a href="/bin/view/Storage/Hadoop20GridFTP" class="twikiLink">as documented here</a>.
+</li></ol> 
+<p />
+<p />
+<p />
+The Gratia probe requires the file <code>osg-user-vo-map.txt</code> to exist and be up to date. We provide an rpm package that takes care of creating and updating this file as needed.  To get it run:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ yum install osg-user-vo-map-cron
+</pre>
+<p />
+It will pull in the <code>gums-client</code> rpm as a dependency.  Details on setting up <code>osg-user-vo-map-cron</code> are below.
+<p />
+<p />
+<p />
+<h1><a name="YUM_Installation"></a> YUM Installation </h1>
+<p />
+To configure your local installation for the yum repository, <a href="/bin/view/Storage/Hadoop20Installation#Installing_with_yum" class="twikiAnchorLink">follow the advice here</a> to install the <code>osg-hadoop-20</code> package for your site.
+<p />
+After installing the osg-hadoop-20 yum configuration package, you can install the Gratia probe with:
+<p />
+<p />
+<p />
+<pre class="rootscreen">
+[root@client ~]$ yum install gratia-probe-gridftp-transfer
+</pre>
+<p />
+Updates can be installed with:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ yum upgrade gratia-probe-gridftp-transfer
+</pre>
+<p />
+<p />
+<p />
+<h1><a name="Configuration"></a> Configuration </h1>
+<p />
+<p />
+<p />
+This RPM <strong>does not</strong> use Linux-standard file locations.  Here are the most relevant file and directory locations:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Purpose </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Needs Editing? </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Location </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Probe Configuration </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> /opt/vdt/gratia/probe/gridftp-transfer/ProbeConfig </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Probe Executables </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> /opt/vdt/gratia/probe/gridftp-transfer </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Log files </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> /opt/vdt/gratia/var/logs </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Temporary files </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> /opt/vdt/gratia/var/tmp </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Gums configuration </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> /etc/gums/gums-client.properties </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+The RPM installs the Gratia probe into the system crontab, but does not configure it.  The configuration of the probe is controlled by the file
+<p />
+<pre>
+/opt/vdt/gratia/probe/gridftp-transfer/ProbeConfig
+</pre>
+<p />
+This is usually one XML node spread over multiple lines.  Note that comments (#) have no effect on this file.  You will need to edit the following:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Attribute </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Needs Editing </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Value </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> ProbeName </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Maybe </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> This should be set to "gridftp-transfer:&lt;hostname&gt;", where &lt;hostname&gt; is the fully-qualified domain name of your gridftp host. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> CollectorHost </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Maybe </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Set to the hostname and port of the central collector.  By default it sends to the OSG collector.  See below. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> SiteName </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Set to the resource group name of your site as registered in OIM. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> GridftpLogDir </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Set to /var/log, or wherever your current gridftp logs are located </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Grid </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Maybe </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Set to "ITB" if this is a test resource; otherwise, leave as OSG. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> UserVOMapFile </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Set to the location of your osg-user-vo-map.txt; see below for information about this file. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> SuppressUnknownVORecords </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Maybe </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Set to 1 to suppress any records that can't be matched to a VO; 0 is strongly recommended. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> SuppressNoDNRecords </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Maybe </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Set to 1 to suppress records that can't be matched to a DN; 0 is strongly recommended. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> EnableProbe </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Set to 1 to enable the probe. </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Selecting_a_collector_host"></a> Selecting a collector host </span></h2>
+<p />
+The collector is the central server which logs the GridFTP transfers into a database.  There are usually three options:
+<p /> <ol>
+<li> <strong>OSG Transfer Collector</strong>: This is the primary collector for transfers in the OSG.  Use CollectorHost="gratia-osg-transfer.opensciencegrid.org:80".
+</li> <li> <strong>OSG-ITB Transfer Collector</strong>: This is the test collector for transfers in the OSG.  Use CollectorHost="gratia-osg-transfer.opensciencegrid.org:8881".
+</li> <li> <strong>Site local collector</strong>: If your site has set up its own collector, then your admin will be able to give you an endpoint to use.  Typically, this is along the lines of CollectorHost="collector.example.com:8880".
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Generating_osg_user_vo_map_txt"></a> Generating osg-user-vo-map.txt </span></h2>
+<p />
+The <code>osg-user-vo-map.txt</code> is a simple, space-separated format that contains 2 columns; the first is a unix username and the second is the VO which that username correspond to.  In order to create it you must install the <code>osg-user-vo-map-cron</code> rpm as mentioned above.  Once <code>osg-user-vo-map-cron</code> is installed you need to configure the gums client.
+<p />
+The primary configuration file for the gums-client utilities is located in <code>/etc/gums/gums-client.properties</code>.  The two properties that you must change are:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table3" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Attribute </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Needs Editing </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Value </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> gums.location </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> This should be set to the admin URL for your gums server, usually of the form gums.location=https://GUMS_HOSTNAME:8443/gums/services/GUMSAdmin </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> gums.authz </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> Yes </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> This should be set to the authorization interface URL for your gums server, usually of the form gums.authz=https://GUMS_HOSTNAME:8443/gums/services/GUMSXACMLAuthorizationServicePort </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+After <code>osg-user-vo-map-cron</code> is installed and the gums client is configured <code>osg-user-vo-map.txt</code> should be created in the following location:
+<p />
+<pre>/etc/grid-security/osg-user-vo-map.txt</pre>
+<p />
+Make sure the <strong>UserVOMapFile</strong> field is set to this location in
+<p />
+<pre>/opt/vdt/gratia/probe/gridftp-transfer/ProbeConfig</pre>
+<p />
+Without <code>osg-user-vo-map.txt</code> , all gridftp transfers will show up as belonging to the VO "Unknown".
+<p />
+<p />
+<p />
+<h1><a name="Validation"></a> Validation </h1>
+<p />
+<p />
+<p />
+Run the Gratia probe once by hand to check for functionality:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ /opt/vdt/gratia/probe/gridftp-transfer/gridftp-transfer_meter.cron.sh
+</pre>
+<p />
+Look for any abnormal termination and report it if it is a non-trivial site issue.  Look in the log files in <code>/opt/vdt/gratia/var/logs/&lt;date&gt;.log</code> and make sure there are no error messages printed.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Storage<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Storage/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/Storage/Hadoop" class="twikiLink">Hadoop</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>Hadoop20Gratia</span> <br />    
+Topic revision: r7 - 09 Nov 2011 - 19:05:53 - <span class="twikiNewLink">DouglasStrain<a href="/bin/edit/Storage/DouglasStrain?topicparent=Storage.Hadoop20Gratia" rel="nofollow" title="DouglasStrain (this topic does not yet exist; you can create it)">?</a></span>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

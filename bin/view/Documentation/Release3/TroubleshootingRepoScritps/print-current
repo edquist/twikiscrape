@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> TroubleshootingRepoScritps &lt; Documentation/Release3 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/Release3/TroubleshootingRepoScritps?_T=16 Feb 2017" type="application/x-wiki" title="edit TroubleshootingRepoScritps" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/Release3/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/TroubleshootingRepoScritps"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFFFF;
+	}
+	.patternBookView {
+		border-color:#FFFFFF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Troubleshooting_Guide_for_Yum_Re"></a> Troubleshooting Guide for Yum Repository Scripts </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Troubleshooting_Guide_for_Yum_Re"> Troubleshooting Guide for Yum Repository Scripts</a> <ul>
+<li> <a href="?cover=print#About_This_Guide"> About This Guide</a>
+</li> <li> <a href="?cover=print#Monitoring"> Monitoring </a>
+</li> <li> <a href="?cover=print#Troubleshooting_and_Mitigation"> Troubleshooting and Mitigation</a> <ul>
+<li> <a href="?cover=print#Identifying_and_fixing_a_hung_ma"> Identifying and fixing a hung mash process</a>
+</li></ul> 
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="About_This_Guide"></a> About This Guide </span></h2>
+<p />
+The <code>repo1.grid.iu.edu</code> and <code>repo2.grid.iu.edu</code> hosts contain the OSG Yum software repositories plus related services and tools. In particular, the <code>mash</code> software is used to download RPMs from where they are built (at the University of Wisconsin–Madison), and there are some associated scripts to configure and invoke <code>mash</code> periodically. Use this guide to monitor the <code>mash</code> system for problems and to perform basic troubleshooting when such problems arise.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Monitoring"></a> Monitoring </span></h2>
+<p />
+To monitor the repository hosts for proper <code>mash</code> operation, do the following steps on each host:
+<p /> <ol>
+<li> Access <a href="http://repo1.grid.iu.edu/web/log/" target="_top">http://repo1.grid.iu.edu/web/log/</a> or <a href="http://repo2.grid.iu.edu/web/log/" target="_top">http://repo2.grid.iu.edu/web/log/</a> to view logs from <code>mash</code> updates
+</li> <li> Examine the “Last modified” timestamp of all of the <code>update_repo.*.log</code> files       <p><strong>Note:</strong> The timestamps are displayed in UTC, so convert to local time accordingly</p>
+</li> <li> If the timestamps are all less than 2 hours old, life is good and you can skip the remaining steps below
+</li> <li> Otherwise, examine the “Last modified” timestamp of the <code>update_all_repos.err</code> file
+</li> <li> If the <code>update_all_repos.err</code> timestamp is current, there may be a <code>mash</code> process that is hung; see the Troubleshooting steps below
+</li> <li> If <strong>all</strong> timestamps are more than 6 hours old, something may be wrong with cron or its mash entries: <ol>
+<li> If possible, verify that cron is running and that the cron entries for mash are still present; if not, try to restore things
+</li> <li> Otherwise, create a GOC ticket with a subject like “Repo update logs are too old on repo<strong>N</strong>” and with relevant details in the body
+</li> <li> Assign the ticket to “Software Support (Triage)”
+</li> <li> Email Carl Edquist &lt;edquist@cs.wisc.edu&gt; and CC Tim Cartwright &lt;cat@cs.wisc.edu&gt; with the ticket URL
+</li></ol> 
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Troubleshooting_and_Mitigation"></a> Troubleshooting and Mitigation </span></h2>
+<p />
+<style type="text/css">
+  em.pgid { color: red; font-weight: bold; }
+  em.start { color: blue; font-weight: bold; }
+</style>
+<p />
+<h3><a name="Identifying_and_fixing_a_hung_ma"></a> Identifying and fixing a hung mash process </h3>
+<p />
+If a mash update process hangs, all future invocations from cron of the mash scripts will exit without taking action because of the hung process. Thus, it is important to identify and remove any hung processes so that future updates can proceed. Use the procedure below to remove any hung mash processes; doing so is safe in that it will not adversely affect the Yum repositories being served from the host.
+<p /> <ol>
+<li> On the web listing of log files (see above), click on the <code>update_all_repos.err</code> link
+</li> <li> In the error log file, look for messages such as:       <pre class="file">Wed Jan 20 18:10:02 UTC 2016: <strong>Can't acquire lock, is update_all_repos.sh already running?</strong></pre>       <p>This message indicates that the most recent update attempt quit early due to the presence of a lock file, most likely from a hung <code>mash</code> process.</p>
+</li> <li> Log on to the host as <code>root</code> or with your regular user account
+</li> <li> Look for <code>mash</code> processes:       <pre class="rootscreen"># <strong>ps -C mash -o pid,ppid,pgid,start,command</strong>
+  PID  PPID  <em class="pgid">PGID</em>  <em class="start">STARTED</em> COMMAND
+24551 24549 <em class="pgid">23455</em>   <em class="start">Jan 15</em> /usr/bin/python /usr/bin/mash osg-3.1-el5-release -o
+24552 24551 <em class="pgid">23455</em>   <em class="start">Jan 15</em> /usr/bin/python /usr/bin/mash osg-3.1-el5-release -o
+</pre>
+</li> <li> If there are <code>mash</code> processes that started on a previous date or more than 2 hours ago, it is best to remove their corresponding process groups (PGID, highlighted above):       <pre class="rootscreen"># <strong>kill -TERM -<em class="pgid">23455</em></strong></pre>       <p>Then verify that the old processes are gone using the same <code>ps</code> command as above:       <pre class="rootscreen"># <strong>ps -C mash -o pid,ppid,pgid,start,command</strong>
+  PID  PPID  PGID  STARTED COMMAND
+#</pre>
+</li> <li> If any part of this process does not look or work as expected: <ol>
+<li> Create a GOC ticket with a subject like “Problems with mash on repo<strong>N</strong>” and with relevant details in the body
+</li> <li> Assign the ticket to “Software Support (Triage)”
+</li> <li> Email Carl Edquist &lt;edquist@cs.wisc.edu&gt; and CC Tim Cartwright &lt;cat@cs.wisc.edu&gt; with the ticket URL
+</li></ol> 
+</li></ol> </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation/Release3<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>TroubleshootingRepoScritps</span> <br />    
+Topic revision: r5 - 21 Jan 2016 - 21:36:38 - <a href="/bin/view/Main/TimCartwright" class="twikiLink">TimCartwright</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

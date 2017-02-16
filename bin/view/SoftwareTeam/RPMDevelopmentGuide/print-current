@@ -1,0 +1,840 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> RPMDevelopmentGuide &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/RPMDevelopmentGuide?_T=16 Feb 2017" type="application/x-wiki" title="edit RPMDevelopmentGuide" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/RPMDevelopmentGuide"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--TABLEPLUGIN_table1--><style type="text/css" media="all">
+.tableSortIcon img {padding-left:.3em; vertical-align:text-bottom;}
+</style>
+<!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="RPM_Development_Guide"></a> RPM Development Guide </h1>
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#RPM_Development_Guide"> RPM Development Guide</a> <ul>
+<li> <a href="?cover=print#Principles"> Principles</a>
+</li> <li> <a href="?cover=print#Contributing_Packages"> Contributing Packages</a>
+</li> <li> <a href="?cover=print#Development_Infrastructure"> Development Infrastructure</a> <ul>
+<li> <a href="?cover=print#Upstream_Source_Cache"> Upstream Source Cache</a> <ul>
+<li> <a href="?cover=print#Locating_Files_in_the_Cache"> Locating Files in the Cache</a>
+</li> <li> <a href="?cover=print#Contributing_Upstream_Files"> Contributing Upstream Files</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Revision_Control_System"> Revision Control System</a> <ul>
+<li> <a href="?cover=print#Subversion_Access"> Subversion Access</a>
+</li> <li> <a href="?cover=print#OSG_Owned_Software"> OSG-Owned Software</a>
+</li> <li> <a href="?cover=print#Packaging_Top_Level_Directory_Or"> Packaging Top-Level Directory Organization</a>
+</li> <li> <a href="?cover=print#Package_Directory_Organization"> Package Directory Organization</a> <ul>
+<li> <a href="?cover=print#README"> README</a>
+</li> <li> <a href="?cover=print#upstream"> upstream</a>
+</li> <li> <a href="?cover=print#osg"> osg</a>
+</li> <li> <a href="?cover=print#upstream_srpm_contents"> _upstream_srpm_contents</a>
+</li> <li> <a href="?cover=print#upstream_tarball_contents"> _upstream_tarball_contents</a>
+</li> <li> <a href="?cover=print#final_srpm_contents"> _final_srpm_contents</a>
+</li> <li> <a href="?cover=print#build_results"> _build_results</a>
+</li> <li> <a href="?cover=print#Use_Case_1_Packaging_Our_Own_Cod"> Use Case 1: Packaging Our Own Code</a>
+</li> <li> <a href="?cover=print#Use_Case_2_Packaging_an_Upstream"> Use Case 2: Packaging an Upstream Source Tarball</a>
+</li> <li> <a href="?cover=print#Use_Case_3_Passing_Through_a_Sou"> Use Case 3: Passing Through a Source RPM</a>
+</li> <li> <a href="?cover=print#Use_Case_4_Modifying_a_Source_RP"> Use Case 4: Modifying a Source RPM</a>
+</li></ul> 
+</li></ul> 
+</li> <li> <a href="?cover=print#Build_Process"> Build Process</a> <ul>
+<li> <a href="?cover=print#Officially_Supported_Packages"> Officially Supported Packages</a>
+</li> <li> <a href="?cover=print#Unsupported_Contributed_Packages"> Unsupported Contributed Packages</a>
+</li> <li> <a href="?cover=print#Build_Tools"> Build Tools</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#OSG_Software_Repository"> OSG Software Repository</a> <ul>
+<li> <a href="?cover=print#Release_Levels"> Release Levels</a>
+</li> <li> <a href="?cover=print#Package_Signing"> Package Signing</a>
+</li></ul> 
+</li></ul> 
+</li> <li> <a href="?cover=print#Packaging_Conventions"> Packaging Conventions</a>
+</li> <li> <a href="?cover=print#Packaging_for_Multiple_Distro_Ve"> Packaging for Multiple Distro Versions</a> <ul>
+<li> <a href="?cover=print#Conditionalizing_spec_files"> Conditionalizing spec files</a>
+</li> <li> <a href="?cover=print#Other_notes"> Other notes</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#External_RPM_Repositories"> External RPM Repositories</a> <ul>
+<li> <a href="?cover=print#EPEL_Globus"> EPEL &amp; Globus</a>
+</li> <li> <a href="?cover=print#EMI"> EMI</a>
+</li></ul> 
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+This page documents technical guidelines and details about RPM development for the OSG Software Stack. The procedures, conventions, and policies defined within are used by the OSG Software Team, and are recommended to all external developers who wish to contribute to the OSG Software Stack.
+<p />
+<font color="#ff0000">Status:</font> Mid-December 2011: needs review
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Principles"></a> Principles </span></h2>
+<p />
+The principles below guide the design and implementation of the technical details that follow.
+<p /> <ul>
+<li> Packages should adhere to community standards (e.g., <a href="http://fedoraproject.org/wiki/PackagingGuidelines" target="_top">Fedora Packaging Guidelines</a>) when possible, and significant deviations must be documented
+</li> <li> Every released package must be reproducible from data stored in our system
+</li> <li> Source code for software should be clearly separable from the packaging of that software
+</li> <li> Upstream source files (which should not be modified) should be clearly separated from files owned by the OSG Software Team
+</li> <li> Building source and binary packages from our system should be easy and efficient
+</li> <li> External developers should have a clear and effective system for developing and contributing packages
+</li> <li> We should use standard tools from relevant packaging and development communities when appropriate
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Contributing_Packages"></a> Contributing Packages </span></h2>
+<p />
+We encourage all interested parties to contribute to OSG Software, and all the infrastructure described on this page should be friendly to external contributors.
+<p />
+<strong>However</strong>, not all of the infrastructure is in place yet: you must gather a few authorizations. We will be working to decrease the extra steps necessary.
+<p /> <ul>
+<li> To participate in the packaging community: You must subscribe to the <a href="mailto&#58;osg&#45;software&#64;opensciencegrid&#46;org">osg-software&#64;opensciencegrid.org</a> email list. Subscribing to an OSG email list is <a href="http://listserv.fnal.gov/users.asp#subscribe%20to%20list" target="_top">described here</a>.
+</li> <li> To create and edit packages: <a href="http://vdt.cs.wisc.edu/internal/svn.html" target="_top">Obtain access to VDT SVN</a>.
+</li> <li> To upload new source tarballs: You must have a cs.wisc.edu account with write access to the VDT source tarball directory. Email the osg-software list and request permission.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Development_Infrastructure"></a> Development Infrastructure </span></h2>
+<p />
+This section documents most of what a developer needs to know about our RPM infrastructure:
+<p /> <ul>
+<li> Upstream Source Cache — a filesystem scheme for caching upstream source files
+</li> <li> Revision Control System — where to get and store development files, and how they are organized
+</li> <li> Build System — how to build packages from the revision control system
+</li> <li> Development Tools — other tools to aid development
+</li> <li> Yum Repository — the location and organization of our Yum repository, and how to promote packages through it
+</li></ul> 
+<p />
+<h3><a name="Upstream_Source_Cache"></a> Upstream Source Cache </h3>
+<p />
+One of our principles (every released package must be reproducible from data stored in our system) creates a potential issue: If we keep all historical source data, especially upstream files like source tarballs and source RPMs, in our revision control system, we may face large checkouts and consequently long checkout and update times.
+<p />
+Our solution is to cache all upstream source files in a separate filesystem area, retaining historical files indefinitely. To avoid tainting upstream files, our policy is to leave them unmodified after download.
+<p />
+Now that we build RPMs in koji, it is considered the authoritative location for source files we have released packages from.
+<p />
+<h4><a name="Locating_Files_in_the_Cache"></a> Locating Files in the Cache </h4>
+<p />
+Upstream source files are stored in the filesystem as follows:
+<p />
+<blockquote><code><em><font color="#008000">prefix</font></em>/<em><font color="#008000">package</font></em>/<em><font color="#008000">version</font></em>/<em><font color="#008000">file</font></em></code></blockquote>
+<p />
+where:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">Symbol</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <font color="#252b37">Definition</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <font color="#252b37">Example</font> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code><em><font color="#008000">prefix</font></em></code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Filesystem prefix, the base location of the upstream source cache </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> At Madison: <code>/p/vdt/public/html/upstream</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code><em><font color="#008000">package</font></em></code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Upstream name of the source package, or some widely accepted form thereof </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> <code>ndt</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code><em><font color="#008000">version</font></em></code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Upstream version string used to identify the release </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>3.6.4</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code><em><font color="#008000">file</font></em></code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> Upstream filename itself (unless filename conflicts force a change, which should be exceedingly rare) </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <code>ndt-3.6.4.tar.gz</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+The authoritative cache is the VDT webserver, which is fully backed up. Other developers can create a local cache for efficient development.
+<p />
+Upstream source files are referenced from within the revision control system; see below for details.
+<p />
+<h4><a name="Contributing_Upstream_Files"></a> Contributing Upstream Files </h4>
+<p />
+If you are using a local cache during development, you must make sure that any new upstream source files are cached on the VDT webserver before declaring the package to be ready for testing. You have two options:
+<p /> <ul>
+<li> If you have access to a UW–Madison CSL machine, you can scp the source files directly into the AFS locations using that machine
+</li> <li> If you do not have such access, write to the osg-software list to find someone who will post the files for you
+</li></ul> 
+<p />
+<h3><a name="Revision_Control_System"></a> Revision Control System </h3>
+<p />
+All packages that the OSG Software Team releases are checked into our revision control system (currently Subversion but with the option to change at a later date).
+<p />
+<h4><a name="Subversion_Access"></a> Subversion Access </h4>
+<p />
+Our Subversion repository is located at:
+<p />
+<blockquote><pre>https://vdt.cs.wisc.edu/svn</pre></blockquote>
+<p />
+<a href="http://vdt.cs.wisc.edu/internal/svn.html" target="_top">Procedure for offsite users obtaining access to Subversion</a>
+<p />
+Or, from a UW–Madison Computer Sciences machine:
+<p />
+<blockquote><pre>file:///p/condor/workspaces/vdt/svn</pre></blockquote>
+<p />
+The current SVN directory housing our work-in-progress native package work is <code>$repo/native</code> (where <code>$repo</code> is one of the ways of accessing our SVN repository above). For example, to check out the current Subversion repository via https, do:
+<p />
+<pre class="screen">svn co https://vdt.cs.wisc.edu/svn/native</pre>
+<p />
+<h4><a name="OSG_Owned_Software"></a> OSG-Owned Software </h4>
+<p />
+OSG-owned software goes into Subversion as follows:
+<p />
+<blockquote><code>software/<em><font color="#008000">package</font></em>/<em><font color="#008000">section</font></em></code></blockquote>
+<p />
+where:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">Symbol</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <font color="#252b37">Definition</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <font color="#252b37">Example</font> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code><em><font color="#008000">package</font></em></code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Our name for the software package </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>vdt-system-profiler</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code><em><font color="#008000">section</font></em></code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> Development section </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Standard Subversion sections like <code>trunk</code>, <code>branches/*</code>, and <code>tags/*</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+Within a section directory, files are organized as the developer sees fit.
+<p />
+It is strongly recommended that each software package include a top-level Makefile with at least the following targets:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table3" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">Symbol</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1 twikiLastCol"> <font color="#252b37">Purpose</font> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>install</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> Install the software into final FHS locations rooted at <code>DESTDIR</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>dist</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> Create a distribution source tarball (in the current section directory) for a release </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>upstream</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> Install the distribution source tarball into the upstream source cache (default to VDT AFS, but override the upstream root with <code>UPSTREAM</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h4><a name="Packaging_Top_Level_Directory_Or"></a> Packaging Top-Level Directory Organization </h4>
+<p />
+The top levels of our Subversion directory hierarchy for packaging are as follows:
+<p />
+<blockquote><code>native/<em><font color="#008000">os</font></em>/<em><font color="#008000">section</font></em>/<em><font color="#008000">package</font></em></code></blockquote>
+<p />
+where:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table4" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">Symbol</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <font color="#252b37">Definition</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <font color="#252b37">Example</font> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code><em><font color="#008000">os</font></em></code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Major operating system release </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>redhat</code> (only supported value, currently) </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code><em><font color="#008000">section</font></em></code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Development section </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Standard Subversion sections like <code>trunk</code>, <code>branches/*</code>, and <code>tags/*</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code><em><font color="#008000">package</font></em></code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> Our standardized name for a source package </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <code>ndt</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h4><a name="Package_Directory_Organization"></a> Package Directory Organization </h4>
+<p />
+Within a source package directory, the following files (detailed in separate sections below) may exist:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table5" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>README</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> text file </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> package notes, by and for developers </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>upstream/</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> directory </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> references to the upstream source cache and other kinds of upstream files </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>osg/</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> directory </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> overrides and patches of upstream files, plus new files, which contribute to the final OSG source package </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>_upstream_srpm_contents/</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> generated directory (not under revision control) </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> expanded contents of a cached upstream source package </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>_upstream_tarball_contents/</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> generated directory (not under revision control) </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> expanded contents of all cached upstream source tarballs </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>_final_srpm_contents/</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> generated directory (not under revision control) </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> the final contents of the OSG source package </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>_build_results/</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> generated directory (not under revision control) </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> OSG source and binary packages resulting from a build </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h5><a name="README"></a> README </h5>
+<p />
+This is a free-form text file for developers to leave notes about the package. Please document anything interesting about how you procured the upstream source, the reasons for the modifications you made, or anything else people might need to know in order to maintain the package in the future. Please document the <em>why</em>, not just the <em>what</em>.
+<p />
+<h5><a name="upstream"></a> upstream </h5>
+<p />
+Within the per-package directories of the revision control system, there must be a way to refer to cached files. This is done with small text files that (a) are named consistently, and (b) contain the location of the referenced file as its contents.
+<p />
+A reference file is named:
+<p />
+<blockquote><code><em><font color="#008000">description</font></em>.<em><font color="#008000">type</font></em>.source</code></blockquote>
+<p />
+where:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table6" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">Symbol</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <font color="#252b37">Definition</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <font color="#252b37">Example</font> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code><em><font color="#008000">description</font></em></code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Descriptive label of the source of the referenced file </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>developer</code>, <code>epel</code>, <code>emi</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code><em><font color="#008000">type</font></em></code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> Type of referenced file </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Use: <code>tarball</code>, <code>srpm</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+The contents of the file match the upstream source cache path defined above, without the prefix component:
+<p />
+<blockquote><code><em><font color="#008000">package</font></em>/<em><font color="#008000">version</font></em>/<em><font color="#008000">file</font></em></code></blockquote>
+<p />
+This way, the command-line tools that use the <code>.source</code> files can be given different prefixes for different build situations.
+<p />
+For example, the reference file for NDT’s source tarball is named <code>developer.tarball.source</code> and might contain:
+<p />
+<blockquote><code>ndt/3.6.4/ndt-3.6.4.tar.gz</code></blockquote>
+<p />
+The <code>.source</code> files may contain comments, which start with <code>#</code> and continue until the end of the line.
+<p />
+<h5><a name="osg"></a> osg </h5>
+<p />
+The <code>osg</code> directory contains files that are owned by the OSG Software Team and that are used to create the final, released source package. It may contain a variety of development files:
+<p /> <ul>
+<li> An RPM <code>.spec</code> file, which overrides any spec file from a referenced source
+</li> <li> Patch (<code>.patch</code>) or replacement files, which override any same-named file from the top-level directory of a referenced source
+</li> <li> Other files, which must be explicitly placed into the package by the spec file
+</li></ul> 
+<p />
+<h5><a name="upstream_srpm_contents"></a> _upstream_srpm_contents </h5>
+<p />
+The <code>_upstream_srpm_contents</code> directory contains the files that are part of the upstream source package. It is generated by the package build tool and is a volatile record of the upstream source for developer use. This directory is excluded from Subversion commits.
+<p />
+<h5><a name="upstream_tarball_contents"></a> _upstream_tarball_contents </h5>
+<p />
+The <code>_upstream_tarball_contents</code> directory contains the files that are part of the upstream source tarballs. It is generated by the package build tool if and only if the <code>--full-extract</code> option is passed. It is not used for anything by the build tool, but meant as a convenience to allow the developer to look inside the upstream sources (for making patches, etc.). This directory is excluded from Subversion commits.
+<p />
+<h5><a name="final_srpm_contents"></a> _final_srpm_contents </h5>
+<p />
+The <code>_final_srpm_contents</code> directory contains the final files that are part of the released source package. It is generated by the package build tool and is a volatile record of a build for developer use. This directory is excluded from Subversion commits.
+<p />
+<h5><a name="build_results"></a> _build_results </h5>
+<p />
+The <code>_build_results</code> directory contains the source and binary RPMs that are produced by a local build. The directory is generated by the package build tool and is a volatile record of a build for developer use. It is excluded from Subversion commits.
+<p />
+<h5><a name="Use_Case_1_Packaging_Our_Own_Cod"></a> Use Case 1: Packaging Our Own Code </h5>
+<p />
+When the OSG Software Team contributes all of the files for a package, they are located in the <code>software</code> project area. The <code>Makefile</code> therein creates an upstream source tarball in the standard location. All that remains is to define a <code>.source</code> reference to the upstream source tarball, and a <code>.spec</code> file. For example, the OSG Software Team provides a debugging utility called <code>vdt-system-profiler</code> to collect system information that can be sent to the OSG Software Team to aid in debugging. Its <code>software</code> directory contains:
+<p />
+<blockquote>
+<pre>
+vdt-system-profiler/
+    Makefile
+    vdt-system-profiler
+</pre>
+</blockquote>
+<p />
+Its packaging directory contains:
+<p />
+<blockquote>
+<pre>
+vdt-system-profiler/
+    osg/
+        vdt-system-profiler.spec
+    upstream/
+        vdt.tarball.source
+</pre>
+</blockquote>
+<p />
+<h5><a name="Use_Case_2_Packaging_an_Upstream"></a> Use Case 2: Packaging an Upstream Source Tarball </h5>
+<p />
+When the OSG Software Team packages an upstream source tarball, for which there is no existing package, the source tarball is referenced with a .source file and we provide a spec file and, if necessary, patches. For example, RSV is provided as a source tarball only. Its package directory contains:
+<p />
+<blockquote>
+<pre>
+osg-rsv/
+    osg/
+        osg-rsv.spec
+    upstream/
+        developer.tarball.source
+</pre>
+</blockquote>
+<p />
+<h5><a name="Use_Case_3_Passing_Through_a_Sou"></a> Use Case 3: Passing Through a Source RPM </h5>
+<p />
+When the OSG Software Team simply provides a copy of an existing source RPM, it is referenced with a .source file and that is it. For example, we do not modify the xrootd source RPM from EMI. Its package directory contains:
+<p />
+<blockquote>
+<pre>
+xrootd/
+    upstream/
+        developer.srpm.source
+</pre>
+</blockquote>
+<p />
+<h5><a name="Use_Case_4_Modifying_a_Source_RP"></a> Use Case 4: Modifying a Source RPM </h5>
+<p />
+When the OSG Software Team modifies an existing source RPM, it is referenced with a .source file and then all changes to the upstream source are contained in the <code>osg</code> directory. For example, <strong>if we were to ship a modified Apache HTTPD webserver package,</strong> we would use this mechanism. Its package directory contains:
+<p />
+<blockquote><pre>
+apache/
+    osg/
+        httpd.spec
+        vdt-apachectl.patch
+    upstream/
+        epel.srpm.source
+</pre></blockquote>
+<p />
+<h3><a name="Build_Process"></a> Build Process </h3>
+<p />
+We use the standard RPM build tools such as <code>rpmbuild</code>, <code>mock</code>, and <code>koji</code> with our own wrapper scripts around them.
+<p />
+<h4><a name="Officially_Supported_Packages"></a> Officially Supported Packages </h4>
+<p /> <ol>
+<li> All necessary information to create the package will be committed to the VDT source code repository (see below)
+</li> <li> A tool is provided that will take those files, create a source RPM, and submit it to a build system; currently we support three underlying build systems: <ul>
+<li> rpmbuild
+</li> <li> mock
+</li> <li> koji
+</li></ul> 
+</li></ol> 
+<p />
+Official builds will be done with Koji, but contributors can use options 1 or 2 to develop a package before contributing it to the OSG Software Stack.
+<p />
+<h4><a name="Unsupported_Contributed_Packages"></a> Unsupported Contributed Packages </h4>
+<p />
+Unsupported contributed packages have two build options. They will be provided via a separate yum repository for unsupported contributions.
+<p /> <ol>
+<li> Build exactly like the supported packages (above). 
+</li> <li> The RPM can be built by the contributor in their own environment and shared with the OSG Software Team for manual staging into the yum repository. 
+</li></ol> 
+<p />
+Should we support Koji in the future, we'll allow Koji submissions for trusted contributors. 
+<p />
+<h4><a name="Build_Tools"></a> Build Tools </h4>
+<p />
+The main build tools can be checked out from SVN, under <code>software/osg-build/trunk</code>, or installed from the <code>osg-build</code> RPM in the <code>osg-development</code> repository.
+See <a href="/bin/view/SoftwareTeam/OSGBuildTools" class="twikiLink">instructions on how to use the OSG build tools</a>
+<p />
+<h3><a name="OSG_Software_Repository"></a> OSG Software Repository </h3>
+<p />
+The GOC maintains the Yum repositories that contain our source and binary RPMs.
+The repositories are mirrored at other institutions as well.
+The repositories are hosted on <code>http://repo.grid.iu.edu</code> and is organized in the following fashion:
+<p />
+<blockquote><code>http://repo.grid.iu.edu/<em><font color="#008000">osg-level</font></em>/<em><font color="#008000">architecture</font></em>/*.rpm</code></blockquote>
+<p />
+where:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table7" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">Symbol</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <font color="#252b37">Definition</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <font color="#252b37">Example</font> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code><em><font color="#008000">osg-level</font></em></code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Release level of the package (see below) </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>osg-development</code>, <code>osg-testing</code>, <code>osg-production</code>, <code>osg-contrib</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code><em><font color="#008000">architecture</font></em></code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> Architecture of the built packages </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <code>i386</code>, <code>x86_64</code>, <code>source</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+In addition, once we start having multiple major-minor versions of the VDT, and supporting multiple OS releases, we will need to reorganize the repositories to include the following information:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table8" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">Symbol</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <font color="#252b37">Definition</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <font color="#252b37">Example</font> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code><em><font color="#008000">version</font></em></code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Major-minor version of the VDT </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>3.0</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code><em><font color="#008000">os</font></em></code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> Major operating system release for which packages were built </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <code>el5</code>, <code>el6</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<p />
+<h4><a name="Release_Levels"></a> Release Levels </h4>
+<p />
+Every package is classified into a release level based on the amount of testing it has undergone and our confidence in its stability. When a package is first built, it goes into the lowest level (<code>osg-development</code>). Only members of the OSG Software Team may promote packages upward through the release levels.
+<p />
+See the <a href="/bin/view/SoftwareTeam/ReleasePolicy" class="twikiLink">Release Policy page</a> for more info.
+<p />
+<h4><a name="Package_Signing"></a> Package Signing </h4>
+<p />
+Packages are signed automatically by Koji after a non-scratch build.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Packaging_Conventions"></a> Packaging Conventions </span></h2>
+<p />
+In addition to adhering to the <a href="http://fedoraproject.org/wiki/PackagingGuidelines" target="_top">Fedora Packaging Guidelines</a> (FPG), we have a few rules and guidelines of our own:
+<p /> <ul>
+<li> When we pass-through an RPM and make any changes to it (so it has an updated package number), we construct the version-release as follows: <ul>
+<li> The version of the original RPM remains unchanged.
+</li> <li> The release is composed of three parts: ORIGINALRELEASE.OSGRELEASE
+</li> <li> We add the 'osg.el5' (or 'osg.el6') distro tag. (Use <code>%{?dist}</code> in the Release field)
+</li></ul> 
+</li></ul> 
+Example: We copy package foobar-3.0.5-1 from somewhere. We need to patch it, so the full name-version-release (NVR) becomes <code>foobar-3.0.5-1<font color="#ff0000">.1.osg.el5</font></code> That is, we added ".1.osg.el5" to the release number. If we update our packaging (but still base on foobar-3.0.5-1), we change to ".2.osg.el5". In the spec file, this would look like: <pre class="file">
+Release: 1.2%{?dist}
+</pre> <ul>
+<li> <font color="#ff0000"> We may require packages that do not meet all FPG guidelines to install a file (perhaps in <code>/usr/share/doc/<font color="#008000">package</font>/</code>) that documents major deviations from the guidelines that may be significant to end users.</font>
+</li> <li> <font color="#ff0000"> We should probably provide a more user-level README file in /usr/share/doc/package as well, if a package doesn't come with some form of documentation.</font>
+</li> <li> Java-based software must be packaged according to our <a href="/bin/view/SoftwareTeam/JavaPackageNotes" class="twikiLink">Java packaging policy</a>.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Packaging_for_Multiple_Distro_Ve"></a> Packaging for Multiple Distro Versions </span></h2>
+<p />
+<h3><a name="Conditionalizing_spec_files"></a> Conditionalizing spec files </h3>
+<p />
+We are starting support for RHEL 6-based distributions in addition to RHEL 5-based ones.
+In order to minimize effort needed to keep the builds synchronized, instead of creating separate spec files for EL 5 and EL 6, we will be writing spec files such that they build on both distro versions.
+Some packages may need different build behavior between versions; RPM conditional statements will be used to handle this.
+The following macros are defined:
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table9" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/RPMDevelopmentGuide?cover=print;sortcol=0;table=9;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Name</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/SoftwareTeam/RPMDevelopmentGuide?cover=print;sortcol=1;table=9;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Value (EL5)</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/RPMDevelopmentGuide?cover=print;sortcol=2;table=9;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Value (EL6)</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>%rhel</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> <code>5</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>6</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>%el5</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> <code>1</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> <em>undefined</em> or <code>0</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>%el6</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> <em>undefined</em> or <code>0</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>1</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>%dist</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> <code>.osg.el5</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <code>.osg.el6</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+Here's how to use them:
+<p />
+<pre>%if 0%{?el5}
+# this code will be executed on EL 5 only
+%endif</pre>
+<pre>%if 0%{?el6}
+# this code will be executed on EL 6 only
+%endif</pre>
+<pre>%if 0%{?rhel} >= 6
+# this code will be executed on EL 6 and newer
+%endif</pre>
+(There does not seem to be an <code>%elseif</code>).
+<p />
+The syntax <code>%{?el6}</code> expands to the value of the <code>%el6</code> macro if it is defined, and to the empty string if not; the <code>0</code> is there to keep the condition from being empty in the <code>%if</code> statement if the macro is not defined.
+<p />
+<h3><a name="Other_notes"></a> Other notes </h3>
+<p /> <ul>
+<li> Pass <code>--el5</code> or <code>--el6</code> to <code>osg-build</code> to target those distros. <code>--el5</code> is the default, regardless of the distro of the machine you are running <code>osg-build</code> on.
+</li> <li> For your final builds, use <code>osg-build allbuild <em>PACKAGE</em></code> to build the package for all distros. This prevents packages from getting out of sync between distros due to forgetfulness.
+</li> <li> Never<super>*</super> tag a package built for el5 with a tag beginning with el6, or vice versa.
+</li> <li> Always make sure <code>%{?dist}</code> is at the end of the <code>Release</code> field for each package you make; in the past you could get away with having it be missing but now Koji will complain about duplicate NVRs when you try to build the package for multiple distros.
+</li> <li> We will provide a tool to verify that the packages tagged for each distro are in sync.
+</li></ul> 
+<p />
+<super>*</super> <small>unless you really know what you are doing</small>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="External_RPM_Repositories"></a> External RPM Repositories </span></h2>
+<p />
+<h3><a name="EPEL_Globus"></a> EPEL &amp; Globus </h3>
+<p />
+We tell our users that they have to use/enable the EPEL repository.
+We also tell our uses that they use the <code>yum-priorities</code> plugin to make sure that our packages override packages from EPEL, in case we modify any packages.
+<p />
+We currently ship Globus ourselves, though our packages are based on the SRPMs that the Globus team provides (that were originally built for EPEL).
+This is because at the time of this writing, EPEL was shipping a version of Globus 5.0 that we considered unusable, so we started shipping 5.2 prereleases instead.
+<p />
+<p />
+<h3><a name="EMI"></a> EMI </h3>
+<p />
+EMI 1.0 is very new. We expect to use many of their packages, but we will prefer to copy the packages to our repository instead of relying directly on the EMI repository. This will allow us to control the versions of the critical grid software our stakeholders need.
+<p />
+If you report bugs to EMI, you can use <a href="https://ggus.eu/pages/home.php" target="_top">GGUS</a>. Please note a few things:
+<p /> <ol>
+<li> Please copy Alain on the ticket so he can be aware of what's happening with all of our bug reports to EMI.
+</li> <li> If you think the ticket affects other people in the group, please send a note about it to <a href="mailto&#58;osg&#45;software&#64;opensciencegrid&#46;org&#46;">osg-software&#64;opensciencegrid.org.</a> 
+</li> <li> You should put "EMI" in the <em>short description</em> and something like "Please assign to EMI Release Management" in the <em>description</em>.
+</li></ol> 
+<p />
+<p />
+<!-- vim:ft=twiki tw=0
+--></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>RPMDevelopmentGuide</span> <br />    
+Topic revision: r45 - 27 Jan 2012 - 20:34:03 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

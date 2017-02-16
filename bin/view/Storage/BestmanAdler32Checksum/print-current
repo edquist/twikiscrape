@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> BestmanAdler32Checksum &lt; Storage &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Storage/BestmanAdler32Checksum?_T=16 Feb 2017" type="application/x-wiki" title="edit BestmanAdler32Checksum" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Storage/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Storage/BestmanAdler32Checksum"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#0000FF;
+	}
+	.patternBookView {
+		border-color:#0000FF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Bestman_Adler_32_Checksum"></a>  <strong><noop>Bestman Adler 32 Checksum</strong> </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Introduction"> Introduction</a>
+</li> <li> <a href="?cover=print#Checklist"> Checklist</a>
+</li> <li> <a href="?cover=print#How_to_setup_checksum_calculatio"> How to setup checksum calculation </a>
+</li></ul> 
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Introduction"></a> Introduction </span></h2>
+This page documents a hopefully quite generic way for Bestman-Gateway 
+to calculate adler32 checksums and store them as extended file attributes
+in a Lustre file system (and others, like GPFS, ext4, ...).
+<p />
+This is quite ATLAS specific, since ATLAS is using adler32 instead of md5 checksums.
+But the principle should be applicable to any Bestman installation in order to speed up
+checksum call outs.
+<p />
+For Bestman2 installations, simply replace <strong>bestman</strong> with <strong>bestman2</strong> in all places below.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Checklist"></a> Checklist </span></h2>
+This document assumes a working Bestman-Gateway installation on top of 
+a posix compliant file system which supports extended file attributes
+and commands like
+<p />
+<pre class="screen">
+<code>$> getfattr --only-values --absolute-names -n user.adler32 <font color="#ff0000">file</font> </code>
+<code>$> setfattr -n user.adler32 -v <font color="#ff0000">value</font>  <font color="#ff0000">file</font> </code>
+</pre>
+<p />
+Our Bestman service runs as the <code><b>daemon</b></code> user, and the checksum scripts are in 
+<code><b>/home/osg/bestman_apps/adler32/</b></code>. If your service runs as a different user or your scripts
+are in a different directory, you will need to do a global replacement of these key words
+in all the scripts and commands below.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="How_to_setup_checksum_calculatio"></a> How to setup checksum calculation </span></h2>
+The idea is to have Bestman call a python script <code><b>adler32.py</b></code> which checks
+whether the checksum is already present as an attribute and uses that 
+if it is, otherwise call another python script <code><b>calc_adler32.py</b></code> which 
+calculates it and then store it for the next access.
+<p />
+In order for that to work, you also need to make modifications to
+<code><b>bestman.rc</b></code>, <code><b>/etc/sudoers</b></code>, and <code><b>/etc/fstab</b></code>. See below for the contents
+of all these files, including the python scripts.
+<p />
+<code><b>adler32.py</b></code> and <code><b>calc_adler32.py</b></code> need to be executable, of course.
+<p />
+We also run an hourly cron job which finds files which have been added
+in the last hour, and then runs <code><b>adler32.py</b></code> on them to pre-calculate 
+and save the checksum.
+<p />
+And Paul Nilsson added a new feature in the Panda Pilot to check for the 
+env var SETADLER32 (for pacman, it can be found in the <code>$VDT_LOCATION/vdt/etc/vdt-local-setup.sh</code>, for RPMs, it must be 
+set in <code>profile.d</code> or other environment profile on the 
+compute node) and if it exists, calls it to ensure the checksum is stored 
+immediately upon the storage of each output file, which will take 
+more load off the bestman system as well. See below for the value.
+<p />
+Many thanks to Alex, Junmin, Doug, Saul, Charles, Patrick, Paul, 
+and others for all their help in getting this to work!
+<p />
+<p />
+Here are the changes to the various configuration files,
+as well as the scripts themselves:
+<p />
+Edit <code><b>$VDT_LOCATION/bestman/conf/bestman.rc</b></code>
+<pre class="file">
+##########################################################
+#  Add checksum code
+##########################################################
+defaultChecksumType=adler32
+showChecksumWhenListingFile=true
+hexChecksumCommand=sudo /home/osg/bestman_apps/adler32/adler32.py
+</pre>
+<p />
+Edit <code><b>/etc/sudoers</b></code>, add:
+<pre class="file">
+daemon     ALL=(root) NOPASSWD: /home/osg/bestman_apps/adler32/adler32.py
+</pre>
+<p />
+Or, if you run your Bestman services as a different user, like <code><b>bestman</b></code>, you need to 
+replace <code><b>daemon</b></code> with <code><b>bestman</b></code> (or whatever user you are using) above.
+<p />
+Modify <code><b>/etc/fstab</b></code>  by adding (<img width="16" alt="warning" align="top" src="/twiki/pub/TWiki/TWikiDocGraphics/warning.gif" height="16" border="0" /> <code><b>user_xattr</b></code> is the important change here)
+<pre class="file">
+10.173.10.15:/data /storage/data lustre _netdev,localflock,user_xattr 0 0
+10.173.10.15:/app /storage/app lustre _netdev,localflock,user_xattr 0 0
+</pre>
+<p />
+Edit <code><b>/home/osg/osgwn/vdt/etc/vdt-local-setup.sh</b></code> script (on compute nodes), add
+<pre class="file">
+export SETADLER32='setfattr -n user.adler32 -v '
+</pre>
+<p />
+<p />
+<h3><a name="Checksum_scripts"></a> Checksum scripts </h3>
+The content of <code><b>adler32.py</b></code> script is shown below:
+<pre class="file">
+#!/usr/bin/env python
+#
+#   bestman callout adler32
+#
+#   This reads or sets the extended attribute user.adler32 for files in Lustre
+#
+#   use:
+#
+#   adler32.py <full path to a file>
+#
+#   returns an error if the path is a directory
+
+adlercom = '/home/osg/bestman_apps/adler32/calc_adler32.py'
+
+import sys
+if len(sys.argv)==1: 
+        sys.stderr.write('No input path provided\n')
+        sys.exit(1)
+#
+#   get the path of the file to get adler32 of
+#
+path = sys.argv[1]
+
+#
+#    first see if adler32 is stored as an attribute
+#
+import commands
+
+com1 = 'getfattr --only-values --absolute-names -n user.adler32 '+path
+status,output = commands.getstatusoutput(com1)
+
+if status==0 and len(output)>0 and not ' ' in output:
+        sys.stdout.write(output+'\n')
+        sys.exit(0)
+else:
+        #-- compute adler32
+        com2 = adlercom+' '+path
+
+        status,adler32 = commands.getstatusoutput(com2)
+
+        if status==0 and len(adler32)>0:
+                #  attempt to save the answer as an attribute
+                com3 = 'setfattr -n user.adler32 -v '+adler32+' '+path
+                status,output = commands.getstatusoutput(com3)
+                if not status==0: sys.stderr.write("error setting adler32 for "+path+'\n')
+                sys.stdout.write(adler32+'\n')
+                sys.exit(0)
+        else:
+                sys.stderr.write("error computing adler32 for "+path+'sys.argv,status,adler32:'+str(sys.argv)+'|'+str(status)+' | '+adler32+'\n')
+                sys.exit(1)
+</pre>
+<p />
+The content of <code><b>calc_adler32.py</b></code> is shown below:
+<pre class="file">
+#!/usr/bin/env python
+BLOCKSIZE=32*1024*1024
+import sys
+from zlib import adler32
+
+for f in sys.argv[1:]:
+        val = 1
+        if f=='-':
+                fp=sys.stdin
+        else:   
+                fp=open(f)
+        while True:
+                data = fp.read(BLOCKSIZE)
+                if not data:
+                        break
+                val = adler32(data, val)
+        if val < 0:
+                val += 2**32
+        print hex(val)[2:10].zfill(8).lower()
+</pre>
+<p />
+<p />
+<p />
+<h3><a name="Comments"></a> <strong>Comments</strong> </h3>
+<form method="post" action="https://twiki.opensciencegrid.org/bin/save/Storage/BestmanAdler32Checksum" enctype="multipart/form-data" name="tableappend0" id="tableappend0">
+<p />
+<div class="commentPlugin commentPluginPromptBox">
+<table><tr valign="middle"><td><textarea  rows="3" cols="70" name="comment" wrap="soft" onfocus="if(this.value=='')this.value=''" onblur="if(this.value=='')this.value=''"></textarea></td><td><input  type="submit" value="Add comment" /></td></tr></table>
+</div><!--/commentPlugin-->
+<p />
+<input type="hidden" name="comment_action" value="save"  />
+<input type="hidden" name="comment_type" value="tableappend"  />
+<input type="hidden" name="comment_index" value="0"  /></form>
+<p />
+<!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ <code><b>===============</b></code>
+<p />
+ Thank you for claiming ownership for this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Storage/FirstLast?topicparent=Storage.BestmanAdler32Checksum" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local OWNER = <span class="twikiNewLink">HorstSeverini<a href="/bin/edit/Storage/HorstSeverini?topicparent=Storage.BestmanAdler32Checksum" rel="nofollow" title="HorstSeverini (this topic does not yet exist; you can create it)">?</a></span>
+</li></ul> 
+<p />
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (<span class="twikiNewLink">ComputeElement<a href="/bin/edit/Storage/ComputeElement?topicparent=Storage.BestmanAdler32Checksum" rel="nofollow" title="ComputeElement (this topic does not yet exist; you can create it)">?</a></span>|General|Trash/Trash/Integration|Monitoring|Operations|Security|Storage|Trash/Tier3|User|VO) <ul>
+<li> Local DOC_AREA       = Storage
+</li></ul> 
+<p />
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (Developer|Documenter|Scientist|Student|SysAdmin|VOManager) <ul>
+<li> Local DOC_ROLE       = <span class="twikiNewLink">SysAdmin<a href="/bin/edit/Storage/SysAdmin?topicparent=Storage.BestmanAdler32Checksum" rel="nofollow" title="SysAdmin (this topic does not yet exist; you can create it)">?</a></span>
+</li></ul> 
+<p />
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (<span class="twikiNewLink">HowTo<a href="/bin/edit/Storage/HowTo?topicparent=Storage.BestmanAdler32Checksum" rel="nofollow" title="HowTo (this topic does not yet exist; you can create it)">?</a></span>|Installation|Knowledge|Navigation|Planning|Training|Troubleshooting) <ul>
+<li> Local DOC_TYPE       = <span class="twikiNewLink">HowTo<a href="/bin/edit/Storage/HowTo?topicparent=Storage.BestmanAdler32Checksum" rel="nofollow" title="HowTo (this topic does not yet exist; you can create it)">?</a></span>  Please define if this document in general needs to be reviewed before release ( 1 | 0 )
+</li> <li> Local INCLUDE_REVIEW = 1
+</li></ul> 
+<p />
+ Please define if this document in general needs to be tested before release ( 1 | 0 ) <ul>
+<li> Local INCLUDE_TEST   = 0
+</li></ul> 
+<p />
+ change to 1 once the document is ready to be reviewed and back to 0 if that is not the case <ul>
+<li> Local REVIEW_READY   = 1
+</li></ul> 
+<p />
+ change to 1 once the document is ready to be tested and back to 0 if that is not the case <ul>
+<li> Local TEST_READY     = 0
+</li></ul> 
+<p />
+ change to 1 only if the document has passed the review and the test (if applicable) and is ready for release <ul>
+<li> Local RELEASE_READY  = 1
+</li></ul> 
+<p />
+<p />
+ DEAR DOCUMENT REVIEWER
+ <code><b>==================</b></code>
+<p />
+ Thank for reviewing this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Storage/FirstLast?topicparent=Storage.BestmanAdler32Checksum" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local REVIEWER       =  <span class="twikiNewLink">TanyaLevshina<a href="/bin/edit/Storage/TanyaLevshina?topicparent=Storage.BestmanAdler32Checksum" rel="nofollow" title="TanyaLevshina (this topic does not yet exist; you can create it)">?</a></span> Please define the review status for this document to be in progress ( 2 ), failed ( 0 ) or passed ( 1 )
+</li> <li> Local REVIEW_PASSED  = 1
+</li></ul> 
+<p />
+<p />
+ DEAR DOCUMENT TESTER
+ <code><b>================</b></code>
+<p />
+ Thank for testing this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Storage/FirstLast?topicparent=Storage.BestmanAdler32Checksum" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local TESTER         = 
+</li></ul> 
+<p />
+ Please define the test status for this document to be in progress ( 2 ), failed ( 0 ) or passed ( 1 ) <ul>
+<li> Local TEST_PASSED    = 1
+</li></ul> 
+############################################################################################################
+-->
+<p />
+-- <a href="/bin/view/Main/HorstSeverini" class="twikiLink">HorstSeverini</a> - 18 Aug 2010</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Storage<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>BestmanAdler32Checksum</span> <br />    
+Topic revision: r16 - 06 Dec 2016 - 18:13:13 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

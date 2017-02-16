@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> GoldenRulesForOSGUsage &lt; Documentation &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/GoldenRulesForOSGUsage?_T=16 Feb 2017" type="application/x-wiki" title="edit GoldenRulesForOSGUsage" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/GoldenRulesForOSGUsage"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFF99;
+	}
+	.patternBookView {
+		border-color:#FFFF99;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Helpful_Hints_for_Running_At_Sca"></a> Helpful Hints for Running At-Scale on the OSG </h1>
+<p />
+<p />
+<p />
+In no particular order, we have found the following hints useful for VOs as they grow from "exploratory scale" (less than 100 concurrently running jobs) to "production scale" (1000 or more running jobs).
+<p /> <ul>
+<li> Never try using streaming of stdout/stderr in Condor-G. Not only does it disable grid_monitor, but it is also disallowed from most sites.If you need to debug running jobs, consider <a href="http://jobmon.sourceforge.net/" target="_top">JobMon</a> instead. It is much more scalable, puts less load on the site infrastructure, and is more feature rich. <ul>
+<li> Always use grid_monitor. 
+</li> <li> The grid_monitor is enabled by default on almost all modern versions of Condor.
+</li></ul> 
+</li> <li> Avoid <code>jobmanager-fork</code> except when installing software.  Even then, we heavily recommend that you <strong>install</strong> software through jobmanager-fork and not <strong>compile</strong> software. <ul>
+<li> Software should be compiled locally, then uploaded remotely.  If this is not an option, compile it as a job on the remote batch system, tarball the results, and then upload through jobmanager fork.
+</li></ul> 
+</li> <li> Minimise the number and size of files you transfer in or out of a site using <code>Condor-G</code>.  Instead, try staging large files in with your job wrapper using HTTP (if a HTTP cache is available and the input data is less than 1GB) or SRM. <ul>
+<li> As a rule of thumb, 10MB per job is a "good size", 100MB is about the limit.  <code>Condor-G</code> won't error out, but you'll basically overload the remote server.
+</li></ul> 
+</li> <li> Avoid using a single GridFTP server; use SRM, which can distribute the load amongst several servers.
+</li> <li> Avoid very short- and long-running jobs.  For opportunistic use, "too short" jobs are those less than 30 minutes; "too long" jobs are those more than 8 hours.  Ideal wall clock time for a job is a few hours. Many CEs are limited to jobs shorter than 24 hours, so if you have jobs which need to run for more than 24 hours, less CEs will be available to you. One solution for longer than 24 hour jobs is to break the job up into multiple jobs. One possible solution for short-running jobs is to group several jobs into one job. <ul>
+<li> This advice is not applicable for short jobs; for glideinWMS, try to make sure each job is longer than 1 minute.
+</li></ul> 
+</li> <li> Just like that are only a subset of CEs accepting long-running jobs, most CEs are configured to not have a huge amount of RAM available per job slot. If your code requires more than 1 GB of RAM, less CEs will be able to accept your jobs. <ul>
+<li> The Engage team usually can provide you with an up-to-date list of sites that accept jobs which are more RAM hungry, and can provide the per-site hacks which need to be done.
+</li></ul> 
+</li> <li> Avoid network mounted disks for IO operations. Always remember: a cluster is a large error amplifier! If you have &gt;100 jobs running in parallel even a modest amount of IO to a network mounted disk can overwhelm the server, and can cause a large mess on the site you are running! <ul>
+<li> <strong>NEVER</strong> run jobs in <code>$OSG_DATA</code>.  Always have the working directory be a subdirectory of <code>$OSG_WN_TMP</code>.
+</li> <li> <strong>NEVER</strong> run <code>find</code> as part of your job wrapper as a means to clean up your Globus temporary files in your home directory.  This becomes a disaster for the site when you have several hundred jobs doing this simultaneously.  This behavior will get you banned at many sites. <ul>
+<li> If you want to clean up your home directory, do this in a special job once a day.  If you are using OSG-MM, this would be done in your daily maintenance job.
+</li></ul> 
+</li></ul> 
+</li> <li> Avoid a steady stream of separate job submissions at around the 1-5 Hz rate. You are better off submitting, say 10 at once, and then take a 20 seconds break, than space them equally by 2 seconds. We found that the gridmonitor is unable to handle a steady stream of submits at 0.5 Hz, while it deals with the other pattern quite well.
+</li> <li> For <code>Condor-G</code> versions below 7.5.0, avoid removing all your jobs at once.  This can severely load your submit host.  Try deleting them 100 at a time.
+</li></ul> 
+<p />
+If you have any additional questions you run into as you scale up your operations on OSG, please feel free to ask other power users for advice by sending email to <code>osg-sites atSign opensciencegrid DOT org</code>.
+<p />
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Comments"></a> <strong>Comments</strong> </span></h2>
+<form method="post" action="https://twiki.opensciencegrid.org/bin/save/Documentation/GoldenRulesForOSGUsage" enctype="multipart/form-data" name="tableappend0" id="tableappend0">
+<p />
+<div class="commentPlugin commentPluginPromptBox">
+<table><tr valign="middle"><td><textarea  rows="3" cols="70" name="comment" wrap="soft" onfocus="if(this.value=='')this.value=''" onblur="if(this.value=='')this.value=''"></textarea></td><td><input  type="submit" value="Add comment" /></td></tr></table>
+</div><!--/commentPlugin-->
+<p />
+<input type="hidden" name="comment_action" value="save"  />
+<input type="hidden" name="comment_type" value="tableappend"  />
+<input type="hidden" name="comment_index" value="0"  /></form>
+<p />
+<!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ <code><b>===============</b></code>
+<p />
+ Thank you for claiming ownership for this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Documentation/FirstLast?topicparent=Documentation.GoldenRulesForOSGUsage" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local OWNER = <span class="twikiNewLink">MatsRynge<a href="/bin/edit/Documentation/MatsRynge?topicparent=Documentation.GoldenRulesForOSGUsage" rel="nofollow" title="MatsRynge (this topic does not yet exist; you can create it)">?</a></span>
+</li></ul> 
+<p />
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (<span class="twikiNewLink">ComputeElement<a href="/bin/edit/Documentation/ComputeElement?topicparent=Documentation.GoldenRulesForOSGUsage" rel="nofollow" title="ComputeElement (this topic does not yet exist; you can create it)">?</a></span>|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3) <ul>
+<li> Local DOC_AREA       = User
+</li></ul> 
+<p />
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (<span class="twikiNewLink">EndUser<a href="/bin/edit/Documentation/EndUser?topicparent=Documentation.GoldenRulesForOSGUsage" rel="nofollow" title="EndUser (this topic does not yet exist; you can create it)">?</a></span>|Student|Developer|SysAdmin|VOManager) <ul>
+<li> Local DOC_ROLE       = Scientist
+</li></ul> 
+<p />
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge) <ul>
+<li> Local DOC_TYPE       = Knowledge
+</li></ul> 
+<p />
+  Please define if this document in general needs to be reviewed before release ( 1 | 0 ) <ul>
+<li> Local INCLUDE_REVIEW = 1
+</li></ul> 
+<p />
+ Please define if this document in general needs to be tested before release ( 1 | 0 ) <ul>
+<li> Local INCLUDE_TEST   = 0
+</li></ul> 
+<p />
+ change to 1 once the document is ready to be reviewed and back to 0 if that is not the case <ul>
+<li> Local REVIEW_READY   = 1
+</li></ul> 
+<p />
+ change to 1 once the document is ready to be tested and back to 0 if that is not the case <ul>
+<li> Local TEST_READY     = 0
+</li></ul> 
+<p />
+ change to 1 only if the document has passed the review and the test (if applicable) and is ready for release <ul>
+<li> Local RELEASE_READY  = 1
+</li></ul> 
+<p />
+<p />
+ DEAR DOCUMENT REVIEWER
+ <code><b>==================</b></code>
+<p />
+ Thank for reviewing this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Documentation/FirstLast?topicparent=Documentation.GoldenRulesForOSGUsage" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local REVIEWER       = <span class="twikiNewLink">BrianBockelman<a href="/bin/edit/Documentation/BrianBockelman?topicparent=Documentation.GoldenRulesForOSGUsage" rel="nofollow" title="BrianBockelman (this topic does not yet exist; you can create it)">?</a></span> Please define the review status for this document to be in progress ( 2 ), failed ( 0 ) or passed ( 1 )
+</li> <li> Local REVIEW_PASSED  = 1
+</li></ul> 
+<p />
+<p />
+ DEAR DOCUMENT TESTER
+ <code><b>================</b></code>
+<p />
+ Thank for testing this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Documentation/FirstLast?topicparent=Documentation.GoldenRulesForOSGUsage" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local TESTER         =  Please define the test status for this document to be in progress ( 2 ), failed ( 0 ) or passed ( 1 )
+</li> <li> Local TEST_PASSED    = 2
+</li></ul> 
+############################################################################################################
+--></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Documentation/UsingTheGrid" class="twikiLink">UsingTheGrid</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>GoldenRulesForOSGUsage</span> <br />    
+Topic revision: r20 - 06 Dec 2016 - 18:12:38 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

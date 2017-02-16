@@ -1,0 +1,431 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> OSGStorageDiscoveryDesign &lt; InformationServices &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/InformationServices/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/InformationServices/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/InformationServices/OSGStorageDiscoveryDesign?_T=16 Feb 2017" type="application/x-wiki" title="edit OSGStorageDiscoveryDesign" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/InformationServices/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/InformationServices/OSGStorageDiscoveryDesign"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--TWISTYPLUGIN_TWISTY--><style type="text/css" media="all">
+@import url("https://twiki.opensciencegrid.org/twiki/pub/TWiki/TwistyContrib/twist.css");
+</style>
+<script type='text/javascript' src='https://twiki.opensciencegrid.org/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js'></script>
+<script type="text/javascript" src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiJavascripts/twikiPref.js"></script>
+<script type="text/javascript" src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TwistyContrib/twist.compressed.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+var styleText = '<style type="text/css" media="all">.twikiMakeVisible{display:inline;}.twikiMakeVisibleInline{display:inline;}.twikiMakeVisibleBlock{display:block;}.twikiMakeHidden{display:none;}</style>';
+document.write(styleText);
+// ]]>
+</script>
+
+<!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+<!--TABLEPLUGIN_twikiAttachmentsTable--><style type="text/css" media="all">
+.tableSortIcon img {padding-left:.3em; vertical-align:text-bottom;}
+.twikiTable#twikiAttachmentsTable td {border-style:solid none;}
+.twikiTable#twikiAttachmentsTable th {border-style:solid none;}
+.twikiTable#twikiAttachmentsTable td {vertical-align:middle;}
+.twikiTable#twikiAttachmentsTable th {vertical-align:middle;}
+.twikiTable#twikiAttachmentsTable td {vertical-align:top;}
+.twikiTable#twikiAttachmentsTable th {background-color:#eceef2;}
+.twikiTable#twikiAttachmentsTable th.twikiSortedCol {background-color:#e0e3e9;}
+.twikiTable#twikiAttachmentsTable tr.twikiTableRowdataBg0 td {background-color:#ffffff;}
+.twikiTable#twikiAttachmentsTable tr.twikiTableRowdataBg0 td.twikiSortedCol {background-color:#f2f3f6;}
+.twikiTable#twikiAttachmentsTable td.twikiTableCol0 {text-align:center;}
+.twikiTable#twikiAttachmentsTable td.twikiTableCol1 {text-align:left;}
+.twikiTable#twikiAttachmentsTable td.twikiTableCol2 {text-align:left;}
+.twikiTable#twikiAttachmentsTable td.twikiTableCol3 {text-align:right;}
+.twikiTable#twikiAttachmentsTable td.twikiTableCol4 {text-align:left;}
+.twikiTable#twikiAttachmentsTable td.twikiTableCol5 {text-align:left;}
+.twikiTable#twikiAttachmentsTable td.twikiTableCol6 {text-align:left;}
+.twikiTable#twikiAttachmentsTable td.twikiTableCol7 {text-align:center;}
+</style></head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <strong>Design Specification</strong>
+<p />
+<strong>OSG Storage Discovery</strong>
+<p />
+Version 1.0 Draft-2
+<p />
+Document Owner: Ted Hesselroth, Open Science Grid, Fermilab
+<p />
+<strong>Revision History</strong>
+<table width="661" cellspacing="0" style="width: 495.75pt; border-collapse: collapse" cellpadding="0" border="0"> <tbody><tr> <td width="144" valign="top" style="width: 1.5in; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; border-width: 1pt; border-color: windowtext; border-style: solid">
+<p />
+<strong>Name</strong>
+</td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt">
+<p />
+<strong>Change</strong>
+</td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt">
+<p />
+<strong>Date</strong>
+</td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt">
+<p />
+<strong>Version</strong>
+</td> </tr>
+<tr style="height: 0.3in"> <td width="144" valign="top" style="width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in">
+<p />
+Ted Hesselroth
+</td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in">
+<p />
+Modifications based on first round of feedback.
+</td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in">
+<p />
+June 23, 2009
+</td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in">
+<p />
+1.0-Draft-2
+</td> </tr> 
+<tr style="height: 0.3in"> <td width="144" valign="top" style="width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in">
+<p />
+Ted Hesselroth
+</td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in">
+<p />
+Initial Draft.
+</td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in">
+<p />
+April 16, 2009
+</td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in">
+<p />
+1.0-Draft-1
+</td> </tr> <tr style="height: 0.3in"> <td width="144" valign="top" style="width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> </tr> <tr style="height: 0.3in"> <td width="144" valign="top" style="width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> </tr> <tr style="height: 0.3in"> <td width="144" valign="top" style="width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> </tr> <tr> <td width="144" valign="top" style="width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt"> </td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt"> </td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt"> </td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt"> </td> </tr> </tbody></table>
+<p />
+<strong>Concurrence</strong>
+<table width="661" cellspacing="0" style="width: 495.75pt; border-collapse: collapse" cellpadding="0" border="0"> <tbody><tr> <td width="144" valign="top" style="width: 1.5in; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; border-width: 1pt; border-color: windowtext; border-style: solid">
+<p />
+<strong>Name</strong>
+</td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt">
+<p />
+<strong>Organization</strong>
+</td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt">
+<p />
+<strong>Date</strong>
+</td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: solid; border-right-style: solid; border-bottom-style: solid; border-top-color: windowtext; border-right-color: windowtext; border-bottom-color: windowtext; border-top-width: 1pt; border-right-width: 1pt; border-bottom-width: 1pt; border-left-style: none; border-left-width: initial; border-left-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt">
+<p />
+<strong>Version</strong>
+</td> </tr> <tr style="height: 0.3in"> <td width="144" valign="top" style="width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> </tr> <tr style="height: 0.3in"> <td width="144" valign="top" style="width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> </tr> <tr style="height: 0.3in"> <td width="144" valign="top" style="width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> </tr> <tr style="height: 0.3in"> <td width="144" valign="top" style="width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt; height: 0.3in"> </td> </tr> <tr> <td width="144" valign="top" style="width: 1.5in; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: windowtext; border-bottom-color: windowtext; border-left-color: windowtext; border-right-width: 1pt; border-bottom-width: 1pt; border-left-width: 1pt; border-top-style: none; border-top-width: initial; border-top-color: initial; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt"> </td> <td width="277" valign="top" style="width: 207.9pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt"> </td> <td width="114" valign="top" style="width: 85.4pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt"> </td> <td width="126" valign="top" style="width: 94.45pt; border-top-style: none; border-top-width: initial; border-top-color: initial; border-left-style: none; border-left-width: initial; border-left-color: initial; border-bottom-style: solid; border-bottom-color: windowtext; border-bottom-width: 1pt; border-right-style: solid; border-right-color: windowtext; border-right-width: 1pt; padding-top: 0in; padding-right: 5.4pt; padding-bottom: 0in; padding-left: 5.4pt"> </td> </tr> </tbody></table>
+<p />
+<strong>Introduction</strong>
+<p />
+This is the design specification for the OSG Storage Discovery capability. It is written to define how the requirements described in the companion requirements document (see References) shall be implemented.
+<p />
+<strong>System Overview</strong>
+<p />
+The basis for much of the required functionality for OSG Storage Discovery has already been implemented and deployed, in the sense that services which can deliver much if not all of the needed information already exist within the OSG. In particular, the BDII service aggregates storage as well as compute information from OSG sites, using recently deployed updated GIP modules. The OSG Resource Selection Service has also been deployed, aggregating information using the same schema (Glue 1.3) as BDII, through CEMon. The OSG Matchmaker software provides ReSS information supplemented with additional site snapshots obtained by probes. The OSG Storage Discovery project will provide an accessible means of exploiting the information provided by these services.
+<p />
+The project will ideally not require modifications to services on which it depends, and this specification is written to that end. That being said, it is possible that some shortcomings in the existing services will be exposed by the new capability, so the door should remain open to interplay between the design of this component and those of the above services.
+<p />
+The requirements document describes an Authorization Check feature as being optional. In this document, that feature will be considered as out of scope.
+<p />
+<strong>Design Considerations</strong>
+<p />
+The new software falls in to the Ease-of-Use category targeted at new users of the OSG. Therefore, installation and use of the software should be as simple as possible. Fortunately, most of the needed functionality can be achieved with well-known web service components, and the areas that cannot, can be packaged in such a way as to hide the complexity from the user.
+<p />
+<strong>Architectural Strategies</strong>
+<p />
+This software lies at the consumer end of the information services, providing access through interfaces that most users are already familiar with. Therefore, the architecture will serve as a bridge between those interface components and the existing services.
+<p />
+<strong>System Architecture</strong>
+<p />
+The system architecture for the Information Services domain of the Open Science Grid is described in ??????. The portions of interest to OSG Storage Discovery are the BDII and <span class="twikiNewLink">ReSS<a href="/bin/edit/InformationServices/ReSS?topicparent=InformationServices.OSGStorageDiscoveryDesign" rel="nofollow" title="ReSS (this topic does not yet exist; you can create it)">?</a></span> services. The new software shall interact with the BDII service through the LDAP interface. It shall interact with the <span class="twikiNewLink">ReSS<a href="/bin/edit/InformationServices/ReSS?topicparent=InformationServices.OSGStorageDiscoveryDesign" rel="nofollow" title="ReSS (this topic does not yet exist; you can create it)">?</a></span> service indirectly, through the test job run function acting through schedd.
+<p />
+The eventual use of schedd causes this software to also have a dependence on the Job Submission domain, at least to the extent of the required format for job submission materials. There is, however, not effect of this dependence on the software design.
+<p />
+<strong>Software Architecture</strong>
+<p />
+To implement the features described the requirements document, the following specification shall be followed. See figure 1. for an overview of the software architecture.
+<p />
+<p align="center" style="margin-top: 12pt; margin-right: 0in; margin-left: 0in; margin-bottom: 0.0001pt; text-align: center; line-height: 13.6pt">
+<img src="/twiki/pub/InformationServices/OSGStorageDiscoveryDesign/OSGStorageDiscoveryDesign.gif" alt="OSGStorageDiscoveryDesign.gif" width='793' height='559' />"  </p>
+<p align="center" style="margin-top: 12pt; margin-right: 0in; margin-left: 0in; margin-bottom: 0.0001pt; text-align: center; line-height: 13.6pt">Figure 1.</p>
+<p />
+Satisfying requirement 1.1, the requirements expression shall be written in XPath. This format allows easy composition of multiple parameters, allows the use of commonly-available libraries and representations, and provides for future integration capability.
+<p />
+<strong>The Command Line</strong>
+<p />
+A command line interface to BDII shall be written in Java, satisfying requirements 2.1-2. The interface shall use openldap libraries for communication with BDII. The XPath expression shall first be converted to XML using the <span class="twikiNewLink">XQueryX<a href="/bin/edit/InformationServices/XQueryX?topicparent=InformationServices.OSGStorageDiscoveryDesign" rel="nofollow" title="XQueryX (this topic does not yet exist; you can create it)">?</a></span> utility, and then to ldapsearch format via the STAX parser using custom software. Results from the BDII server shall be converted from DSML to structured XML, and the XPath expression evaluated using the Xalan library.
+<p />
+Command line options shall be as follows.
+<p />
+<em>Usage</em>
+<pre>
+xpathsearch &#91;options]  &#60;xpathexpression &#124; name1&#60;OP&#62;value1 &#91;name2&#60;OP&#62;value2] ...&#62;
+</pre>
+<p />
+<em>Available options</em>
+<pre>
+ -b &#60;o&#61;BASE&#62;                       base for LDAP search. Example (default): -b o&#61;grid
+
+ -H &#60;PROTOCOL://HOST:PORT&#62;         host&#95;uri for search. Example (default): -H ldap://iu.grid.ui.edu:2710
+
+ -h,--help                         Print usage and options
+
+ -v,--version                      Print the version number of xpathsearch
+
+ -u,--use&#95;ldap&#95;aux                 Use auxilary LDAP classes
+
+ -d,--output&#95;ldap&#95;dn               Output the dn of each LDAP objectclass
+
+ -a,--output&#95;all&#95;ldap&#95;attributes   Output all queried attributes of each LDAP objectclass
+
+ -f,--format &#60;list&#124;xml&#124;job&#62;    Output format, as list, XML, or job. Default is list.
+
+ -t,--test                         Run the unit tests
+</pre>
+<p />
+<em>Explanation of Options</em>
+<pre>
+ -b &#60;o&#61;BASE&#62;                       base for LDAP search. Example (default): -b o&#61;grid
+</pre>
+The base determines at what level in the LDAP directory the search begins. The default "o=grid" is the highest level of the BDII information. A lower level, such as to produce a search on the information from only one site, for example, could be specified by using the site's LDAP dn as the base. 
+<p />
+<pre>
+ -H &#60;PROTOCOL://HOST:PORT&#62;         host&#95;uri for search. Example (default): -H ldap://iu.grid.ui.edu:2710
+</pre>
+URI of the information server. Only the ldap protocol is supported in the initial implmentation.
+<p />
+<pre>
+ -h,--help                         Print usage and options
+</pre>
+Print the above usage synopsis and option, and the supported attribute name shortcuts (see below).
+<p />
+<pre>
+ -v,--version                      Print the version number of xpathsearch
+</pre>
+The version is the release number for production software, and build number for test software.
+<p />
+<pre>
+ -u,--use&#95;ldap&#95;aux                 Use auxilary LDAP classes
+</pre>
+Standard LDAP searches ignore auxilary classes and utilize structural classes only. This causes inconsistency with the corresponding XML schema, which treats all classes the same. This feature allows switching between the two conventions.
+<p />
+<pre>
+-d,--output&#95;ldap&#95;dn               Output the dn of each LDAP objectclass
+</pre>
+In cases where the search is on only nodes, nothing useful would be output because all specific information is in attributes. This option specifies a default attribute on which to produce the results.
+<p />
+<pre>
+ -a,--output&#95;all&#95;ldap&#95;attributes   Output all queried attributes of each LDAP objectclass
+</pre>
+Similar in motivation to the "--output_ldap_dn" option, but outputs all attributes.
+<p />
+<pre>
+ -f,--format &#60;list&#124;xml&#124;job&#62;    Output format, as list, XML, or job. Default is list.
+</pre>
+The default is to output the results in list form, with one result per line. The output format may optionally be xml, with each result being a text node of a simple generic schema. The job output does not do a search, but transforms the query to a job script, including a classad. The job script can then be used for a test job submission.
+<p />
+<pre>
+ -t,--test                         Run the unit tests
+</pre>
+Invokes the unit test, which contains some XPath expressions which can be run against the default host and base.
+<p />
+<em>xpathexpression Format</em>
+<p />
+In this format, the XPath expression is supplied by the user. It must conform to the schema of the server specified with the "-H" option. All XPath 1.0 expressions are supported, with the following exceptions. <ul>
+<li> Lateral traversal notations, such as "next-sibling", are not supported. Child and ancestor traversal notations are supported.
+</li> <li> The use of variables is not supported.
+</li></ul> 
+<p />
+<em>Name/Value Format</em>
+<p />
+A series of attribute value comparisons may be substituted for the XPath Expression. The names on the command line must correspond to attribute names in the schema. The values are specified by the user, and will be compared to the associated values from the information service trough the "OP", which must be one of "&lt;", "=", or "&gt;" The software will resolve the attribute names to their full paths and compose internally the corresponding XPath expression for the logical AND of the set of attribute value comparisons specified.
+<p />
+Shorthand attribute names may be used as follows:
+<p /> <ul>
+<li> access=GlueSEAccessProtocolType
+</li> <li> control=GlueSEControlProtocolType
+</li> <li> vo=GlueVOInfoAccessControlBaseRule
+</li> <li> lifetime=GlueSAPolicyFileLifeTime
+</li></ul> 
+<p />
+Other shorthand names may be added as the need arises. All the available shorthand names will be printed when the "-help" is chosen.
+<p />
+<strong>The Graphical Interface</strong>
+<p />
+The user interface shall be written in Javascript, runnable in all Firefox, Safari, and Internet Explorer browsers. Graphical components are as follows.
+<p /> <ul>
+<li> Requirement 1.2 shall be satisfied with a pasteable "Expression" input text field and a "Result" output text field. The text field will take XPath expressions of the same kind as the command line tool, see above. Besides text entry, drag-and-drop from the tree view will be supported. The text field will be one line in height by default, but expandable into a larger pane for easier editing of expressions. 
+</li> <li> A tree view of the BDII information shall provide the browsing function for requirement 1.3. Selections from the tree shall be draggable into the Expression text field in order to aid in composing queries. The XPath for the element dragged shall be inserted in to the text at the point where the drop occurs.
+</li> <li> A variety of pre-written searches shall be selected via a tab panel for requirements 1.4 and 1.5. Dropdown menus and text field shall provide the forms for requirement 1.5, each being implemented with text fields and radio buttons.
+</li> <li> Requirements 1.6 and 1.7 shall be provided by text fields, reachable through the above tab panel. For 1.6, the user shall input any text into a text field. Upon pressing a "Search" button, an internal search on the directory schema is performed, to find node names which contain the input string. XPath expressions for those nodes are printed in a result pane. This helps the user compose XPath searches based on partial knowledge of the schema. For 1.7, the preceding schema search is done, followed by an evaluation of the found XPath expressions, and the results displayed in the GUI Result pane.
+</li> <li> A button labeled "Generate job script" shall be provided to satisfy requirement 1.8. The button will be effective for both pre-written and generic searches, and will generate an equivalent classad for the current search. The outputs defining a runnable test job shall be copyable for pasting into an external editor. If security constraints allow, the text shall also be saveable as a files. In all cases the above components shall either lead to internal javascript processing, or formation of requests to the proxy server, described below.
+</li></ul> 
+<p />
+The GUI mockup is shown in Figure 2 below.
+<p />
+<p align="center" style="margin-top: 12pt; margin-right: 0in; margin-left: 0in; margin-bottom: 0.0001pt; text-align: center; line-height: 13.6pt">
+<img src="/twiki/pub/InformationServices/OSGStorageDiscoveryDesign/LDAPBrowserMockup.jpg" alt="LDAPBrowserMockup.jpg" width='687' height='653' />
+</p>
+<p align="center" style="margin-top: 12pt; margin-right: 0in; margin-left: 0in; margin-bottom: 0.0001pt; text-align: center; line-height: 13.6pt">Figure 2.</p>
+<p />
+The test job submission files shall be collected by the user submitted outside of the OSG Storage Discovery application. Therefore the test job submission files must be compatible with the job submission software the user is directed to employ.
+<p />
+A REST proxy web service shall be run, either remotely or locally, connecting the user interface to the Java application. Messages in http format shall be sent from the javascript instance to cause the proxy to invoke methods from the Java command line interface. The proxy service shall respond to the javascript instance using XML over http. As time permits, a caching capability shall be incorporated into the proxy server with XMLDB.
+<p />
+The user interface shall be made available through OSG's <span class="twikiNewLink">MyOSG<a href="/bin/edit/InformationServices/MyOSG?topicparent=InformationServices.OSGStorageDiscoveryDesign" rel="nofollow" title="MyOSG (this topic does not yet exist; you can create it)">?</a></span> service. The proxy server shall run in conjunction with that service. As such, it shall be deployed in a manner compatible with Apache 2. The deployment will be in the form of a Sun Grizzly application server utilizing an Apache http connector.
+<p />
+<p />
+<strong>Risk</strong>
+<p />
+· Conversion of XPath expressions to LDAP search strings is difficult, but has been mostly accomplished in the development so far.
+<p />
+· The degree is difficulty of the javascript code is not completely known, but is not expected to be significantly more than for java swing code, for which the above description would not cause concern.
+<p />
+· Installation of a proxy service and optional cache is an extra step which could cause difficulties for installation and firewall issues with novice users. That could be mitigated by the deployment of a central proxy service by OSG.
+<p />
+· Information gathered in BDII and <span class="twikiNewLink">ReSS<a href="/bin/edit/InformationServices/ReSS?topicparent=InformationServices.OSGStorageDiscoveryDesign" rel="nofollow" title="ReSS (this topic does not yet exist; you can create it)">?</a></span> could be inaccurate or incomplete, resulting in a failure of the test job to validate the search results.
+<p />
+· Widespread simultaneous use of the tool without caching would cause an increased load on the BDII server.
+<p />
+<strong>References</strong>
+<p />
+<a href="/bin/view/InformationServices/OSGStorageDiscoveryRequirements" class="twikiLink">OSG Storage Discovery Requirements</a>
+<p />
+Project Process
+<p />
+Document Process
+<p />
+OSG Information Services Domain design document.
+<p />
+<p /></div><!-- /patternTopic-->
+<p />
+<p />
+<div class="twikinetRounded twikinetRoundedAttachments"><div class="rCRounded"><div class="rCTR"><div class="rCTL"></div><!--/rCTL--><div class="twikiAttachments">
+<div class="twistyPlugin twikiMakeVisibleInline">  <span id="topicattachmentslistshow" class="twistyRememberSetting twistyTrigger twikiUnvisited twistyHidden twistyInited"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleopen.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Attachments</span></a> </span> <span id="topicattachmentslisthide" class="twistyRememberSetting twistyTrigger twikiUnvisited twistyHidden twistyInited"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleclose.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Attachments</span></a> </span>  </div><!--/twistyPlugin twikiMakeVisibleInline--> <div class="twistyPlugin"><div id="topicattachmentslisttoggle" class="twistyRememberSetting twistyContent twikiMakeHidden twistyInited">
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table summary="Topic attachments" cellspacing="0" id="twikiAttachmentsTable" cellpadding="0" class="twikiTable" rules="rows" border="1"><caption>Topic attachments</caption>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#eceef2" valign="middle" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/InformationServices/OSGStorageDiscoveryDesign?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">I</font></a> </th>
+			<th bgcolor="#eceef2" valign="middle" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/InformationServices/OSGStorageDiscoveryDesign?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Attachment</font></a> </th>
+			<th bgcolor="#eceef2" valign="middle" class="twikiTableCol2"> <a rel="nofollow" href="/bin/view/InformationServices/OSGStorageDiscoveryDesign?cover=print;sortcol=2;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Action</font></a> </th>
+			<th bgcolor="#eceef2" valign="middle" class="twikiTableCol3"> <a rel="nofollow" href="/bin/view/InformationServices/OSGStorageDiscoveryDesign?cover=print;sortcol=3;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Size</font></a> </th>
+			<th bgcolor="#eceef2" valign="middle" class="twikiTableCol4"> <a rel="nofollow" href="/bin/view/InformationServices/OSGStorageDiscoveryDesign?cover=print;sortcol=4;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Date</font></a> </th>
+			<th bgcolor="#eceef2" valign="middle" class="twikiTableCol5"> <a rel="nofollow" href="/bin/view/InformationServices/OSGStorageDiscoveryDesign?cover=print;sortcol=5;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Who</font></a> </th>
+			<th bgcolor="#eceef2" valign="middle" class="twikiTableCol6 twikiLastCol"> <a rel="nofollow" href="/bin/view/InformationServices/OSGStorageDiscoveryDesign?cover=print;sortcol=6;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Comment</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> <img width="16" alt="jpg" align="top" src="/twiki/pub/TWiki/TWikiDocGraphics/jpg.gif" height="16" border="0" /><span class="twikiHidden">jpg</span> </td>
+			<td bgcolor="#ffffff" align="left" valign="top" class="twikiTableCol1"> <a href="/twiki/pub/InformationServices/OSGStorageDiscoveryDesign/LDAPBrowserMockup.jpg">LDAPBrowserMockup.jpg</a> </td>
+			<td bgcolor="#ffffff" align="left" valign="top" class="twikiTableCol2"> <a href="/bin/attach/InformationServices/OSGStorageDiscoveryDesign?filename=LDAPBrowserMockup.jpg;revInfo=1" title="change, update, previous revisions, move, delete..." rel="nofollow">manage</a> </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol3"> 63.5&nbsp;K </td>
+			<td bgcolor="#ffffff" align="left" valign="top" class="twikiTableCol4"> <span class="twikiNoBreak">23 Jun 2009 - 16:32</span> </td>
+			<td bgcolor="#ffffff" align="left" valign="top" class="twikiTableCol5"> <a href="/bin/view/Main/TedHesselroth" class="twikiLink">TedHesselroth</a> </td>
+			<td bgcolor="#ffffff" align="left" valign="top" class="twikiTableCol6 twikiLastCol"> &nbsp; </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <img width="16" alt="gif" align="top" src="/twiki/pub/TWiki/TWikiDocGraphics/gif.gif" height="16" border="0" /><span class="twikiHidden">gif</span> </td>
+			<td bgcolor="#ffffff" align="left" valign="top" class="twikiTableCol1 twikiLast"> <a href="/twiki/pub/InformationServices/OSGStorageDiscoveryDesign/OSGStorageDiscoveryDesign.gif">OSGStorageDiscoveryDesign.gif</a> </td>
+			<td bgcolor="#ffffff" align="left" valign="top" class="twikiTableCol2 twikiLast"> <a href="/bin/attach/InformationServices/OSGStorageDiscoveryDesign?filename=OSGStorageDiscoveryDesign.gif;revInfo=1" title="change, update, previous revisions, move, delete..." rel="nofollow">manage</a> </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol3 twikiLast"> 17.2&nbsp;K </td>
+			<td bgcolor="#ffffff" align="left" valign="top" class="twikiTableCol4 twikiLast"> <span class="twikiNoBreak">12 May 2009 - 19:23</span> </td>
+			<td bgcolor="#ffffff" align="left" valign="top" class="twikiTableCol5 twikiLast"> <a href="/bin/view/Main/TedHesselroth" class="twikiLink">TedHesselroth</a> </td>
+			<td bgcolor="#ffffff" align="left" valign="top" class="twikiTableCol6 twikiLastCol twikiLast"> &nbsp; </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+</div></div> <!--/twistyPlugin--></div><!--//twikiAttachments--></div><!--/rCTR--><div class="rCBR"><div class="rCBL"></div><!--/rCBL--></div><!--/rCBR--></div><!--/rCRounded--></div><!--/twikinetRounded--></div><!-- /patternContent-->
+<hr />
+This topic: InformationServices<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/InformationServices/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/InformationServices/OSGStorageDiscovery" class="twikiLink">OSGStorageDiscovery</a> &gt; <a href="/bin/view/InformationServices/PlanningDocuments" class="twikiLink">PlanningDocuments</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>OSGStorageDiscoveryDesign</span> <br />    
+Topic revision: r5 - 23 Jun 2009 - 17:24:55 - <a href="/bin/view/Main/TedHesselroth" class="twikiLink">TedHesselroth</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

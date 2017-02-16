@@ -1,0 +1,1463 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> TroubleshootingHTCondorCE &lt; Documentation/Release3 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/Release3/TroubleshootingHTCondorCE?_T=16 Feb 2017" type="application/x-wiki" title="edit TroubleshootingHTCondorCE" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/Release3/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/TroubleshootingHTCondorCE"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFFFF;
+	}
+	.patternBookView {
+		border-color:#FFFFFF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--TWISTYPLUGIN_TWISTY--><style type="text/css" media="all">
+@import url("https://twiki.opensciencegrid.org/twiki/pub/TWiki/TwistyContrib/twist.css");
+</style>
+<script type='text/javascript' src='https://twiki.opensciencegrid.org/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js'></script>
+<script type="text/javascript" src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiJavascripts/twikiPref.js"></script>
+<script type="text/javascript" src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TwistyContrib/twist.compressed.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+var styleText = '<style type="text/css" media="all">.twikiMakeVisible{display:inline;}.twikiMakeVisibleInline{display:inline;}.twikiMakeVisibleBlock{display:block;}.twikiMakeHidden{display:none;}</style>';
+document.write(styleText);
+// ]]>
+</script>
+
+<!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="HTCondor_CE_Troubleshooting_Guid"></a> HTCondor-CE Troubleshooting Guide </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#HTCondor_CE_Troubleshooting_Guid"> HTCondor-CE Troubleshooting Guide</a> <ul>
+<li> <a href="?cover=print#About_This_Guide"> About This Guide</a>
+</li> <li> <a href="?cover=print#HTCondor_CE_Troubleshooting_Data"> HTCondor-CE Troubleshooting Data</a> <ul>
+<li> <a href="?cover=print#MasterLog_AN1"> MasterLog</a>
+</li> <li> <a href="?cover=print#SchedLog_AN1"> SchedLog</a>
+</li> <li> <a href="?cover=print#JobRouterLog_AN1"> JobRouterLog</a>
+</li> <li> <a href="?cover=print#GridmanagerLog_AN1"> GridmanagerLog</a>
+</li> <li> <a href="?cover=print#SharedPortLog_AN1"> SharedPortLog</a>
+</li> <li> <a href="?cover=print#Messages_log"> Messages log</a>
+</li> <li> <a href="?cover=print#BLAHP_Configuration_File"> BLAHP Configuration File</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#HTCondor_CE_Troubleshooting_Tool"> HTCondor-CE Troubleshooting Tools</a> <ul>
+<li> <a href="?cover=print#condor_ce_run"> condor_ce_run</a>
+</li> <li> <a href="?cover=print#condor_ce_trace"> condor_ce_trace</a>
+</li> <li> <a href="?cover=print#condor_submit"> condor_submit</a>
+</li> <li> <a href="?cover=print#condor_ce_ping"> condor_ce_ping</a>
+</li> <li> <a href="?cover=print#condor_ce_q"> condor_ce_q</a>
+</li> <li> <a href="?cover=print#condor_ce_history"> condor_ce_history</a>
+</li> <li> <a href="?cover=print#condor_ce_job_router_info"> condor_ce_job_router_info</a>
+</li> <li> <a href="?cover=print#condor_ce_router_q"> condor_ce_router_q</a>
+</li> <li> <a href="?cover=print#condor_ce_status"> condor_ce_status</a>
+</li> <li> <a href="?cover=print#condor_ce_config_val"> condor_ce_config_val</a>
+</li> <li> <a href="?cover=print#condor_ce_reconfig"> condor_ce_reconfig</a>
+</li> <li> <a href="?cover=print#condor_ce_on_off_restart"> condor_ce_{on,off,restart}</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#General_Troubleshooting_Items"> General Troubleshooting Items</a> <ul>
+<li> <a href="?cover=print#Making_sure_packages_are_up_to_d"> Making sure packages are up-to-date</a>
+</li> <li> <a href="?cover=print#Verify_package_contents"> Verify package contents</a>
+</li> <li> <a href="?cover=print#Verify_clocks_are_synchronized"> Verify clocks are synchronized</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#HTCondor_CE_Troubleshooting_Item"> HTCondor-CE Troubleshooting Items</a> <ul>
+<li> <a href="?cover=print#Daemons_fail_to_start"> Daemons fail to start</a>
+</li> <li> <a href="?cover=print#Jobs_fail_to_submit_to_the_CE"> Jobs fail to submit to the CE</a>
+</li> <li> <a href="?cover=print#Jobs_stay_idle_on_the_CE"> Jobs stay idle on the CE</a>
+</li> <li> <a href="?cover=print#Jobs_stay_idle_on_a_remote_host"> Jobs stay idle on a remote host submitting to the CE</a>
+</li> <li> <a href="?cover=print#Jobs_go_on_hold"> Jobs go on hold</a>
+</li> <li> <a href="?cover=print#Identifying_the_corresponding_jo"> Identifying the corresponding job ID on the local batch system</a>
+</li> <li> <a href="?cover=print#Jobs_removed_from_the_local_HTCo"> Jobs removed from the local HTCondor pool become resubmitted (HTCondor batch systems only)</a>
+</li> <li> <a href="?cover=print#Missing_HTCondor_tools"> Missing HTCondor tools</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Known_Issues"> Known Issues   </a>
+</li> <li> <a href="?cover=print#Getting_Help"> Getting Help</a>
+</li> <li> <a href="?cover=print#Reference"> Reference</a>
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="About_This_Guide"></a> About This Guide </span></h2>
+<p />
+In this document, you will find a collection of files and commands to help troubleshoot HTCondor-CE along with a list of common issues with suggested troubleshooting steps.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="HTCondor_CE_Troubleshooting_Data"></a> HTCondor-CE Troubleshooting Data </span></h2>
+<p />
+The following files are located on the CE host.
+<p />
+<a name="MasterLog"></a>
+<h3><a name="MasterLog_AN1"></a> MasterLog </h3>
+<p />
+The HTCondor-CE master log tracks status of all of the other HTCondor daemons and thus contains valuable information if they fail to start. 
+<p />
+To increase the debug level in this log, set the following value in <code>/etc/condor-ce/config.d/99-local.conf</code> on the CE host:
+<p />
+<pre class="file">MASTER_DEBUG = D_FULLDEBUG</pre>
+<p />
+To apply these changes, reconfigure HTCondor-CE:
+<p />
+<pre class="rootscreen">[root@client ~]$ condor_ce_reconfig</pre>
+<p />
+<strong>Location:</strong>
+<pre>/var/log/condor-ce/MasterLog</pre>
+<p />
+<strong>Key Contents</strong>
+Start-up, shut-down and communication with other HTCondor daemons
+<p />
+<strong>What to look for:</strong>
+<p />
+Successful daemon start-up. The following line shows that the Collector daemon started successfully:   <pre class="file">10/07/14 14:20:27 <span style="background-color: #FFCCFF;">Started DaemonCore process "/usr/sbin/condor_collector -f -port 9619"</span>, pid and pgroup = 7318</pre>
+<p />
+<a name="SchedLog"></a>
+<h3><a name="SchedLog_AN1"></a> SchedLog </h3>
+<p />
+The HTCondor-CE schedd log contains information on all jobs that are submitted to the CE. It contains valuable information when trying to troubleshoot authentication issues. 
+<p />
+To increase the debug level in this log, set the following value in <code>/etc/condor-ce/config.d/99-local.conf</code> on the CE host:
+<p />
+<pre class="file">SCHEDD_DEBUG = D_FULLDEBUG</pre>
+<p />
+To apply these changes, reconfigure HTCondor-CE:
+<p />
+<pre class="rootscreen">[root@client ~]$ condor_ce_reconfig</pre>
+<p />
+<strong>Location:</strong>
+<pre>/var/log/condor-ce/SchedLog</pre>
+<p />
+<strong>Key Contents</strong> <ul>
+<li> Every job submitted to the CE
+</li> <li> User authorization events
+</li></ul> 
+<p />
+<strong>What to look for:</strong>
+<p /> <ul>
+<li> Job owner is authorized and mapped:   <pre class="file">10/07/14 16:52:17 <span style="background-color: #FFCCFF;">Command=QMGMT_WRITE_CMD</span>, peer=<131.225.154.68:42262>
+10/07/14 16:52:17 <span style="background-color: #FFCCFF;">AuthMethod=GSI, AuthId=/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047,/GLOW/Role=NULL/Capability=NULL, CondorId=glow@users.opensciencegrid.org</span></pre>   In this example, the job is authorized with the job’s proxy subject using GSI and is mapped to the <code>glow</code> user.
+</li> <li> <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#SubmitFailure" class="twikiCurrentTopicLink twikiAnchorLink">User job submission fails</a> due to improper authentication or authorization:   <pre class="file">08/30/16 16:52:56 DC_AUTHENTICATE: required authentication of 72.33.0.189 failed: AUTHENTICATE:1003:Failed to authenticate with any method|AUTHENTICATE:1004:Failed to authenticate using GSI|GSI:5002:Failed to authenticate because the remote (client) side was not able to acquire its credentials.|AUTHENTICATE:1004:Failed to authenticate using FS|FS:1004:Unable to lstat(/tmp/FS_XXXZpUlYa)
+08/30/16 16:53:12 <span style="background-color: #FFCCFF;">PERMISSION DENIED to gsi@unmapped from host 72.33.0.189 for command 60021 (DC_NOP_WRITE), access level WRITE: reason: WRITE authorization policy contains no matching ALLOW entry for this request; identifiers used for this host: 72.33.0.189,dyn-72-33-0-189.uwnet.wisc.edu, hostname size = 1, original ip address = 72.33.0.189</span>
+08/30/16 16:53:12 DC_AUTHENTICATE: Command not authorized, done!</pre>
+</li> <li> Job is submitted to the CE queue:    <pre class="file">10/07/14 16:52:17 <span style="background-color: #FFCCFF;">Submitting new job 234.0</span></pre>   In this example, the ID of the submitted job is <code>234.0</code>.
+</li> <li> Missing negotiator:    <pre class="file">10/18/14 17:32:21 <span style="background-color: #FFCCFF;">Can't find address for negotiator</span>
+10/18/14 17:32:21 <span style="background-color: #FFCCFF;">Failed to send RESCHEDULE to unknown daemon:</span></pre>   Since HTCondor-CE does not manage any resources, it does not run a negotiator daemon by default and this error message is expected. In the same vein, you may see messages that there are 0 worker nodes:    <pre class="file">06/23/15 11:15:03 Number of Active Workers 0 </pre>
+</li> <li> Corrupted <code>job_queue.log</code>:    <pre class="file">
+02/07/17 10:55:48 Logging per-job history files to: /var/lib/gratia/condorce_data
+02/07/17 10:55:48 Failed to execute /usr/sbin/condor_shadow.std, ignoring
+<span style="background-color: #FFCCFF;">02/07/17 10:55:49 WARNING: Encountered corrupt log record 95654 (byte offset 5046225)
+02/07/17 10:55:49     103 1354325.0 PeriodicRemove ( StageInFinish > 0 ) 105
+02/07/17 10:55:49 Lines following corrupt log record 95654 (up to 3):
+02/07/17 10:55:49     103 1346101.0 RemoteWallClockTime 116668.000000
+02/07/17 10:55:49     104 1346101.0 WallClockCheckpoint
+02/07/17 10:55:49     104 1346101.0 ShadowBday
+02/07/17 10:55:49 ERROR "Error: corrupt log record 95654 (byte offset 5046225) occurred inside closed transaction, recovery failed" at line 1080 in file /builddir/build/BUILD/condor-8.4.8/src/condor_utils/classad_log.cpp</span>
+02/07/17 10:55:49 Cron: Killing all jobs
+02/07/17 10:55:49 CronJobList: Deleting all jobs
+02/07/17 10:55:49 Cron: Killing all jobs
+02/07/17 10:55:49 CronJobList: Deleting all jobs</pre>   This means <code>/var/lib/condor-ce/spool/job_queue.log</code> has been corrupted and you will need to hand-remove the offending record by searching for the text specified after the <code>Lines following corrupt log record...</code> line. The most common culprit of the corruption is that the disk containing the <code>job_queue.log</code> has filled up. To avoid this problem, you can change the location of <code>job_queue.log</code> by setting <code>JOB_QUEUE_LOG</code> in <code>/etc/condor-ce/config.d/</code> to a path, preferably one on a large SSD.
+</li></ul> 
+<p />
+set <code>JOB_QUEUE_LOG</code> in the configuration to a path for the <code>job_queue.log</code>, preferably a large SSD.
+<p />
+<a name="JobRouterLog"></a>
+<h3><a name="JobRouterLog_AN1"></a> JobRouterLog </h3>
+<p />
+The HTCondor-CE job router log produced by the job router itself and thus contains valuable information when trying to troubleshoot issues with job routing.
+<p />
+To increase the debug level in this log, set the following value in <code>/etc/condor-ce/config.d/99-local.conf</code> on the CE host:
+<p />
+<pre class="file">JOB_ROUTER_DEBUG = D_FULLDEBUG</pre>
+<p />
+To apply these changes, reconfigure HTCondor-CE:
+<p />
+<pre class="rootscreen">[root@client ~]$ condor_ce_reconfig</pre>
+<p />
+<strong>Location:</strong>
+<pre>/var/log/condor-ce/JobRouterLog</pre>
+<p />
+<strong>Key contents:</strong> <ul>
+<li> Every attempt to route a job
+</li> <li> Routing success messages
+</li> <li> Job attribute changes, based on chosen route
+</li> <li> Job submission errors to an HTCondor batch system
+</li> <li> Corresponding job IDs on an HTCondor batch system
+</li></ul> 
+<p />
+<strong>Known Errors:</strong>
+<p /> <ul>
+<li> If you have D_FULLDEBUG turned on for the job router, you will see errors like the following:    <pre class="file">06/12/15 14:00:28 HOOK_UPDATE_JOB_INFO not configured.</pre>   You can safely ignore these.
+</li></ul> 
+<p />
+<strong>Symptoms</strong>
+<p />
+<em>HTCondor batch systems only</em>: The following error occurs when the job router daemon cannot submit the routed job:
+<p />
+<pre class="file">10/19/14 13:09:15 Can't resolve collector condorce.example.com; skipping
+10/19/14 13:09:15 ERROR (pool condorce.example.com) Can't find address of schedd
+10/19/14 13:09:15 JobRouter failure (src=5.0,route=Local_Condor): failed to submit job</pre>
+<p />
+<strong>What to look for:</strong>
+<p /> <ul>
+<li> Job is considered for routing:      <pre class="file">09/17/14 15:00:56 JobRouter (src=86.0,route=Local_LSF): <span style="background-color: #FFCCFF;">found candidate job</span></pre>      <p>In parentheses are the original HTCondor-CE job ID (e.g., <code>86.0</code>) and the route (e.g., <code>Local_LSF</code>).</p>
+</li> <li> Job is successfully routed:      <pre class="file">09/17/14 15:00:57 JobRouter (src=86.0,route=Local_LSF): <span style="background-color: #FFCCFF;">claimed job</span></pre>
+</li> <li> Finding the corresponding job ID on your HTCondor batch system:      <pre class="file">09/17/14 15:00:57 JobRouter (<span style="background-color: #FFCCFF;">src=86.0,dest=205.0</span>, route=Local_Condor): claimed job</pre>      <p>In parentheses are the original HTCondor-CE job ID (e.g., <code>86.0</code>) and the resultant job ID on the HTCondor batch system (e.g., <code>205.0</code>)</p>
+</li> <li> If your job is not routed, there will not be any evidence of it within the log itself. To investigate why your jobs are not being considered for routing, use the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorJobRouterInfo" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_job_router_info</a>
+</li></ul> 
+<p />
+<a name="GridmanagerLog"></a>
+<h3><a name="GridmanagerLog_AN1"></a> GridmanagerLog </h3>
+<p />
+The HTCondor-CE grid manager log  tracks the submission and status of jobs on the batch system. It contains valuable information when trying to troubleshoot jobs that have been routed but failed to complete. Details on how to read the Gridmanager log can be found on the <a href="https://htcondor-wiki.cs.wisc.edu/index.cgi/wiki?p=GridmanagerLog" target="_top">HTCondor Wiki</a>. 
+<p />
+To increase the debug level in this log, set the following value in <code>/etc/condor-ce/config.d/99-local.conf</code> on the CE host:
+<p />
+<pre class="file">MAX_GRIDMANAGER_LOG = 6h
+MAX_NUM_GRIDMANAGER_LOG = 8
+GRIDMANAGER_DEBUG = D_FULLDEBUG</pre>
+<p />
+To apply these changes, reconfigure HTCondor-CE:
+<p />
+<pre class="rootscreen">[root@client ~]$ condor_ce_reconfig</pre>
+<p />
+<strong>Location:</strong>
+<pre>/var/log/condor-ce/GridmanagerLog.&lt;job owner&gt;</pre>
+<p />
+<strong>Key Contents</strong> <ul>
+<li> Every attempt to submit a job to a batch system or other grid resource
+</li> <li> Status updates of submitted jobs 
+</li> <li> Corresponding job IDs on non-HTCondor batch systems
+</li></ul> 
+<p />
+<strong>What to look for:</strong>
+<p /> <ul>
+<li> Job is submitted to the batch system:   <pre class="file">09/17/14 09:51:34 [12997] <span style="background-color: #FFCCFF;">(85.0)</span> gm state change: GM_SUBMIT_SAVE -> <span style="background-color: #FFCCFF;">GM_SUBMITTED</span></pre>   <p>Every state change the Gridmanager tracks should have the job ID in parentheses (i.e.=(85.0)).</p>
+</li> <li> Job status being updated:   <pre class="file">09/17/14 15:07:24 [25543] (87.0) gm state change: GM_SUBMITTED -> <span style="background-color: #FFCCFF;">GM_POLL_ACTIVE</span>
+09/17/14 15:07:24 [25543] GAHP[25563] <- 'BLAH_JOB_STATUS 3 lsf/20140917/482046'
+09/17/14 15:07:24 [25543] GAHP[25563] -> 'S'
+09/17/14 15:07:25 [25543] GAHP[25563] <- 'RESULTS'
+09/17/14 15:07:25 [25543] GAHP[25563] -> 'R'
+09/17/14 15:07:25 [25543] GAHP[25563] -> 'S' '1'
+09/17/14 15:07:25 [25543] GAHP[25563] -> '3' '0' 'No Error' '4' '<span style="background-color: #FFCCFF;">[ BatchjobId = "482046"; JobStatus = 4; ExitCode = 0; WorkerNode = "atl-prod08" ]</span>'</pre>   <p>The first line tells us that the Gridmanager is initiating a status update and the following lines are the results. The most interesting line is the second highlighted section that notes the job ID on the batch system and its status. If there are errors querying the job on the batch system, they will appear here.</p>
+</li> <li> Finding the corresponding job ID on your non-HTCondor batch system:   <pre class="file">09/17/14 15:07:24 [25543] <span style="background-color: #FFCCFF;">(87.0)</span> gm state change: GM_SUBMITTED -> GM_POLL_ACTIVE
+09/17/14 15:07:24 [25543] GAHP[25563] <- 'BLAH_JOB_STATUS 3 <span style="background-color: #FFCCFF;">lsf/20140917/482046</span>'</pre>   <p>On the first line, after the timestamp and PID of the Gridmanager process, you will find the CE&rsquo;s job ID in parentheses. At the end of the second line, you will find the batch system, date, and batch system job id separated by slashes.</p>
+</li> <li> Job completion on the batch system:   <pre class="file">09/17/14 15:07:25 [25543] (87.0) gm state change: GM_TRANSFER_OUTPUT -> <span style="background-color: #FFCCFF;">GM_DONE_SAVE</span></pre>
+</li></ul> 
+<p />
+<a name="SharedPortLog"></a>
+<h3><a name="SharedPortLog_AN1"></a> SharedPortLog </h3>
+<p />
+The HTCondor-CE shared port log keeps track of all connections to all of the HTCondor-CE daemons other than the collector. This log is a good place to check if experiencing connectivity issues with HTCondor-CE. More information can be found <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/3_7Networking_includes.html#SECTION00472000000000000000" target="_top">here</a>.
+<p />
+To increase the debug level in this log, set the following value in <code>/etc/condor-ce/config.d/99-local.conf</code> on the CE host:
+<p />
+<pre class="file">SHARE_DPORT_DEBUG = D_FULLDEBUG</pre>
+<p />
+To apply these changes, reconfigure HTCondor-CE:
+<p />
+<pre class="rootscreen">[root@client ~]$ condor_ce_reconfig</pre>
+<p />
+<strong>Location:</strong>
+<pre>/var/log/condor-ce/SharedPortLog</pre>
+<p />
+<strong>Key Contents</strong>
+Every attempt to connect to HTCondor-CE (except collector queries)
+<p />
+<h3><a name="Messages_log"></a> Messages log </h3>
+<p />
+The messages file can include output from lcmaps, which handles mapping of X.509 proxies to Unix usernames. If there are issues with the <a href="/bin/view/Documentation/Release3/InstallHTCondorCE#5_2_Setup_Authorization" class="twikiAnchorLink">authentication setup</a>, the errors may appear here.
+<p />
+<strong>Location:</strong>
+<pre>/var/log/messages</pre>
+<p />
+<strong>Key Contents</strong> <ul>
+<li> User authentication
+</li></ul> 
+<p />
+<strong>What to look for:</strong>
+<p /> <ul>
+<li> A user is mapped:   <pre class="file">Oct  6 10:35:32 osgserv06 <span style="background-color: #FFCCFF;">htondor-ce-llgt[12147]: Callout to "LCMAPS" returned local user (service condor): "osgglow01"</span></pre>
+</li> <li> Specific error messages and methods to troubleshoot them can be found in <a href="/bin/view/Documentation/Release3/TroubleshootingGlexecLcmaps" class="twikiLink">this document</a>
+</li></ul> 
+<p />
+<a name="BlahpConfig"></a>
+<h3><a name="BLAHP_Configuration_File"></a> BLAHP Configuration File </h3>
+<p />
+HTCondor-CE uses the BLAHP to submit jobs to your local non-HTCondor batch system using your batch system's client tools. You can also tell the BLAHP to save the files that are being submitted to the local batch system to <code>DIR_NAME</code> by adding the following line:
+<pre class="file">
+blah_debug_save_submit_info=<span style="background-color: #FFCCFF;">DIR_NAME</span>
+</pre>
+The BLAHP will then create a directory with the format <code>bl_*</code> for each submission to the local jobmanager with the submit file and proxy used.   
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  Whitespace is important so do not put any spaces around the = sign.  In addition, the directory must be created and HTCondor-CE should have sufficient permissions to create directories within <code>DIR_NAME</code>. 
+</dd></dl> 
+<p />
+<strong>Location:</strong>
+<pre>/etc/blah.config</pre>
+<p />
+<strong>Key Contents</strong> <ul>
+<li> Locations of the batch system's client binaries and logs
+</li> <li> Location to save files that are submitted to the local batch system
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="HTCondor_CE_Troubleshooting_Tool"></a> HTCondor-CE Troubleshooting Tools </span></h2>
+<p />
+HTCondor-CE has its own separate set of of the HTCondor tools with <em>_ce_</em> in the name (i.e., <code>condor_<b>ce</b>_submit</code> vs <code>condor_submit</code>). Some of the the commands are only for the CE (e.g., <code>condor_ce_run</code> and <code>condor_ce_trace</code>) but many of them are just HTCondor commands configured to interact with the CE (e.g., <code>condor_ce_q</code>, <code>condor_ce_status</code>). It is important to differentiate the two: <code>condor_ce_config_val</code> will provide configuration values for your HTCondor-CE while <code>condor_config_val</code> will provide configuration values for your batch system.
+<p />
+<h3><a name="condor_ce_run"></a> condor_ce_run </h3>
+<p />
+<h4><a name="Usage"></a> Usage </h4>
+<p />
+Similar to <code>globus-job-run</code>, <code>condor_ce_run</code> is a tool that submits a simple job to your CE, so it is useful for verifying that job submission works from end-to-end. To submit a job to the CE and run the <code>env</code> command on the remote batch system:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_run -r <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619 /bin/env
+</pre>
+<p />
+Replacing the <span style="background-color: #D1CAF2;">highlighted</span> text with the hostname of the CE. If you are troubleshooting an HTCondor-CE that you do not have a login for and the CE accepts <a href="/bin/view/Documentation/Release3/InstallHTCondorCE#LocalUni" class="twikiAnchorLink">local universe jobs</a>, you can run commands locally on the CE with <code>condor_ce_run</code> with the <code>-l</code> option. The following example outputs the JobRouterLog of the CE in question:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_run -lr <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619 cat /var/log/condor-ce/JobRouterLog
+</pre>
+<p />
+Replacing the <span style="background-color: #D1CAF2;">highlighted</span> text with the hostname of the CE. To disable this feature on your CE, consult <a href="/bin/view/Documentation/Release3/InstallHTCondorCE#LocalUni" class="twikiAnchorLink">this</a> section of the install documentation.
+<p />
+<h4><a name="Troubleshooting"></a> Troubleshooting </h4>
+<p /> <ol>
+<li> <strong>If you do not see any results:</strong> <code>condor_ce_run</code> does not display results until the job completes on the CE, which may take several minutes or longer if the CE is busy. In the meantime,  can use <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorQ" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_q</a> in a separate terminal to track the job on the CE. If you never see any results, use <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorTrace" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_trace</a> to pinpoint errors.
+</li> <li> <strong>If you see an error message that begins with &ldquo;Failed to&hellip;&rdquo;:</strong> Check connectivity to the CE with <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorTrace" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_trace</a> or <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorPing" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_ping</a>
+</li></ol> 
+<p />
+<a name="CondorTrace"></a>
+<h3><a name="condor_ce_trace"></a> condor_ce_trace </h3>
+<p />
+<h4><a name="Usage_AN1"></a> Usage </h4>
+<p />
+If <code>condor_ce_run</code> fails, the <code>condor_ce_trace</code> tool may help in verifying the install:
+<p />
+<pre class="screen">
+condor_ce_trace --debug <span style="background-color: #D1CAF2;">condorce.example.com</span>
+</pre>
+<p />
+<div class="twistyPlugin twikiMakeVisibleInline">  <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE1show" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Show an example condor_ce_trace run</span></a> </span> <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE1hide" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyHidden twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Hide Full Output</span></a> </span>  </div><!--/twistyPlugin twikiMakeVisibleInline--> <div class="twistyPlugin"><div id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE1toggle" class="twistyRememberSetting twistyStartHide twistyContent twikiMakeHidden twistyInited0">
+<pre class="screen">
+[user@client ~]$ condor_ce_trace condorce.example.com
+Testing HTCondor-CE collector connectivity.
+***** condor_ping output *****
+10/07/14 12:54:40 recognized 60011 as command number.
+Remote Version:              $CondorVersion: 8.0.7 Sep 24 2014 $
+Local  Version:              $CondorVersion: 8.0.7 Sep 24 2014 $
+Session ID:                  condorce:22494:1412704480:2403
+Instruction:                 60011
+Command:                     60011
+Encryption:                  none
+Integrity:                   MD5
+Authenticated using:         GSI
+All authentication methods:  GSI
+Remote Mapping:              glow@users.opensciencegrid.org
+Authorized:                  TRUE
+
+********************
+- Successful ping of collector on <131.225.154.68:9619>.
+
+Testing HTCondor-CE schedd connectivity.
+***** condor_ping output *****
+10/07/14 12:54:40 recognized 60011 as command number.
+Remote Version:              $CondorVersion: 8.0.7 Sep 24 2014 $
+Local  Version:              $CondorVersion: 8.0.7 Sep 24 2014 $
+Session ID:                  condorce:22495:1412704480:336
+Instruction:                 60011
+Command:                     60011
+Encryption:                  none
+Integrity:                   MD5
+Authenticated using:         GSI
+All authentication methods:  GSI
+Remote Mapping:              glow@users.opensciencegrid.org
+Authorized:                  TRUE
+
+********************
+- Successful ping of schedd on <131.225.154.68:9620?sock=22489_8590_4>.
+
+Job ad, pre-submit: 
+    [
+        Log = "/cloud/login/blin/.log_5237_YCPBqo"; 
+        x509UserProxyVOName = "GLOW"; 
+        x509userproxysubject = "/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047/CN=proxy"; 
+        Out = "/cloud/login/blin/.stdout_5237_s9KGwd"; 
+        LeaveJobInQueue = ( StageOutFinish > 0 ) isnt true; 
+        x509UserProxyFirstFQAN = "/GLOW/Role=NULL/Capability=NULL"; 
+        x509userproxy = "/tmp/x509up_u47646"; 
+        x509UserProxyFQAN = "/GLOW/Role=NULL/Capability=NULL"; 
+        Args = ""; 
+        Err = "/cloud/login/blin/.stderr_5237_j_FluG"; 
+        Cmd = "/bin/env"; 
+        x509UserProxyExpiration = 1412736896
+    ]
+Submitting job to schedd <131.225.154.68:9620?sock=22489_8590_4>
+- Successful submission; cluster ID 229
+Resulting job ad: 
+    [
+        BufferSize = 524288; 
+        NiceUser = false; 
+        CoreSize = -1; 
+        CumulativeSlotTime = 0; 
+        OnExitHold = false; 
+        RequestCpus = 1; 
+        Err = "_condor_stderr"; 
+        BufferBlockSize = 32768; 
+        x509userproxy = "/tmp/x509up_u47646"; 
+        TransferOutputRemaps = "_condor_stdout=/cloud/login/blin/.stdout_5237_s9KGwd;_condor_stderr=/cloud/login/blin/.stderr_5237_j_FluG"; 
+        ImageSize = 100; 
+        CurrentTime = time(); 
+        WantCheckpoint = false; 
+        CommittedTime = 0; 
+        TargetType = "Machine"; 
+        WhenToTransferOutput = "ON_EXIT"; 
+        Cmd = "/bin/env"; 
+        JobUniverse = 5; 
+        ExitBySignal = false; 
+        HoldReasonCode = 16; 
+        Iwd = "/cloud/login/blin"; 
+        NumRestarts = 0; 
+        CommittedSuspensionTime = 0; 
+        Owner = undefined; 
+        NumSystemHolds = 0; 
+        CumulativeSuspensionTime = 0; 
+        RequestDisk = DiskUsage; 
+        Requirements = true && TARGET.OPSYS == "LINUX" && TARGET.ARCH == "X86_64" && TARGET.HasFileTransfer && TARGET.Disk >= RequestDisk && TARGET.Memory >= RequestMemory; 
+        MinHosts = 1; 
+        JobNotification = 0; 
+        NumCkpts = 0; 
+        LastSuspensionTime = 0; 
+        NumJobStarts = 0; 
+        WantRemoteSyscalls = false; 
+        JobPrio = 0; 
+        RootDir = "/"; 
+        CurrentHosts = 0; 
+        x509UserProxyExpiration = 1412736896; 
+        StreamOut = false; 
+        WantRemoteIO = true; 
+        OnExitRemove = true; 
+        DiskUsage = 1; 
+        In = "/dev/null"; 
+        PeriodicRemove = false; 
+        RemoteUserCpu = 0.0; 
+        LocalUserCpu = 0.0; 
+        LocalSysCpu = 0.0; 
+        RemoteSysCpu = 0.0; 
+        ClusterId = 229; 
+        Log = "/cloud/login/blin/.log_5237_YCPBqo"; 
+        CompletionDate = 0; 
+        RemoteWallClockTime = 0.0; 
+        x509UserProxyFQAN = "/GLOW/Role=NULL/Capability=NULL"; 
+        LeaveJobInQueue = JobStatus == 4 && ( CompletionDate is UNDDEFINED || CompletionDate == 0 || ( ( time() - CompletionDate ) < 864000 ) ); 
+        CondorVersion = "$CondorVersion: 8.0.7 Sep 24 2014 $"; 
+        MyType = "Job"; 
+        StreamErr = false; 
+        HoldReason = "Spooling input data files"; 
+        PeriodicHold = false; 
+        ProcId = 0; 
+        x509UserProxyFirstFQAN = "/GLOW/Role=NULL/Capability=NULL"; 
+        Out = "_condor_stdout"; 
+        JobStatus = 5; 
+        PeriodicRelease = false; 
+        RequestMemory = ifthenelse(MemoryUsage isnt undefined,MemoryUsage,( ImageSize + 1023 ) / 1024); 
+        Args = ""; 
+        MaxHosts = 1; 
+        TotalSuspensions = 0; 
+        CommittedSlotTime = 0; 
+        x509userproxysubject = "/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=People/CN=Brian Lin 1047/CN=proxy"; 
+        x509UserProxyVOName = "GLOW"; 
+        CondorPlatform = "$CondorPlatform: X86_64-CentOS_6.5 $"; 
+        ShouldTransferFiles = "YES"; 
+        ExitStatus = 0; 
+        QDate = 1412704480; 
+        EnteredCurrentStatus = 1412704480
+    ]
+Spooling cluster 229 files to schedd <131.225.154.68:9620?sock=22489_8590_4>
+- Successful spooling
+Querying job status (1/600)
+Job status: Held
+Querying job status (2/600)
+Job status: Idle
+Querying job status (3/600)
+Job status: Idle
+Querying job status (4/600)
+Job status: Idle
+Querying job status (5/600)
+Job status: Idle
+Querying job status (6/600)
+Job status: Idle
+Querying job status (7/600)
+Job status: Idle
+Querying job status (8/600)
+Job status: Idle
+Querying job status (9/600)
+Job status: Idle
+Querying job status (10/600)
+Job status: Idle
+Querying job status (11/600)
+Job status: Idle
+Querying job status (12/600)
+Job status: Idle
+Querying job status (13/600)
+Job status: Idle
+Querying job status (14/600)
+Job status: Idle
+Querying job status (15/600)
+Job status: Idle
+Querying job status (16/600)
+Job status: Idle
+Querying job status (17/600)
+Job status: Idle
+Querying job status (18/600)
+Job status: Idle
+Querying job status (19/600)
+Job status: Idle
+Querying job status (20/600)
+Job status: Idle
+Querying job status (21/600)
+Job status: Idle
+Querying job status (22/600)
+Job status: Idle
+Querying job status (23/600)
+Job status: Idle
+Querying job status (24/600)
+Job status: Idle
+Querying job status (25/600)
+Job status: Idle
+Querying job status (26/600)
+Job status: Idle
+Querying job status (27/600)
+Job status: Idle
+Querying job status (28/600)
+Job status: Idle
+Querying job status (29/600)
+Job status: Idle
+Querying job status (30/600)
+Job status: Idle
+Querying job status (31/600)
+Job status: Idle
+Querying job status (32/600)
+Job status: Idle
+Querying job status (33/600)
+Job status: Idle
+Querying job status (34/600)
+Job status: Idle
+Querying job status (35/600)
+Job status: Idle
+Querying job status (36/600)
+Job status: Idle
+Querying job status (37/600)
+Job status: Idle
+Querying job status (38/600)
+Job status: Idle
+Querying job status (39/600)
+Job status: Idle
+Querying job status (40/600)
+Job status: Idle
+Querying job status (41/600)
+Job status: Idle
+Querying job status (42/600)
+Job status: Idle
+Querying job status (43/600)
+Job status: Idle
+Querying job status (44/600)
+Job status: Idle
+Querying job status (45/600)
+Job status: Idle
+Querying job status (46/600)
+Job status: Idle
+Querying job status (47/600)
+Job status: Idle
+Querying job status (48/600)
+Job status: Completed
+***** Job output *****
+_CONDOR_ANCESTOR_22435=22441:1412360582:256213668
+_CONDOR_ANCESTOR_22441=5347:1412704518:1792957092
+_CONDOR_ANCESTOR_5347=5356:1412704519:2135643703
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+OSG_JOB_CONTACT=host.name/jobmanager-condor
+_CONDOR_SLOT=
+OSG_DEFAULT_SE=None
+OSG_GRID=/etc/osg/wn-client/
+TMPDIR=/var/lib/condor/execute/dir_5347
+GLOBUS_LOCATION=/usr
+_CONDOR_SCRATCH_DIR=/var/lib/condor/execute/dir_5347
+_CONDOR_JOB_IWD=/var/lib/condor/execute/dir_5347
+TEMP=/var/lib/condor/execute/dir_5347
+OSG_HOSTNAME=condorce.example.com
+OSG_STORAGE_ELEMENT=False
+OSG_SITE_NAME=local
+_CONDOR_JOB_PIDS=
+OSG_APP=/share/osg/app
+OSG_WN_TMP=None
+X509_USER_PROXY=/var/lib/condor/execute/dir_5347/x509up_u47646
+TMP=/var/lib/condor/execute/dir_5347
+_CONDOR_JOB_AD=/var/lib/condor/execute/dir_5347/.job.ad
+OSG_SITE_WRITE=None
+OSG_GLEXEC_LOCATION=None
+OSG_DATA=UNAVAILABLE
+HOME=/home/glow
+_CONDOR_MACHINE_AD=/var/lib/condor/execute/dir_5347/.machine.ad
+OSG_SITE_READ=None
+********************
+</pre>
+</div></div> <!--/twistyPlugin-->
+<p />
+The tool contacts both the CE&rsquo;s Schedd and Collector daemons to see if you have permission to submit to the CE, displays the submit script that it submits to the CE, and tracks the resultant job.
+<p />
+<h4><a name="Troubleshooting_AN1"></a> Troubleshooting </h4>
+<p /> <ol>
+<li> <p><strong>If the command fails with &ldquo;Failed ping&hellip;&rdquo;:</strong> Make sure that the HTCondor-CE daemons are running on the CE</p>
+</li> <li> <p><strong>If you see &ldquo;gsi@unmapped&rdquo; in the &ldquo;Remote Mapping&rdquo; line:</strong> Either your credentials are not mapped on the CE or authentication is not set up at all. To set up authentication, refer to our <a href="/bin/view/Documentation/Release3/InstallHTCondorCE#5_2_Setup_Authorization" class="twikiAnchorLink">installation document</a>.</p>
+</li> <li> <p><strong>If the job submits but does not complete:</strong> Look at the status of the job and perform the relevant <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#TroubleshootingItems" class="twikiCurrentTopicLink twikiAnchorLink">troubleshooting steps</a>.</p>
+</li></ol> 
+<p />
+<a name="CondorSubmit"></a>
+<h3><a name="condor_submit"></a> condor_submit </h3>
+<p />
+<h4><a name="Usage_AN2"></a> Usage </h4>
+<p />
+Use the <code>condor_submit</code> (notice that this is <strong>not</strong> <code>condor_ce_submit</code>) command to manually test job submission from a remote host. You may need to try manual submission if you are having difficulty with <code>condor_ce_run</code> or <code>condor_ce_trace</code>, need to specify attributes for your local batch system, or simply want further tests of remote submission.
+<p />
+<pre class="screen">
+[user@client ~]$ condor_submit test.sub
+</pre>
+<p />
+<div class="twistyPlugin twikiMakeVisibleInline">  <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE2show" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Show sample submit file&hellip;</span></a> </span> <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE2hide" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyHidden twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Hide Full Output</span></a> </span>  </div><!--/twistyPlugin twikiMakeVisibleInline--> <div class="twistyPlugin"><div id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE2toggle" class="twistyRememberSetting twistyStartHide twistyContent twikiMakeHidden twistyInited0">
+<pre class="file">
+universe = grid
+grid_resource = condor condorce.example.com condorce.example.com:9619
+
+executable = test.sh
+output = test.out
+error = test.err
+log = test.log
+
+ShouldTransferFiles = YES
+WhenToTransferOutput = ON_EXIT
+
+use_x509userproxy = true
++Owner=undefined
+queue
+</pre>
+</div></div> <!--/twistyPlugin-->
+<p />
+<code>test.sub</code> is a submit file that describes attributes of the job in HTCondor&rsquo;s job description language. It is outside of the scope of this document to describe the full suite of attributes offered by <code>condor_submit</code> but there are a few CE-specific attributes that can be set to override any defaults in the <a href="/bin/view/Documentation/Release3/JobRouterRecipes#2_5_Setting_a_Default" class="twikiAnchorLink">job routes</a>:
+<p />
+<pre class="file">
+# Set the requested memory to 2GB
++maxMemory = 2000
+# Set the requested number of cores to 2
++xcount = 2
+# Set the maximum amount of time that a job should run for to 10 minutes
++maxWallTime = 10
+# Set the job's batch system queue to 'analysis'
++remote_queue = 'analysis'
+</pre>
+<p />
+More information on <code>condor_submit</code> and submit files can be found in the <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_submit.html" target="_top">condor_manual</a>. 
+<p />
+<h4><a name="Troubleshooting_AN2"></a> Troubleshooting </h4>
+<p />
+All interactions between <code>condor_submit</code> and the CE will be recorded in the file specified by the <code>log</code> attribute in your submit file. This includes acknowledgement of the job in your local queue, connection to the CE, and a record of job completion. <div class="twistyPlugin twikiMakeVisibleInline">  <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE3show" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Show sample log file&hellip;</span></a> </span> <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE3hide" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyHidden twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Hide Full Output</span></a> </span>  </div><!--/twistyPlugin twikiMakeVisibleInline--> <div class="twistyPlugin"><div id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE3toggle" class="twistyRememberSetting twistyStartHide twistyContent twikiMakeHidden twistyInited0">
+<pre class="screen">
+000 (786.000.000) 12/09 16:49:55 Job submitted from host: <131.225.154.68:53134>
+...
+027 (786.000.000) 12/09 16:50:09 Job submitted to grid resource
+    GridResource: condor condorce.example.com condorce.example.com:9619
+    GridJobId: condor condorce.example.com condorce.example.com:9619 796.0
+...
+005 (786.000.000) 12/09 16:52:19 Job terminated.
+        (1) Normal termination (return value 0)
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+                Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+        0  -  Run Bytes Sent By Job
+        0  -  Run Bytes Received By Job
+        0  -  Total Bytes Sent By Job
+        0  -  Total Bytes Received By Job
+
+
+</pre>
+</div></div> <!--/twistyPlugin-->
+<p />
+If there are issues contacting the CE, you will see error messages about a 'Down Globus Resource':
+<p />
+<pre class="file">
+020 (788.000.000) 12/09 16:56:17 Detected Down Globus Resource
+    RM-Contact: fermicloud133.fnal.gov
+...
+026 (788.000.000) 12/09 16:56:17 Detected Down Grid Resource
+    GridResource: condor condorce.example.com condorce.example.com:9619
+</pre>
+<p />
+This indicates a communication issue with your CE that can be diagnosed with <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorPing" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_ping</a>.
+<p />
+<a name="CondorPing"></a>
+<h3><a name="condor_ce_ping"></a> condor_ce_ping </h3>
+<p />
+<h4><a name="Usage_AN3"></a> Usage </h4>
+<p />
+Use the following <code>condor_ce_ping</code> command to test your ability to submit jobs to an HTCondor-CE:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_ping -verbose -name <span style="background-color: #D1CAF2;">condorce.example.com</span> -pool <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619 WRITE
+</pre>
+<p />
+The following shows successful output where I am able to submit jobs (Authorized: TRUE) as the glow user (Remote Mapping: <a href="mailto&#58;glow&#64;users&#46;opensciencegrid&#46;org">glow&#64;users.opensciencegrid.org</a>):
+<p />
+<pre class="screen">
+Remote Version:              $CondorVersion: 8.0.7 Sep 24 2014 $
+Local  Version:              $CondorVersion: 8.0.7 Sep 24 2014 $
+Session ID:                  condorce:27407:1412286981:3
+Instruction:                 WRITE
+Command:                     60021
+Encryption:                  none
+Integrity:                   MD5
+Authenticated using:         GSI
+All authentication methods:  GSI
+Remote Mapping:              glow@users.opensciencegrid.org
+Authorized:                  TRUE
+</pre>
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  If you run the <code>condor_ce_ping</code> command on the CE that you are testing, omit the <code>-name</code> and <code>-pool</code> options. <code>condor_ce_ping</code> takes the same arguments as <code>condor_ping</code> and is documented in the <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_ping.html" target="_top">HTCondor manual</a>.
+</dd></dl> 
+<p />
+<h4><a name="Troubleshooting_AN3"></a> Troubleshooting </h4>
+<p /> <ol>
+<li> <strong>If you see &ldquo;ERROR: couldn&rsquo;t locate (null)!&rdquo;</strong>, that means the HTCondor-CE schedd (the daemon that schedules jobs) cannot be reached. To track down the issue, increase debugging levels on the CE:   <pre class="file">
+MASTER_DEBUG = D_FULLDEBUG
+SCHEDD_DEBUG = D_FULLDEBUG</pre>   <p>Then look in the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#MasterLog" class="twikiCurrentTopicLink twikiAnchorLink">Master log</a> and <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#SchedLog" class="twikiCurrentTopicLink twikiAnchorLink">Schedd log</a> for any errors.</p>
+</li> <li> <strong>If you see &ldquo;gsi@unmapped&rdquo; in the &ldquo;Remote Mapping&rdquo; line</strong>, this means that either your credentials are not mapped on the CE or that authentication is not set up at all. To set up authentication, refer to our <a href="/bin/view/Documentation/Release3/InstallHTCondorCE#5_2_Setup_Authorization" class="twikiAnchorLink">installation document</a>.
+</li></ol> 
+<p />
+<a name="CondorQ"></a>
+<h3><a name="condor_ce_q"></a> condor_ce_q </h3>
+<p />
+<h4><a name="Usage_AN4"></a> Usage </h4>
+<p />
+<code>condor_ce_q</code> can display job status or specific job attributes for jobs that are still in the CE&rsquo;s queue.
+<p />
+To list jobs that are queued on a CE:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_q -name <span style="background-color: #D1CAF2;">condorce.example.com</span> -pool <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619
+</pre>
+<p />
+To inspect the full ClassAd for a specific job, specify the <code>-l</code> flag and the job ID:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_q -name <span style="background-color: #D1CAF2;">condorce.example.com</span> -pool <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619 -l &lt;Job ID&gt;
+</pre>
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  If you run the <code>condor_ce_q</code> command on the CE that you are testing, omit the <code>-name</code> and <code>-pool</code> options. <code>condor_ce_q</code> takes the same arguments as <code>condor_q</code> and is documented in the <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_q.html" target="_top">HTCondor manual</a>. 
+</dd></dl> 
+<p />
+<h4><a name="Troubleshooting_AN4"></a> Troubleshooting </h4>
+<p />
+If the jobs that you are submiting to a CE are not completing, <code>condor_ce_q</code> can tell you the status of your jobs.
+<p /> <ol>
+<li> <strong>If the schedd is not running:</strong> You will see a lengthy message about being unable to contact the schedd. To track down the issue, increase the debugging levels on the CE with: <pre class="file">
+MASTER_DEBUG = D_FULLDEBUG
+SCHEDD_DEBUG = D_FULLDEBUG
+</pre> <p>To apply these changes, reconfigure HTCondor-CE:</p> <pre class="rootscreen">[root@client ~]$ condor_ce_reconfig</pre> <p>Then look in the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#MasterLog" class="twikiCurrentTopicLink twikiAnchorLink">Master log</a> and <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#SchedLog" class="twikiCurrentTopicLink twikiAnchorLink">Schedd log</a> on the CE for any errors.</p>
+</li> <li> <strong>If there are issues with contacting the collector:</strong> You will see the following message:<pre class="screen">
+condor_ce_q -pool ce1.accre.vanderbilt.edu -name ce1.accre.vanderbilt.edu
+
+-- Failed to fetch ads from: <129.59.197.223:9620?sock=33630_8b33_4> : ce1.accre.vanderbilt.edu</pre><p>This may be due to network issues or bad HTCondor daemon permissions. To fix the latter issue, ensure that the <code>ALLOW_READ</code> configuration value is not set by checking <code>condor_ce_config_val</code>:</p><pre class="screen">[user@client ~]$ condor_ce_config_val -v ALLOW_READ
+Not defined: ALLOW_READ</pre><p>If it is defined, remove it from the file that is returned in the output.</p>
+</li> <li> <strong>If a job is held:</strong> There should be an accompanying <code>HoldReason</code> that will tell you why it is being held. The <code>HoldReason</code> is in the job&rsquo;s ClassAd, so you can use the long form of <code>condor_ce_q</code> to extract its value: <pre class="screen">
+[user@client ~]$ condor_ce_q -name <span style="background-color: #D1CAF2;">condorce.example.com</span> -pool <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619 -l <Job ID> | grep HoldReason</pre>
+</li> <li> <strong>If a job is idle:</strong> The most common cause is that it is not matching any routes in the CE&rsquo;s job router. To find out whether this is the case, use the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorJobRouterInfo" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_job_router_info</a>.
+</li></ol> 
+<p />
+<a name="CondorHistory"></a>
+<h3><a name="condor_ce_history"></a> condor_ce_history </h3>
+<p />
+<h4><a name="Usage_AN5"></a> Usage </h4>
+<p />
+<code>condor_ce_history</code> can display job status or specific job attributes for jobs that have that have left the CE&rsquo;s queue.
+<p />
+To list jobs that have run on the CE:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_history -name <span style="background-color: #D1CAF2;">condorce.example.com</span> -pool <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619
+</pre>
+<p />
+To inspect the full ClassAd for a specific job, specify the <code>-l</code> flag and the job ID:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_history -name <span style="background-color: #D1CAF2;">condorce.example.com</span> -pool <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619 -l &lt;Job ID&gt;
+</pre>
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  If you run the <code>condor_ce_history</code> command on the CE that you are testing, omit the <code>-name</code> and <code>-pool</code> options. <code>condor_ce_history</code> takes the same arguments as <code>condor_history</code> and is documented in the <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_history.html" target="_top">HTCondor manual</a>. 
+</dd></dl> 
+<p />
+<a name="CondorJobRouterInfo"></a>
+<h3><a name="condor_ce_job_router_info"></a> condor_ce_job_router_info </h3>
+<p />
+<h4><a name="Usage_AN6"></a> Usage </h4>
+<p />
+Use the <code>condor_ce_job_router_info</code> command to help troubleshoot your routes and how jobs will match to them. 
+<p />
+To see all of your routes (the output is long because it combines your routes with the <a href="/bin/view/Documentation/Release3/JobRouterRecipes#JobRouterDefaults" class="twikiAnchorLink">JOB_ROUTER_DEFAULTS</a> configuration variable):
+<p />
+<pre class="screen">
+[root@client ~]$ condor_ce_job_router_info -config
+</pre>
+<p />
+<div class="twistyPlugin twikiMakeVisibleInline">  <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE4show" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Show sample output&hellip;</span></a> </span> <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE4hide" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyHidden twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Hide Full Output</span></a> </span>  </div><!--/twistyPlugin twikiMakeVisibleInline--> <div class="twistyPlugin"><div id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE4toggle" class="twistyRememberSetting twistyStartHide twistyContent twikiMakeHidden twistyInited0">
+<pre class="screen">
+Route 1
+Name         : "Local_PBS"
+Universe     : 9
+MaxJobs      : 10000
+MaxIdleJobs  : 2000
+GridResource : batch pbs
+Requirements : target.osgTestPBS is true
+ClassAd      : 
+    [
+        set_osg_environment = "OSG_GRID='/etc/osg/wn-client/' OSG_SITE_READ='None' OSG_APP='/share/osg/app' OSG_HOSTNAME='condorce.example.com' OSG_DATA='UNAVAILABLE' OSG_GLEXEC_LOCATION='None' GLOBUS_LOCATION='/usr' OSG_STORAGE_ELEMENT='False' OSG_SITE_NAME='local' OSG_WN_TMP='None' PATH='/bin:/usr/bin:/sbin:/usr/sbin' OSG_SITE_WRITE='None' OSG_DEFAULT_SE='None' OSG_JOB_CONTACT='host.name/jobmanager-condor'"; 
+        set_requirements = true; 
+        MaxJobs = 10000; 
+        copy_environment = "orig_environment"; 
+        eval_set_remote_SMPGranularity = ifThenElse(InputRSL.xcount isnt null,InputRSL.xcount,ifThenElse(xcount isnt null,xcount,ifThenElse(default_xcount isnt null,default_xcount,1))); 
+        delete_PeriodicRemove = true; 
+        GridResource = "batch pbs"; 
+        set_RoutedJob = true; 
+        name = "Local_PBS"; 
+        MaxIdleJobs = 2000; 
+        eval_set_environment = debug(strcat("HOME=",userHome(Owner,"/")," ",ifThenElse(orig_environment is undefined,osg_environment,strcat(osg_environment," ",orig_environment)))); 
+        eval_set_RequestMemory = ifThenElse(InputRSL.maxMemory isnt null,InputRSL.maxMemory,ifThenElse(maxMemory isnt null,maxMemory,ifThenElse(default_maxMemory isnt null,default_maxMemory,2000))); 
+        eval_set_remote_NodeNumber = ifThenElse(InputRSL.xcount isnt null,InputRSL.xcount,ifThenElse(xcount isnt null,xcount,ifThenElse(default_xcount isnt null,default_xcount,1))); 
+        eval_set_remote_queue = ifThenElse(InputRSL.queue isnt null,InputRSL.queue,ifThenElse(queue isnt null,queue,ifThenElse(default_queue isnt null,default_queue,""))); 
+        eval_set_remote_cerequirements = ifThenElse(InputRSL.maxWallTime isnt null,strcat("Walltime == ",string(60 * InputRSL.maxWallTime)," && CondorCE == 1"),"CondorCE == 1"); 
+        delete_osgTestPBS = true; 
+        Requirements = target.osgTestPBS is true; 
+        eval_set_RequestCpus = ifThenElse(InputRSL.xcount isnt null,InputRSL.xcount,ifThenElse(xcount isnt null,xcount,ifThenElse(default_xcount isnt null,default_xcount,1))); 
+        delete_CondorCE = true; 
+        TargetUniverse = 9
+    ]
+
+Route 2
+Name         : "Condor Test"
+Universe     : 5
+MaxJobs      : 10000
+MaxIdleJobs  : 2000
+GridResource : 
+Requirements : true
+ClassAd      : 
+    [
+        set_osg_environment = "OSG_GRID='/etc/osg/wn-client/' OSG_SITE_READ='None' OSG_APP='/share/osg/app' OSG_HOSTNAME='condorce.example.com' OSG_DATA='UNAVAILABLE' OSG_GLEXEC_LOCATION='None' GLOBUS_LOCATION='/usr' OSG_STORAGE_ELEMENT='False' OSG_SITE_NAME='local' OSG_WN_TMP='None' PATH='/bin:/usr/bin:/sbin:/usr/sbin' OSG_SITE_WRITE='None' OSG_DEFAULT_SE='None' OSG_JOB_CONTACT='host.name/jobmanager-condor'"; 
+        eval_set_accounting_group = "accounting_group"; 
+        set_requirements = true; 
+        MaxJobs = 10000; 
+        copy_environment = "orig_environment"; 
+        eval_set_remote_SMPGranularity = ifThenElse(InputRSL.xcount isnt null,InputRSL.xcount,ifThenElse(xcount isnt null,xcount,ifThenElse(default_xcount isnt null,default_xcount,1))); 
+        delete_PeriodicRemove = true; 
+        set_RoutedJob = true; 
+        name = "Condor Test"; 
+        MaxIdleJobs = 2000; 
+        eval_set_environment = debug(strcat("HOME=",userHome(Owner,"/")," ",ifThenElse(orig_environment is undefined,osg_environment,strcat(osg_environment," ",orig_environment)))); 
+        eval_set_accounting_group_user = "blin_user"; 
+        eval_set_RequestMemory = ifThenElse(InputRSL.maxMemory isnt null,InputRSL.maxMemory,ifThenElse(maxMemory isnt null,maxMemory,ifThenElse(default_maxMemory isnt null,default_maxMemory,2000))); 
+        eval_set_remote_NodeNumber = ifThenElse(InputRSL.xcount isnt null,InputRSL.xcount,ifThenElse(xcount isnt null,xcount,ifThenElse(default_xcount isnt null,default_xcount,1))); 
+        eval_set_remote_queue = ifThenElse(InputRSL.queue isnt null,InputRSL.queue,ifThenElse(queue isnt null,queue,ifThenElse(default_queue isnt null,default_queue,""))); 
+        eval_set_remote_cerequirements = ifThenElse(InputRSL.maxWallTime isnt null,strcat("Walltime == ",string(60 * InputRSL.maxWallTime)," && CondorCE == 1"),"CondorCE == 1"); 
+        Requirements = true; 
+        eval_set_RequestCpus = ifThenElse(InputRSL.xcount isnt null,InputRSL.xcount,ifThenElse(xcount isnt null,xcount,ifThenElse(default_xcount isnt null,default_xcount,1))); 
+        delete_CondorCE = true; 
+        TargetUniverse = 5
+    ]
+</pre>
+</div></div> <!--/twistyPlugin-->
+<p />
+To see how the job router is handling a job that is currently in the CE&rsquo;s queue, analyze the output of <code>condor_ce_q</code> (replace the <span style="background-color: #D1CAF2;">highlighted</span> text with the job ID that you are interested in):
+<p />
+<pre class="screen">
+[root@client ~]$ condor_ce_q -l <span style="background-color: #D1CAF2;">&lt;Job ID&gt;</span> | condor_ce_job_router_info -match-jobs -ignore-prior-routing -jobads -
+</pre>
+<p />
+<div class="twistyPlugin twikiMakeVisibleInline">  <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE5show" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Show sample output&hellip;</span></a> </span> <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE5hide" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyHidden twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Hide Full Output</span></a> </span>  </div><!--/twistyPlugin twikiMakeVisibleInline--> <div class="twistyPlugin"><div id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE5toggle" class="twistyRememberSetting twistyStartHide twistyContent twikiMakeHidden twistyInited0">
+<pre class="screen">
+Matching jobs against routes to find candidate jobs.
+
+Checking for candidate jobs. routing table is:
+Route Name             Submitted/Max        Idle/Max     Throttle
+Local_PBS                      0/  10000       0/   2000     none
+Condor Test                    0/  10000       0/   2000     none
+
+Umbrella constraint: ((target.x509userproxysubject =!= UNDEFINED) && (target.x509UserProxyExpiration =!= UNDEFINED) && (time() < target.x509UserProxyExpiration) && (target.JobUniverse =?= 5 || target.JobUniverse =?= 1)) && ( (target.osgTestPBS is true) || (true) ) && (target.ProcId >= 0 && target.JobStatus == 1 && (target.StageInStart is undefined || target.StageInFinish isnt undefined) && target.Managed isnt "ScheddDone" && target.Managed isnt "External" && target.Owner isnt Undefined && target.RoutedBy isnt "htcondor-ce")
+Checking Job src=162,0 against all routes
+	Route Matches: Condor Test
+Found candidate job src=162,0,route=Condor Test
+1 candidate jobs found
+</pre>
+</div></div> <!--/twistyPlugin-->
+<p />
+To inspect a job that has already left the queue, use <code>condor_ce_history</code> instead of <code>condor_ce_q</code>:
+<p />
+<pre class="screen">
+[root@client ~]$ condor_ce_history -l <span style="background-color: #D1CAF2;">&lt;Job ID&gt;</span> | condor_ce_job_router_info -match-jobs -ignore-prior-routing -jobads -
+</pre>
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  If the proxy for the job has expired, the job will not match any routes. To work around this constraint:
+</dd></dl> 
+<p />
+<pre class="screen">
+[root@client ~]$ condor_ce_history -l <span style="background-color: #D1CAF2;">&lt;Job ID&gt;</span> | sed "s/^\(x509UserProxyExpiration\) = .*/\1 = `date +%s --date '+1 sec'`/" | condor_ce_job_router_info -match-jobs -ignore-prior-routing -jobads -
+</pre>
+<p />
+Alternatively, you can provide a file containing a job&rsquo;s ClassAd as the input and edit attributes within that file:
+<p />
+<pre class="screen">
+[root@client ~]$ condor_ce_job_router_info -match-jobs -ignore-prior-routing -jobads <span style="background-color: #D1CAF2;">&lt;JobAd file&gt;</span>
+</pre>
+<p />
+<h4><a name="Troubleshooting_AN5"></a> Troubleshooting </h4>
+<p /> <ol>
+<li> <p><strong>If the job does not match any route:</strong> You can identify this case when you see <code>0 candidate jobs found</code> in the <code>condor_job_router_info</code> output. This message means that, when compared to your job&rsquo;s ClassAd, the Umbrella constraint does not evaluate to <code>true</code>. When troubleshooting, look at all of the expressions prior to the <code>target.ProcId &gt;&#61; 0</code> expression, because it and everything following it is logic that the job router added so that routed jobs do not get routed again. <div class="twistyPlugin twikiMakeVisibleInline">  <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE6show" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleopen-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Show sample output&hellip;</span></a> </span> <span id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE6hide" class="twistyRememberSetting twistyStartHide twistyTrigger twikiUnvisited twistyHidden twistyInited0"><a href="#"><img src="/twiki/pub/TWiki/TWikiDocGraphics/toggleclose-small.gif" border="0" alt="" /><span class="twikiLinkLabel twikiUnvisited">Hide Full Output</span></a> </span>  </div><!--/twistyPlugin twikiMakeVisibleInline--> <div class="twistyPlugin"><div id="twistyIdDocumentation/Release3TroubleshootingHTCondorCE6toggle" class="twistyRememberSetting twistyStartHide twistyContent twikiMakeHidden twistyInited0"><pre class="screen">
+Umbrella constraint: ((target.x509userproxysubject =!= UNDEFINED) && (target.x509UserProxyExpiration =!= UNDEFINED) && (time() < target.x509UserProxyExpiration) && (target.JobUniverse =?= 5 || target.JobUniverse =?= 1)) && ( (target.osgTestPBS is true) || (true) ) && (target.ProcId >= 0 && target.JobStatus == 1 && (target.StageInStart is undefined || target.StageInFinish isnt undefined) && target.Managed isnt "ScheddDone" && target.Managed isnt "External" && target.Owner isnt Undefined && target.RoutedBy isnt "htcondor-ce")
+<span style="background-color: #D1CAF2;">0 candidate jobs found</span>
+</pre> </div></div> <!--/twistyPlugin--> </p>
+</li> <li> <strong>If your job matches more than one route:</strong> the tool will tell you by showing all matching routes after the job ID:    <pre class="screen">Checking Job src=162,0 against all routes
+<span style="background-color: #D1CAF2;">Route Matches: Local_PBS</span>
+<span style="background-color: #D1CAF2;">Route Matches: Condor Test</span></pre>      <p>To troubleshoot why this is occuring, look at the combined Requirements expressions for all routes and compare it to the job&rsquo;s ClassAd provided. The combined Requirements expression is <span style="background-color: #D1CAF2;">highlighted</span> below:</p><pre class="screen">Umbrella constraint: ((target.x509userproxysubject =!= UNDEFINED) && 
+(target.x509UserProxyExpiration =!= UNDEFINED) && 
+(time() < target.x509UserProxyExpiration) && 
+(target.JobUniverse =?= 5 || target.JobUniverse =?= 1)) && 
+<span style="background-color: #D1CAF2;">( (target.osgTestPBS is true) || (true) )</span> && 
+(target.ProcId >= 0 && target.JobStatus == 1 && 
+(target.StageInStart is undefined || target.StageInFinish isnt undefined) && 
+target.Managed isnt "ScheddDone" && 
+target.Managed isnt "Extenal" && 
+target.Owner isnt Undefined && 
+target.RoutedBy isnt "htcondor-ce")
+</pre>      <p>Both routes evaluate to <code>true</code> for the job&rsquo;s ClassAd because it contained <code>osgTestPBS = true</code>. Make sure your routes are mutually exclusive, otherwise you may have jobs routed incorrectly! See the <a href="/bin/view/Documentation/Release3/JobRouterRecipes" class="twikiLink">job route configuration page</a> for more details.</p>
+</li> <li> <strong>If it is unclear why jobs are matching a route:</strong> wrap the route's requirements expression in <a href="/bin/view/Documentation/Release3/JobRouterRecipes#2_7_Debugging_Routes" class="twikiAnchorLink">debug()</a> and check the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#JobRouterLog" class="twikiCurrentTopicLink twikiAnchorLink">JobRouterLog</a> for more information.
+</li></ol> 
+<p />
+<a name="CondorJobRouterQ"></a>
+<h3><a name="condor_ce_router_q"></a> condor_ce_router_q </h3>
+<p />
+<h4><a name="Usage_AN7"></a> Usage </h4>
+<p />
+If you have multiple job routes and many jobs, <code>condor_ce_router_q</code> is a useful tool to see how jobs are being routed and their statuses:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_router_q
+</pre>
+<p />
+<code>condor_ce_router_q</code> takes the same options as <code>condor_router_q</code> and <code>condor_q</code> and is documented in the <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_router_q.html" target="_top">HTCondor manual</a>
+<p />
+<a name="CondorStatus"></a>
+<h3><a name="condor_ce_status"></a> condor_ce_status </h3>
+<p />
+<h4><a name="Usage_AN8"></a> Usage </h4>
+<p />
+To see the daemons running on a CE, you can run the following:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_status -any -name <span style="background-color: #D1CAF2;">condorce.example.com</span> -pool <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619
+</pre>
+<p />
+Replace the <span style="background-color: #D1CAF2;">highlighted</span> text with the hostname of the CE. 
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  If you run the <code>condor_ce_status</code> command on the CE that you are testing, omit the <code>-name</code> and <code>-pool</code> options. <code>condor_ce_status</code> takes the same arguments as <code>condor_status</code> and is documented in the <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_status.html" target="_top">HTCondor manual</a>.
+</dd></dl> 
+<p />
+<h4><a name="Troubleshooting_AN6"></a> Troubleshooting </h4>
+<p />
+To list the daemons that are configured to run:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_config_val -v DAEMON_LIST
+DAEMON_LIST: MASTER COLLECTOR SCHEDD JOB_ROUTER, SHARED_PORT, SHARED_PORT
+  Defined in '/etc/condor-ce/config.d/03-ce-shared-port.conf', line 9.
+</pre>
+<p />
+If you do not see these daemons in the output of <code>condor_ce_status</code>, check the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#MasterLog" class="twikiCurrentTopicLink twikiAnchorLink">Master log</a> for errors.
+<p />
+<a name="CondorConfigVal"></a>
+<h3><a name="condor_ce_config_val"></a> condor_ce_config_val </h3>
+<p />
+<h4><a name="Usage_AN9"></a> Usage </h4>
+<p />
+To see the value of configuration variables and where they are set, use <code>condor_ce_config_val</code>. Primarily, This tool is used with the other troubleshooting tools to make sure your configuration is set properly. To see the value of a single variable and where it is set:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_config_val -v <span style="background-color: #D1CAF2;">&lt;configuration variable&gt;</span>
+</pre>
+<p />
+To see a list of all configuration variables and their values:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_config_val -dump
+</pre>
+<p />
+To see a list of all the files that are used to create your configuration and the order that they are parsed, use the following command:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_config_val -config
+</pre>
+<p />
+<code>condor_ce_config_val</code> takes the same arguments as <code>condor_config_val</code> and is documented in the <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/condor_config_val.html" target="_top">HTCondor manual</a>.
+<p />
+<a name="CondorReconfig"></a>
+<h3><a name="condor_ce_reconfig"></a> condor_ce_reconfig </h3>
+<p />
+<h4><a name="Usage_AN10"></a> Usage </h4>
+<p />
+To ensure that your configuration changes have taken effect, run <code>condor_ce_reconfig</code>.
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_reconfig
+</pre>
+<p />
+<a name="CondorOnOffRestart"></a>
+<h3><a name="condor_ce_on_off_restart"></a> condor_ce_{on,off,restart} </h3>
+<p />
+<h4><a name="Usage_AN11"></a> Usage </h4>
+<p />
+To turn on/off/restart HTCondor-CE daemons, use the following commands:
+<p />
+<pre class="screen">
+[root@client ~]$ condor_ce_on
+[root@client ~]$ condor_ce_off
+[root@client ~]$ condor_ce_restart
+</pre>
+<p />
+The HTCondor-CE service uses the previous commands with default values. Using these commands directly gives you more fine-grained control over the behavior of HTCondor-CE's on/off/restart:
+<p /> <ul>
+<li> If you have installed a new version of HTCondor-CE and want to restart the CE under the new version, run the following command:<pre class="screen">
+[root@client ~]$ condor_ce_restart -fast
+</pre>    <p>This will cause HTCondor-CE to restart and quickly reconnect to all running jobs.</p>
+</li> <li> If you need to stop running new jobs, run the following:<pre class="screen">
+[root@client ~]$ condor_ce_off -peaceful
+</pre><p>This will cause HTCondor-CE to accept new jobs without starting them and will wait for currently running jobs to complete before turning all the daemons exit.</p>
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="General_Troubleshooting_Items"></a> General Troubleshooting Items </span></h2>
+<p />
+<h3><a name="Making_sure_packages_are_up_to_d"></a> Making sure packages are up-to-date </h3>
+<p />
+It is important to make sure that the HTCondor-CE and related RPMs are up-to-date.
+<p />
+<pre class="screen">yum update <em>"htcondor-ce*" blahp condor</em></pre>
+If you just want to see the packages to update, but do not want to perform the update now, answer <code>N</code> at the prompt.
+<p />
+<h3><a name="Verify_package_contents"></a> Verify package contents </h3>
+<p />
+If the contents of your HTCondor-CE packages have been changed, the CE may cease to function properly. To verify the contents of your packages (ignoring changes to configuration files):
+<p />
+<pre class="screen">
+[user@client ~]$ rpm -q --verify htcondor-ce htcondor-ce-client blahp | awk '$2 != "c" {print $0}'
+</pre>
+<p />
+If the verification command returns output, this means that your packages have been changed. To fix this, you can reinstall the packages:
+<p />
+<pre class="screen">
+[user@client ~]$ yum reinstall htcondor-ce htcondor-ce-client blahp
+</pre>
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  The reinstall command may place original versions of configuration files alongside the versions that you have modified. If this is the case, the reinstall command will notify you that the original versions will have an <code>.rpmnew</code> suffix. Further inspection of these files may be required as to whether or not you need to merge them into your current configuration.
+</dd></dl> 
+<p />
+<h3><a name="Verify_clocks_are_synchronized"></a> Verify clocks are synchronized </h3>
+<p />
+Like all GSI-based authentication, HTCondor-CE is sensitive to time skews.  Make sure the clock on your CE is synchronized using a utility such as <code>ntpd</code>. Additionally, HTCondor itself is sensitive to time skews on the NFS server.  If you see empty stdout / err being returned to the submitter, verify there is no NFS server time skew.
+<p />
+<a name="TroubleshootingItems"></a>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="HTCondor_CE_Troubleshooting_Item"></a> HTCondor-CE Troubleshooting Items </span></h2>
+<p />
+This section contains common issues you may encounter using HTCondor-CE and next actions to take when you do. Before troubleshooting, we recommend increasing the log level:
+<p /> <ol>
+<li> Write the following into <code>/etc/condor-ce/config.d/99-local.conf</code> to increase the log level for all daemons:    <pre class="file">ALL_DEBUG = D_FULLDEBUG</pre>
+</li> <li> Ensure that the configuration is in place:    <pre class="rootscreen">[root@client ~]$ condor_ce_reconfig</pre>
+</li> <li> Reproduce the issue
+</li></ol> 
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  Before spending any time on troubleshooting, you should ensure that the state of configuration is as expected by running <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorReconfig" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_reconfig</a>.
+</dd></dl> 
+<p />
+<h3><a name="Daemons_fail_to_start"></a> Daemons fail to start </h3>
+<p />
+If there are errors in your configuration of HTCondor-CE, this may cause some of its required daemons to fail to startup. Check the following subsections in order:
+<p />
+<strong>Symptoms</strong>
+<p />
+Daemon startup failure may manifest in many ways, the following are few symptoms of the problem.
+<p /> <ul>
+<li> The service fails to start:    <pre class="rootscreen">[root@client ~]$ service condor-ce start
+Starting Condor-CE daemons:			[ FAIL ]
+</pre>
+</li> <li> <code>condor_ce_q</code> fails with a lengthy error message:    <pre class="screen">[user@client ~]$ condor_ce_q
+Error: 
+
+Extra Info: You probably saw this error because the condor_schedd is not 
+running on the machine you are trying to query. If the condor_schedd is not 
+running, the Condor system will not be able to find an address and port to 
+connect to and satisfy this request. Please make sure the Condor daemons are 
+running and try again.
+ 
+Extra Info: If the condor_schedd is running on the machine you are trying to 
+query and you still see the error, the most likely cause is that you have 
+setup a personal Condor, you have not defined SCHEDD_NAME in your 
+condor_config file, and something is wrong with your SCHEDD_ADDRESS_FILE 
+setting. You must define either or both of those settings in your config 
+file, or you must use the -name option to condor_q. Please see the Condor 
+manual for details on SCHEDD_NAME and SCHEDD_ADDRESS_FILE.
+</pre>
+</li></ul> 
+<p />
+<strong>Next actions</strong>
+<p /> <ol>
+<li> <strong>If the MasterLog is filled with <code>ERROR:SECMAN...TCP connection to collector...failed</code>:</strong> This is likely due to a misconfiguration for a host with multiple network interfaces. Verify that you have followed the instructions in <a href="/bin/view/Documentation/Release3/InstallHTCondorCE#NetworkInterfaces" class="twikiAnchorLink">this</a> section of the install guide.
+</li> <li> <strong>If the MasterLog is filled with <code>DC_AUTHENTICATE</code> errors:</strong> The HTCondor-CE daemons use the host certificate to authenticate with each other. Verify that your host certificate&rsquo;s DN matches one of the regular expressions found in <code>/etc/condor-ce/condor_mapfile</code>.
+</li> <li> <strong>If the SchedLog is filled with <code>Can&rsquo;t find address for negotiator</code>:</strong> You can ignore this error! The negotiator daemon is used in HTCondor batch systems to match jobs with resources but since HTCondor-CE does not manage any resources directly, it does not run one.
+</li></ol> 
+<p />
+<a name="SubmitFailure"></a>
+<h3><a name="Jobs_fail_to_submit_to_the_CE"></a> Jobs fail to submit to the CE </h3>
+<p />
+If a user is having issues submitting jobs to the CE and you've ruled out general connectivity or firewalls as the culprit, then you may have encountered an authentication or authorization issue. You may see error messages like the following in your <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#SchedLog" class="twikiCurrentTopicLink twikiAnchorLink">schedd log</a>:
+<p />
+<pre class="file">08/30/16 16:52:56 DC_AUTHENTICATE: required authentication of 72.33.0.189 failed: AUTHENTICATE:1003:Failed to authenticate with any method|AUTHENTICATE:1004:Failed to authenticate using GSI|GSI:5002:Failed to authenticate because the remote (client) side was not able to acquire its credentials.|AUTHENTICATE:1004:Failed to authenticate using FS|FS:1004:Unable to lstat(/tmp/FS_XXXZpUlYa)
+08/30/16 16:53:12 PERMISSION DENIED to gsi@unmapped from host 72.33.0.189 for command 60021 (DC_NOP_WRITE), access level WRITE: reason: WRITE authorization policy contains no matching ALLOW entry for this request; identifiers used for this host: 72.33.0.189,dyn-72-33-0-189.uwnet.wisc.edu, hostname size = 1, original ip address = 72.33.0.189
+08/30/16 16:53:12 DC_AUTHENTICATE: Command not authorized, done!</pre>
+<p />
+<strong>Next actions</strong>
+<p /> <ol>
+<li> <strong>Check GUMS or grid-mapfile</strong> and ensure that the user's DN is known to your authentication method
+</li> <li> <strong>Check for lcmaps errors</strong> in <code>/var/log/messages</code>
+</li> <li> <strong>If you do not see helpful error messages in <code>/var/log/messages</code>,</strong> adjust the debug level by setting <code>LCMAPS_DEBUG_LEVEL=5</code> in <code>/etc/sysconfig/condor-ce</code> and checking <code>/var/log/messages</code> for errors again.
+</li></ol> 
+<p />
+<h3><a name="Jobs_stay_idle_on_the_CE"></a> Jobs stay idle on the CE </h3>
+<p />
+Check the following subsections in order, but note that jobs may take several minutes or longer to run if the CE is busy.
+<p />
+<h4><a name="Idle_jobs_on_CE_Is_the_job_route"></a> Idle jobs on CE: Is the job router handling the incoming job? </h4>
+<p />
+Jobs on the CE will be put on hold if they do not match any job routes after 30 minutes, but you can check a few things if you suspect that the jobs are not being matched. Check if the JobRouter sees a job before that by looking at the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#JobRouterLog" class="twikiCurrentTopicLink twikiAnchorLink">job router log</a> and looking for the text <code>src=&lt;job id&gt;&hellip;claimed job</code>. 
+<p />
+<strong>Next actions</strong>
+<p />
+Use <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorJobRouterInfo" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_job_router_info</a> to see why your idle job does not match any routes
+<p />
+<h4><a name="Idle_jobs_on_CE_Verify_correct_o"></a> Idle jobs on CE: Verify correct operation between the CE and your local batch system </h4>
+<p />
+<h5><a name="For_HTCondor_batch_systems"></a> For HTCondor batch systems </h5>
+<p />
+HTCondor-CE submits jobs directly to an HTCondor batch system via the JobRouter, so any issues with the CE/local batch system interaction will appear in the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#JobRouterLog" class="twikiCurrentTopicLink twikiAnchorLink">JobRouterLog</a>.
+<p />
+<strong>Next actions</strong>
+<p /> <ol>
+<li> Check the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#JobRouterLog" class="twikiCurrentTopicLink twikiAnchorLink">JobRouterLog</a> for failures.
+</li> <li> Verify that the local HTCondor is functional.
+</li> <li> Use <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorConfigVal" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_config_val</a> to verify that the <code>JOB_ROUTER_SCHEDD2_NAME</code>, <code>JOB_ROUTER_SCHEDD2_POOL</code>, and <code>JOB_ROUTER_SCHEDD2_SPOOL</code> configuration variables are set to the hostname of your CE and the hostname of your local HTCondor&rsquo;s collector, and the location of your local HTCondor&rsquo;s spool directory, respectively.
+</li> <li> Use <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorConfigVal" class="twikiCurrentTopicLink twikiAnchorLink">condor_config_val</a> to verify that <code>QUEUE_SUPER_USER_MAY_IMPERSONATE</code> is set to <code>'.*'</code> (without the quotes).
+</li></ol> 
+<p />
+<h5><a name="For_non_HTCondor_batch_systems"></a> For non-HTCondor batch systems </h5>
+<p />
+HTCondor-CE submits jobs to a non-HTCondor batch system via the Gridmanager, so any issues with the CE/local batch system interaction will appear in the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#GridmanagerLog" class="twikiCurrentTopicLink twikiAnchorLink">GridmanagerLog</a>. Look for <code>gm state change&hellip;</code> lines to figure out where the issures are occuring. 
+<p />
+<strong>Next actions</strong>
+<p /> <ol>
+<li> <p><b>If you see failures in the GridmanagerLog during job submission:</b> Save the submit files by adding the appropriate entry to <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#BlahpConfig" class="twikiCurrentTopicLink twikiAnchorLink">blah.config</a> and submit it <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#ManualSubmission" class="twikiCurrentTopicLink twikiAnchorLink">manually</a> to the batch system. If that succeeds, make sure that the BLAHP knows where your binaries are located by setting the <code>&lt;batch system&gt;_binpath</code> in <code>/etc/blah.config</code>.</p>
+</li> <li> <p><b>If you see failures in the GridmanagerLog  during queries for job status:</b> Query the resultant job with your batch system tools from the CE. If you can, the BLAHP uses scripts to query for status in <code>/usr/libexec/blahp/&lt;batch system&gt;_status.sh</code> (e.g., <code>/usr/libexec/blahp/lsf_status.sh</code>) that take the argument <code>batch system/YYYMMDD/job ID</code> (e.g., <code>lsf/20141008/65053</code>). Run the appropriate "status" script for your batch system and upon success, you should see the following output:</p>   <pre class="screen">[ BatchjobId = "894862"; JobStatus = 4; ExitCode = 0; WorkerNode = "atl-prod08" ]</pre>   If the script fails, <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#OsgSupport" class="twikiCurrentTopicLink twikiAnchorLink">request help</a> from the OSG.
+</li></ol> 
+<p />
+<a name="ManualSubmission"></a>
+<h4><a name="Idle_jobs_on_CE_Make_sure_the_un"></a> Idle jobs on CE: Make sure the underlying batch system can run jobs </h4>
+<p />
+HTCondor-CE communicates directly with an HTCondor batch system schedd, so if jobs are not running, examine the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#SchedLog" class="twikiCurrentTopicLink twikiAnchorLink">schedd log</a> and diagnose the problem from there. For other batch systems, the BLAHP is used to submit jobs using your batch system’s job submission binaries, whose location is specified in <code>/etc/blah.config</code>.
+<p />
+<strong>Procedure</strong> <ol>
+<li> Manually create and submit a simple job (e.g., <code>sleep</code>)
+</li> <li> Check for errors in the submission itself
+</li> <li> Watch the job in the batch system queue (e.g., using <code>condor_q</code>)
+</li> <li> If the job does not run, check for errors on the batch system
+</li></ol> 
+<p />
+<strong>Next actions</strong>
+<p />
+If the underlying batch system does not run a simple manual job, it will probably not run a job coming from HTCondor-CE. Once you can run simple manual jobs on your batch system, try submitting to the HTCondor-CE again.
+<p />
+<h4><a name="Idle_jobs_on_CE_Verify_ability_t"></a> Idle jobs on CE: Verify ability to change permissions on key files </h4>
+<p />
+HTCondor-CE needs the ability to write and chown files in its <code>spool</code> directory and if it cannot, jobs will not run at all. Spool permission errors can appear in the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#SchedLog" class="twikiCurrentTopicLink twikiAnchorLink">SchedLog</a> and the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#JobRouterLog" class="twikiCurrentTopicLink twikiAnchorLink">JobRouterLog</a>.
+<p />
+<strong>Symptoms</strong>
+<p />
+<pre class="file">09/17/14 14:45:42 Error: Unable to chown '/var/lib/condor-ce/spool/1/0/cluster1.proc0.subproc0/env' from 12345 to 54321</pre>
+<p />
+<strong>Next actions</strong>
+<p />
+As root, try to change ownership of the file or directory in question. If the file does not exist, a parent directory may have improper permissions.
+<p />
+<h3><a name="Jobs_stay_idle_on_a_remote_host"></a> Jobs stay idle on a remote host submitting to the CE </h3>
+<p />
+If you are submitting your job from a separate submit host to the CE, it stays idle in the queue forever, and you do not see a resultant job in the CE's queue, this means that your job cannot contact the CE for submission or it is not authorized to run there. Note that jobs may take several minutes or longer if the CE is busy.
+<p />
+<h4><a name="Remote_idle_jobs_Can_you_contact"></a> Remote idle jobs: Can you contact the CE? </h4>
+<p />
+To check basic connectivity to a CE, use <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorPing" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_ping</a>:
+<p />
+<strong>Symptoms</strong>
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ping -verbose -name <span style="background-color: #D1CAF2;">condorce.example.com</span> -pool <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619 WRITE 
+<span style="background-color: #D1CAF2;">ERROR: couldn't locate condorce.example.com!</span>
+</pre>
+<p />
+<strong>Next actions</strong>
+<p /> <ol>
+<li> <p>Make sure that the HTCondor-CE daemons are running with <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorStatus" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_status</a>.</p>
+</li> <li> Verify the <span style="background-color: #D1CAF2;">CE</span> is reachable from your submit host:   <pre class="screen">ping <span style="background-color: #D1CAF2;">CE</span></pre>
+</li></ol> 
+<p />
+<h4><a name="Remote_idle_jobs_Are_you_authori"></a> Remote idle jobs: Are you authorized to run jobs on the CE? </h4>
+<p />
+The CE will only accept jobs from users that authenticate via GUMS or a grid mapfile. You can use <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorPing" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_ping</a> to check if you are authorized and what user your proxy is being mapped to.
+<p />
+<strong>Symptoms</strong>
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ping -verbose -name <span style="background-color: #D1CAF2;">condorce.example.com</span> -pool <span style="background-color: #D1CAF2;">condorce.example.com</span>:9619 WRITE 
+Remote Version:              $CondorVersion: 8.0.7 Sep 24 2014 $
+Local  Version:              $CondorVersion: 8.0.7 Sep 24 2014 $
+Session ID:                  condorce:3343:1412790611:0
+Instruction:                 WRITE
+Command:                     60021
+Encryption:                  none
+Integrity:                   MD5
+Authenticated using:         GSI
+All authentication methods:  GSI
+<span style="background-color: #D1CAF2;">Remote Mapping:              gsi@unmapped</span>
+<span style="background-color: #D1CAF2;">Authorized:                  FALSE</span>
+</pre>
+<p />
+<strong>Next actions</strong>
+<p /> <ol>
+<li> Verify that an <a href="/bin/view/Documentation/Release3/InstallHTCondorCE#5_2_Setup_Authorization" class="twikiAnchorLink">authentication method</a> is set up on the CE
+</li> <li> Verify that your proxy is mapped to an existing system user
+</li></ol> 
+<p />
+<h3><a name="Jobs_go_on_hold"></a> Jobs go on hold </h3>
+<p />
+Jobs will be put on held with a <code>HoldReason</code> attribute that can be inspected with <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorQ" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_q</a>:
+<p />
+<pre class="screen">[user@client ~]$ condor_ce_q -l <span style="background-color: #D1CAF2;">&lt;job ID&gt;</span> -attr HoldReason
+HoldReason = "CE job in status 5 put on hold by SYSTEM_PERIODIC_HOLD due to non-existent route or entry in JOB_ROUTER_ENTRIES."
+</pre>
+<p />
+<h4><a name="Held_jobs_Missing_expired_user_p"></a> Held jobs: Missing/expired user proxy </h4>
+<p />
+HTCondor-CE requires a valid user proxy for each job that is submitted. You can check the status of your proxy with the following
+<p />
+<pre class="screen">[user@client ~]$ voms-proxy-info -all</pre>
+<p />
+<strong>Next actions</strong>
+<p />
+Ensure that the owner of the job generates their proxy with <code>voms-proxy-init</code>.
+<p />
+<h4><a name="Held_jobs_Invalid_job_universe"></a> Held jobs: Invalid job universe </h4>
+<p />
+The HTCondor-CE only accepts jobs that have <code>universe</code> in their submit files set to <code>vanilla</code>, <code>standard</code>, <code>local</code>, or <code>scheduler</code>. These universes also have corresponding integer values that can be found in the <a href="http://research.cs.wisc.edu/htcondor/manual/v8.2/12_Appendix_A.html#91174" target="_top">HTCondor manual</a>. 
+<p />
+<strong>Next actions</strong>
+<p /> <ol>
+<li> Ensure jobs submitted locally, from the CE host, are submitted with <code>universe = vanilla</code>
+</li> <li> Ensure jobs submitted from a remote submit point are submitted with:   <pre class="file">universe = grid
+grid_resource = condor <span style="background-color: #D1CAF2;">condorce.example.com condorce.example.com</span>:9619</pre>   <p>where <span style="background-color: #D1CAF2;">condorce.example.com</span> is replaced by the hostname of the CE.</p>
+</li></ol> 
+<p />
+<h4><a name="Held_jobs_Non_existent_route_or"></a> Held jobs: Non-existent route or entry in JOB_ROUTER_ENTRIES </h4>
+<p />
+Jobs on the CE will be put on hold if they do not match any job routes within 30 minutes. 
+<p />
+<strong>Next actions</strong>
+<p />
+Use <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorJobRouterInfo" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_job_router_info</a> to see why your idle job does not match any routes.
+<p />
+<a name="JobMap"></a>
+<h3><a name="Identifying_the_corresponding_jo"></a> Identifying the corresponding job ID on the local batch system </h3>
+<p />
+When troubleshooting interactions between your CE and your local batch system, you will need to associate the CE job ID and the resultant job ID on the batch system. The methods for finding the resultant job ID differs between batch systems.
+<p />
+<h4><a name="HTCondor_batch_systems"></a> HTCondor batch systems </h4>
+<p /> <ol>
+<li> <p>To inspect the CE&rsquo;s job ad, use <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorQ" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_q</a> or <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorHistory" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_history</a>:</p>   <pre class="screen"># Use condor_ce_q if the job is still in the CE&rsquo;s queue
+[user@client ~]$ condor_ce_q <span style="background-color: #FFCCFF;">&lt;Job ID&gt; -af RoutedToJobId</span>
+# Use condor_ce_history if the job has left the CE&rsquo;s queue
+[user@client ~]$ condor_ce_history <span style="background-color: #FFCCFF;">&lt;Job ID&gt; -af RoutedToJobId</span></pre>
+</li> <li> Parse the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#JobRouterLog" class="twikiCurrentTopicLink twikiAnchorLink">JobRouterLog</a> for the CE&rsquo;s job ID.
+</li></ol> 
+<p />
+<h4><a name="Non_HTCondor_batch_systems"></a> Non-HTCondor batch systems </h4>
+<p />
+When HTCondor-CE records the corresponding batch system job ID, it is written in the form &lt;BATCH SYSTEM&gt;/&lt;DATE&gt;/&lt;JOB ID&gt;:
+<p />
+<pre class=file>lsf/20141206/482046</pre>
+<p /> <ol>
+<li> <p>To inspect the CE&rsquo;s job ad, use <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#CondorQ" class="twikiCurrentTopicLink twikiAnchorLink">condor_ce_q</a>:</p>   <pre class="screen">[user@client ~]$ condor_ce_q <span style="background-color: #FFCCFF;">&lt;Job ID&gt; -af GridJobId</span></pre>
+</li> <li> Parse the <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#GridmanagerLog" class="twikiCurrentTopicLink twikiAnchorLink">GridmanagerLog</a> for the CE&rsquo;s job ID.
+</li></ol> 
+<p />
+<h3><a name="Jobs_removed_from_the_local_HTCo"></a> Jobs removed from the local HTCondor pool become resubmitted (HTCondor batch systems only) </h3>
+<p />
+By design, HTCondor-CE will resubmit jobs that have been removed from the underlying HTCondor pool. Therefore, to remove misbehaving jobs, they will need to be removed on the CE level following these steps:
+<p /> <ol>
+<li> Identify the misbehaving job ID
+</li> <li> <p>Find the job's corresponding CE job ID:</p>   <pre class="screen">[user@client ~]$ condor_q <span style="background-color: #FFCCFF;">&lt;Job ID&gt; -af RoutedFromJobId</span></pre>
+</li> <li> Use <code>condor_ce_rm</code> to remove the CE job from the queue
+</li></ol> 
+<p />
+<h3><a name="Missing_HTCondor_tools"></a> Missing HTCondor tools </h3>
+<p />
+Most of the HTCondor-CE tools are just wrappers around existing HTCondor tools that load the CE-specific config. If you are trying to use HTCondor-CE tools and you see the following error:
+<p />
+<pre class="screen">
+[user@client ~]$ condor_ce_job_router_info
+<span style="background-color: #FFCCFF;">/usr/bin/condor_ce_job_router_info: line 6: exec: condor_job_router_info: not found</span>
+</pre>
+<p />
+This means that the <code>condor_job_router_info</code> (note this is not the CE version), is not in your <code>PATH</code>. 
+<p />
+<strong>Next Actions</strong>
+<p /> <ol>
+<li> Either the condor RPM is missing or there are some other issues with it (try <code>rpm --verify condor</code>).
+</li> <li> You have installed HTCondor in a non-standard location that is not in your <code>PATH</code>.
+</li> <li> The condor_job_router_info itself wasn't available until OSG's release of Condor-8.0.7-5 (available in osg-release) or Condor-8.2.3-1.1 (available in osg-upcoming).
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Known_Issues"></a> Known Issues </span></h2>
+<h3><a name="SUBMIT_EXPRS_are_not_applied_to"></a>  SUBMIT_EXPRS are not applied to jobs on the local HTCondor </h3>
+<p />
+If you are adding attributes to jobs submitted to your HTCondor pool with <code>SUBMIT_EXPRS</code>, these will <em>not</em> be applied to jobs that are entering your pool from the HTCondor-CE. To get around this, you will want to add the attributes to your <a href="/bin/view/Documentation/Release3/TroubleshootingHTCondorCE#JobRoutes" class="twikiCurrentTopicLink twikiAnchorLink">job routes</a>. If the CE is the only entry point for jobs into your pool, you can get rid of <code>SUBMIT_EXPRS</code> on your backend. Otherwise, you will have to maintain your list of attributes both in your list of routes and in your <code>SUBMIT_EXPRS</code>.
+<p />
+<a name="OsgSupport"></a>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Getting_Help"></a> Getting Help </span></h2>
+<p />
+If you are still experiencing issues after using this document, please let us know!
+<p /> <ol>
+<li> <p>Gather basic HTCondor-CE and related information (versions, relevant configuration, problem description, etc.)</p>
+</li> <li> <p>Gather system information:</p>       <pre class="screen">osg-system-profiler</pre>
+</li> <li> <p>Start a support request using <a href="https://ticket.grid.iu.edu/submit" target="_top">a web interface</a> or by email to <a href="mailto&#58;goc&#64;opensciencegrid&#46;org">goc&#64;opensciencegrid.org</a></p> <ul>
+<li> Describe issue and expected or desired behavior
+</li> <li> Include basic HTCondor-CE and related information
+</li> <li> Attach the osg-system-profiler output
+</li></ul> 
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Reference"></a> Reference </span></h2>
+<p />
+Here are some other HTCondor-CE documents that might be helpful:
+<p /> <ul>
+<li> <a href="/bin/view/Documentation/Release3/HTCondorCEOverview" class="twikiLink">HTCondor-CE overview and architecture</a>
+</li> <li> <a href="/bin/view/Documentation/Release3/InstallHTCondorCE" class="twikiLink">Installing HTCondor-CE</a>
+</li> <li> <a href="/bin/view/Documentation/Release3/InstallHTCondorBosco" class="twikiLink">Installing and maintaining HTCondor-CE-Bosco</a>
+</li> <li> <a href="/bin/view/Documentation/Release3/JobRouterRecipes" class="twikiLink">Configuring HTCondor-CE job routes</a>
+</li> <li> <a href="/bin/view/Documentation/Release3/SubmittingHTCondorCE" class="twikiLink">Submitting jobs to HTCondor-CE</a>
+</li></ul> </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation/Release3<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>TroubleshootingHTCondorCE</span> <br />    
+Topic revision: r62 - 10 Feb 2017 - 19:00:46 - <a href="/bin/view/Main/BrianLin" class="twikiLink">BrianLin</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

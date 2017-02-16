@@ -1,0 +1,355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> UserSchool16Mon24QueueN &lt; Education &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Education/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Education/UserSchool16Mon24QueueN?_T=16 Feb 2017" type="application/x-wiki" title="edit UserSchool16Mon24QueueN" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Education/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Education/UserSchool16Mon24QueueN"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+@import url('/pub/Documentation/Tools/exercises.css ');
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <style type="text/css">
+pre em { font-style: normal; background-color: yellow; }
+pre strong { font-style: normal; font-weight: bold; color: #008; }
+</style>
+<p />
+<h1><a name="Monday_Exercise_2_4_Use_queue_N"></a> Monday Exercise 2.4: Use queue <em>N</em>, $(Cluster), and $(Process) </h1>
+<p />
+The goal of this exercise is to learn to submit many jobs from a single <code>queue</code> statement, and then to control filenames and arguments per job.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Submitting_Many_Jobs_With_One_Su"></a> Submitting Many Jobs With One Submit File </span></h2>
+<p />
+Suppose you have a program that you want to run many times. The program takes an argument, and you want to change the argument for each run of the program. With what you know so far, you have a couple of choices (assuming that you cannot change the job itself to work this way):
+<p /> <ul>
+<li> Write one submit file; submit one job, change the argument in the submit file, submit another job, change the submit file, …
+</li> <li> Write many submit files that are nearly identical except for the program argument
+</li></ul> 
+<p />
+Neither of these options seems very satisfying. Fortunately, we can do better with HTCondor.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Running_Many_Jobs_With_One_queue"></a> Running Many Jobs With One queue Statement </span></h2>
+<p />
+Here is a C program that uses a simple stochastic (random) method to estimate the value of &pi;&nbsp;&mdash; feel free to try to figure out the method from the code, but it is not critical for this exercise. The single argument to the program is the number of samples to take. More samples should result in better estimates!
+<p />
+<pre class="file">
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/time.h&gt;
+
+int main(int argc, char *argv[])
+{
+  struct timeval my_timeval;
+  int iterations = 0;
+  int inside_circle = 0;
+  int i;
+  double x, y, pi_estimate;
+
+  gettimeofday(&my_timeval, NULL);
+  srand48(my_timeval.tv_sec ^ my_timeval.tv_usec);
+
+  if (argc == 2) {
+    iterations = atoi(argv[1]);
+  } else {
+    printf(&quot;usage: circlepi ITERATIONS\n&quot;);
+    exit(1);
+  }
+
+  for (i = 0; i &lt; iterations; i++) {
+    x = (drand48() - 0.5) * 2.0;
+    y = (drand48() - 0.5) * 2.0;
+    if (((x * x) + (y * y)) &lt;= 1.0) {
+      inside_circle++;
+    }
+  }
+  pi_estimate = 4.0 * ((double) inside_circle / (double) iterations);
+  printf(&quot;%d iterations, %d inside; pi = %f\n&quot;, iterations, inside_circle, pi_estimate);
+  return 0;
+}
+</pre>
+<p /> <ol>
+<li> In a new directory for this exercise, save the code to a file named <code>circlepi.c</code>
+</li> <li> Compile the code (we will cover this in more detail Wednesday):       <pre class="screen">$> <strong>gcc -static -o circlepi circlepi.c</strong></pre>
+</li> <li> If there are errors, check the file contents and compile command carefully, otherwise see the instructors
+</li> <li> Test the program with just a few samples:       <pre class="screen">$> <strong>./circlepi 10000</strong></pre>
+</li></ol> 
+<p />
+Now suppose that you want to run the program many times, to produce many estimates. This is exactly what a statement like <code>queue 3</code> is useful for. Let’s see how it works.
+<p /> <ol>
+<li> Write a normal submit file for this program <ul>
+<li> Pass 1 billion (<code>1000000000</code>) as the command line argument to <code>circlepi</code>
+</li> <li> Remember to use <code>queue 3</code> instead of just <code>queue</code>
+</li></ul> 
+</li> <li> Submit the file       <p>Note the slightly different message from <code>condor_submit</code>:</p>       <pre class="screen"><em>3 job(s)</em> submitted to cluster <i>NNNN</i>.</pre>
+</li> <li> Before the jobs execute, look at the job queue to see the multiple jobs
+</li></ol> 
+<p />
+Here is some sample <code>condor_q</code> output:
+<p />
+<pre class="screen">
+ ID       OWNER            SUBMITTED     RUN_TIME ST PRI SIZE CMD
+10228.0   cat             7/25 11:57   0+00:00:00 I  0    0.7 circlepi 1000000000
+10228.1   cat             7/25 11:57   0+00:00:00 I  0    0.7 circlepi 1000000000
+10228.2   cat             7/25 11:57   0+00:00:00 I  0    0.7 circlepi 1000000000
+</pre>
+<p />
+In this sample, all three jobs are part of <strong>cluster</strong> <code>10228</code>, but the first job was assigned <strong>process</strong> <code>0</code>, the second job was assigned process <code>1</code>, and the third one was assigned process <code>2</code>.  (Historical note: Programmers like to start counting from 0, hence the odd numbering scheme.)
+<p />
+At this time, it is worth reviewing the definition of a <strong><em>job ID</em></strong>. It is a job’s cluster number, a dot (<code>.</code>), and the job’s process number. So in the example above, the job ID of the second job is <code>10228.1</code>.
+<p />
+<strong>Pop Quiz:</strong> Do you remember how to ask HTCondor to list all of the jobs from one cluster? How about one specific job ID?
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Using_queue_N_With_Output"></a> Using queue <em>N</em> With Output </span></h2>
+<p />
+When all three jobs in your single cluster are finished, examine the resulting files.
+<p /> <ul>
+<li> What is in the output file?
+</li> <li> What is in the error file (hopefully nothing!)?
+</li> <li> What is in the log file? Look carefully at the job IDs in each event.
+</li> <li> Is this what you expected? Is it what you wanted?
+</li></ul> 
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Using_Process_to_Distinguish_Job"></a> Using $(Process) to Distinguish Jobs </span></h2>
+<p />
+As you saw with the experiment above, we need a way to separate output (and error) files <em>per job that is queued</em>, not just for the whole cluster of jobs. Fortunately, HTCondor has a way to separate the files easily.
+<p />
+When processing a submit file, HTCondor defines and uses a special variable for the process number of each job. If you write <code>$(Process)</code> in a submit file, HTCondor will replace it with the process number of the job, independently for each job that is queued. For example, you can use the <code>$(Process)</code> variable to define a separate output file name for each job. Suppose the following two lines are in a submit file:
+<p />
+<pre class="file">
+output = my-output-file-$(Process).out
+queue 10
+</pre>
+<p />
+Even though the <code>output</code> filename is defined only once, HTCondor will create separate output filenames for each job:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> First job </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> <code>my-output-file-0.out</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Second job </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> <code>my-output-file-1.out</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Third job </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> <code>my-output-file-2.out</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" colspan="2" valign="top" class="twikiTableCol0 twikiFirstCol"> ... </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Last (tenth) job </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> <code>my-output-file-9.out</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+Let’s see how this works for our program that estimates &pi;.
+<p /> <ol>
+<li> In your submit file, change the definitions of <code>output</code> and <code>error</code> to use <code>$(Process)</code>, in a way that is similar to the example above
+</li> <li> Remove any output, error, and log files from previous runs
+</li> <li> Submit the updated file
+</li></ol> 
+<p />
+When all three jobs are finished, examine the resulting files again.
+<p /> <ul>
+<li> How many files are there of each type? What are their names?
+</li> <li> Is this what you expected? Is it what you wanted from the &pi; estimation process?
+</li></ul> 
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Using_Cluster_to_Separate_Files"></a> Using $(Cluster) to Separate Files Across Runs </span></h2>
+<p />
+With <code>$(Process)</code>, you can get separate output (and error) filenames for each job within a run. However, the next time you submit the same file, all of the output and error files are overwritten by new ones created by the new jobs. Maybe this is the behavior that you want. But sometimes, you may want to separate files by run, as well.
+<p />
+In addition to <code>$(Process)</code>, there is also a <code>$(Cluster)</code> variable that you can use in your submit files. It works just like <code>$(Process)</code>, except it is replaced with the cluster number of the entire submission. Because the cluster number is the same for all jobs within a single submission, it does not separate files by job within a submission. But when used <strong>with</strong> <code>$(Process)</code>, it can be used to separate files by run. For example, consider this <code>output</code> statement:
+<p />
+<pre class="file">
+output = my-output-file-$(Cluster)-$(Process).out
+</pre>
+<p />
+For one particular run, it might result in output filenames like this:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> First job </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> <code>my-output-file-2444-0.out</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Second job </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> <code>my-output-file-2444-1.out</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Third job </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> <code>my-output-file-2444-2.out</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" colspan="2" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> ... </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+If you like, change your submit file from the previous exercise to use both <code>$(Cluster)</code> and <code>$(Process)</code>. Submit your file twice to see the separate files for each run. Be careful how many jobs you run total, as the number of output files grows quickly!
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Using_Process_and_Cluster_in_Oth"></a> Using $(Process) and $(Cluster) in Other Statements </span></h2>
+<p />
+The <code>$(Cluster)</code> and <code>$(Process)</code> variables can be used in any submit file statement, although they are useful in some kinds of statements more than others. For instance, it is hard to imagine a truly good reason to use the <code>$(Process)</code> variable in a <code>rank</code> statement (i.e., for preferring some execute slots over others), and in general the <code>$(Cluster)</code> variable often makes little sense to use.
+<p />
+But in some situations, the <code>$(Process)</code> variable can be very helpful. Common uses are in the following kinds of statements — can you think of a scenario in which each use might be helpful?
+<p /> <ul>
+<li> <code>log</code>
+</li> <li> <code>transfer_input_files</code>
+</li> <li> <code>transfer_output_files</code>
+</li> <li> <code>arguments</code>
+</li></ul> 
+<p />
+Unfortunately, HTCondor does not let you perform math on the <code>$(Process)</code> number when using it. So, for example, if you use <code>$(Process)</code> as a numeric argument to a command, it will always result in jobs getting the arguments 0, 1, 2, and so on. If you have control over your program and the way in which it uses command-line arguments, then you are fine. Otherwise, you might need to transform the <code>$(Process)</code> numbers into something more appropriate using a <strong><em>wrapper script</em></strong>, which will be discussed on Wednesday.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Optional_Defining_Extra_Attribut"></a> (Optional) Defining Extra Attributes for Tracking </span></h2>
+<p />
+During the lecture, it was mentioned that you can define arbitrary attributes in your submit file, and that one purpose of such attributes is to track or report on different jobs separately. In this optional exercise, you will see how this technique can be used.
+<p />
+Once again, we will use <code>sleep</code> jobs, so that your jobs remain in the queue long enough to experiment on.
+<p /> <ol>
+<li> Create a basic submit file that runs <code>sleep 120</code> (or some reasonable duration)
+</li> <li> Instead of a single <code>queue</code> statement, write this:       <pre class="file">
+<em>+MyJobAttribute = 1</em>
+queue 5
+<em>+MyJobAttribute = 2</em>
+queue 5
+</pre>       <p>The highlighted statements give the extra attribute <code>MyJobAttribute</code> to your jobs; the first 5 jobs have one value, and the second 5 have another.
+</li> <li> Submit the file
+</li></ol> 
+<p />
+Check on the submissions using a normal <code>condor_q</code>. Of course, your special attribute does not appear in the standard <code>condor_q</code> output, but it is present in each job’s ClassAd. You can see the effect of the attribute by limiting your <code>condor_q</code> output to one type of job or another. First, run this command:
+<p />
+<pre class="screen">
+$> <strong>condor_q -constraint 'MyJobAttribute == 1'</strong>
+</pre>
+<p />
+Use your own <code>userid</code>, of course. Do you get the output that you expected?
+<p />
+Using the example command above, how would you list your other five jobs?</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Education<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Education/OSGUserSchool2016" class="twikiLink">OSGUserSchool2016</a> &gt; <a href="/bin/view/Education/UserSchool16Materials" class="twikiLink">UserSchool16Materials</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>UserSchool16Mon24QueueN</span> <br />    
+Topic revision: r8 - 22 Jul 2016 - 19:15:36 - <span class="twikiNewLink">IanRoss<a href="/bin/edit/Main/IanRoss?topicparent=Education.UserSchool16Mon24QueueN" rel="nofollow" title="IanRoss (this topic does not yet exist; you can create it)">?</a></span>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

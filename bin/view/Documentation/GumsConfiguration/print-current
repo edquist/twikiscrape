@@ -1,0 +1,426 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> GumsConfiguration &lt; Documentation &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/GumsConfiguration?_T=16 Feb 2017" type="application/x-wiki" title="edit GumsConfiguration" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/GumsConfiguration"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFF99;
+	}
+	.patternBookView {
+		border-color:#FFFF99;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Configure_GUMS_to_Implement_Site"></a> Configure GUMS to Implement Site Policies </h1>
+<p />
+<p />
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Configure_GUMS_to_Implement_Site"> Configure GUMS to Implement Site Policies</a> <ul>
+<li> <a href="?cover=print#Mapping_users_to_accounts"> Mapping users to accounts</a>
+</li> <li> <a href="?cover=print#Retrieving_the_Map"> Retrieving the Map</a>
+</li> <li> <a href="?cover=print#Policy_File_Structure"> Policy File Structure</a>
+</li> <li> <a href="?cover=print#A_Simple_Example"> A Simple Example</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#References"> References</a>
+</li></ul> 
+</div>
+<p />
+See <a href="/bin/view/Documentation/AboutGums" class="twikiLink">About GUMS</a> for an introduction.
+<p />
+GUMS runs at a grid site under the control of site administrators; it is a "site tool" as opposed to a "VO tool". The users it maps may be affiliated with numerous VOs. The mappings in a site's GUMS installation are defined in a single XML policy file, <code>gums.config</code>. This file may contain multiple policies, and the administrator can assign different policies to different groups of users. The administrator can also specify different mappings on different hosts or different sets of hosts.
+<p />
+The <code>gums.config</code> file has three parts: <dl>
+<dt> persistenceFactories </dt><dd> defines where to store user and mapping data, such as a database or LDAP (the storage is referred to as "persistence" in GUMS; the interface to it is called a "persistence factory"). In OSG, it's always kept in mysql. Each component that needs persistence information will retrieve it from mysql.
+</dd></dl> 
+<p /> <dl>
+<dt> groupMappings </dt><dd> defines groups of users and sets how they are to get mapped. A groupMapping is defined by two things: a set of users (userGroup) and a policy for account mapping (accountMapping). Optionally, the policy can be composed of multiple policies (compositeAccountMapping)
+</dd></dl> 
+<p /> <dl>
+<dt> hostGroups </dt><dd> defines which groupMappings are used for the different hosts.
+</dd></dl> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Mapping_users_to_accounts"></a> Mapping users to accounts </span></h2>
+<p />
+Users can be mapped to accounts in a variety of ways:
+<p /> <ul>
+<li> map groups of users to shared group accounts
+</li> <li> map users to pool accounts, one user per account
+</li> <li> map users to group accounts manually
+</li></ul> 
+<p />
+The accounts themselves are created outside of GUMS. Particular accounts or ranges of accounts (e.g., xyz0000 to xyz9999) are then specified in the GUMS configuration file. The mapping policy as implemented in this file may take into account the grid identity of the user and his/her VO only, or it can accommodate extended attributes (implemented via voms-proxy-init) such as the user's role and group within the VO. Furthermore, different mapping policies may be implemented depending on the host chosen to process the job. 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Retrieving_the_Map"></a> Retrieving the Map </span></h2>
+A gatekeeper (or a generic service) can retrieve the suitable map in two ways:
+<p /> <ul>
+<li> by using the <code>gums-host</code> tool to retrieve the grid-mapfile <font color="#ff0000">(under BNL site guide_commands.html; unavailable to me right now) </font>
+</li> <li> by calling directly the GUMS service for every request
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Policy_File_Structure"></a> Policy File Structure </span></h2>
+<p />
+The XML policy file has this structure:
+<pre>
+&#60;gums&#62;
+ &#60;persistenceFactories&#62;
+
+ &#60;persistenceFactory/&#62;
+
+ &#60;/persistenceFactories&#62;
+ &#60;adminUserGroup/&#62;
+ &#60;groupMappings&#62;
+ &#60;groupMapping&#62;
+ &#60;userGroup/&#62;
+
+ &#60;accountMapping/&#62;
+
+ &#60;/groupMapping&#62;
+ &#60;groupMapping&#62;
+ &#60;userGroup/&#62;
+ &#60;compositeAccountMapping&#62;
+ &#60;accountMapping/&#62;
+
+ &#60;accountMapping/&#62;
+
+ &#60;accountMapping/&#62;
+ &#60;/compositeAccountMapping&#62;
+ &#60;/groupMapping&#62;
+ ...
+ &#60;/groupMappings&#62;
+
+ &#60;hostGroups&#62;
+
+ &#60;hostGroup/&#62;
+ &#60;/hostGroups&#62;
+&#60;/gums&#62;
+</pre>
+<p />
+<h3><a name="persistenceFactories"></a> persistenceFactories </h3>
+<p />
+The default file includes one persistenceFactory element; leave it as is <font color="#ff0000">(even the password?)</font>.
+<pre>
+&#60;persistenceFactory 
+name&#61;&#39;mysql&#39;
+className&#61;&#39;gov.bnl.gums.MySQLPersistenceFactory&#39;
+jdbcDriver&#61;&#39;com.mysql.jdbc.Driver&#39;
+jdbcUrl&#61;&#39;jdbc:mysql://cd-94372.dhcp.fnal.gov/GUMS&#95;1&#95;0&#39; 
+user&#61;&#39;gums&#39; 
+password&#61;&#39;VDTXLKRBKIM&#39; 
+autoReconnect&#61;&#39;true&#39; /&#62;
+</pre>
+<p />
+<h3><a name="groupMappings"></a> groupMappings </h3>
+<p />
+This element contains groupMapping elements. The only essential attribute is "name". This is the name for the mapping defined within this element. Each groupMapping element in the file must have a unique name.
+<p />
+<code><groupMapping name='osg1'></code>
+<p />
+<h4><a name="userGroup"></a> userGroup </h4>
+<p />
+The userGroup element is a subelement of groupMapping.
+<p />
+<strong>Required, fixed-value attributes</strong>
+<p />
+It has two attributes which are always needed and should never be changed from the default values: className and persistenceFactory.
+<pre>
+className&#61;&#39;gov.bnl.gums.VOMSGroup&#39;
+persistenceFactory&#61;&#39;mysql&#39; 
+</pre>
+<p />
+<strong>Required, installation-specific attributes</strong>
+<p />
+It has others which are required, but that you need to set for your own installation: url, name, voGroup, sslCertfile, ss1key. The default values for these last two should work as is, but check.
+Values:
+<p /> <ul>
+<li> name: your VO name
+</li> <li> voGroup: a group defined in VOMS under your VO 
+</li> <li> url: URL for your VOMS admin server
+</li> <li> sslCertfile: path to the httpcert.pem file on your GUMS host 
+</li> <li> sslKey path to the httpkey.pem file on your GUMS host 
+</li></ul> 
+E.g.,
+<pre>
+name&#61;&#39;myusergroup1&#39; 
+voGroup&#61;&#34;/myvo/group1&#34;
+url&#61;&#39;https://my-voms-server:8443/edg-voms-admin/vos/services/VOMSAdmin&#39;
+sslCertfile&#61;&#39;/etc/grid-security/http/httpcert.pem&#39;
+sslKey&#61;&#39;/etc/grid-security/http/httpkey.pem&#39; 
+</pre>
+<p />
+<h4><a name="Optional_attributes"></a> Optional attributes </h4>
+<p />
+There are two optional attributes: voRole and ingoreFQAN. <ul>
+<li> voRole: Specifies which VO role(s) (defined in a VOMS) must be specified in the proxy in order to make a match. Should be used with ignoreFQAN="false".
+</li> <li> ignoreFQAN: This dictates whether to process or ignore role and group information, if any, in a proxy obtained with voms-proxy-init. False means "process it"; true means "ignore it".
+</li></ul> 
+<p />
+We recommend that you always include ignoreFQAN with its value, either true or false. That way you don't have to remember the default value (which is "false").
+<pre>
+voRole&#61;&#34;role1&#34;
+ignoreFQAN&#61;&#34;false&#34;
+</pre>
+<p />
+<h3><a name="Account_Mapping"></a> Account Mapping </h3>
+<p />
+An accountMapping element defines the logic with which the user credentials are mapped to the local account. You can choose whether you want to implement mapping to a group account or to a pool of accounts.
+<p />
+<h4><a name="Group_Account_Mapping"></a> Group Account Mapping </h4>
+<p />
+For group mapping, you just have to specify the implementing class (use the value for className shown here, below) and the name of the group account, e.g.,
+<pre>
+&#60;accountMapping 
+className&#61;&#39;gov.bnl.gums.GroupAccountMapper&#39; 
+groupName&#61;&#39;groupaccount1&#39; /&#62;
+</pre>
+<h4><a name="Pool_Account_Mapping"></a> Pool Account Mapping </h4>
+<p />
+To use a pool of accounts, you need to specify the implementing class (use the value for className shown here, below), the place to look up the pool of accounts (the persistenceFactory, always set to "mysql" in OSG) and the name for the pool (there may be multiple pools defined), e.g.,:
+<pre>
+&#60;accountMapping 
+className&#61;&#39;gov.bnl.gums.AccountPoolMapper&#39;
+persistenceFactory&#61;&#39;mysql&#39; 
+name&#61;&#39;Pool&#95;1&#39; /&#62;
+</pre>
+<p />
+<h4><a name="Both_Composite"></a> Both (Composite) </h4>
+<p />
+You may include both types of mapping within one groupMapping element. A typical use for this would be to map the incoming user to a pool account if available, and if not, then fallback to a group account. Use the compositeAccountMapping element as shown here to accomplish this:
+<pre>
+&#60;compositeAccountMapping&#62;
+ &#60;accountMapping className&#61;&#39;gov.bnl.gums.AccountPoolMapper&#39;
+ persistenceFactory&#61;&#39;mysql&#39; 
+ name&#61;&#39;Pool&#95;1&#39; /&#62;
+ &#60;accountMapping 
+ className&#61;&#39;gov.bnl.gums.GroupAccountMapper&#39;
+ groupName&#61;&#39;groupaccount1&#39; /&#62;
+&#60;/compositeAccountMapping&#62;
+</pre>
+<p />
+<h4><a name="Host_Group"></a> Host Group </h4>
+<p />
+A hostGroup element has to define which hosts use which mappings. It has three required attributes: <dl>
+<dt> className </dt><dd> use the value for className shown here, below
+</dd> <dt> wildcard </dt><dd> specifies a host or set of hosts; can use a wildcard 
+</dd> <dt> groups </dt><dd> specifies the group mapping to be used by the specified host(s) (The value must match the "name" attribute of one or more of the groupMapping elements).
+</dd></dl> 
+<pre>
+&#60;hostGroup 
+className&#61;&#39;gov.bnl.gums.WildcardHostGroup&#39; 
+wildcard&#61;&#39;&#42;.fnal.gov&#39; 
+groups&#61;&#39;osg1&#39; /&#62;
+</pre>
+As with other elements in the <code>gums.config</code> file, GUMS maps according to the first match encountered. If you implement multiple hostGroups, make sure your wildcard value only catches the hosts it should; and put broader matches after narrower ones (e.g., myhost.fnal.gov ahead of *.fnal.gov).
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="A_Simple_Example"></a> A Simple Example </span></h2>
+<p />
+Here we'll use group mapping to a single account, osg01. We'll assume people are coming in with a standard grid proxy so that we can ignore VO groups and roles. <font color="#ff0000">(We haven't talked about FQAN or the adminUserGroup...)</font>
+<pre>
+&#60;gums&#62;
+
+ &#60;persistenceFactories&#62;
+
+ &#60;persistenceFactory ... (all the default values as listed above) /&#62;
+ &#60;/persistenceFactories&#62;
+ &#60;adminUserGroup 
+ className&#61;&#39;gov.bnl.gums.ManualUserGroup&#39;
+ persistenceFactory&#61;&#39;mysql&#39; 
+ name&#61;&#39;admins&#39; /&#62;
+ &#60;groupMappings&#62;
+ &#60;groupMapping&#62;
+
+ name&#61;&#39;osg01&#39;
+ &#60;userGroup 
+ className&#61;&#39;gov.bnl.gums.VOMSGroup&#39;
+ name&#61;&#39;usergroup1&#39;
+ url&#61;&#39;https://your-voms-server:8443/edg-voms-admin/{VO name}/services/VOMSAdmin&#39;
+ voGroup&#61;&#34;/myvo/group1&#34;
+ persistenceFactory&#61;&#39;mysql&#39; 
+ sslCertfile&#61;&#39;/etc/grid-security/http/httpcert.pem&#39;
+ sslKey&#61;&#39;/etc/grid-security/http/httpkey.pem&#39;
+ ignoreFQAN&#61;&#34;true&#34;/&#62;
+
+ &#60;accountMapping 
+ className&#61;&#39;gov.bnl.gums.GroupAccountMapper&#39; 
+ groupName&#61;&#39;osg01account&#39; /&#62;
+ &#60;/groupMapping&#62;
+ &#60;/groupMappings&#62;
+ &#60;hostGroups&#62;
+ &#60;hostGroup 
+ className&#61;&#39;gov.bnl.gums.WildcardHostGroup&#39; 
+ wildcard&#61;&#39;&#42;.fnal.gov&#39; 
+ groups&#61;&#39;osg01&#39; /&#62;
+
+ &#60;/hostGroups&#62;
+
+&#60;/gums&#62;
+</pre>
+<p />
+If you want <a href="/bin/view/Trash/ReleaseDocumentationMonALISA" class="twikiLink">ReleaseDocumentationMonALISA</a> to be able to retrieve information for a given groupMapping, you'll need to set two other attributes in that groupMapping element: <dl>
+<dt> accountingVo </dt><dd> its value should be similar or identical to the VO name and must be completely lowercase
+</dd> <dt> accountingDesc </dt><dd> the same string as accountingVo but in uppercase
+</dd></dl> 
+<p />
+E.g.,
+<pre>
+ &#60;groupMapping&#62;
+ name&#61;&#39;osg01&#39;
+ accountingVo&#61;&#39;&#39;myvo
+ accountingDesc&#61;&#39;MYVO&#39;&#62;
+ ...
+ &#60;/groupMapping&#62;
+</pre>
+These values will appear in the <code>$VDT_LOCATION/monitoring/grid3-user-vo-map.txt</code> file (the inverse map file) when you run <em>Generate Inverse Map</em> on the GUMS web UI.
+<p />
+<p />
+<h1><a name="References"></a> References </h1>
+<p /> <ul>
+<li> <a href="http://grid.racf.bnl.gov/GUMS/guide_introduction.html" target="_top">http://grid.racf.bnl.gov/GUMS/guide_introduction.html</a>
+</li></ul> 
+<p />
+<!-- CONTENT MANAGEMENT PROJECT
+############################################################################################################
+ DEAR DOCUMENT OWNER
+ <code><b>===============</b></code>
+<p />
+ Thank you for claiming ownership for this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Documentation/FirstLast?topicparent=Documentation.GumsConfiguration" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local OWNER = <span class="twikiNewLink">TerrenceMartin<a href="/bin/edit/Documentation/TerrenceMartin?topicparent=Documentation.GumsConfiguration" rel="nofollow" title="TerrenceMartin (this topic does not yet exist; you can create it)">?</a></span>
+</li></ul> 
+<p />
+ Please define the document area, choose one of the defined areas from the next line
+ DOC_AREA = (<span class="twikiNewLink">ComputeElement<a href="/bin/edit/Documentation/ComputeElement?topicparent=Documentation.GumsConfiguration" rel="nofollow" title="ComputeElement (this topic does not yet exist; you can create it)">?</a></span>|Storage|VO|Security|User|Monitoring|General|Trash/Trash/Integration|Operations|Tier3) <ul>
+<li> Local DOC_AREA       = VO
+</li></ul> 
+<p />
+ define the primary role the document serves, choose one of the defined roles from the next line
+ DOC_ROLE = (<span class="twikiNewLink">EndUser<a href="/bin/edit/Documentation/EndUser?topicparent=Documentation.GumsConfiguration" rel="nofollow" title="EndUser (this topic does not yet exist; you can create it)">?</a></span>|Student|Developer|SysAdmin|VOManager) <ul>
+<li> Local DOC_ROLE       = <span class="twikiNewLink">SysAdmin<a href="/bin/edit/Documentation/SysAdmin?topicparent=Documentation.GumsConfiguration" rel="nofollow" title="SysAdmin (this topic does not yet exist; you can create it)">?</a></span>
+</li></ul> 
+<p />
+ Please define the document type, choose one of the defined types from the next line
+ DOC_TYPE = (Troubleshooting|Training|Installation|HowTo|Planning|Navigation|Knowledge) <ul>
+<li> Local DOC_TYPE       = <span class="twikiNewLink">HowTo<a href="/bin/edit/Documentation/HowTo?topicparent=Documentation.GumsConfiguration" rel="nofollow" title="HowTo (this topic does not yet exist; you can create it)">?</a></span>
+</li></ul> 
+<p />
+  Please define if this document in general needs to be reviewed before release ( 1 | 0 ) <ul>
+<li> Local INCLUDE_REVIEW = 1
+</li></ul> 
+<p />
+ Please define if this document in general needs to be tested before release ( 1 | 0 ) <ul>
+<li> Local INCLUDE_TEST   = 0
+</li></ul> 
+<p />
+ change to 1 once the document is ready to be reviewed and back to 0 if that is not the case <ul>
+<li> Local REVIEW_READY   = 1
+</li></ul> 
+<p />
+<p />
+ change to 1 only if the document has passed the review and the test (if applicable) and is ready for release <ul>
+<li> Local RELEASE_READY  = 0
+</li></ul> 
+<p />
+<p />
+ DEAR DOCUMENT REVIEWER
+ <code><b>==================</b></code>
+<p />
+ Thank for reviewing this document! Please fill in your <span class="twikiNewLink">FirstLast<a href="/bin/edit/Documentation/FirstLast?topicparent=Documentation.GumsConfiguration" rel="nofollow" title="FirstLast (this topic does not yet exist; you can create it)">?</a></span> name here: <ul>
+<li> Local REVIEWER       = <span class="twikiNewLink">TerrenceMartin<a href="/bin/edit/Documentation/TerrenceMartin?topicparent=Documentation.GumsConfiguration" rel="nofollow" title="TerrenceMartin (this topic does not yet exist; you can create it)">?</a></span> Please define the review status for this document to be in progress ( 2 ), failed ( 0 ) or passed ( 1 )
+</li> <li> Local REVIEW_PASSED  = 2
+</li></ul> 
+<p />
+<p />
+############################################################################################################
+--></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Documentation/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>GumsConfiguration</span> <br />    
+Topic revision: r24 - 07 Feb 2017 - 19:16:27 - <a href="/bin/view/Main/BrianBockelman" class="twikiLink">BrianBockelman</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,276 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> GipCeInfo &lt; InformationServices &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/InformationServices/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/InformationServices/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/InformationServices/GipCeInfo?_T=16 Feb 2017" type="application/x-wiki" title="edit GipCeInfo" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/InformationServices/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/InformationServices/GipCeInfo"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="The_GLUE_CE"></a> The GLUE CE </h1>
+<p />
+The GLUE Schema says the following about the GLUE CE entry:
+<p />
+A Computing Element is the common Grid abstraction for a queue of a system managing computing resources.
+<p />
+Roughly, a compute element should map to a queue in the batch system.  However, this sometimes leads to frustrating results.  For example, what should be done with batch systems which are not queue based (such as Condor, the most common batch system on the OSG)?  What should be done with multiple GRAM endpoints which lead to the same batch system?  This page lists common exceptions to the "one CE per queue" rule and how the OSG deals with them.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Condor_Batch_System"></a> Condor Batch System </span></h2>
+<p />
+We break the Condor case in two - the present and planned cases.
+<p />
+<h3><a name="Present_Case"></a> Present Case </h3>
+<p />
+Condor is advertised as having a separate CE per VO, and one VO view per CE.  For example, consider one of the USCMS gatekeepers:
+<p />
+<pre>
+SITE: USCMS-FNAL-WC1-CE
+
+   &#42; CE: cmsosgce.fnal.gov:2119/jobmanager-condor-cms, Close SE: cmsosgce.fnal.gov
+      - VO: cms
+   &#42; CE: cmsosgce.fnal.gov:2119/jobmanager-condor-mis, Close SE: cmsosgce.fnal.gov
+      - VO: mis
+   &#42; CE: cmsosgce.fnal.gov:2119/jobmanager-condor-ops, Close SE: cmsosgce.fnal.gov
+      - VO: ops
+</pre>
+<p />
+<h3><a name="Proposed"></a> Proposed </h3>
+<p />
+Condor nominally only has one queue, but has a standardized format for implementing "quota-like" functionality for groups or users.  This allows one to specify a desired number of jobs to run by a particular user.  If, for example, CMS has their group quota set to 100 jobs, then Condor will attempt to give CMS that number of running jobs; however, it's not a hard limit, nor is it a reservation.
+<p />
+We treat any condor site with no groups as a simple single-queue CE in the GLUE schema, and treat each group as it's own GLUE CE (in the GLUE schema design, each GLUE CE should correspond to a batch system queue).
+<p />
+<h4><a name="Case_1_No_Condor_Groups"></a> Case 1: No Condor Groups </h4>
+<p />
+Condor should advertise one CE for the entire batch system:
+<p />
+<pre>
+&#60;hostname&#62;:2119/jobmanager-condor-default
+</pre>
+<p />
+The name is arbitrarily set to <em>default</em> to match EGEE's jobmanager-<batch system>-<queue> syntax.
+<p />
+Each VO should have a VOView entry underneath this CE.  Here is the previous USCMS example but using the proposed layout:
+<p />
+<pre>
+SITE: USCMS-FNAL-WC1-CE
+
+   &#42; CE: cmsosgce.fnal.gov:2119/jobmanager-condor-default, Close SE: cmsosgce.fnal.gov
+      - VO: cms
+      - VO: mis
+      - VO: ops
+</pre>
+<p />
+<h4><a name="Case_2_Condor_Groups"></a> Case 2: Condor Groups </h4>
+<p />
+Condor advertises one CE per group, plus one "fallback" CE for any VO not in a group.  The fallback CE should be jobmanager-condor-default.  Each VO should have a VOView entry under each group it is supported by.  Here's a CMS example; a separate quota is used for CMS production, CMS users, and everyone else:
+<p />
+<pre>
+SITE: USCMS-FNAL-WC1-CE
+   &#42; CE: cmsosgce.fnal.gov:2119/jobmanager-condor-default, Close SE: cmsosgce.fnal.gov
+      - VO: mis
+      - VO: ops
+   &#42; CE: cmsosgce.fnal.gov:2119/jobmanager-condor-cmsprod, Close SE: cmsosgce.fnal.gov
+      - VO: cms
+   &#42; CE: cmsosgce.fnal.gov:2119/jobmanager-condor-cmsusers, Close SE: cmsosgce.fnal.gov
+      - VO: cms
+</pre>
+<p />
+It would be nice to use VOMS group/role support, but that is not yet available.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="The_PBS_SGE_and_LSF_batch_system"></a> The PBS, SGE, and LSF batch systems </span></h2>
+<p />
+PBS, SGE, and LSF are all based upon having multiple queues.  The VOs which are allowed to run in a specific queue are attempted to be auto-detected, but this often fails.  The configuration file should have a section for the site's LRMS; the sections are called [pbs], [sge], and [lsf], respectively.  Each section has the following options:
+<p /> <ul>
+<li> queue_exclude: Comma-separated list of queues to exclude.
+</li> <li> <queuename>_whitelist: Comma-separated list of VOs to include in queue <queuename>.
+</li> <li> <queuename>_blacklist: Comma-separated list of VOs to exclude from queue <queuename>; the character "*" excludes all VOs.
+</li></ul> 
+<p />
+In determining whether or not the queue / VO is included, first remove any queue in the queue_exclude list.  Then, remove all VO/queue pairs specified in the blacklist.  Finally, add in any VO in the whitelist.
+<p />
+<h3><a name="Whitelist_blacklist_examples"></a> Whitelist/blacklist examples: </h3>
+<p />
+The queue named 'workq' supports all VOs except for CMS <ul>
+<li> workq_blacklist = cms
+</li> <li> (no workq_whitelist entry is made in the config file)
+</li></ul> 
+<p />
+The queue named 'cmsprod' supports only the CMS VO: <ul>
+<li> cmsprod_blacklist = *
+</li> <li> cmsprod_whitelist = cms
+</li></ul> 
+<p />
+The queue named 'pushpa' is excluded: <ul>
+<li> queue_exclude=pushpa
+</li></ul> 
+<p />
+These semantics should be applied consistently for the PBS, SGE, and LSF batch systems.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="WS_GRAM_Support"></a> WS-GRAM Support </span></h2>
+<p />
+In order to advertise WS-GRAM support, one must advertise a second CE per queue for the WS-GRAM endpoint.  The following is a valid WS-GRAM CE entry:
+<pre>
+dn: GlueCEUniqueID&#61;https://red.unl.edu:9443/wsrf/services/ManagedJobFactoryService-cms,mds-vo-name&#61;local,o&#61;grid
+objectClass: GlueCETop
+objectClass: GlueCE
+objectClass: GlueSchemaVersion
+objectClass: GlueCEAccessControlBase
+objectClass: GlueCEInfo
+objectClass: GlueCEPolicy
+objectClass: GlueCEState
+objectClass: GlueInformationService
+objectClass: GlueKey
+GlueCEHostingCluster: red.unl.edu
+GlueCEName: red.unl.edu
+GlueCEImplementationName: Globus
+GlueCEImplementationVersion: 4.0.6
+GlueCEUniqueID: https://red.unl.edu:9443/wsrf/services/ManagedJobFactoryService-cms
+GlueCEInfoGatekeeperPort: 9443
+GlueCEInfoHostName: red.unl.edu
+GlueCEInfoLRMSType: pbs
+GlueCEInfoLRMSVersion: PBSPro&#95;9.1.0.72982
+GlueCEInfoGRAMVersion: 4.0
+GlueCEInfoTotalCPUs: 444
+GlueCEInfoJobManager: pbs
+GlueCEInfoContactString: https://red.unl.edu:9443/wsrf/services/ManagedJobFactoryService
+GlueCEInfoApplicationDir: /opt/osg/app
+GlueCEInfoDataDir: /opt/osg/data
+GlueCEInfoDefaultSE: T2&#95;Nebraska&#95;Storage
+GlueCEStateEstimatedResponseTime: 3600
+GlueCEStateFreeCPUs: 189
+GlueCEStateRunningJobs: 202
+GlueCEStateStatus: Production
+GlueCEStateTotalJobs: 202
+GlueCEStateWaitingJobs: 0
+GlueCEStateWorstResponseTime: 3600
+GlueCEStateFreeJobSlots: 189
+GlueCEPolicyMaxCPUTime: 1440
+GlueCEPolicyMaxObtainableCPUTime: 1440
+GlueCEPolicyMaxRunningJobs: 444
+GlueCEPolicyMaxWaitingJobs: 999999
+GlueCEPolicyMaxTotalJobs: 444
+GlueCEPolicyMaxWallClockTime: 1440
+GlueCEPolicyMaxObtainableWallClockTime: 1440
+GlueCEPolicyPriority: 118
+GlueCEPolicyAssignedJobSlots: 444
+GlueCEPolicyMaxSlotsPerJob: 1
+GlueCEPolicyPreemption: FALSE
+GlueCEAccessControlBaseRule:VO: cms
+GlueForeignKey: GlueClusterUniqueID&#61;red.unl.edu
+GlueInformationServiceURL: ldap://is.grid.iu.edu:2170
+GlueSchemaVersionMajor: 1
+GlueSchemaVersionMinor: 3
+</pre>
+<p />
+The current pre-WS GRAM version is 2.0.  The current WS-GRAM version is 4.0.  The upcoming WS-GRAM version is 4.2.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="MPI_Support"></a> MPI Support </span></h2>
+For any CE implementation which supports multiple batch slots per job (usually for running MPI) <strong>and</strong> supports the "count" RSL attribute for multiple slots per job, this support can be advertised.
+<p />
+In order to do this, set:
+<p />
+<pre>
+GlueCEPolicyMaxSlotsPerJob: 4
+</pre>
+in the CE entry (adjust the number '4' for the maximum slots which can be achieved).
+<p />
+In addition to increasing the max slots per job in the CE entry, one should additionally advertise the software locations for MPI.
+<p />
+-- <a href="/bin/view/Main/BrianBockelman" class="twikiLink">BrianBockelman</a> - 11 Mar 2008</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: InformationServices<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/InformationServices/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>GipCeInfo</span> <br />    
+Topic revision: r4 - 16 Dec 2008 - 16:45:42 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

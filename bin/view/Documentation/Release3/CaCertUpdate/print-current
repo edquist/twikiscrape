@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> CaCertUpdate &lt; Documentation/Release3 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/Release3/CaCertUpdate?_T=16 Feb 2017" type="application/x-wiki" title="edit CaCertUpdate" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/Release3/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/CaCertUpdate"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFFFF;
+	}
+	.patternBookView {
+		border-color:#FFFFFF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Updating_CA_Certificates"></a> Updating CA Certificates </h1>
+<p />
+<a href="/bin/view/Documentation/Release3/Release3110" class="twikiLink">OSG release 3.1.10</a>, released on 9 October 2012, contains updates to the IGTF CA certifcates including replacements for expiring certificates.
+<p />
+Most sites should update their certificates soon, and some must do it very soon:
+<p /> <ul>
+<li> If you do not update, end users who use the expiring UK eScience CA will not be able to use your resources; this affects a few members of the WLCG collaboration
+</li> <li> RSV reports warnings for out-of-date CA certificates (now) and will start reporting an error (on 11 or 17 October, see below for details)
+</li> <li> Your WLCG availability measure will start to decline if and when RSV reports an error
+</li> <li> More generally, CA certificates are the base of the OSG trust system and should be kept up to date
+</li></ul> 
+<p />
+<strong>Critically,</strong> some sites will have to apply this specific update manually, at least this one time. Read on to see if this means you!
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Do_I_Need_to_Perform_Manual_Upda"></a> Do I Need to Perform Manual Updates? </span></h2>
+<p />
+For each resource with CA certificates (e.g., CE, SE, worker node), use the following decision process:
+<p /> <ol>
+<li> Does the resource use OSG 1.2 (the Pacman-based system)? If so, updates to the CA certificates should be applied automatically and you do not need to take any action.
+</li> <li> Does the resource use OSG 3 (the RPM-based system)? If yes: <ol>
+<li type="a"> Does the resource use <code>osg-ca-manage</code> for CA certificates? If so, updates to the CA certificates should be applied automatically and you do not need to take any action.
+</li> <li type="a"> Does the resource get CA certificates from a shared filesystem? If so, apply this whole decision process to the resource that installs the CA certificates on that shared filesystem, but take no further action on machines that merely read the CA certificates.
+</li> <li type="a"> Otherwise, you must perform a manual update of your CA certificates. Read on!
+</li></ol> 
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="How_Important_Is_the_Update_to_M"></a> How Important Is the Update to Me? </span></h2>
+<p /> <ol>
+<li> If you are member of WLCG, and if your CE’s CA certificates are used to measure your availability: RSV now reports warnings about out-of-date CA certificates, and will begin reporting errors on Thursday, 11 October (if you have OSG 3.1.7 or earlier), or Wednesday, 17 October (if you have OSG 3.1.8 or later). Errors will cause your availability measure to go down.
+</li> <li> If you are member of WLCG or have other collaborations in Europe, then you may have end users with a certificate signed from the old UK eScience CA that is expiring at the end of October (this is a small percentage of the users from the UK).
+</li></ol> 
+<p />
+If #1, #2, or both are true, then the upgrade is important and urgent (particularly if #1 is true). Otherwise, the updates are recommended but not urgent.
+<p />
+<h3><a name="Examples"></a> Examples </h3>
+<p />
+I have the following resources in my site:
+<p /> <ol>
+<li> A CE with OSG 1.2.30
+</li> <li> A cluster with OSG 3 Worker Nodes that mount the CA certificates via NFS from the CE (1)
+</li> <li> A new cluster registered with WLCG, with OSG 3.1.9 on one CE and its worker nodes
+</li> <li> A second CE registered with WLCG, with OSG 3.1.7 
+</li> <li> I have also a CE with OSG 3.1.9 used by my local OSG collaborators here in Chicago
+</li></ol> 
+<p />
+It is very important to update (3) and (4) because I want to be all green for WLCG. And it is urgent, because my CE (4) will turn <span style="color: red; font-weight: bold;">RED</span> on Thursday, 11 October, starting to lower my availability in the WLCG reports. It is still a good idea to update (5), which must be done manually, but it is not critical. The CA certificates on (1) and (2) will be updated automatically, and so there is no further action for them. 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="How_Do_I_Perform_the_Manual_Upda"></a> How Do I Perform the Manual Update? </span></h2>
+<p />
+If you ar here we suppose that you have already installed some OSG software, at leaset the CA certificates form the OSG repositories. If you need to enable the OSG repositories please check our <a href="/bin/view/Documentation/Release3/YumRepositories#Enabling_repositories" class="twikiAnchorLink">Yum document</a>.
+<p />
+You can update <strong>only</strong> the CA certificates, which is simple and sufficient, or update your whole system; pick one of the subsections below:
+<p />
+<h3><a name="To_Update_Only_the_CA_Certificat"></a> To Update Only the CA Certificates </h3>
+<p />
+This method takes care of the immediate update concern, leaving the rest of your installation unchanged:
+<p />
+<pre class="rootscreen">[root@client ~]$ yum update igtf-ca-certs igtf-ca-certs-compat osg-ca-certs osg-ca-certs-compat</pre>
+<p />
+<strong>Note:</strong> You will have only one of those four packages installed and hence updated. For the other three packages that you do not have installed, yum prints messages about not updating them. For example, if <code>osg-ca-certs</code> is installed and being updated, yum prints:
+<p />
+<pre class="file">Package(s) igtf-ca-certs available, but not installed.
+Package(s) igtf-ca-certs-compat available, but not installed.
+Package(s) osg-ca-certs-compat available, but not installed.</pre>
+<p />
+This behavior is expected and OK.
+<p />
+If the packages result not available, e.g <code>No Match for argument: igtf-ca-certs</code> check if you have to <a href="/bin/view/Documentation/Release3/YumRepositories" class="twikiLink">enable the OSG repository explicitly</a> during the installation or if you arrived here by mistake. Are you using OSG 1.2, the Pacman version instead of OSG 3?
+<p />
+<h3><a name="To_Update_the_Entire_System"></a> To Update the Entire System </h3>
+<p />
+Doing a full update will bring your entire system up-to-date, including system packages, OSG packages, <strong>and</strong> the CA certificates. Be sure to understand the implications of updating all packages, prior to using the following command.
+<p />
+<pre class="rootscreen">[root@client ~]$ yum update</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="How_Do_I_Know_If_I_Have_the_New"></a> How Do I Know If I Have the New Certificates? </span></h2>
+<p />
+After the update, or if you think you already have the new CA certificates, you can check the CA certificate version by using one of the following methods:
+<p />
+<h3><a name="Check_the_Index_File"></a> Check the Index File </h3>
+<p />
+Check the version numbers in the far right column of the <code>/etc/grid-security/certificates/INDEX.txt</code> file: Each one should be 1.50 (for IGTF-distributed certificates) or 1.31NEW (for OSG-added ones).
+<p />
+<h3><a name="Check_the_RSV_Monitor"></a> Check the RSV Monitor </h3>
+<p />
+If the RSV metric monitoring the CA certificates is green, then you have the latest version (at least in that resource monitored by RSV).
+<p />
+<h3><a name="Check_the_RPM_Versions"></a> Check the RPM Versions </h3>
+<p />
+List the CA certificate RPMs you have installed:
+<p />
+<pre class="rootscreen">[root@client ~]$ rpm -qa | grep ca-certs</pre>
+<p />
+Compare the <strong>package and version</strong> part of the output with the ones below; <strong>note:</strong> you will have only one of the packages below, which is correct: 
+<p />
+<pre class="file">
+igtf-ca-certs-1.50-2
+igtf-ca-certs-compat-1.50-2
+osg-ca-certs-1.31-2
+osg-ca-certs-compat-1.31-2
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Need_help"></a> Need help? </span></h2>
+<p />
+Do you need help with this update? <a href="/bin/view/Documentation/Release3/HelpProcedure" class="twikiLink">Contact us for help</a>.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation/Release3<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><span class="twikiNewLink">Trash/Trash/Integration<a href="/bin/edit/Trash/Trash/Integration/WebHome?topicparent=Documentation/Release3.CaCertUpdate" rel="nofollow" title="Trash/Trash/Integration (this topic does not yet exist; you can create it)">?</a></span> &gt; <a href="/bin/view/ReleaseDocumentation/WebHome" class="twikiLink">ReleaseDocumentation</a> &gt; <a href="/bin/view/Trash/ReleaseDocumentationReleaseNotes" class="twikiLink">ReleaseDocumentationReleaseNotes</a> &gt; <a href="/bin/view/Documentation/Release3/Release3110" class="twikiLink">Release3110</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>CaCertUpdate</span> <br />    
+Topic revision: r6 - 15 Oct 2012 - 01:46:29 - <a href="/bin/view/Main/MarcoMambelli" class="twikiLink">MarcoMambelli</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,541 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> HadoopStorageReports &lt; Storage &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Storage/HadoopStorageReports?_T=16 Feb 2017" type="application/x-wiki" title="edit HadoopStorageReports" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Storage/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Storage/HadoopStorageReports"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#0000FF;
+	}
+	.patternBookView {
+		border-color:#0000FF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Hadoop_Storage_Reports"></a>  <strong><noop>Hadoop Storage Reports</strong> </h1>
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Introduction"> Introduction</a>
+</li> <li> <a href="?cover=print#Hadoop_Storage_Probe"> Hadoop Storage Probe</a> <ul>
+<li> <a href="?cover=print#YUM_Installation"> YUM Installation</a>
+</li> <li> <a href="?cover=print#Configuration"> Configuration</a> <ul>
+<li> <a href="?cover=print#ProbeConfig"> ProbeConfig</a>
+</li> <li> <a href="?cover=print#storage_cfg"> storage.cfg</a> <ul>
+<li> <a href="?cover=print#Example_file"> Example file</a>
+</li></ul> 
+</li></ul> 
+</li></ul> 
+</li> <li> <a href="?cover=print#Hadoop_Storage_Report"> Hadoop Storage Report</a> <ul>
+<li> <a href="?cover=print#Prerequisites"> Prerequisites</a>
+</li> <li> <a href="?cover=print#Installation"> Installation</a> <ul>
+<li> <a href="?cover=print#Files_and_Directories_Used"> Files and Directories Used</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Configuration_AN1"> Configuration</a> <ul>
+<li> <a href="?cover=print#Configuration_file"> Configuration file</a>
+</li> <li> <a href="?cover=print#Cron"> Cron</a>
+</li></ul> 
+</li></ul> 
+</li> <li> <a href="?cover=print#Sample_report"> Sample report</a>
+</li></ul> 
+</div>
+<p />
+<h1><a name="Introduction"></a> Introduction </h1>
+<p />
+<p />
+<p />
+The Hadoop storage reports provides a daily report on the status and usage of your SE.  This serves as a handy tool for both site administrators and site executives.  An example report is copied at the end of this guide.
+<p />
+<p />
+<p />
+This guide is split into 2 parts: the probe installation/configuration and the report installation/configuration.
+<p />
+<h1><a name="Hadoop_Storage_Probe"></a> Hadoop Storage Probe </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="YUM_Installation"></a> YUM Installation </span></h2>
+<p />
+This probe is currently kept in the Caltech yum repository.  Once <a href="/bin/view/Documentation/Release3/WebHome" class="twikiLink">VDT Release 3</a> is completed, this package will be available from the VDT repository.  Assuming that you have installed HDFS with this, do the following on the namenode:
+<p />
+<p />
+<p />
+<pre class="rootscreen">
+[root@client ~]$ yum install gratia-probe-hadoop-storage
+</pre>
+<p />
+Updates can be installed with:
+<p />
+<pre class="rootscreen">
+[root@client ~]$ yum upgrade gratia-probe-hadoop-storage
+</pre>
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuration"></a> Configuration </span></h2>
+<p />
+<p />
+<p />
+This RPM <strong>does not</strong> using Linux-standard file locations.  Here are the most relevant file and directory locations:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Purpose </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Needs Editing? </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Location </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Probe Configuration </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> /opt/vdt/gratia/probe/hadoop-storage/ProbeConfig </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Probe Executable </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> /opt/vdt/gratia/probe/hadoop-storage/hadoop_storage_probe </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Log files </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> /opt/vdt/gratia/var/logs </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Temporary files </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> No </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> /opt/vdt/gratia/var/tmp </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+The RPM installs the Gratia probe into the system crontab, but does not configure it.  The configuration of the probe is controlled by two files
+<p />
+<pre>
+/opt/vdt/gratia/probe/hadoop-storage/ProbeConfig
+/opt/vdt/gratia/probe/hadoop-storage/storage.cfg
+</pre>
+<p />
+<h3><a name="ProbeConfig"></a> ProbeConfig </h3>
+This is usually one XML node spread over multiple lines.  Note that comments (#) have no effect on this file.  You will need to edit the following:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Attribute </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Needs Editing </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Value </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> CollectorHost </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Maybe </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Set to the hostname and port of the central collector.  By default it sends to the OSG collector.  You probably do not want to change it. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> SiteName </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Set to the resource group name of your SE as registered in OIM. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Grid </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Maybe </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Set to "ITB" if this is a test resource; otherwise, leave as OSG. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> EnableProbe </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> Yes </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Set to 1 to enable the probe. </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h3><a name="storage_cfg"></a> storage.cfg </h3>
+This file controls which paths in HDFS should be monitored.  This is in the Windows INI format.
+<p />
+For each logical "area" (arbitrarily defined by you), specify both a given name and a list of paths that belong to that area.  Unix globs are accepted.
+<p />
+To configure an area named "CMS /store" that monitors the space usage in the paths /user/cms/store/*, one would add the following to the storage.cfg file.
+<p />
+<pre class="file">
+[Area CMS /store]
+Name = CMS /store
+Path = /user/cms/store/*
+Trim = /user/cms
+</pre>
+<p />
+For each such area, add a section to your configuration file.
+<p />
+<h4><a name="Example_file"></a> Example file </h4>
+Below is a configuration file that includes three distinct areas.  Note that you shouldn't have to touch the [Gratia] section if you edited the ProbeConfig above:
+<p />
+<pre class="file">
+[Gratia]
+gratia_location = /opt/vdt/gratia
+ProbeConfig = %(gratia_location)s/probe/hadoop-storage/ProbeConfig
+
+[Area /store]
+Name = CMS /store
+Path = /store/*
+
+[Area /store/user]
+Name = CMS /store/user
+Path = /store/user/*
+
+[Area /user]
+Name = Hadoop /user
+Path = /user/*
+</pre>
+<p />
+<p />
+<p />
+<h1><a name="Hadoop_Storage_Report"></a> Hadoop Storage Report </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Prerequisites"></a> Prerequisites </span></h2>
+<p />
+<p />
+<p /> <ol>
+<li> A working HDFS installation
+</li> <li> A local <a href="/bin/view/Trash/ReleaseDocumentationGratiaSiteCollector" class="twikiLink">Gratia Collector</a> installed
+</li> <li> A Hadoop Storage Probe installed and configured to point to the local Gratia Collector
+</li></ol> 
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Installation"></a> Installation </span></h2>
+This package is kept in the Caltech yum repository.  Assuming that you have installed HDFS with this, do the following on the namenode:
+<p />
+<p />
+<p />
+<pre class="rootscreen">
+&#91;root&#64;client ~]$ yum install GratiaReporting
+</pre>
+<p />
+Updates can be installed with:
+<p />
+<pre class="rootscreen">
+&#91;root&#64;client ~]$ yum upgrade GratiaReporting
+</pre>
+<p />
+<p />
+<p />
+<h3><a name="Files_and_Directories_Used"></a> Files and Directories Used </h3>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuration_AN1"></a> Configuration </span></h2>
+<p />
+<p />
+<p />
+This RPM uses Linux-standard file locations.  Here are the most relevant file and directory locations:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table3" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Purpose </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Needs Editing? </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Location </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Report Configuration </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> /etc/gratia_reporting </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Cron template </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> /etc/gratia_reporting/gratia_reporting/gratia_reporting.cron (move to /etc/cron.d) </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Logging Configuration </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> /etc/gratia_reporting/logging.cfg </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Log files </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> No </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> /var/log/gratia_reporting.log </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h3><a name="Configuration_file"></a> Configuration file </h3>
+Copy the file <code>/etc/gratia_reporting/reporting.cfg</code> to a new filename in <code>/etc/gratia_reporting</code> (for example, <code>/etc/gratia_reporting/reporting_cms.cfg</code>).  You will do this once for every report you want to send out.
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table4" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Attribute </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Needs Editing </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Value </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> SiteName </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Set to the resource group name of your SE as registered in OIM. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> database </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Maybe </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Set to the database section containing the login details for your Gratia Collector (a few, non-functioning examples sections are included). Installing a Gratia Collector is <a href="/bin/view/Trash/ReleaseDocumentationGratiaSiteCollector" class="twikiLink">covered here</a>, but ask around on osg-hadoop: Nebraska will usually run these reports for you if requested. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> toNames </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Python list for the "to names" for the report email. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> toEmails </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Python list for the "to emails" for the report email. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> smtphost </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Maybe </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Hostname of a SMTP server that accepts email from this host. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> fromName </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Maybe </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Set to the "from name" for the report email. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> fromEmail </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> Maybe </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Set to the "from email" for the report email. </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h3><a name="Cron"></a> Cron </h3>
+Copy the file <code>/etc/gratia_reporting/gratia_reporting.cron</code> to <code>/etc/cron.d</code>.  There is one line per report; comment out all except the hadoop report.  It is the line containing <code>-n hadoop</code>.  Update the line to point at your new configuration file.
+<p />
+<p />
+<p />
+<h1><a name="Sample_report"></a> Sample report </h1>
+<p />
+<p />
+<p />
+This is a sample report from the Nebraska HDFS instance.
+<pre class="file">
+============================================================
+  The Hadoop Chronicle | 85 % | 2009-09-25
+============================================================
+
+--------------------
+| Global Storage   |
+-----------------------------------------------------
+|                  |  Today  | Yesterday | One Week |
+-----------------------------------------------------
+| Total Space (GB) | 311,470 |   357,818 |  368,711 |
+| Free Space (GB)  |  47,304 |    93,719 |  128,391 |
+| Used Space (GB)  | 264,166 |   264,100 |  240,320 |
+| Used Percentage  |     85% |       74% |      65% |
+-----------------------------------------------------
+--------------
+| CMS /store |
+-------------------------------------------------------------------------------------------------------------------------------------
+|           Path           | Size(GB) | 1 Day Change | 7 Day Change | Remaining | # Files | 1 Day Change | 7 Day Change | Remaining |
+-------------------------------------------------------------------------------------------------------------------------------------
+| /store/user              |      771 |            0 | UNKNOWN      | NO QUOTA  |   4,859 |            0 | UNKNOWN      | NO QUOTA  |
+| /store/mc                |   95,865 |         -353 | UNKNOWN      | NO QUOTA  |  86,830 |         -171 | UNKNOWN      | NO QUOTA  |
+| /store/test              |        0 |            0 | UNKNOWN      | NO QUOTA  |     569 |           25 | UNKNOWN      | NO QUOTA  |
+| /store/results           |      237 |            0 | UNKNOWN      | NO QUOTA  |     198 |            0 | UNKNOWN      | NO QUOTA  |
+| /store/phedex_monarctest |      729 |            0 | UNKNOWN      | NO QUOTA  |     257 |            0 | UNKNOWN      | NO QUOTA  |
+| /store/unmerged          |    3,681 |            3 | UNKNOWN      | NO QUOTA  |  35,687 |           23 | UNKNOWN      | NO QUOTA  |
+| /store/CSA07             |        0 |            0 | UNKNOWN      | NO QUOTA  |       0 |            0 | UNKNOWN      | NO QUOTA  |
+| /store/data              |        0 |            0 | UNKNOWN      | NO QUOTA  |       0 |            0 | UNKNOWN      | NO QUOTA  |
+| /store/PhEDEx_LoadTest07 |        0 |          -21 | UNKNOWN      | NO QUOTA  |       1 |          -22 | UNKNOWN      | NO QUOTA  |
+-------------------------------------------------------------------------------------------------------------------------------------
+
+-------------------
+| CMS /store/user |
+----------------------------------------------------------------------------------------------------------------------------------
+|          Path         | Size(GB) | 1 Day Change | 7 Day Change | Remaining | # Files | 1 Day Change | 7 Day Change | Remaining |
+----------------------------------------------------------------------------------------------------------------------------------
+| /store/user/hpi       |        0 |            0 | UNKNOWN      |     1,099 |      15 |            0 | UNKNOWN      |     9,985 |
+| /store/user/gattebury |        0 |            0 | UNKNOWN      |     1,100 |       1 |            0 | UNKNOWN      |     9,999 |
+| /store/user/mkirn     |        0 |            0 | UNKNOWN      |     1,100 |       3 |            0 | UNKNOWN      |     9,997 |
+| /store/user/spadhi    |       12 |            0 | UNKNOWN      |     1,062 |   1,114 |            0 | UNKNOWN      |     8,886 |
+| /store/user/creed     |        0 |            0 | UNKNOWN      |     1,100 |       0 |            0 | UNKNOWN      |    10,000 |
+| /store/user/rossman   |        0 |            0 | UNKNOWN      |     1,099 |       5 |            0 | UNKNOWN      |     9,995 |
+| /store/user/eluiggi   |        0 |            0 | UNKNOWN      |     1,099 |       6 |            0 | UNKNOWN      |     9,994 |
+| /store/user/ewv       |        7 |            0 | UNKNOWN      |     1,081 |     284 |            0 | UNKNOWN      |     9,716 |
+| /store/user/test      |        0 |            0 | UNKNOWN      | NO QUOTA  |     167 |            0 | UNKNOWN      |     9,833 |
+| /store/user/schiefer  |      751 |            0 | UNKNOWN      |     1,044 |   3,264 |            0 | UNKNOWN      |     6,736 |
+----------------------------------------------------------------------------------------------------------------------------------
+
+----------------
+| Hadoop /user |
+----------------------------------------------------------------------------------------------------------------------------------
+|       Path      | Size(GB) | 1 Day Change | 7 Day Change | Remaining | # Files | 1 Day Change | 7 Day Change |    Remaining    |
+----------------------------------------------------------------------------------------------------------------------------------
+| /user/djbender  |        0 |            0 | UNKNOWN      | NO QUOTA  |       1 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/lhcb      |        0 |            0 | UNKNOWN      |        54 |       0 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/dzero     |      897 |            0 | UNKNOWN      |       347 |  89,376 |            0 | UNKNOWN      |         410,624 |
+| /user/bloom     |      454 |            0 | UNKNOWN      | NO QUOTA  |   1,410 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/uscms01   |  101,384 |         -362 | UNKNOWN      | NO QUOTA  | 129,739 |         -141 | UNKNOWN      | NO QUOTA        |
+| /user/cdf       |        0 |            0 | UNKNOWN      | NO QUOTA  |       6 |            0 | UNKNOWN      | 536,870,911,994 |
+| /user/osg       |        1 |            0 | UNKNOWN      | NO QUOTA  |       3 |            0 | UNKNOWN      |   5,368,709,117 |
+| /user/dweitzel  |       20 |            0 | UNKNOWN      | NO QUOTA  |   2,282 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/gattebury |        5 |            0 | UNKNOWN      | NO QUOTA  |  10,002 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/brian     |       72 |            0 | UNKNOWN      | NO QUOTA  |   2,697 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/usatlas   |        0 |            0 | UNKNOWN      | NO QUOTA  |       0 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/powers    |        1 |            1 | UNKNOWN      | NO QUOTA  |     211 |          211 | UNKNOWN      | NO QUOTA        |
+| /user/ifisk     |        0 |            0 | UNKNOWN      | NO QUOTA  |       1 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/gpn       |      261 |           -5 | UNKNOWN      |     1,360 |   3,805 |            1 | UNKNOWN      |         996,195 |
+| /user/engage    |      461 |          367 | UNKNOWN      | NO QUOTA  |      16 |           13 | UNKNOWN      |         999,984 |
+| /user/clundst   |        0 |            0 | UNKNOWN      | NO QUOTA  |       6 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/che       |        0 |            0 | UNKNOWN      | NO QUOTA  |      13 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/store     |        0 |            0 | UNKNOWN      | NO QUOTA  |       0 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/dteam     |        0 |            0 | UNKNOWN      |        53 |      18 |            0 | UNKNOWN      | NO QUOTA        |
+| /user/root      |        0 |            0 | UNKNOWN      | NO QUOTA  |       1 |            0 | UNKNOWN      | NO QUOTA        |
+----------------------------------------------------------------------------------------------------------------------------------
+
+-------------
+| FSCK Data |
+-------------
+ Total size:	114592906796932 B (Total open files size: 38923141120 B)
+ Total dirs:	41293
+ Total files:	295431 (Files currently being written: 38)
+ Total blocks (validated):	1356788 (avg. block size 84458962 B) (Total open file blocks (not validated): 297)
+ Minimally replicated blocks:	1356788 (100.0 %)
+ Over-replicated blocks:	1 (7.370348E-5 %)
+ Under-replicated blocks:	0 (0.0 %)
+ Mis-replicated blocks:		0 (0.0 %)
+ Default replication factor:	3
+ Average block replication:	2.2943976
+ Corrupt blocks:		0
+ Missing replicas:		0 (0.0 %)
+ Number of data-nodes:		101
+ Number of racks:		1
+The filesystem under path '/' is HEALTHY
+</pre></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Storage<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Storage/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/Storage/Hadoop" class="twikiLink">Hadoop</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>HadoopStorageReports</span> <br />    
+Topic revision: r10 - 07 Feb 2017 - 20:18:16 - <a href="/bin/view/Main/BrianBockelman" class="twikiLink">BrianBockelman</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

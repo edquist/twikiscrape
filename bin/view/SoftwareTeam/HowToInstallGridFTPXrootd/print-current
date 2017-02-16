@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> HowToInstallGridFTPXrootd &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/HowToInstallGridFTPXrootd?_T=16 Feb 2017" type="application/x-wiki" title="edit HowToInstallGridFTPXrootd" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/HowToInstallGridFTPXrootd"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <div class="twikiToc"> <ul>
+<li> <a href="?cover=print#How_to_install_and_test_xrootd_g"> How to install and test xrootd-gridftp rpm</a>
+</li></ul> 
+</div>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="How_to_install_and_test_xrootd_g"></a> How to install and test xrootd-gridftp rpm </span></h2>
+<p /> <ol>
+<li> Obtain hostcertificate and place it <code><b>/etc/grid-security/hostcert.pem</b></code>,  <code><b>/etc/grid-security/hostkey.pem</b></code> 
+</li> <li> Create <code><b>/etc/yum.repos.d/vdt.repo</b></code> <pre class="rootscreen">
+[vdt-development]
+name = VDT RPM repository - development versions for Redhat Enterprise Linux 5 and compatible
+baseurl = http://vdt.cs.wisc.edu/native/rpm/development/rh5/$basearch
+gpgcheck = 0
+enabled = 1
+<font color="#008000">#### skip that if you already have CAs certificate installed from some other source</font>
+[vdt-ca-certs]
+name=VDT CA Certificates
+baseurl=http://vdt.cs.wisc.edu/vdt_rpms/vdt-ca-certs
+gpgcheck=0
+enabled=1
+</pre>
+</li> <li> Install xrootd-grdftp and related packages:<pre class="rootscreen">
+$ yum install vdt-ca-certs #<font color="#008000">execute this command only if you want CA certificates from VDT</font>
+
+$ yum install xrootd-dsi
+....
+=======================================================================================================================================================================
+ Package                                         Arch                           Version                                  Repository                               Size
+=======================================================================================================================================================================
+Installing:
+ xrootd-dsi                                     x86_64                        3.0.4-1                                  vdt-development                         19 k
+Installing for dependencies:
+ globus-base-data-server                        x86_64                        4.0.8-7                                  vdt-development                        498 k
+ globus-base-essentials                         x86_64                        4.0.8-7                                  vdt-development                         13 M
+ gpt                                            x86_64                        3.2-3.gt408.1                            vdt-development                        1.3 M
+ vdt-compat                                     noarch                        2.0.0.22-5                               vdt-development                        4.0 k
+ xrootd-client                                  x86_64                        1:3.0.4-0.rc1.xu                         vdt-development                        1.5 M
+ xrootd-libs                                    x86_64                        1:3.0.4-0.rc1.xu                         vdt-development                        1.9 M
+
+
+=======================================================================================================================================================================
+</pre>
+</li> <li> If you want to use <code><b>grid-mapfile</b></code> for authorization you have to manually create it under <code><b>/etc/grid-security</b></code>, for example:<pre class="file">"/DC=org/DC=doegrids/OU=People/CN=Tanya Levshina 508821" fnalgrid</pre> If you want to use GUMS you will need to install additional package:<pre class="rootscreen">yum install prima</pre> and then modify information related to your GUMS server in <code><b>prima-authz.conf</b></code> under <code><b>/etc/grid-security</b></code>. <ul>
+<li> <code><b>/etc/grid-security/prima-authz.conf</b></code>:<pre class="file">....
+
+# This is the identity mapping server, it performs a mapping based on the gridmap file on the service host
+imsContact https://<font color="#ff0000">!!HOSTNAME!!</font>:8443/gums/services/GUMSAuthorizationServicePort
+xacmlContact https://<font color="#ff0000">!!HOSTNAME!!</font>:8443/gums/services/GUMSXACMLAuthorizationServicePort
+
+</pre> Where you have to replace <font color="#ff0000">!!HOSTNAME!!</font> with FQDN of your GUMS server, if your GUMS server is running on the port other then 8443 you have to change it as well.
+</li></ul> 
+</li></ol> 
+<p /> <ol>
+<li> Modify  <code><b>xrootd-gsiftp.sh</b></code> in <code><b>/opt/vdt/setup.d</b></code> <pre class="file">
+# This file must not be world-writable, and must be owned by root
+
+# You need to edit XROOTD_VMP if XROOTD_HOST, XROOTD_MOUNT_POINT
+# or XROOTD_REDIRECTOR_STORAGEPATH are present in the line below.
+export XROOTD_VMP="<font color="#ff0000">redirector_node</font>:1094:<font color="#ff0000">/local_mount_point</font>=<font color="#ff0000">/storage_path</font>"
+# Replace redirector_node and storage_path with the xrootd redirector
+# ie. root://redirector_node:1094/storage_path
+# This will map to /local_mount_point on the local machine / gridftp server
+
+
+# You almost certainly should not edit XROOTDLIB or LD_PRELOAD
+# unless you are running i386 or 32 bit arch, in which case
+# XROOTDLIB should be "/usr/lib"
+export XROOTDLIB=/usr/lib64
+export LD_PRELOAD=$XROOTDLIB/libXrdPosixPreload.so
+</pre> Replace <font color="#ff0000">redirector_node</font> with the name of your redirector host, <font color="#ff0000">local_mount_point</font> with a virtual mount point (e.g "/atlas") and <font color="#ff0000">/storage_path</font> with your redirector storage_path
+</li> <li> Start/stop service<pre class="rootscreen"> 
+$ service  globus-gridftp-server  start
+Starting GridFTP server...                                 <font color="#008000">[  OK  ]</font>
+$ service  globus-gridftp-server  stop
+</pre>
+</li> <li> Tests gridftp/xrootd from the node where OSG client is installed or globus commands are available: <ul>
+<li> login on the node as non-root user
+</li> <li> Make sure that <code><b>grid-proxy-init</b></code>, <code><b>globus-url-copy</b></code> is in your path.
+</li> <li> obtain grid proxy, e.g:<pre class="screen">
+grid-proxy-init 
+Your identity: /DC=org/DC=doegrids/OU=People/CN=Tanya Levshina 508821
+Enter GRID pass phrase for this identity:
+Creating proxy ...................................... Done
+Your proxy is valid until: Thu Apr 28 04:07:30 2011</pre> 
+</li> <li> Check that you can access gridftp host<pre class="screen"> 
+$ uberftp <font color="#ff0000">gridftp_server</font>
+220 fermicloud015.fnal.gov GridFTP Server 2.8 (gcc64dbg, 1217607445-63) ['VDT patched' 4.0.8] ready.
+230 User tlevshin logged in.
+
+UberFTP> ls /tmp
+-rw-------   1     root     root          115 Apr  5 10:14    test
+drwx------   2     root     root         4096 Apr  5 09:38 blah
+....
+</pre>
+</li> <li> Test it with globus-url-copy:<pre class="screen"> 
+$ globus-url-copy file:///bin/sh gsiftp://<font color="#ff0000">gridftp-server</font>:2811//<font color="#ff0000">mount_point</font>/test
+</pre>
+</li></ul> 
+</li></ol> 
+<p />
+<p />
+-- <a href="/bin/view/Main/TanyaLevshina" class="twikiLink">TanyaLevshina</a> - 05 Apr 2011</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/Projects" class="twikiLink">Projects</a> &gt; <a href="/bin/view/SoftwareTeam/XrootdRPMPhase1" class="twikiLink">XrootdRPMPhase1</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>HowToInstallGridFTPXrootd</span> <br />    
+Topic revision: r5 - 01 Jun 2011 - 17:00:21 - <a href="/bin/view/Main/TanyaLevshina" class="twikiLink">TanyaLevshina</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,420 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> LoadBalancedGridFTP &lt; Documentation/Release3 &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Documentation/Release3/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Documentation/Release3/LoadBalancedGridFTP?_T=16 Feb 2017" type="application/x-wiki" title="edit LoadBalancedGridFTP" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Documentation/Release3/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Documentation/Release3/LoadBalancedGridFTP"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFFFFF;
+	}
+	.patternBookView {
+		border-color:#FFFFFF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--TABLEPLUGIN_table1--><style type="text/css" media="all">
+.tableSortIcon img {padding-left:.3em; vertical-align:text-bottom;}
+</style>
+<!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <style type="text/css">
+code em, pre em { color: red; font-weight: normal; font-style: normal; }
+</style>
+<p />
+<div style="border: 1px solid black; margin: 1em 0; padding: 1em; background-color: #FFDDDD; font-weight: 600;">
+<h1><a name="Draft_Documentation"></a>  Draft Documentation </h1>
+Consider this document to be a late draft: The technical content has been reviewed, and is <strong>mostly</strong> complete and accurate. Here are the known issues with the document now: <ul>
+<li> It needs a troubleshooting section
+</li> <li> The suggested use of CA certificates must be reviewed
+</li> <li> The section on optional backup balancers needs further review and clarifications
+</li> <li> The section on disabling ARP needs further review and clarifications
+</li></ul> 
+We expect to complete the document during the week of 17&ndash;20 January 2017.
+</div>
+<p />
+<h1><a name="Load_Balancing_GridFTP"></a> Load Balancing GridFTP </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Load_Balancing_GridFTP"> Load Balancing GridFTP</a> <ul>
+<li> <a href="?cover=print#About_This_Guide"> About This Guide</a>
+</li> <li> <a href="?cover=print#Before_Starting"> Before Starting</a>
+</li> <li> <a href="?cover=print#Installing_Keepalived_on_Load_Ba"> Installing Keepalived on Load Balancers</a>
+</li> <li> <a href="?cover=print#Configuring_the_Load_Balancer_s"> Configuring the Load Balancer(s)</a> <ul>
+<li> <a href="?cover=print#Optional_Configuration"> Optional Configuration</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Configuring_Your_Real_Servers"> Configuring Your Real Servers</a> <ul>
+<li> <a href="?cover=print#Adding_your_virtual_IP_address"> Adding your virtual IP address</a>
+</li> <li> <a href="?cover=print#Disabling_ARP"> Disabling ARP</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Using_Keepalived"> Using Keepalived</a> <ul>
+<li> <a href="?cover=print#Managing_the_keepalived_service"> Managing the keepalived service</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Getting_Help"> Getting Help</a>
+</li> <li> <a href="?cover=print#Reference"> Reference</a>
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="About_This_Guide"></a> About This Guide </span></h2>
+<p />
+GridFTP is designed for high throughput data transfers and in many cases can handle all of the transfers for a site. However, in some cases it may be useful to run multiple GridFTP servers to distribute the load. For such sites, we recommend using a <a href="https://en.wikipedia.org/wiki/Load_balancing_(computing)" target="_top">load balancer</a> to distribute requests and present the appearance of a single high-throughput GridFTP server.
+<p />
+One general-purpose technology for implementing a load balancer on Linux is <a href="http://www.linuxvirtualserver.org/whatis.html" target="_top">Linux Virtual Server</a> (LVS). To use it with GridFTP, a single load balancer listens on a virtual IP address, monitors the health of the set of real GridFTP servers, and forwards requests to available ones. Optionally, there can be one or more inactive, backup load balancers that can activate and take over the virtual IP address in case the primary load balancer fails, resulting in a system that is more resilient to failure. LVS is implemented by the <a href="http://www.linuxvirtualserver.org/software/ipvs.html" target="_top">IP Virtual Server</a> kernel module, which can be managed by userspace services on the load balancers such as <a href="http://www.keepalived.org" target="_top">keepalived</a>.
+<p />
+This guide explains how to install, configure, run, test, and troubleshoot the <code>keepalived</code> service on a load balancing host for a set of <a href="/bin/view/Documentation/Release3/InstallOSGGridFTP" class="twikiLink">GridFTP</a> servers.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Before_Starting"></a> Before Starting </span></h2>
+<p />
+<p />
+As with all OSG software installations, there are some one-time (per host) steps to prepare in advance:
+<p /> <ul>
+<li> Ensure the host has <a href="/bin/view/Documentation/Release3/SupportedOperatingSystems" class="twikiLink">a supported operating system</a>
+</li> <li> Obtain root access to the host
+</li> <li> Prepare <a href="/bin/view/Documentation/Release3/YumRepositories" class="twikiLink">the required Yum repositories</a>
+</li> <li> Install <a href="/bin/view/Documentation/Release3/InstallCertAuth" class="twikiLink">CA certificates</a>
+</li></ul> 
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Installing_Keepalived_on_Load_Ba"></a> Installing Keepalived on Load Balancers </span></h2>
+<p />
+Whether you run a single load balancer, or have one active load balancer and some inactive backups, each load balancer host must have the <code>keepalived</code> software installed, configured, and running.
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  Do not install <code>keepalived</code> on the GridFTP servers themselves.
+</dd></dl> 
+<p />
+The <code>keepalived</code> package is available from the operating system repositories. Install it on each load balancer host using the following commands:
+<p />
+<ol>
+<p />
+    <li>
+      <p>Clean yum cache:</p>
+      <pre class="rootscreen">[root@client ~]$ yum clean all --enablerepo=*</pre>
+    </li>
+    <li>
+      <p>Update software:</p>
+      <pre class="rootscreen">[root@client ~]$ yum update</pre>
+      <p>This command will update <strong>all</strong> packages on your system.</p>
+    </li>
+<p />
+  <li>
+    <p>Install the <code>keepalived</code> package:</p>
+    <pre class="rootscreen">[root@client ~]$ yum install keepalived</pre>
+  </li>
+</ol>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuring_the_Load_Balancer_s"></a> Configuring the Load Balancer(s) </span></h2>
+<p />
+On the primary load balancer, edit <code>/etc/keepalived/keepalived.conf</code>:
+<p />
+<pre class="file">global_defs {
+   router_id <span style="background-color: #FFCCFF;">LABEL FOR YOUR LVS</span>
+}
+
+vrrp_instance VI_gridftp {
+    state MASTER
+    interface <span style="background-color: #FFCCFF;">INTERFACE (e.g. eth0)</span>
+    virtual_router_id <span style="background-color: #FFCCFF;">ARBITRARY ID, 0–255</span>
+    priority 100
+    virtual_ipaddress {
+        <span style="background-color: #FFCCFF;">VIRTUAL IP ADDRESS</span>/<span style="background-color: #FFCCFF;">SUBNET MASK</span> dev <span style="background-color: #FFCCFF;">INTERFACE (e.g., eth0)</span>
+    }
+}
+
+virtual_server <span style="background-color: #FFCCFF;">VIRTUAL IP ADDRESS</span> 2811 {
+    delay_loop 10
+    lb_algo wlc
+    lb_kind DR
+    protocol tcp
+
+    real_server <span style="background-color: #FFCCFF;">GRIDFTP SERVER #1 IP ADDRESS</span> 2811 {
+        TCP_CHECK {
+            connect_timeout 3
+        }
+    }
+    real_server <span style="background-color: #FFCCFF;">GRIDFTP SERVER #2 IP ADDRESS</span> 2811 {
+        TCP_CHECK {
+            connect_timeout 3
+        }
+    }
+    <span style="background-color: #FFCCFF;">[&hellip;]</span>
+}</pre>
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  Use the same <code>VIRTUAL IP ADDRESS</code> throughout your LVS configuration.
+</dd></dl> 
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  In the <code>virtual_server</code> section, write one <code>real_server</code> subsection per GridFTP server behind the load balancer.
+</dd></dl> 
+<p />
+<a name="OptionalConfig"></a>
+<h3><a name="Optional_Configuration"></a> Optional Configuration </h3>
+<p />
+The following configuration steps are optional and will likely not be required for setting up a small cluster of GridFTP hosts. If you do not need any of the following special configurations, skip to <a href="/bin/view/Documentation/Release3/LoadBalancedGridFTP#ConfigureReal" class="twikiCurrentTopicLink twikiAnchorLink">the section on configuring your real servers</a>.
+<p /> <ul>
+<li> <a href="/bin/view/Documentation/Release3/LoadBalancedGridFTP#BackupLoadBalancers" class="twikiCurrentTopicLink twikiAnchorLink">Adding backup load balancers</a>
+</li> <li> <a href="/bin/view/Documentation/Release3/LoadBalancedGridFTP#EmailNotifications" class="twikiCurrentTopicLink twikiAnchorLink">Enabling e-mail notifications</a>
+</li></ul> 
+<p />
+<a name="BackupLoadBalancers"></a>
+<h4><a name="Adding_backup_load_balancers"></a> Adding backup load balancers </h4>
+<p />
+If you need to add backup load balancers, copy <code>/etc/keepalived/keepalived.conf</code> from your primary load balancer and change the <code>state</code> and priority attributes under your <code>vrrp_instance VI_gridftp</code> section:
+<p />
+<p /> <dl>
+<dt> <img src="/twiki/pub/TWiki/TWikiDocGraphics/help.gif" alt="HELP" title="HELP" width="16" height="16" border="0" />     <strong><font color="#ff0000"> NOTE </font></strong> </dt><dd>  Priority specifies the order of preferred load balancer fall back where larger values corresponds to a higher preference.
+</dd></dl> 
+<p />
+<pre class="file">vrrp_instance VI_gridftp {
+    state BACKUP
+    interface <span style="background-color: #FFCCFF;">INTERFACE (e.g. eth0)</span>
+    virtual_router_id <span style="background-color: #FFCCFF;">SAME ID AS MASTER LOAD BALANCER</span>
+    priority <span style="background-color: #FFCCFF;">PRIORITY INTEGER</span>
+    virtual_ipaddress {
+        <span style="background-color: #FFCCFF;">VIRTUAL IP ADDRESS</span>/<span style="background-color: #FFCCFF;">SUBNET MASK</span> dev <span style="background-color: #FFCCFF;">INTERFACE (e.g., eth0)</span>
+    }
+}
+</pre>
+<p />
+<a name="EmailNotifications"></a>
+<h4><a name="Enabling_e_mail_notifications"></a> Enabling e-mail notifications </h4>
+<p />
+To receive e-mails when the state of your LVS cluster changes, update the <code>global_defs</code> section of <code>/etc/keepalived/keepalived.conf</code> for each of your load balancer nodes:
+<p />
+<pre class="file">
+notification_email {
+<span style="background-color: #FFCCFF;">NOTIFY EMAIL ADDRESS #1</span>
+<span style="background-color: #FFCCFF;">NOTIFY EMAIL ADDRESS #2</span>
+<span style="background-color: #FFCCFF;">...</span>
+}
+notification_email_from <span style="background-color: #FFCCFF;">FROM EMAIL ADDRESS</span>
+smtp_server <span style="background-color: #FFCCFF;">SMTP SERVER IP ADDRESS</span>
+smtp_connect_timeout 60
+router_id <span style="background-color: #FFCCFF;">STRING IDENTIFYING MACHINE</span>
+</pre>
+<p />
+<a name="ConfigureReal"></a>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuring_Your_Real_Servers"></a> Configuring Your Real Servers </span></h2>
+<p />
+Each real server requires changes to its IP configuration and potentially its arptables: 
+<p /> <ul>
+<li> <a href="/bin/view/Documentation/Release3/LoadBalancedGridFTP#AddingVIP" class="twikiCurrentTopicLink twikiAnchorLink">Adding your virtual IP address</a>
+</li> <li> <a href="/bin/view/Documentation/Release3/LoadBalancedGridFTP#DisableArp" class="twikiCurrentTopicLink twikiAnchorLink">Disabling ARP</a> &minus; if your real servers are on the same network segment as the virtual IP
+</li></ul> 
+<p />
+<a name="AddingVIP"></a>
+<h3><a name="Adding_your_virtual_IP_address"></a> Adding your virtual IP address </h3>
+<p />
+Use the same virtual IP address as your load balancers as the secondary IP on your real servers. Add it using the <code>ip</code> tool:
+<p />
+<pre class="rootscreen">[root@client ~]$ ip addr add <span style="background-color: #D1CAF2;">VIRTUAL IP ADDRESS</span>/<span style="background-color: #D1CAF2;">SUBNET MASK</span> dev <span style="background-color: #D1CAF2;">INTERFACE (e.g. eth0)</span></pre>
+<p />
+TODO: How to persist across reboots?
+<p />
+<a name="DisableArp"></a>
+<h3><a name="Disabling_ARP"></a> Disabling ARP </h3>
+<p />
+If your real servers are only listening on the same network as your virtual IP address, skip to <a href="/bin/view/Documentation/Release3/LoadBalancedGridFTP#UsingKeepalived" class="twikiCurrentTopicLink twikiAnchorLink">the section on using keepalived</a>. If your real servers and load balancer(s) are on the same network segment, you will have to disable ARP on the real servers to avoid <a href="http://kb.linuxvirtualserver.org/wiki/ARP_Issues_in_LVS/DR_and_LVS/TUN_Clusters" target="_top">ARP race conditions</a>:
+<p />
+<ol>
+  <li>
+    <p>Select the appropriate RPM:</p>
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">If your operating system version is…</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1 twikiLastCol"> <font color="#252b37">Then use the following package(s)…</font> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Enterprise Linux 6 </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> <code>arptables_jf</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Enterprise Linux 7 </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> <code>arptables</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+  </li>
+  <li>
+    <p>Install the arptables software:</p>
+    <pre class="rootscreen">[root@client ~]$ yum install arptables_jf</pre>
+  </li>
+  <li>
+    <p>Disable ARP:</p>
+    <pre class="rootscreen">[root@client ~]$ arptables -F
+[root@client ~]$ arptables -A IN -d <span style="background-color: #D1CAF2;">VIRTUAL IP ADDRESS</span> -j DROP
+[root@client ~]$ arptables -A OUT -s <span style="background-color: #D1CAF2;">VIRTUAL IP ADDRESS</span> -j mangle --mangle-ip-s <span style="background-color: #D1CAF2;">REAL IP ADDRESS</span></pre>  </li>
+  </li>
+  <li>
+    <p>Save ARP tables to survive reboots:</p>
+    <pre class="rootscreen">[root@client ~]$ arptables-save > /etc/sysconfig/arptables</pre>    
+  </li>
+</ol>
+<p />
+<a name="UsingKeepalived"></a>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Using_Keepalived"></a> Using Keepalived </span></h2>
+<p />
+<h3><a name="Managing_the_keepalived_service"></a> Managing the keepalived service </h3>
+<p />
+<p />
+On the load balancer nodes, <code>keepalived</code> is the only additional service required for running an LVS. As a reminder, here are common service commands (all run as <code>root</code>):
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <font color="#252b37">To &hellip;</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <font color="#252b37">On EL&nbsp;6, run the command&hellip;</font> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <font color="#252b37">On EL&nbsp;7, run the command&hellip;</font> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Start a service </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> <code>service keepalived start</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>systemctl start keepalived</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Stop a service </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> <code>service keepalived stop</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> <code>systemctl start keepalived</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Enable a service to start during boot </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> <code>chkconfig keepalived on</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> <code>systemctl enable keepalived</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Disable a service from starting during boot </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> <code>chkconfig keepalived off</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> <code>systemctl disable keepalived</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Getting_Help"></a> Getting Help </span></h2>
+<p />
+To get assistance with <code>keepalived</code> in front of OSG Software services, please use the <a href="/bin/view/Documentation/HelpProcedure" class="twikiLink">this page</a>.
+<p />
+<a name="ReferenceSection"></a>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Reference"></a> Reference </span></h2>
+<p /> <ul>
+<li> <a href="http://www.linuxvirtualserver.org/whatis.html" target="_top">Linux Virtual Server homepage</a>
+</li> <li> <a href="http://www.keepalived.org/index.html" target="_top">Keepalived homepage</a>
+</li> <li> <a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Load_Balancer_Administration/index.html" target="_top">RHEL 7 Load Balancer Administration Guide</a>
+</li> <li> <a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Load_Balancer_Administration/index.html" target="_top">RHEL 6 Load Balancer Administration Guide</a>
+</li> <li> <a href="https://github.com/gattebury/gridftp-with-lvs" target="_top">T2 Nebraska LVS installation notes</a>
+</li></ul> </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Documentation/Release3<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>LoadBalancedGridFTP</span> <br />    
+Topic revision: r3 - 19 Jan 2017 - 16:17:34 - <a href="/bin/view/Main/BrianLin" class="twikiLink">BrianLin</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> GratiaDataCollectionNotes &lt; Accounting &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Accounting/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Accounting/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Accounting/GratiaDataCollectionNotes?_T=16 Feb 2017" type="application/x-wiki" title="edit GratiaDataCollectionNotes" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Accounting/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Accounting/GratiaDataCollectionNotes"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Gratia_Data_Collection_Notes"></a>  Gratia Data Collection Notes </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Introduction"></a> Introduction </span></h2>
+<p />
+This attempts to put all in one place a description of the algorithms followed when collecting and processing job level Gratia data. Where appropriate, common and probe-specific behaviors will be discussed, including any historical behaviors that still may be of relevance.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Overview_of_Gratia_data_collecti"></a> Overview of Gratia data collection. </span></h2>
+<p />
+Speaking very generally, a Gratia probe will: <ol>
+<li> Collect information from one or more sources;
+</li> <li> Prepare a record for upload to the probe by using the Gratia python API;
+</li> <li> Contact a Gratia data collection service, upload some meta-information and then the job level data.
+</li></ol> 
+<p />
+The different types of data sent to Gratia collectors include:
+<p /> <ol>
+<li> Local and OSG-originated job level information on batch jobs executed by a variety of LRMS (Local Resource Management Systems) including Condor, PBS (including Torque), LSF, SGE;
+</li> <li> Summary level information from a variety of resources (PANDA is a prime example) for <em>ad hoc</em> comparison with job-level data.
+</li> <li> Summarized process-level information.
+</li> <li> Metric information from RSV tests.
+</li> <li> Pilot level information from the glExec pilot/glide-in system.
+</li> <li> Storage allocation information from OSG Storage Elements (SEs).
+</li> <li> Transfer-level information from dCache and GRIDFtp.
+</li></ol> 
+<p />
+At the collector these data are received, stored in a DB and summarized as appropriate. Reports are available either via the BIRT interface, or as text-based emails.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Anatomy_of_a_record_upload"></a> Anatomy of a record upload. </span></h2>
+<p />
+<ol><li>The probe will register its relevant version information with the Gratia infrastructure using any or all of the following python routines:
+    <dl><dt> <tt>Gratia.registerReporter(<em>name</em>, <em>version string</em>)</tt> </dt><dd> <tt>Gratia.registerReporter("glexec.py", "v1.0.2")</tt> </dd>
+        <dt> <tt>Gratia.registerReporterLibrary(<em>name</em>, <em>version string</em>)</tt> </dt><dd> <tt>Gratia.registerReporterLibrary("glexec_extraSubs.py", "v1.1")</tt> </dd>
+        <dt> <tt>Gratia.registerService(<em>name</em>, <em>version string</em>)</tt> </dt><dd> <tt>Gratia.registerService("Condor", "v7.0.3")</tt> </dd>
+    </dl>
+    A useful utility routine here is <tt>Gratia.extractRevision("$Revision: %")</tt> </li>
+    <li>Initialize the Gratia system and perform a handshake with the collector: <tt>Gratia.initialize(<em>[config-file]</em>)</tt> </li>
+    <li>Attempt to send any records written to file but not uploaded successfully.</li>
+    <li>For each job record to upload:
+    <ul><li>Define the job level record with information gleaned from the primary information source (eg LRMS log).</li>
+        <li>Give the send instruction for the record (<tt>record.Send()</tt>).</li>
+        <li>Pre-process the data prior to sending by:
+        <ul><li>Checking the MeterName, SiteName and Grid attributes and adding them to the record as appropriate.</li>
+            <li id="check_vo">Checking and obtaining the best possible values for VOName and ReportableVOName according to an established order of precedence. Please see the specific <a href="/bin/view/Accounting/GratiaDataCollectionNotes#Methods_used_to_ascertain_the_us" class="twikiCurrentTopicLink twikiAnchorLink">notes on VOName and ReportableVOName</a> below.</li>
+        <li>Suppress records as appropriate according to configuration settings and data checks (<a href="/bin/view/Accounting/GratiaDataCollectionNotes#record_suppression" class="twikiCurrentTopicLink twikiAnchorLink">see below</a>).</li>
+        <li>Create a file backup of the record.</li>
+        <li>Send the record and delete the file backup upon successful completion.</li>
+        </ul></li>
+    </ul></li>
+    <li>Remove old log files and old (unusable) data files.</li>
+    <li>Produce a summary of records sent and failed.</li>
+    <li>Disconnect and exit.</li>
+</ol>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Behavior_common_to_all_probes"></a> Behavior common to all probes. </span></h2>
+<p />
+<ul>
+    <li> <em>Any</em> probe reading data from elsewhere (DB, log files, etc) must take care to track progress and avoid sending multiple records describing the same event.</li>
+    <li>The second and subsequent records received by the collector describing the same given event are not written to the DB in the usual manner but are stored in the DupRecord table along with a reference to the original record. These are not considered further by the collector except to be cleaned up according to the configured housekeeping schedule. A revised description of an event therefore must be incorporated in the DB manually.</li>
+    <li>Records not sent to the collector successfully will be stored on disk and sent when connection is re-established.</li>
+    <li>Log-scraping probes (eg PBS / LSF, SGE) must take special care to track progress and avoid rewinding and re-sending information about old jobs. In addition, one must take care to avoid problems associated with the possibility of reading the log at the same time as new information is being added (possibly at high rate). This problem is especially acute when the log is mirrored in some way from its primary location (rsync or NFS).</li>
+    <li id="record_suppression">Several ProbeConfig attributes control whether and how records are suppressed without being uploaded to the collector:
+    <dl><dt><tt>SuppressUnknownVORecords</tt></dt>
+        <dd>Suppress records with a VOName of "Unknown."</dd>
+        <dt><tt>SuppressNoDNRecords</tt></dt>
+        <dd>Suppress records with no DN.</dd>
+        <dt><tt>SuppressGridLocalRecords</tt></dt>
+        <dd>Suppress records with a Grid attribute of "Local." In VDT 1.10.1n, this option is true by default.</dd>
+    </dl></li>
+</ul>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Behavior_common_to_LRMS_probes"></a> Behavior common to LRMS probes. </span></h2>
+<p />
+[ LRMS -&gt; Local Resource Management System a.k.a batch manager. ]
+<p />
+<h3><a name="Methods_used_to_ascertain_the_us"></a> Methods used to ascertain the user details associated with a job. </h3>
+<p />
+The user details attributes of an LRMS Gratia record are: <ul>
+<li> LocalUserId;
+</li> <li> GlobalUserName;
+</li> <li> DN;
+</li> <li> VOName; <em>and</em>
+</li> <li> ReportableVOName
+</li></ul> 
+<p />
+In particular, VOName and ReportableVOName correspond respectively to <em>either</em>: <ul>
+<li> FQAN, VO Name (or sub-VO name as appropriate, eg Minos); <em>or</em>
+</li> <li> voi, VOc as specified in <code>$VDT_LOCATION/monitoring/osg-user-vo-map.txt</code>.
+</li></ul> 
+<p />
+On a modern system (OSG 1.0+ for Condor probe, OSG 1.0/VDT 1.10.1n+ for other probes), the DN, FQAN and VO name are obtained via a Gratia-specific hook in the job manager Perl code which runs voms-proxy-info on the delegated proxy (if available). The proxy is available if the jobs was submitted via: <ul>
+<li> CondorG;
+</li> <li> <code>globus-job-run</code> (or <code>globusrun</code>); <em>or</em>
+</li> <li> <code>globusrun-ws</code> with explicit credential delegation.
+</li></ul> 
+<p />
+Whether FQAN / VOName are available in this manner depends on whether the submitter used a voms-proxy (yes) or vanilla grid-proxy (no).
+<p />
+The information gleaned in this way is stored in a, "certinfo" file in <code>$VDT_LOCATION/gratia/var/data</code>.
+<p />
+If the DN is not available via this method, it is obtainable from the ClassAd for Condor jobs or via reverse grid map file look-up for the SGE probe.
+<p />
+On older OSG installations or if a delegated proxy is not available, the LocalUserId is used to look up the voi &amp; VOc.  Note that here, we are completely at the mercy of the site admins, since a reverse grid map file may be generated by <code>edg-mkgridmap</code>, GUMS or (as on several sites) by hand, with varying levels of consistency and reliability. This method is also a first-match system, so the mapping is imperfect in a variety of increasingly common scenarios.
+<p />
+To summarize: following algorithm is used by the <code>Gratia.py</code> infrastructure at the <a href="/bin/view/Accounting/GratiaDataCollectionNotes#check_vo" class="twikiCurrentTopicLink twikiAnchorLink">relevant point</a> to decide what gets sent to the collector: <ol>
+<li> VOName / ReportableVOName as provided by the specific probe if VOName is the FQAN;
+</li> <li> Credentials from a certinfo file if one can be associated with the job record;
+</li> <li> VOName / ReportableVOName if provided by the specific probe; <em>or</em>
+</li> <li> voi &amp; VOc from a reverse grid map file.
+</li></ol> 
+<p />
+At the collector level every unique combination of VOName / ReportableVOName is put into a table. This combination is used to look up the "true" VO name for reporting purposes. If this combination has not been seen before the default translation of the combination is the VOName unless the VOName is an FQAN, in which case the default translation is the ReportableVOName. This translation may be changed on the collector using the administration GUI.
+<p />
+<h3><a name="Notes_on_local_vs_OSG_GRAM_jobs"></a> Notes on local vs OSG-GRAM jobs. </h3>
+<p />
+Condor (with <code>PER_JOB_HISTORY_DIR</code>) and most other known LRMS (SGE, PBS, LSF) store information for <em>all</em> jobs seen, not necessarily just GRAM-originated jobs. In campus grid situations where the same LRMS is used for GRAM and non-GRAM jobs it is extremely difficult for the probe to distinguish one from the other. One increasingly common case is locally scheduled MPI jobs; another is jobs executed via a Teragrid gateway. One is reliant on the construction of the reverse mapping file and the grid-identity to LocalUserId (UNIX UID) mapping to distinguish GRAM from non-GRAM. 
+<p />
+Currently, having a GRAM job does not mean having access to FQAN (grid-proxy-based  authorization) or even DN (non-delegated WS jobs), so that is not a foolproof discriminator. Similarly, a job coming in through the teragrid gateway might be mapped to the same LocalUserId as one via the OSG gateway as recently happened to nanoHUB at Purdue. Also, a hand-written mapfile (<em>cf</em> OUHEP) might manually map individual users to a VO (DOSAR) such that PBS jobs mapped via <code>osg-user-vo-map.txt</code> will be accounted (as far as Gratia can tell) as an OSG job.
+<p />
+Finally, there has been a practice on the part of LHC experiments (notably ATLAS) to run jobs locally but have them reported to Gratia in order to get them credited to WLCG via Gratia's automatic reporting to same. This also leads to blurring of the distinction between local and GRAM jobs.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Specific_probe_behavior_and_othe"></a> Specific probe behavior and other notes. </span></h2>
+<p />
+<h3><a name="Condor"></a> Condor </h3>
+<p /> <ul>
+<li> The probe as released with VDT 1.10.1n is capable of tagging ClassAds as being of GRAM origin in the job manager and marking jobs that do not possess this tag as Grid=Local. The configuration attribute <code>SuppressGridLocalRecords</code> can therefore be used to filter-out local jobs.
+</li></ul> 
+<p /> <ul>
+<li> Newer versions of Condor (&gt;=6.9.0) can be configured to write ClassAd files into a known directory upon completion. <code>PER_JOB_HISTORY_DIR</code> should be set to match the configuration attribute <code>DataFolder</code> (default <code>$VDT_LOCATION/gratia/var/data</code>) in this case.
+</li></ul> 
+<p /> <ul>
+<li> With older versions of Condor (or where <code>PER_JOB_HISTORY_DIR</code> is not set correctly) we rely on a GRAM stub being written to <code>$VDT_LOCATION/gratia/var/data</code> either by the job manager (GT2) or by the probe itself after extracting the information from <code>globus-condor.log</code>. Once the job ID is ascertained, <code>condor_history</code> is invoked, which can be very slow on (eg) systems running Quill.
+</li></ul> 
+<p /> <ul>
+<li> Some pre-OSG-1.0 versions of the probe did not catch jobs if the version of Condor was &gt;6.9.0 but did not have <code>PER_JOB_HISTORY_DIR</code> set. Similarly WS jobs were missed if a GRAM stub was required for one reason or another because individual stubs were not available for GT4 jobs. Now if _PER_JOB_HISTORY_DIR= is not set the GRAM stub is used as a fallback; and the <code>globus-condor.log</code> is parsed for GRAM stub information from WS jobs.
+</li></ul> 
+<p /> <ul>
+<li> As of VDT 1.10.1n grid monitor jobs are tagged with <code>ResourceType</code> = 'Documentation/Release3.GridMonitor' and are therefore separable from normal jobs. As of Gratia Services v1.00.5 these data are stored only; and not used in any reports or queries.
+</li></ul> 
+<p />
+<h3><a name="PBS_LSF"></a> PBS / LSF </h3>
+<p /> <ul>
+<li> Pre-VDT 1.10.1n, the probe was not able to associate certinfo files to a particular job (even if a certinfo file was written). Combined with PBS' lack of a DN this rendered PBS entirely reliant on the map file for VO information.
+</li></ul> 
+<p /> <ul>
+<li> Pre-OSG 1.0, the probe was susceptible to mis-reading the LRMS log file when the LRMS was under high load. This mis-reading tended to occur when the LRMS log file was copied in some way to the machine upon which the probe ran (either via rsync or NFS mount).
+</li></ul> 
+<p /> <ul>
+<li> Some ways of configuring the LRMS render Gratia unable to see the correct accounting information for jobs (certain queue forwarding scenarios).
+</li></ul> 
+<p />
+<h3><a name="SGE"></a> SGE </h3>
+<p />
+On some sites running SGE, the reverse map file contains the DN. This probe is able to parse the DN information out of the map file in those circumstances.
+<p />
+<h3><a name="gLexec"></a> gLexec </h3>
+<p /> <ul>
+<li> This is the only OSG Gratia probe currently which must be run on the WN. It must be configured properly such that the <code>MeterName</code> in ProbeConfig corresponds exactly to the GK's <code>MeterName</code>.
+</li></ul> 
+<p /> <ul>
+<li> gLexec information received at the collector is tagged differently to standard LRMS jobs and is therefore separable. As of Gratia Services v1.00.5 these data are stored only; and not used in any reports or queries.
+</li></ul> 
+<p />
+<h3><a name="PS_Accounting"></a> PS-Accounting </h3>
+<p /> <ul>
+<li> This non-OSG probe collects summarized ps-accounting data gathered by the UNIX <code>psacct</code> utility. It is not to be considered comparable to job-level data.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Advice_to_OSG_VOs_wishing_to_get"></a> Advice to OSG VOs wishing to get as complete an accounting of their activities as possible. </span></h2>
+<p />
+<h3><a name="Things_you_can_do_yourself"></a> Things you can do yourself. </h3>
+<p /> <ul>
+<li> Always use a VOMS proxy rather than a grid proxy;
+</li> <li> If you submit via non-CondorG WS: always explicitly delegate your credentials;
+</li> <li> Always use the right FQAN for the job -- Role=RSV, Role=Pilot, Role=Production, etc, etc. Any distinct FQAN can be mapped to a different, "VO" as desired for fine-grained accounting.
+</li></ul> 
+<p />
+<h3><a name="Things_to_ask_of_the_sites_where"></a> Things to ask of the sites where you run jobs. </h3>
+<p /> <ul>
+<li> If the sites are nominally, "yours," then you can separate out any test batch and fork jobs run by the RSV system by running them with separable credentials (eg Role=RSV) and having the Gratia team translate them to a different reporting VO label.
+</li> <li> Install and run the managedfork system to account for fork jobs run on the gatekeeper (this will also manage gatekeeper load better than the default fork queue.
+</li> <li> Install the latest version of OSG (currently 1.0), and the latest patches / updates therefor.
+</li> <li> If they are running Condor (as batch <em>and/or</em> managedfork LRMS) they should follow the pre-install checklist which specifies how to check the PER_JOB_HISTORY_DIR attribute of their condor_config to ensure all condor jobs are caught and their reporting is as efficient as possible and contains the maximum amount of information.
+</li></ul> 
+<p />
+-- <a href="/bin/view/Main/ChrisGreen" class="twikiLink">ChrisGreen</a> - 01 Dec 2008</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Accounting<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Accounting/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>GratiaDataCollectionNotes</span> <br />    
+Topic revision: r8 - 17 Jan 2012 - 22:41:33 - <a href="/bin/view/Main/JamesWeichel" class="twikiLink">JamesWeichel</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

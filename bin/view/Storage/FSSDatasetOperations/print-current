@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> FSSDatasetOperations &lt; Storage &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Storage/FSSDatasetOperations?_T=16 Feb 2017" type="application/x-wiki" title="edit FSSDatasetOperations" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Storage/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Storage/FSSDatasetOperations"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#0000FF;
+	}
+	.patternBookView {
+		border-color:#0000FF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="FSSDataset_Operations"></a>  <strong><noop>FSSDataset Operations</strong> </h1>
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Dataset_Operations"> Dataset Operations</a> <ul>
+<li> <a href="?cover=print#Defining_Datasets"> Defining Datasets</a>
+</li> <li> <a href="?cover=print#Datasets_in_the_Replica_Catalog"> Datasets in the Replica Catalog</a>
+</li> <li> <a href="?cover=print#Requesting_a_Suballocation_for_a"> Requesting a Suballocation for a Dataset</a>
+</li> <li> <a href="?cover=print#Dataset_Deletion"> Dataset Deletion</a>
+</li> <li> <a href="?cover=print#Dataset_Replication"> Dataset Replication</a>
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Dataset_Operations"></a> Dataset Operations </span></h2>
+<p />
+<h3><a name="Defining_Datasets"></a> Defining Datasets </h3>
+<p />
+Defining datasets ensures that all files in a dataset are directed to the same storage resource. It also allows for copies and deletions of datasets, and for dataset-based allocations.
+<p />
+Dataset parameters and membership are defined in the Dataset Catalog portion of PSC. Information on the location and state of the files in a dataset are saved in the Replica Catalog. In the dataset catalog there is one object per dataset. In the replica catalog there is a dataset object for every allocation on which members of a dataset exist.  
+<p />
+Datasets may be defined by specifying a directory. However, members of a dataset may not all be in the same directory structure, or it may be desired that some files in a directory structure be considered as members a set and others, not. Therefore, it is possible to define dataset membership on individual files as well as on directories.
+<p />
+<p /> <ol>
+<li> The user/VOA invokes the <a href="/bin/view/Storage/FSSCommandReference#Dataset_registration_tool" class="twikiAnchorLink">dataset registration tool</a> with the dataset handle as an argument. 
+</li>  </ol><ul>
+<li> A directory or file path can be specified as an option. Its namespace object must exist.
+</li> <li> The expected size of the dataset can be specified as an option. 
+</li> <li> Requesting a space reservation within the allocation is an option. The expected size must be specified.
+</li> <li> The expected number of files can be specified as an option. 
+</li> <li> The desired expiration of the dataset can be specified as an option. 
+</li></ul> 
+<p />
+To check whether a file is a member of a dataset, its namespace object is first checked for a dataset reference. If there is no value, each directory in the file’s path is checked for a dataset reference. The lowest such reference, if any, defines the file’s dataset membership by path. There are four consequences to this rule. 
+<p /> <ul>
+<li> Dataset membership may be defined directly in a file’s dataset reference attribute, overriding any membership defined by path. 
+</li> <li> All files (recursively) below a dataset directory in the filesystem are part of the dataset, except if there are other datasets defined by path below that dataset directory.
+</li> <li> If any directory below a dataset directory is given a dataset handle, all files below it become part of the new dataset. 
+</li> <li> If any directory above a dataset directory is given a dataset handle, there is no effect on the original dataset’s membership.
+</li></ul> 
+<p />
+It is allowable to have files and directories with the same dataset handle, in which case when referred to by handle they are considered as being in the same dataset. It is allowable to have more than one directory with the same dataset handle, in which case when referred to by handle they are considered as being in the same dataset. When referred to by path in the dataset context, only the members below the directory are included.
+<p />
+<p />
+<h3><a name="Datasets_in_the_Replica_Catalog"></a> Datasets in the Replica Catalog </h3>
+<p />
+The state of a dataset on a storage resource is maintained in a replica catalog object.
+<p /> <ol>
+<li> The <a href="/bin/view/Storage/FSSCommandReference#Dataset_replica_update_utility" class="twikiAnchorLink">dataset replica update utility</a> is invoked, which creates or updates an object in the Replica Catalog with attributes specified on the command line, or their defaults. 
+</li></ol> 
+<p />
+<p />
+<h3><a name="Requesting_a_Suballocation_for_a"></a> Requesting a Suballocation for a Dataset </h3>
+<p />
+Part of an allocation may be assigned to a dataset as a suballocation. A suballocation for a dataset will also be called a “space reservation”, and is consistent with the SRM definition of the same. To make a space reservation, the user or VOA first makes a request as described here, then the VOA meets the request with the steps described in <a href="/bin/view/Storage/FSSUserAdministration#Granting_Suballocations_and_Defi" class="twikiAnchorLink">Granting Suballocations and Defining Quotas</a>.
+<p /> <ol>
+<li> To request a space reservation, the user or VOA runs the <a href="/bin/view/Storage/FSSCommandReference#Allocation_request_tool" class="twikiAnchorLink">allocation request tool</a> with arguments of
+</li>  </ol><ul>
+<li> The dataset handle.
+</li> <li> The size of the suballocation.
+</li> <li> Optionally, the maximum  number of files of the suballocation.
+</li> <li> Optionally, the desired expiration of the suballocation. The default is that of the allocation.
+</li> <li> Optionally, the specific site or storage resource on which the allocation is to be made.
+</li></ul> 
+<p />
+Dataset suballocation (space reservation) requests are different from user or group suballocation requests (see <a href="/bin/view/Storage/FSSUserAdministration#Requesting_a_Suballocation_for_a" class="twikiAnchorLink">Requesting a Suballocation for a User or Group</a>) in that, if replicas of a dataset already exist, then a suballocation request is made for each of them, whereas for a user or group at most one suballocation request is made at a time.
+<p />
+<p />
+<p />
+<p />
+<h3><a name="Dataset_Deletion"></a> Dataset Deletion </h3>
+<p /> <ol>
+<li> To delete a dataset, the <a href="/bin/view/Storage/FSSCommandReference#Dataset_operation_tool" class="twikiAnchorLink">dataset operation tool</a> is invoked with the “delete” flag and dataset handle. For the case of multiple replicas, the storage resource may be specified.
+</li> <li> The dataset operation tool invokes the <a href="/bin/view/Storage/FSSCommandReference#Public_storage_delete" class="twikiAnchorLink">public storage delete</a> command for each file in each dataset replica.
+</li>  </ol><ul>
+<li> If the dataset has space reservation on a storage resource, it is updated.
+</li></ul> 
+<p />
+<h3><a name="Dataset_Replication"></a> Dataset Replication </h3>
+<p /> <ol>
+<li> To replicate a dataset, the <a href="/bin/view/Storage/FSSCommandReference#Dataset_operation_tool" class="twikiAnchorLink">dataset operation tool</a> is invoked with the “replicate” flag and dataset handle. The source and/or destination storage resources may optionally be specified. After any resource selection, the following is done.
+</li> <li> For each file, the <a href="/bin/view/Storage/FSSCommandReference#Public_storage_copy" class="twikiAnchorLink">public storage copy command</a> is called with source and destination storage resources as either specified or selected.
+</li></ol> 
+<p />
+<p />
+-- <a href="/bin/view/Main/TedHesselroth" class="twikiLink">TedHesselroth</a> - 20 Sep 2010</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Storage<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Storage/OpportunisticStorage" class="twikiLink">OpportunisticStorage</a> &gt; <a href="/bin/view/Storage/OSGPublicStorage" class="twikiLink">OSGPublicStorage</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>FSSDatasetOperations</span> <br />    
+Topic revision: r4 - 24 Sep 2010 - 15:37:29 - <a href="/bin/view/Main/TedHesselroth" class="twikiLink">TedHesselroth</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

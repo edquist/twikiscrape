@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> HadoopGridftpValidation &lt; Storage &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Storage/HadoopGridftpValidation?_T=16 Feb 2017" type="application/x-wiki" title="edit HadoopGridftpValidation" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Storage/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Storage/HadoopGridftpValidation"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#0000FF;
+	}
+	.patternBookView {
+		border-color:#0000FF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Hadoop_Gridftp_Validation"></a>  <strong><noop>Hadoop Gridftp Validation</strong> </h1>
+<p />
+<font color="#ff0000">
+WARNING! This page is for an older version of Hadoop.
+For newer versions, please visit <a href="/bin/view/Documentation/Release3/InstallHadoopSE" class="twikiLink">Hadoop Release 3 Installation</a>
+</font>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Testing_a_gridftp_endpoint"> Testing a gridftp endpoint</a>
+</li> <li> <a href="?cover=print#Monitoring_the_gridftp_endpoint"> Monitoring the gridftp endpoint with RSV.</a>
+</li> <li> <a href="?cover=print#Monitoring_the_gridftp_endpo_AN1"> Monitoring the gridftp endpoint with Nagios</a>
+</li></ul> 
+</div>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Testing_a_gridftp_endpoint"></a> Testing a gridftp endpoint </span></h2>
+Testing a gridftp endpoint is fairly straight forward.  You'll need to know the SE path endpoint on the hadoop door and you'll have to have a valid gridcert that is permitted to move files in and out of your site. <ul>
+<li> generate a proxy certificate (grid-proxy-init)
+</li> <li> attempt to pull from your gridftp door.  The command will look something like:  <pre>
+globus-url-copy gsiftp://&#60;server&#62;:port/path/to/test/file file:////tmp/testfile.out
+</pre>
+</li></ul> 
+the port is most likely 2811. <ul>
+<li> attempt to push a file to your gridftp door.  The command will look something like:
+</li></ul> 
+<pre>
+globus-url-copy  file:////tmp/testfile.out gsiftp://&#60;server&#62;:port/path/to/test/file
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Monitoring_the_gridftp_endpoint"></a> Monitoring the gridftp endpoint with RSV. </span></h2>
+You should try and monitor standalone gridftp doors via RSV.
+<pre>
+ ./configure&#95;osg&#95;rsv --user rsvuser --init  --gridftp-uri gridftp.domain.name --gridftp-probes --gratia --grid-type &#34;OSG&#34; --consumers --verbose --setup-for-apache --proxy /tmp/x509up&#95;u&#60;uid&#62;
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Monitoring_the_gridftp_endpo_AN1"></a> Monitoring the gridftp endpoint with Nagios </span></h2>
+The gridftp endpoints can be monitored with the standard check_tcp plugin for Nagios.  This won't tell you if your gridftp server is functioning correctly like the RSV test would, but it will serve as a simple ping test to verify that the gridftp service is alive.  An incomplete nagios configuration for such a check would look like:
+<p />
+<pre>
+define command{
+        command&#95;name    check&#95;gridftp
+        command&#95;line    $USER1$/check&#95;tcp -H $HOSTADDRESS$ -t 30 -p $ARG1$ -e &#34;GridFTP Server 2.8&#34;
+}
+
+define service{
+        use                             your-service-template
+        host&#95;name                       gridftp01.ultralight.org,gridftp02.ultralight.org
+        service&#95;description             GRIDFTP
+        check&#95;command                   check&#95;gridftp!2811
+}
+</pre></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Storage<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Storage/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/Storage/Hadoop" class="twikiLink">Hadoop</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>HadoopGridftpValidation</span> <br />    
+Topic revision: r6 - 25 Oct 2011 - 21:14:23 - <span class="twikiNewLink">DouglasStrain<a href="/bin/edit/Storage/DouglasStrain?topicparent=Storage.HadoopGridftpValidation" rel="nofollow" title="DouglasStrain (this topic does not yet exist; you can create it)">?</a></span>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

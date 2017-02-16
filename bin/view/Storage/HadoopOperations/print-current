@@ -1,0 +1,379 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> HadoopOperations &lt; Storage &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Storage/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Storage/HadoopOperations?_T=16 Feb 2017" type="application/x-wiki" title="edit HadoopOperations" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Storage/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Storage/HadoopOperations"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#0000FF;
+	}
+	.patternBookView {
+		border-color:#0000FF;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Hadoop_Operations"></a>  <strong><noop>Hadoop Operations</strong> </h1>
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Daily_Operations"> Daily Operations</a> <ul>
+<li> <a href="?cover=print#Restarting_the_Namenode"> Restarting the Namenode</a>
+</li> <li> <a href="?cover=print#Starting_and_Stopping_Hadoop_Dae"> Starting and Stopping Hadoop Daemons</a> <ul>
+<li> <a href="?cover=print#Init_Scripts"> Init Scripts</a>
+</li> <li> <a href="?cover=print#Manually_Mounting_FUSE"> Manually Mounting FUSE</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Hadoop_Filesystem"> Hadoop Filesystem</a>
+</li> <li> <a href="?cover=print#FUSE"> FUSE</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Decommissioning_Data_Nodes"> Decommissioning Data Nodes</a>
+</li> <li> <a href="?cover=print#Cleaning_Up_a_CORRUPT_Filesystem"> Cleaning Up a CORRUPT Filesystem</a>
+</li> <li> <a href="?cover=print#Restoring_from_a_checkpoint"> Restoring from a checkpoint</a>
+</li> <li> <a href="?cover=print#Fixing_Stuck_and_Under_Replicate"> Fixing Stuck and Under Replicated Files</a>
+</li> <li> <a href="?cover=print#Port_Forwarding_for_the_Hadoop_W"> Port Forwarding for the Hadoop Web Interface</a>
+</li> <li> <a href="?cover=print#Running_the_Balancer"> Running the Balancer</a>
+</li></ul> 
+</div>
+<p />
+<h1><a name="Daily_Operations"></a> Daily Operations </h1>
+<p />
+All of the admin operations must be done as root on the Hadoop namenode unless
+otherwise noted.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Restarting_the_Namenode"></a> Restarting the Namenode </span></h2>
+<strong>The namenode is the most critical piece of your infrastructure</strong>.  You <em>could</em> restart it without care, but we recommend you be sufficiently paranoid for production systems.
+<p />
+Prior to restarting the namenode, follow these steps: <ol>
+<li> Set the namenode into safemode using the following command: <code>hadoop dfsadmin -safemode enter</code>.  Wait 1 minute.
+</li> <li> Locate the namenode metadata files.  This is usually found in <code>${hadoop.tmp.dir}/dfs/name/current</code>, and will be in a different location depending on how you set up your datanode.  You may want to check the last edited timestamp to verify you are looking at the right files.  Copy these to the same directory structure on the secondary namenode.
+</li> <li> Start up the name node process manually on the secondary namenode using the command <code>hadoop-daemon.sh --config /etc/hadoop start namenode</code>.
+</li> <li> Locate the namenode process's log on the secondary namenode (the one you just started manually in the previous step).  It is often in <code>/var/log/hadoop</code>, but may differ based on your cluster's configuration.   Wait until the namenode appears to have started normally and fully processed the metadata.  If there are any errors or failures, the manually-started namenode should die with an exception.  In this case, contact the osg-hadoop mailing list <em>immediately</em> - turning off your namenode will definitely damage your site's metadata.
+</li> <li> If all goes well, shut off your namenode and continue with your maintenance.
+</li></ol> 
+<p />
+Ninety-nine times out of one hundred, there will be no error, and these extra steps will just cost you an extra 5 minutes of downtime.  This will provide you with the ability to avoid one-in-a-hundred type failures that can cause data loss.
+<p />
+<strong>FAILURE TO FOLLOW THESE STEPS COULD RESULT IN DATA LOSS</strong>.  Regardless of how unlikely such data loss would be, doing the above will eliminate almost all possibility.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Starting_and_Stopping_Hadoop_Dae"></a> Starting and Stopping Hadoop Daemons </span></h2>
+<p />
+<h3><a name="Init_Scripts"></a> Init Scripts </h3>
+<p />
+<pre>
+/etc/init.d/hadoop &#91;start&#124;stop]
+</pre>
+<p />
+Hadoop can be started with 
+<pre class="rootscreen">
+service hadoop start
+</pre>
+<p />
+This will detect what kind of node (datanode, namenode, secondary namenode, etc) and start/stop services appropriately.
+<p />
+<p />
+<em>Note about manual shutdowns:</em>  We recommend using the init scripts to start and stop daemons.
+Care must be taken during any manual shutdown and startup scripts as environment variables must be set correctly.
+Note that the init.d script sources files <code>/etc/sysconfig/hadoop</code> and <code>/etc/hadoop/conf/hadoop-env.sh</code>.  Once
+environment is correctly set up, the following should be run as the hadoop user =/usr/lib/hadoop/bin/hadoop-da
+emon.sh start datanode= (where datanode should substituted with namenode on the name node).  This should only 
+be done in testing circumstances as the init scripts are much more reliable and start the process as a daemon.
+<p />
+<p />
+<h3><a name="Manually_Mounting_FUSE"></a> Manually Mounting FUSE </h3>
+<p />
+First, you should add a line in <code>/etc/fstab</code> with the following information
+<pre class="file">
+hdfs# <font color="#ff0000">/mnt/hadoop</font> fuse server=<font color="#ff0000">namenode</font>,port=9000,rdbuffer=32768,allow_other 0 0
+</pre>
+Change the directory and the location of the namenode hostname.
+<p />
+Once done, you can mount and umount with the following:
+<p />
+Mounting:
+<pre class="rootscreen">
+mount /mnt/hadoop
+</pre>
+<p />
+Unmounting:
+<pre class="rootscreen">
+umount /mnt/hadoop
+</pre>
+<p />
+It is possible to manually mount with the following command, though using the <code>/etc/fstab</code> file is much easier.
+<pre>
+fuse&#95;dfs -oserver&#61;hadoop-name -oport&#61;9000 /mnt/hadoop -oallow&#95;other -ordbufffer&#61;131072
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Hadoop_Filesystem"></a> Hadoop Filesystem </span></h2>
+<p />
+<pre>
+hadoop fsck / -blocks
+</pre>
+<p />
+A successful check will end with these words:
+<p />
+<pre>
+The filesystem under path &#39;/&#39; is HEALTHY
+</pre>
+<p />
+A unsuccessful check will end with the following:
+<p />
+<pre>
+The filesystem under path &#39;/&#39; is CORRUPTED
+</pre>
+<p />
+For general information about HDFS, use <code>dfsadmin</code>:
+<p />
+<pre>
+hadoop dfsadmin -report
+</pre>
+<p />
+Similar information can be found on the name node's <code>dfshealth</code> webpage; for
+example: <a href="http://dcache-head.unl.edu:8088/dfshealth.jsp" target="_top">http://dcache-head.unl.edu:8088/dfshealth.jsp</a>.
+<p />
+To get the current safemode status:
+<p />
+<pre>
+hadoop dfsadmin -safemode get
+</pre>
+<p />
+To leave or enter safemode:
+<p />
+<pre>
+hadoop dfsadmin -safemode leave
+
+hadoop dfsadmin -safemode enter
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="FUSE"></a> FUSE </span></h2>
+<p />
+If you see the message "Transport endpoint is not connected" on nodes where
+FUSE is mounted, this means that the FUSE mount has died. Connect to the node,
+unmount the file system, and remount it:
+<p />
+<pre>
+umount /mnt/hadoop
+mount /mnt/hadoop
+ls /mnt/hadoop
+</pre>
+<p />
+<h1><a name="Decommissioning_Data_Nodes"></a> Decommissioning Data Nodes </h1>
+<p />
+First, add the node's ip address or fully qualified name to the <code>hosts_exclude</code> file. Then, run:
+<p />
+<pre>
+hadoop dfsadmin -refreshNodes
+</pre>
+<p />
+The namenode logs will almost immediately log the start of the decommissioning process:
+<p />
+<pre>
+2009-03-26 10:57:31,794 INFO org.apache.hadoop.hdfs.server.namenode.FSNamesystem: Start Decommissioning node 10.3.255.254:50010
+</pre>
+<p />
+The namenode web interface will also show the node in the state <code>Decommission In Progress</code>.
+During the decommissioning process you will see lots of messages from the namenode asking to replicate blocks that are located on the decommissioned nodes:
+<p />
+<pre>
+2009-03-26 11:08:46,814 INFO org.apache.hadoop.hdfs.StateChange: BLOCK&#42; ask 10.3.255.195:50010 to replicate blk&#95;1327555646282055693&#95;11908 to datanode(s) 10.3.255.230:50010
+</pre>
+<p />
+The decommissioning is complete when you see the following message in the logs:
+<p />
+<pre>
+Decommission complete for node 172.16.1.55:50010
+</pre>
+<p />
+Note: The namenode must see the transition from normal host to excluded host in
+order for it to realize a node is being decommissioned. If you stop the
+namenode, add the file to the hosts_exclude, then start the namenode again, the
+namenode will have the following complaints in the log: 
+<p />
+<pre>
+ProcessReport from unregisterted node: node055:50010
+</pre>
+<p />
+This is because the namenode thinks it is being contacted by a node
+which was never in the system at all, not by a node which should be
+decommissioned.
+<p />
+<h1><a name="Cleaning_Up_a_CORRUPT_Filesystem"></a> Cleaning Up a CORRUPT Filesystem </h1>
+<p />
+When the namenode is in safemode, no edits to the filesystem are
+allowed. First, run <code>fsck</code> and determine the extent of the
+damage.  If it is acceptable to delete or otherwise move aside the
+damaged files, turn off safemode, and move the file using the
+following command:
+<p />
+<pre>
+hadoop fsck -move
+</pre>
+<p />
+This moves any files with problematic blocks into <code>/lost+found</code> in
+the Hadoop namespace.
+<p />
+<h1><a name="Restoring_from_a_checkpoint"></a> Restoring from a checkpoint </h1>
+<p />
+First, shut down the namenode. The namenode keeps two checkpoint
+images:
+<p /> <ul>
+<li> <code>dfs/namesecondary/current/</code>
+</li> <li> <code>dfs/namesecondary/previous.checkpoint/</code>
+</li></ul> 
+<p />
+Copy all the files from one of these directories into
+<code>dfs/name/current/</code>.
+<p />
+Start the namenode again, and watch the logs for activities.
+<p />
+<h1><a name="Fixing_Stuck_and_Under_Replicate"></a> Fixing Stuck and Under Replicated Files </h1>
+<p />
+Sometimes, a small number of blocks may remain under-replicated.
+This often corresponds with blocks that were written during or
+shortly before or after a namenode crash. Block replications
+should occur fairly quickly (no more than 10 minutes); if the block
+remains under-replicated longer than that, proceed with the
+following instructions.
+<p />
+First, confirm that the file has under-replicated blocks:
+<p />
+<pre>
+hadoop fsck &#60;file&#95;name&#62;
+</pre>
+<p />
+Then, set the desired number of replicas to the current
+(insufficient) number of observed replicas:
+<p />
+<pre>
+hadoop fsck -setrep &#60;file&#95;name&#62; &#60;actual&#95;replicas&#62;
+</pre>
+<p />
+Using <code>fsck</code>, verify that the file no longer appears to have
+under-replicated blocks. Then, reset the replication policy for the
+file to the desired number:
+<p />
+<pre>
+hadoop fsck -setrep &#60;file&#95;name&#62; &#60;desired&#95;replicas&#62;
+</pre>
+<p />
+Verify again that Hadoop has begun to replicate the blocks using
+<code>fsck</code>.
+<p />
+If several files are affected, a variation of the following script
+might help:
+<p />
+<pre>
+hadoop fsck / &#124; awk &#39;{print $1}&#39; &#124; grep user &#124; tr -d &#39;:&#39; &#124; sort &#124; uniq &#62; /tmp/stuck&#95;replicas
+cat /tmp/stuck&#95;replicas &#124; xargs -t -i hadoop fs -setrep 2 {}
+hadoop fsck / # Make sure everything is happy
+cat /tmp/stuck&#95;replicas &#124; xargs -t -i hadoop fs -setrep 3 {}
+hadoop fsck / # Watch and see if everything becomes happy
+</pre>
+<p />
+<h1><a name="Port_Forwarding_for_the_Hadoop_W"></a> Port Forwarding for the Hadoop Web Interface </h1>
+<p />
+This only needs to be done once:
+<p />
+<pre>
+/sbin/iptables -t nat -A PREROUTING -p tcp --dport 8088 -i eth0 -j DNAT --to-destination 172.16.100.8:50070
+/sbin/iptables -t nat -A PREROUTING -p tcp --dport 8089 -i eth0 -j DNAT --to-destination 172.16.1.3:50030
+</pre>
+<p />
+<h1><a name="Running_the_Balancer"></a> Running the Balancer </h1>
+<p />
+You may see that your datanode usage may become uneven (this is especially common for heterogeneous sites).  Optimally, all datanodes should have about the same percentage used.
+<p />
+To run the balancer once, execute this from the namenode:
+<pre>
+hadoop-daemon.sh —config /etc/hadoop start balancer -threshold 3
+</pre>
+<p />
+Several sites have taken to adding this to <code>/etc/cron.hourly</code> to make the balancer run at all times.  If the balancer takes more than an hour to run (definitely possible, especially the first time it is run), a second one will refuse to start - so you don't need to worry about the cron job causing a pileup of processes.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Storage<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Storage/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/Storage/Hadoop" class="twikiLink">Hadoop</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>HadoopOperations</span> <br />    
+Topic revision: r7 - 09 Nov 2011 - 16:50:26 - <span class="twikiNewLink">DouglasStrain<a href="/bin/edit/Storage/DouglasStrain?topicparent=Storage.HadoopOperations" rel="nofollow" title="DouglasStrain (this topic does not yet exist; you can create it)">?</a></span>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />
