@@ -1,0 +1,325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> KojiMassRebuilds &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/KojiMassRebuilds?_T=16 Feb 2017" type="application/x-wiki" title="edit KojiMassRebuilds" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/KojiMassRebuilds"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Mass_RPM_Rebuilds_for_a_new_Buil"></a> Mass RPM Rebuilds for a new Build Target in Koji </h1>
+<p />
+Whenever we move to a new OSG series (OSG 3.3) and/or a new RHEL version
+(EL7), we want to make new builds for all of our packages in the new koji
+build target (osg-3.3-el7).  Due to tricky build dependencies and unexpected
+build failures, this can be a messy task; and in the past we have gone about
+it in an ad-hoc manner.
+<p />
+This document will discuss some of the aspects of the task and issues
+involved, some possible approaches, and ultimately a proposal for a general
+tool or procedure for doing our mass rebuilds.
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Mass_RPM_Rebuilds_for_a_new_Buil"> Mass RPM Rebuilds for a new Build Target in Koji</a> <ul>
+<li> <a href="?cover=print#New_RHEL_version_vs_new_OSG_seri"> New RHEL version vs new OSG series</a> <ul>
+<li> <a href="?cover=print#New_RHEL_version"> New RHEL version</a>
+</li> <li> <a href="?cover=print#New_OSG_series"> New OSG series</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Doing_scratch_builds_of_everythi"> Doing scratch builds of everything first</a>
+</li> <li> <a href="?cover=print#Options_for_calculating_build_de"> Options for calculating build dependencies</a>
+</li> <li> <a href="?cover=print#Pre_computing_predictive_vs_just"> Pre-computing (predictive) vs just-in-time</a>
+</li> <li> <a href="?cover=print#Package_list_closure_pruning"> Package list closure, pruning</a>
+</li> <li> <a href="?cover=print#Proposal_Recommendations"> Proposal / Recommendations</a> <ul>
+<li> <a href="?cover=print#For_a_new_OSG_series"> For a new OSG series:</a>
+</li> <li> <a href="?cover=print#For_a_new_RHEL_version"> For a new RHEL version:</a>
+</li></ul> 
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="New_RHEL_version_vs_new_OSG_seri"></a> New RHEL version vs new OSG series </span></h2>
+<p />
+<h3><a name="New_RHEL_version"></a> New RHEL version </h3>
+<p />
+For a new RHEL version, we start with no osg packages to build against, so we
+are forced to build things in dependency order.  Figuring out the dependency
+order is possibly the most difficult (or interesting) part of doing mass
+rebuilds -- more on that later.
+<p />
+<h3><a name="New_OSG_series"></a> New OSG series </h3>
+<p />
+For a new OSG series within an existing RHEL version, we have more options.
+While it's possible to "start from scratch" the same way we would with a new
+RHEL version and build everything in dependency order, this is not really
+necessary if we take advantage of existing builds from the previous series.
+<p />
+A prior step is to determine the package list for the new series -- this will
+be some combination of Upcoming and the current release series, minus any
+packages pruned for the new series.  This should also be reflected in the new
+trunk packaging area.  All the current builds for packages in that list (from
+upcoming + current series) can be tagged into the new *-development (or
+*-build) repos.  This should make all of the build dependencies available for
+mass rebuilding the new series all at once (osg-build koji *).
+<p />
+After some consideration, I wholeheartedly endorse this approach for new
+OSG series -- for all but academic exercises.  Rebuilding in dependency order
+when all the dependencies are already built just seems like wasted effort.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Doing_scratch_builds_of_everythi"></a> Doing scratch builds of everything first </span></h2>
+<p />
+Before doing the mass rebuilds in a new build target, it seems to be a good
+idea to do scratch builds of all the packages in the current series first.
+(Or, at least the ones we intend to bring into the new build target.) This
+will give us a chance to see any build failures that have crept in (possibly
+due to upstream changes in the OS or EPEL), and fix them first if desired, but
+in any case avoid the confusion of seeing the failures for the first time in
+the new build target.
+<p />
+Doing mass scratch rebuilds for an existing series is easy, as they can all be
+done at once.
+<p />
+Relatedly, doing a round of scratch builds <strong>after</strong> successfully building all
+packages into a new build target can also be useful, because it can reveal
+dependency issues only present in the new set of builds.  Doing developer test
+installs or a round of VMU tests may also uncover any runtime dependency issues.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Options_for_calculating_build_de"></a> Options for calculating build dependencies </span></h2>
+<p />
+We can get dependency information from a number of places:
+<p />
+- scraping .spec files for Requires/BuildRequires/Provides and %package
+  names<br>
+- querying existing rpms directly on koji-hub and our OS/EPEL mirrors (rpm
+  -q)<br>
+- querying srpms from 'osg-build prebuild' directly for build requirements<br>
+- inspecting previous buildroots to determine resolved build dependencies<br>
+- use repoquery to determine whatrequires/whatprovides for packages<br>
+- use yum-builddep to find packages with all build requirements available<br>
+- using the repodata (primary+filelists) from rpm repositories, including:<br>
+  - upcoming + 3.X development + external repos (Centos/EPEL/JPackage), OR<br>
+  - osg-upcoming-elX-build, which includes them all<br>
+<p />
+One important aspect is that the runtime requirements are also relevant
+for determining build requirements, since a build will require installing all
+of the runtime requirements of the packages required for the build.
+<p />
+That is, ((A BuildRequires B) and (B Requires C)) implies (A BuildRequires C).
+<p />
+Combined with the fact that runtime requirements are transitive, that is,
+((A Requires B) and (B Requires C)) implies (A Requires C), 
+computing build requirements is a recursive operation, which can be many
+levels deep.
+<p />
+<p />
+Another question to keep in mind is whether to use versioned requires/provides
+(ie, BuildRequires xyz &gt;= 1.2-3) or to only pay attention to the
+package/capability names.  Similarly, whether to pay any attention to
+conflicts/obsoletes.  These would add complexity to anything except the
+standard tools (repoquery, yum-builddep) which already take these things into
+account.  (And we may get pretty far even without paying attention to
+versions.)
+<p />
+Note also that the dependencies/capabilities for a given package often varies
+between different rhel versions.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Pre_computing_predictive_vs_just"></a> Pre-computing (predictive) vs just-in-time </span></h2>
+<p />
+Two different approaches to determining dependency order for building are:
+<p />
+- pre compute all dependencies based on an existing series/rhel version,
+  OR<br>
+- compute which remaining packages have all build reqs satisfied now
+<p />
+The first approach has the benefit of being able to determine the packages
+that need to be built in order to accomplish a smaller subset goal first --
+for example, to be able to install osg-wn-client.  (And, if there are problems
+with resolving certain dependencies (say with osg-wn-client again), it will
+become apparent earlier, as opposed to not until all possible-to-build
+packages have been built.)  The limitation of this approach is that the
+predicted set of files/capabilities that a binary package will provide may
+differ between osg series/rhel versions, and as a result may be inaccurate for
+the new build target.
+<p />
+The second approach provides somewhat more confidence about being able to
+correctly determine which packages should be buildable at any point in time,
+but (as mentioned above) it is a bit more in the dark about seeing the bigger
+picture of the dependency graph or being able to build subsets of targets.
+<p />
+It may be useful to have both options available -- building from the list in
+the second approach, but using the first mechanism to have a better picture of
+where things are at, or perhaps to steer toward finishing a certain subset of
+packages first.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Package_list_closure_pruning"></a> Package list closure, pruning </span></h2>
+<p />
+At some point (either in the planning stage or after building packages into
+the new build target), we need to ensure that the new osg series/rhel version
+contains all of its install requirements for all of its packages.  It would
+probably suffice to do a VMU run that installs each package (perhaps
+individually, to avoid conflicts).
+<p />
+But if we go about it more analytically, we may also get, as a result, a list
+of packages which we previously only maintained for the purpose of building
+our other packages (ie, that were never required at runtime for any use cases
+that we cared about), which now, in the new target, are no longer build
+requirements (directly or indirectly) for any packages that we care about
+installing.  Packages in this category could be reviewed to also be dropped
+from the new build target.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Proposal_Recommendations"></a> Proposal / Recommendations </span></h2>
+<p />
+As mentioned earlier, my recommendation is that we treat a new OSG series
+differently than a new RHEL version.
+<p />
+<h3><a name="For_a_new_OSG_series"></a> For a new OSG series: </h3>
+<p />
+- update native/redhat packaging area to reflect packages for new series,
+  including upcoming + trunk - removed packages
+<p />
+- tag existing builds of packages in new list into the new development tag
+  (eg, for osg-3.3-el6, tag the .osgup.el6 and .osg32.el6 builds into
+  osg-3.3-el6-development)
+<p />
+- build all packages in new packaging area into new build target at once
+<p />
+- for all successful builds, remove corresponding old builds (eg,
+  .osgup/.osg32) from the new tag (osg-3.3-el6-development)
+<p />
+<h3><a name="For_a_new_RHEL_version"></a> For a new RHEL version: </h3>
+<p />
+- pull the repodata from the relevant *-build repo from koji:
+<p />
+  for pre-computing, use a build repo from an existing rhel version:<br>
+    <a href="https://koji.chtc.wisc.edu/mnt/koji/repos/osg-3.2-el6-build/latest/x86_64/repodata/" target="_top">https://koji.chtc.wisc.edu/mnt/koji/repos/osg-3.2-el6-build/latest/x86_64/repodata/</a>
+<p />
+  for just-in-time, use the new build repo:<br>
+    <a href="https://koji.chtc.wisc.edu/mnt/koji/repos/osg-3.2-el8-build/latest/x86_64/repodata/" target="_top">https://koji.chtc.wisc.edu/mnt/koji/repos/osg-3.2-el8-build/latest/x86_64/repodata/</a>
+<p />
+  the primary and filelists (sqlite) files can be used to get runtime requires
+  and provides.  (Note that this includes packages from the relevant external
+  repos, also.)
+<p />
+- generate srpms repodata for the current set of packages to build, with
+  osg-build prebuild and createrepo.
+<p />
+  the primary (sqlite) file can be used to get build-requires.
+<p />
+- use sql to resolve direct dependencies at the package name level:<br>
+  src-pkg: bin-pkg  (BuildRequires)<br>
+  bin-pkg: bin-pkg  (Requires)<br>
+  bin-pkg: src-pkg  (bin-pkg comes from which src-pkg? only needed for
+                     pre-computing dependencies)
+<p />
+- resolve this list into a full list of recursive build dependencies.
+<p />
+  Since this is recursive, there is no way to do it in a fixed number of sql
+  queries.  However the above input list is already directly consumable by
+  Make, which is designed to handle recursive dependencies just like this.
+  Or we can write a new tool to do it in python.
+<p />
+- build ready-to-be-built packages<br>
+- update our copy of the repodata from the regen'ed *-build repo, as often as
+  new versions become available<br>
+- update our dependency lists<br>
+- repeat until all packages are built<br>
+<p />
+-- <a href="/bin/view/Main/CarlEdquist" class="twikiLink">CarlEdquist</a> - 05 Mar 2015</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>KojiMassRebuilds</span> <br />    
+Topic revision: r5 - 02 May 2016 - 20:51:39 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

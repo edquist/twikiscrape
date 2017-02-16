@@ -1,0 +1,1828 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> TWikiFuncDotPm &lt; TWiki &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/TWiki/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/TWiki/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/TWiki/TWikiFuncDotPm?_T=16 Feb 2017" type="application/x-wiki" title="edit TWikiFuncDotPm" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/TWiki/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/TWiki/TWikiFuncDotPm"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFD8AA ;
+	}
+	.patternBookView {
+		border-color:#FFD8AA ;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Package_TWiki_Func"></a> Package <code>TWiki::Func</code> </h1>
+<p />
+<!-- STARTINCLUDE required for huge <a href="/bin/view/TWiki/TWikiDocumentation" class="twikiLink">TWikiDocumentation</a> topic -->
+<p />
+<p />
+<em>Official list of stable TWiki functions for Plugin developers</em>
+<p />
+This module defines official functions that <a href="/bin/view/TWiki/TWikiPlugins" class="twikiLink">Plugins</a>
+can use to interact with the TWiki engine and content.
+<p />
+Refer to <a href="/bin/view/TWiki/EmptyPlugin" class="twikiLink">EmptyPlugin</a> and lib/TWiki/Plugins/EmptyPlugin.pm for a template Plugin and documentation on how to write a Plugin.
+<p />
+Plugins should <strong>only</strong> use functions published in this module. If you use
+functions in other TWiki libraries you might create a security hole and
+you will probably need to change your Plugin when you upgrade TWiki.
+<p />
+Deprecated functions will still work in older code, though they should
+<em>not</em> be called in new Plugins and should be replaced in older Plugins
+as soon as possible.
+<p />
+The version of the TWiki::Func module is defined by the VERSION number of the
+TWiki::Plugins module, currently 1.2. This can be shown
+by the <code>%PLUGINVERSION%</code> variable. The 'Since' field in the function
+documentation refers to the VERSION number and the date that the function
+was addded.
+<p />
+<strong><em>Note:</em></strong> Beware! These methods should only ever be called
+from the context of a TWiki Plugin. They require a Plugins SESSION context to be
+established before they are called, and will not work if simply called from
+another TWiki module. For example,
+<pre>
+use TWiki;
+print TWiki::Func::getSkin(),&#34;\n&#34;;
+</pre>
+will fail with <code>Can't call method "getSkin" on an undefined value at TWiki/Func.pm line 83</code>.
+<p />
+If you want to call the methods outside the context of a plugin, you can create a Plugins SESSION object. For example,
+the script:
+<pre>
+use TWiki:
+$TWiki::Plugins::SESSION &#61; new TWiki();
+print TWiki::Func::getSkin(),&#34;\n&#34;;
+</pre>
+will work happily.
+<p />
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Package_TWiki_Func"> Package TWiki::Func</a> <ul>
+<li> <a href="?cover=print#Environment"> Environment</a> <ul>
+<li> <a href="?cover=print#getSkin_skin"> getSkin( ) -&gt; $skin</a>
+</li> <li> <a href="?cover=print#get_UrlHost_host"> getUrlHost( ) -&gt; $host</a>
+</li> <li> <a href="?cover=print#get_ScriptUrl_web_topic_script_u"> getScriptUrl( $web, $topic, $script, ... ) -&gt; $url</a>
+</li> <li> <a href="?cover=print#get_ViewUrl_web_topic_url"> getViewUrl( $web, $topic ) -&gt; $url</a>
+</li> <li> <a href="?cover=print#get_OopsUrl_web_topic_template_p"> getOopsUrl( $web, $topic, $template, $param1, $param2, $param3, $param4 ) -&gt; $url</a>
+</li> <li> <a href="?cover=print#get_PubUrlPath_path"> getPubUrlPath( ) -&gt; $path</a>
+</li> <li> <a href="?cover=print#get_CgiQuery_query"> getCgiQuery( ) -&gt; $query</a>
+</li> <li> <a href="?cover=print#get_SessionValue_key_value"> getSessionValue( $key ) -&gt; $value</a>
+</li> <li> <a href="?cover=print#set_SessionValue_key_value_boole"> setSessionValue( $key, $value ) -&gt; $boolean</a>
+</li> <li> <a href="?cover=print#clear_SessionValue_key_boolean"> clearSessionValue( $key ) -&gt; $boolean</a>
+</li> <li> <a href="?cover=print#getContext_hash"> getContext() -&gt; \%hash</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Preferences"> Preferences</a> <ul>
+<li> <a href="?cover=print#get_PreferencesValue_key_web_val"> getPreferencesValue( $key, $web ) -&gt; $value</a>
+</li> <li> <a href="?cover=print#get_PluginPreferencesValue_key_v"> getPluginPreferencesValue( $key ) -&gt; $value</a>
+</li> <li> <a href="?cover=print#get_PreferencesFlag_key_web_valu"> getPreferencesFlag( $key, $web ) -&gt; $value</a>
+</li> <li> <a href="?cover=print#get_PluginPreferencesFlag_key_bo"> getPluginPreferencesFlag( $key ) -&gt; $boolean</a>
+</li> <li> <a href="?cover=print#get_WikiToolName_name"> getWikiToolName( ) -&gt; $name</a>
+</li> <li> <a href="?cover=print#get_MainWebname_name"> getMainWebname( ) -&gt; $name</a>
+</li> <li> <a href="?cover=print#get_TwikiWebname_name"> getTwikiWebname( ) -&gt; $name</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#User_Handling_and_Access_Control"> User Handling and Access Control</a> <ul>
+<li> <a href="?cover=print#get_DefaultUserName_loginName"> getDefaultUserName( ) -&gt; $loginName</a>
+</li> <li> <a href="?cover=print#get_WikiName_wikiName"> getWikiName( ) -&gt; $wikiName</a>
+</li> <li> <a href="?cover=print#get_WikiUserName_wikiName"> getWikiUserName( ) -&gt; $wikiName</a>
+</li> <li> <a href="?cover=print#wiki_ToUserName_wikiName_loginNa"> wikiToUserName( $wikiName ) -&gt; $loginName</a>
+</li> <li> <a href="?cover=print#user_ToWikiName_loginName_dont_A"> userToWikiName( $loginName, $dontAddWeb ) -&gt; $wikiName</a>
+</li> <li> <a href="?cover=print#isGuest_boolean"> isGuest( ) -&gt; $boolean</a>
+</li> <li> <a href="?cover=print#permissionsSet_web_boolean"> permissionsSet( $web ) -&gt; $boolean</a>
+</li> <li> <a href="?cover=print#check_AccessPermission_type_wiki"> checkAccessPermission( $type, $wikiName, $text, $topic, $web ) -&gt; $boolean</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Webs_Topics_and_Attachments"> Webs, Topics and Attachments</a> <ul>
+<li> <a href="?cover=print#get_ListOfWebs_filter_webs"> getListOfWebs( $filter ) -&gt; @webs</a>
+</li> <li> <a href="?cover=print#webExists_web_boolean"> webExists( $web ) -&gt; $boolean</a>
+</li> <li> <a href="?cover=print#createWeb_newWeb_baseWeb_opts"> createWeb( $newWeb, $baseWeb, $opts )</a>
+</li> <li> <a href="?cover=print#moveWeb_oldName_newName"> moveWeb( $oldName, $newName )</a>
+</li> <li> <a href="?cover=print#get_TopicList_web_topics"> getTopicList( $web ) -&gt; @topics</a>
+</li> <li> <a href="?cover=print#topicExists_web_topic_boolean"> topicExists( $web, $topic ) -&gt; $boolean</a>
+</li> <li> <a href="?cover=print#check_TopicEditLock_web_topic_oo"> checkTopicEditLock( $web, $topic ) -&gt; ( $oopsUrl, $loginName, $unlockTime )</a>
+</li> <li> <a href="?cover=print#set_TopicEditLock_web_topic_lock"> setTopicEditLock( $web, $topic, $lock )</a>
+</li> <li> <a href="?cover=print#saveTopic_web_topic_meta_text_op"> saveTopic( $web, $topic, $meta, $text, $options ) -&gt; $error</a>
+</li> <li> <a href="?cover=print#save_TopicText_web_topic_text_ig"> saveTopicText( $web, $topic, $text, $ignorePermissions, $dontNotify ) -&gt; $oopsUrl</a>
+</li> <li> <a href="?cover=print#moveTopic_web_topic_newWeb_newTo"> moveTopic( $web, $topic, $newWeb, $newTopic )</a>
+</li> <li> <a href="?cover=print#get_RevisionInfo_web_topic_rev_a"> getRevisionInfo($web, $topic, $rev, $attachment ) -&gt; ( $date, $user, $rev, $comment ) </a>
+</li> <li> <a href="?cover=print#get_RevisionAtTime_web_topic_tim"> getRevisionAtTime( $web, $topic, $time ) -&gt; $rev</a>
+</li> <li> <a href="?cover=print#readTopic_web_topic_rev_meta_tex"> readTopic( $web, $topic, $rev ) -&gt; ( $meta, $text )</a>
+</li> <li> <a href="?cover=print#read_TopicText_web_topic_rev_ign"> readTopicText( $web, $topic, $rev, $ignorePermissions ) -&gt; $text</a>
+</li> <li> <a href="?cover=print#attachmentExists_web_topic_attac"> attachmentExists( $web, $topic, $attachment ) -&gt; $boolean</a>
+</li> <li> <a href="?cover=print#readAttachment_web_topic_name_re"> readAttachment( $web, $topic, $name, $rev ) -&gt; $data</a>
+</li> <li> <a href="?cover=print#saveAttachment_web_topic_attachm"> saveAttachment( $web, $topic, $attachment, $opts )</a>
+</li> <li> <a href="?cover=print#moveAttachment_web_topic_attachm"> moveAttachment( $web, $topic, $attachment, $newWeb, $newTopic, $newAttachment )</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Assembling_Pages"> Assembling Pages</a> <ul>
+<li> <a href="?cover=print#readTemplate_name_skin_text"> readTemplate( $name, $skin ) -&gt; $text</a>
+</li> <li> <a href="?cover=print#loadTemplate_name_skin_web_text"> loadTemplate ( $name, $skin, $web ) -&gt; $text</a>
+</li> <li> <a href="?cover=print#expandTemplate_def_string"> expandTemplate( $def  ) -&gt; $string</a>
+</li> <li> <a href="?cover=print#writeHeader_query_contentLength"> writeHeader( $query, $contentLength )</a>
+</li> <li> <a href="?cover=print#redirect_CgiQuery_query_url"> redirectCgiQuery( $query, $url )</a>
+</li> <li> <a href="?cover=print#add_ToHEAD_id_header"> addToHEAD( $id, $header )</a>
+</li> <li> <a href="?cover=print#expand_CommonVariables_text_topi"> expandCommonVariables( $text, $topic, $web ) -&gt; $text</a>
+</li> <li> <a href="?cover=print#renderText_text_web_text"> renderText( $text, $web ) -&gt; $text</a>
+</li> <li> <a href="?cover=print#internalLink_pre_web_topic_label"> internalLink( $pre, $web, $topic, $label, $anchor, $createLink ) -&gt; $text</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#E_mail"> E-mail</a> <ul>
+<li> <a href="?cover=print#sendEmail_text_retries_error"> sendEmail ( $text, $retries ) -&gt; $error</a>
+</li> <li> <a href="?cover=print#wiki_ToEmail_wikiName_email"> wikiToEmail( $wikiName ) -&gt; $email</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Creating_New_Topics"> Creating New Topics</a> <ul>
+<li> <a href="?cover=print#expand_VariablesOnTopicCreation"> expandVariablesOnTopicCreation ( $text ) -&gt; $text</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Special_handlers"> Special handlers</a> <ul>
+<li> <a href="?cover=print#register_TagHandler_var_fn_synta"> registerTagHandler( $var, \&amp;fn, $syntax )</a>
+</li> <li> <a href="?cover=print#registerRESTHandler_alias_fn"> registerRESTHandler( $alias, \&amp;fn, )</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Searching"> Searching</a> <ul>
+<li> <a href="?cover=print#search_InWebContent_searchString"> searchInWebContent($searchString, $web, \@topics, \%options ) -&gt; \%map</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Plugin_specific_file_handling"> Plugin-specific file handling</a> <ul>
+<li> <a href="?cover=print#get_WorkArea_pluginName_director"> getWorkArea( $pluginName ) -&gt; $directorypath</a>
+</li> <li> <a href="?cover=print#readFile_filename_text"> readFile( $filename ) -&gt; $text</a>
+</li> <li> <a href="?cover=print#saveFile_filename_text"> saveFile( $filename, $text )</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#General_Utilities"> General Utilities</a> <ul>
+<li> <a href="?cover=print#get_RegularExpression_name_expr"> getRegularExpression( $name ) -&gt; $expr</a>
+</li> <li> <a href="?cover=print#normalize_WebTopicName_web_topic"> normalizeWebTopicName($web, $topic) -&gt; ($web, $topic)</a>
+</li> <li> <a href="?cover=print#writeWarning_text"> writeWarning( $text )</a>
+</li> <li> <a href="?cover=print#writeDebug_text"> writeDebug( $text )</a>
+</li> <li> <a href="?cover=print#formatTime_time_format_timezone"> formatTime( $time, $format, $timezone ) -&gt; $text</a>
+</li> <li> <a href="?cover=print#is_ValidWikiWord_text_boolean"> isValidWikiWord ( $text ) -&gt; $boolean</a>
+</li> <li> <a href="?cover=print#extractParameters_attr_params"> extractParameters($attr ) -&gt; %params</a>
+</li> <li> <a href="?cover=print#extract_NameValuePair_attr_name"> extractNameValuePair( $attr, $name ) -&gt; $value</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Deprecated_functions"> Deprecated functions</a> <ul>
+<li> <a href="?cover=print#get_ScriptUrlPath_path"> getScriptUrlPath( ) -&gt; $path</a>
+</li> <li> <a href="?cover=print#get_PublicWebList_webs"> getPublicWebList( ) -&gt; @webs</a>
+</li> <li> <a href="?cover=print#format_GmTime_time_format_text"> formatGmTime( $time, $format ) -&gt; $text</a>
+</li> <li> <a href="?cover=print#get_DataDir_dir"> getDataDir( ) -&gt; $dir</a>
+</li> <li> <a href="?cover=print#get_PubDir_dir"> getPubDir( ) -&gt; $dir</a>
+</li> <li> <a href="?cover=print#checkDependencies_moduleName_dep"> checkDependencies( $moduleName, $dependenciesRef ) -&gt; $error</a>
+</li></ul> 
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Environment"></a> Environment </span></h2>
+<p />
+<p />
+<h3><a name="getSkin_skin"></a> getSkin( ) -&gt; $skin </h3>
+<p />
+Get the skin path, set by the <code>SKIN</code> and <code>COVER</code> preferences variables or the <code>skin</code> and <code>cover</code> CGI parameters
+<p />
+Return: <code>$skin</code> Comma-separated list of skins, e.g. <code>'gnu,tartan'</code>. Empty string if none.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (29 Jul 2001)
+<p />
+<p />
+<h3><a name="get_UrlHost_host"></a> getUrlHost( ) -&gt; $host </h3>
+<p />
+Get protocol, domain and optional port of script URL
+<p />
+Return: <code>$host</code> URL host, e.g. <code>"http://example.com:80"</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="get_ScriptUrl_web_topic_script_u"></a> getScriptUrl( $web, $topic, $script, ... ) -&gt; $url </h3>
+<p />
+Compose fully qualified URL <ul>
+<li> <code>$web</code>    - Web name, e.g. <code>'Main'</code>
+</li> <li> <code>$topic</code>  - Topic name, e.g. <code>'WebNotify'</code>
+</li> <li> <code>$script</code> - Script name, e.g. <code>'view'</code>
+</li></ul> 
+Return: <code>$url</code>       URL, e.g. <code>"http://example.com:80/cgi-bin/view.pl/Main/WebNotify"</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="get_ViewUrl_web_topic_url"></a> getViewUrl( $web, $topic ) -&gt; $url </h3>
+<p />
+Compose fully qualified view URL <ul>
+<li> <code>$web</code>   - Web name, e.g. <code>'Main'</code>. The current web is taken if empty
+</li> <li> <code>$topic</code> - Topic name, e.g. <code>'WebNotify'</code>
+</li></ul> 
+Return: <code>$url</code>      URL, e.g. <code>"http://example.com:80/cgi-bin/view.pl/Main/WebNotify"</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="get_OopsUrl_web_topic_template_p"></a> getOopsUrl( $web, $topic, $template, $param1, $param2, $param3, $param4 ) -&gt; $url </h3>
+<p />
+Compose fully qualified 'oops' dialog URL <ul>
+<li> <code>$web</code>                  - Web name, e.g. <code>'Main'</code>. The current web is taken if empty
+</li> <li> <code>$topic</code>                - Topic name, e.g. <code>'WebNotify'</code>
+</li> <li> <code>$template</code>             - Oops template name, e.g. <code>'oopsmistake'</code>. The 'oops' is optional; 'mistake' will translate to 'oopsmistake'.
+</li> <li> <code>$param1</code> ... <code>$param4</code> - Parameter values for %PARAM1% ... %PARAMn% variables in template, optional
+</li></ul> 
+Return: <code>$url</code>                     URL, e.g. <code>"http://example.com:80/cgi-bin/oops.pl/ Main/WebNotify?template=oopslocked&amp;param1=joe"</code>
+<p />
+This might be used like this:
+<pre>
+   my $url &#61; TWiki::Func::getOopsUrl($web, $topic, &#39;oopsmistake&#39;, &#39;I made a boo-boo&#39;);
+   TWiki::Func::redirectCgiQuery( undef, $url );
+   return 0;
+</pre>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+Since TWiki::Plugins::VERSION 1.1, the recommended approach is to throw an <a href="/bin/view/TWiki/TWikiOopsExceptionDotPm" class="twikiLink">oops exception</a>.
+<pre>
+   use Error qw( :try );
+
+   throw TWiki::OopsException($web, $topic, undef, 0, &#91; &#39;I made a boo-boo&#39; ]);
+</pre>
+and let TWiki handle the cleanup.
+<p />
+<p />
+<h3><a name="get_PubUrlPath_path"></a> getPubUrlPath( ) -&gt; $path </h3>
+<p />
+Get pub URL path
+<p />
+Return: <code>$path</code> URL path of pub directory, e.g. <code>"/pub"</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (14 Jul 2001)
+<p />
+<p />
+<h3><a name="get_CgiQuery_query"></a> getCgiQuery( ) -&gt; $query </h3>
+<p />
+Get CGI query object. Important: Plugins cannot assume that scripts run under CGI, Plugins must always test if the CGI query object is set
+<p />
+Return: <code>$query</code> CGI query object; or 0 if script is called as a shell script
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="get_SessionValue_key_value"></a> getSessionValue( $key ) -&gt; $value </h3>
+<p />
+Get a session value from the client session module <ul>
+<li> <code>$key</code> - Session key
+</li></ul> 
+Return: <code>$value</code>  Value associated with key; empty string if not set
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (27 Feb 200)
+<p />
+<p />
+<h3><a name="set_SessionValue_key_value_boole"></a> setSessionValue( $key, $value ) -&gt; $boolean </h3>
+<p />
+Set a session value via the client session module <ul>
+<li> <code>$key</code>   - Session key
+</li> <li> <code>$value</code> - Value associated with key
+</li></ul> 
+Return: true if function succeeded
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (17 Aug 2001)
+<p />
+<p />
+<h3><a name="clear_SessionValue_key_boolean"></a> clearSessionValue( $key ) -&gt; $boolean </h3>
+<p />
+Clear a session value via the client session module <ul>
+<li> <code>$key</code>   - Session key
+</li></ul> 
+Return: true if function succeeded
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h3><a name="getContext_hash"></a> getContext() -&gt; \%hash </h3>
+Get a hash of context identifiers representing the currently active
+context.
+<p />
+The context is a set of identifiers that are set
+during specific phases of TWiki processing. For example, each of
+the standard scripts in the 'bin' directory each has a context
+identifier - the view script has 'view', the edit script has 'edit'
+etc. So you can easily tell what 'type' of script your Plugin is
+being called within. The core context identifiers are listed
+in the <a href="/bin/view/TWiki/TWikiTemplates" class="twikiLink">TWikiTemplates</a> topic. Please be careful not to
+overwrite any of these identifiers!
+<p />
+Context identifiers can be used to communicate between Plugins, and between
+Plugins and templates. For example, in <span class="twikiNewLink">FirstPlugin<a href="/bin/edit/TWiki/FirstPlugin?topicparent=TWiki.TWikiFuncDotPm" rel="nofollow" title="FirstPlugin (this topic does not yet exist; you can create it)">?</a></span>.pm, you might write:
+<pre>
+sub initPlugin {
+   TWiki::Func::getContext()-&#62;{&#39;MyID&#39;} &#61; 1;
+   ...
+</pre>
+This can be used in SecondPlugin.pm like this:
+<pre>
+sub initPlugin {
+   if( TWiki::Func::getContext()-&#62;{&#39;MyID&#39;} ) {
+      ...
+   }
+   ...
+</pre>
+or in a template, like this:
+<pre>
+&#37;TMPL:DEF{&#34;ON&#34;}&#37; Not off &#37;TMPL:END&#37;
+&#37;TMPL:DEF{&#34;OFF&#34;}&#37; Not on &#37;TMPL:END&#37;
+&#37;TMPL:P{context&#61;&#34;MyID&#34; then&#61;&#34;ON&#34; else&#61;&#34;OFF&#34;}&#37;
+</pre>
+or in a topic:
+<pre>
+&#37;IF{&#34;context MyID&#34; then&#61;&#34;MyID is ON&#34; else&#61;&#34;MyID is OFF&#34;}&#37;
+</pre>
+<strong><em>Note</em></strong>: <strong>all</strong> plugins have an <strong>automatically generated</strong> context identifier
+if they are installed and initialised. For example, if the <span class="twikiNewLink">FirstPlugin<a href="/bin/edit/TWiki/FirstPlugin?topicparent=TWiki.TWikiFuncDotPm" rel="nofollow" title="FirstPlugin (this topic does not yet exist; you can create it)">?</a></span> is
+working, the context ID 'FirstPlugin' will be set.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Preferences"></a> Preferences </span></h2>
+<p />
+<p />
+<h3><a name="get_PreferencesValue_key_web_val"></a> getPreferencesValue( $key, $web ) -&gt; $value </h3>
+<p />
+Get a preferences value from TWiki or from a Plugin <ul>
+<li> <code>$key</code> - Preferences key
+</li> <li> <code>$web</code> - Name of web, optional. Current web if not specified; does not apply to settings of Plugin topics
+</li></ul> 
+Return: <code>$value</code>  Preferences value; empty string if not set
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p /> <ul>
+<li> Example for Plugin setting: <ul>
+<li> <span class="twikiNewLink">MyPlugin<a href="/bin/edit/TWiki/MyPlugin?topicparent=TWiki.TWikiFuncDotPm" rel="nofollow" title="MyPlugin (this topic does not yet exist; you can create it)">?</a></span> topic has: <code>* Set COLOR = red</code>
+</li> <li> Use <code>"MYPLUGIN_COLOR"</code> for <code>$key</code>
+</li> <li> <code>my $color = TWiki::Func::getPreferencesValue( "MYPLUGIN_COLOR" );</code>
+</li></ul> 
+</li></ul> 
+<p /> <ul>
+<li> Example for preferences setting: <ul>
+<li> <a href="/bin/view/TWiki/WebPreferences" class="twikiLink">WebPreferences</a> topic has: <code>* Set WEBBGCOLOR = #FFFFC0</code>
+</li> <li> <code>my $webColor = TWiki::Func::getPreferencesValue( 'WEBBGCOLOR', 'Sandbox' );</code>
+</li></ul> 
+</li></ul> 
+<p />
+<p />
+<h3><a name="get_PluginPreferencesValue_key_v"></a> getPluginPreferencesValue( $key ) -&gt; $value </h3>
+<p />
+Get a preferences value from your Plugin <ul>
+<li> <code>$key</code> - Plugin Preferences key w/o PLUGINNAME_ prefix.
+</li></ul> 
+Return: <code>$value</code>  Preferences value; empty string if not set
+<p />
+<strong><em>Note</em></strong>: This function will will <strong>only</strong> work when called from the Plugin.pm file itself. it <strong>will not work</strong> if called from a sub-package (e.g. TWiki::Plugins::MyPlugin::MyModule)
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.021 (27 Mar 2004)
+<p />
+<p />
+<h3><a name="get_PreferencesFlag_key_web_valu"></a> getPreferencesFlag( $key, $web ) -&gt; $value </h3>
+<p />
+Get a preferences flag from TWiki or from a Plugin <ul>
+<li> <code>$key</code> - Preferences key
+</li> <li> <code>$web</code> - Name of web, optional. Current web if not specified; does not apply to settings of Plugin topics
+</li></ul> 
+Return: <code>$value</code>  Preferences flag <code>'1'</code> (if set), or <code>"0"</code> (for preferences values <code>"off"</code>, <code>"no"</code> and <code>"0"</code>)
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p /> <ul>
+<li> Example for Plugin setting: <ul>
+<li> <span class="twikiNewLink">MyPlugin<a href="/bin/edit/TWiki/MyPlugin?topicparent=TWiki.TWikiFuncDotPm" rel="nofollow" title="MyPlugin (this topic does not yet exist; you can create it)">?</a></span> topic has: <code>* Set SHOWHELP = off</code>
+</li> <li> Use <code>"MYPLUGIN_SHOWHELP"</code> for <code>$key</code>
+</li> <li> <code>my $showHelp = TWiki::Func::getPreferencesFlag( "MYPLUGIN_SHOWHELP" );</code>
+</li></ul> 
+</li></ul> 
+<p />
+<p />
+<h3><a name="get_PluginPreferencesFlag_key_bo"></a> getPluginPreferencesFlag( $key ) -&gt; $boolean </h3>
+<p />
+Get a preferences flag from your Plugin <ul>
+<li> <code>$key</code> - Plugin Preferences key w/o PLUGINNAME_ prefix.
+</li></ul> 
+Return: false for preferences values <code>"off"</code>, <code>"no"</code> and <code>"0"</code>, or values not set at all. True otherwise.
+<p />
+<strong><em>Note</em></strong>: This function will will <strong>only</strong> work when called from the Plugin.pm file itself. it <strong>will not work</strong> if called from a sub-package (e.g. TWiki::Plugins::MyPlugin::MyModule)
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.021 (27 Mar 2004)
+<p />
+<p />
+<h3><a name="get_WikiToolName_name"></a> getWikiToolName( ) -&gt; $name </h3>
+<p />
+Get toolname as defined in TWiki.cfg
+<p />
+Return: <code>$name</code> Name of tool, e.g. <code>'TWiki'</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (27 Feb 2001)
+<p />
+<p />
+<h3><a name="get_MainWebname_name"></a> getMainWebname( ) -&gt; $name </h3>
+<p />
+Get name of Main web as defined in TWiki.cfg
+<p />
+Return: <code>$name</code> Name, e.g. <code>'Main'</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (27 Feb 2001)
+<p />
+<p />
+<h3><a name="get_TwikiWebname_name"></a> getTwikiWebname( ) -&gt; $name </h3>
+<p />
+Get name of TWiki documentation web as defined in TWiki.cfg
+<p />
+Return: <code>$name</code> Name, e.g. <code>'TWiki'</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (27 Feb 2001)
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="User_Handling_and_Access_Control"></a> User Handling and Access Control </span></h2>
+<p />
+<h3><a name="get_DefaultUserName_loginName"></a> getDefaultUserName( ) -&gt; $loginName </h3>
+<p />
+Get default user name as defined in the configuration as <code>DefaultUserLogin</code>
+<p />
+Return: <code>$loginName</code> Default user name, e.g. <code>'guest'</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="get_WikiName_wikiName"></a> getWikiName( ) -&gt; $wikiName </h3>
+<p />
+Get Wiki name of logged in user
+<p />
+Return: <code>$wikiName</code> Wiki Name, e.g. <code>'JohnDoe'</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="get_WikiUserName_wikiName"></a> getWikiUserName( ) -&gt; $wikiName </h3>
+<p />
+Get Wiki name of logged in user with web prefix
+<p />
+Return: <code>$wikiName</code> Wiki Name, e.g. <code>"Main.JohnDoe"</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="wiki_ToUserName_wikiName_loginNa"></a> wikiToUserName( $wikiName ) -&gt; $loginName </h3>
+<p />
+Translate a Wiki name to a login name based on <a href="/bin/view/Main/TWikiUsers" class="twikiLink">Main.TWikiUsers</a> topic <ul>
+<li> <code>$wikiName</code> - Wiki name, e.g. <code>'Main.JohnDoe'</code> or <code>'JohnDoe'</code>
+</li></ul> 
+Return: <code>$loginName</code>   Login name of user, e.g. <code>'jdoe'</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="user_ToWikiName_loginName_dont_A"></a> userToWikiName( $loginName, $dontAddWeb ) -&gt; $wikiName </h3>
+<p />
+Translate a login name to a Wiki name based on <a href="/bin/view/Main/TWikiUsers" class="twikiLink">Main.TWikiUsers</a> topic <ul>
+<li> <code>$loginName</code>  - Login name, e.g. <code>'jdoe'</code>
+</li> <li> <code>$dontAddWeb</code> - Do not add web prefix if <code>"1"</code>
+</li></ul> 
+Return: <code>$wikiName</code>      Wiki name of user, e.g. <code>'Main.JohnDoe'</code> or <code>'JohnDoe'</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="isGuest_boolean"></a> isGuest( ) -&gt; $boolean </h3>
+<p />
+Test if logged in user is a guest (<span class="twikiNewLink">TWikiGuest<a href="/bin/edit/TWiki/TWikiGuest?topicparent=TWiki.TWikiFuncDotPm" rel="nofollow" title="TWikiGuest (this topic does not yet exist; you can create it)">?</a></span>)
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="permissionsSet_web_boolean"></a> permissionsSet( $web ) -&gt; $boolean </h3>
+<p />
+Test if any access restrictions are set for this web, ignoring settings on individual pages <ul>
+<li> <code>$web</code> - Web name, required, e.g. <code>'Sandbox'</code>
+</li></ul> 
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (27 Feb 2001)
+<p />
+<p />
+<h3><a name="check_AccessPermission_type_wiki"></a> checkAccessPermission( $type, $wikiName, $text, $topic, $web ) -&gt; $boolean </h3>
+<p />
+Check access permission for a topic based on the <a href="/bin/view/TWiki/TWikiAccessControl" class="twikiLink">TWiki.TWikiAccessControl</a> rules <ul>
+<li> <code>$type</code>     - Access type, e.g. <code>'VIEW'</code>, <code>'CHANGE'</code>, <code>'CREATE'</code>
+</li> <li> <code>$wikiName</code> - <a href="/bin/view/TWiki/WikiName" class="twikiLink">WikiName</a> of remote user, e.g. <code>"PeterThoeny"</code>. If <code>$wikiName</code> is '', 0 or undef then access is always <strong>permitted</strong>.
+</li> <li> <code>$text</code>     - Topic text, optional. If 'perl false' (undef, 0 or ''), topic <code>$web.$topic</code> is consulted
+</li> <li> <code>$topic</code>    - Topic name, required, e.g. <code>'PrivateStuff'</code>
+</li> <li> <code>$web</code>      - Web name, required, e.g. <code>'Sandbox'</code>
+</li></ul> 
+A perl true result indicates that access is permitted.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (27 Feb 2001)
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Webs_Topics_and_Attachments"></a> Webs, Topics and Attachments </span></h2>
+<p />
+<p />
+<h3><a name="get_ListOfWebs_filter_webs"></a> getListOfWebs( $filter ) -&gt; @webs </h3> <ul>
+<li> <code>$filter</code> - spec of web types to recover
+</li></ul> 
+Gets a list of webs, filtered according to the spec in the $filter,
+which may include one of: <ol>
+<li> 'user' (for only user webs)
+</li> <li> 'template' (for only template webs i.e. those starting with "_")
+</li></ol> 
+<code>$filter</code> may also contain the word 'public' which will further filter
+out webs that have NOSEARCHALL set on them.
+'allowed' filters out webs the current user can't read.
+<p />
+For example, the deprecated getPublicWebList function can be duplicated
+as follows:
+<pre>
+   my &#64;webs &#61; TWiki::Func::getListOfWebs( &#34;user,public&#34; );
+</pre>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h3><a name="webExists_web_boolean"></a> webExists( $web ) -&gt; $boolean </h3>
+<p />
+Test if web exists <ul>
+<li> <code>$web</code> - Web name, required, e.g. <code>'Sandbox'</code>
+</li></ul> 
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (14 Jul 2001)
+<p />
+<p />
+<h3><a name="createWeb_newWeb_baseWeb_opts"></a> createWeb( $newWeb, $baseWeb, $opts ) </h3>
+<p /> <ul>
+<li> <code>$newWeb</code> is the name of the new web.
+</li> <li> <code>$baseWeb</code> is the name of an existing web (a template web). If the base web is a system web, all topics in it will be copied into the new web. If it is a normal web, only topics starting with 'Web' will be copied. If no base web is specified, an empty web (with no topics) will be created. If it is specified but does not exist, an error will be thrown.
+</li> <li> <code>$opts</code> is a ref to a hash that contains settings to be modified in
+</li></ul> 
+the web preferences topic in the new web.
+<p />
+<pre>
+use Error qw( :try );
+use TWiki::AccessControlException;
+
+try {
+    TWiki::Func::createWeb( &#34;Newweb&#34; );
+} catch Error::Simple with {
+    my $e &#61; shift;
+    # see documentation on Error::Simple
+} catch TWiki::AccessControlException with {
+    my $e &#61; shift;
+    # see documentation on TWiki::AccessControlException
+} otherwise {
+    ...
+};
+</pre>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h3><a name="moveWeb_oldName_newName"></a> moveWeb( $oldName, $newName ) </h3>
+<p />
+Move (rename) a web.
+<p />
+<pre>
+use Error qw( :try );
+use TWiki::AccessControlException;
+
+try {
+    TWiki::Func::moveWeb( &#34;Oldweb&#34;, &#34;Newweb&#34; );
+} catch Error::Simple with {
+    my $e &#61; shift;
+    # see documentation on Error::Simple
+} catch TWiki::AccessControlException with {
+    my $e &#61; shift;
+    # see documentation on TWiki::AccessControlException
+} otherwise {
+    ...
+};
+</pre>
+<p />
+To delete a web, move it to a subweb of <code>Trash</code>
+<pre>
+TWiki::Func::moveWeb( &#34;Deadweb&#34;, &#34;Trash.Deadweb&#34; );
+</pre>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h3><a name="get_TopicList_web_topics"></a> getTopicList( $web ) -&gt; @topics </h3>
+<p />
+Get list of all topics in a web <ul>
+<li> <code>$web</code> - Web name, required, e.g. <code>'Sandbox'</code>
+</li></ul> 
+Return: <code>@topics</code> Topic list, e.g. <code>( 'WebChanges',&nbsp; 'WebHome', 'WebIndex', 'WebNotify' )</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="topicExists_web_topic_boolean"></a> topicExists( $web, $topic ) -&gt; $boolean </h3>
+<p />
+Test if topic exists <ul>
+<li> <code>$web</code>   - Web name, optional, e.g. <code>'Main'</code>.
+</li> <li> <code>$topic</code> - Topic name, required, e.g. <code>'TokyoOffice'</code>, or <code>"Main.TokyoOffice"</code>
+</li></ul> 
+$web and $topic are parsed as described in the documentation for <code>normalizeWebTopicName</code>.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (14 Jul 2001)
+<p />
+<p />
+<h3><a name="check_TopicEditLock_web_topic_oo"></a> checkTopicEditLock( $web, $topic ) -&gt; ( $oopsUrl, $loginName, $unlockTime ) </h3>
+Check if a lease has been taken by some other user. <ul>
+<li> <code>$web</code> Web name, e.g. <code>"Main"</code>, or empty
+</li> <li> <code>$topic</code> Topic name, e.g. <code>"MyTopic"</code>, or <code>"Main.MyTopic"</code>
+</li></ul> 
+Return: <code>( $oopsUrl, $loginName, $unlockTime )</code> - The <code>$oopsUrl</code> for calling redirectCgiQuery(), user's <code>$loginName</code>, and estimated <code>$unlockTime</code> in minutes, or ( '', '', 0 ) if no lease exists.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.010 (31 Dec 2002)
+<p />
+<p />
+<h3><a name="set_TopicEditLock_web_topic_lock"></a> setTopicEditLock( $web, $topic, $lock ) </h3> <ul>
+<li> <code>$web</code> Web name, e.g. <code>"Main"</code>, or empty
+</li> <li> <code>$topic</code> Topic name, e.g. <code>"MyTopic"</code>, or <code>"Main.MyTopic"</code>
+</li> <li> <code>$lock</code> 1 to lease the topic, 0 to clear the lease=
+</li></ul> 
+<p />
+Takes out a "lease" on the topic. The lease doesn't prevent
+anyone from editing and changing the topic, but it does redirect them
+to a warning screen, so this provides some protection. The <code>edit</code> script
+always takes out a lease.
+<p />
+It is <strong>impossible</strong> to fully lock a topic. Concurrent changes will be
+merged.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.010 (31 Dec 2002)
+<p />
+<p />
+<h3><a name="saveTopic_web_topic_meta_text_op"></a> saveTopic( $web, $topic, $meta, $text, $options ) -&gt; $error </h3> <ul>
+<li> <code>$web</code> - web for the topic
+</li> <li> <code>$topic</code> - topic name
+</li> <li> <code>$meta</code> - reference to TWiki::Meta object
+</li> <li> <code>$text</code> - text of the topic (without embedded meta-data!!!
+</li> <li> <code>\%options</code> - ref to hash of save options     <code>\%options</code> may include:
+</li></ul> 
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+        <table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">     
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>dontlog</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> don't log this change in twiki log </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>comment</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> comment for save </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>minor</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> True if this is a minor change, and is not to be notified </td>
+		</tr>     </table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+Return: error message or undef.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (29 Jul 2001)
+<p />
+For example,
+<pre>
+my( $meta, $text ) &#61; TWiki::Func::readTopic( $web, $topic )
+$text &#61;~ s/APPLE/ORANGE/g;
+TWiki::Func::saveTopic( $web, $topic, $meta, $text, { comment &#61;&#62; &#39;refruited&#39; } );
+</pre>
+<p />
+<strong><em>Note:</em></strong> Plugins handlers ( e.g. <code>beforeSaveHandler</code> ) will be called as
+appropriate.
+<p />
+<p />
+<h3><a name="save_TopicText_web_topic_text_ig"></a> saveTopicText( $web, $topic, $text, $ignorePermissions, $dontNotify ) -&gt; $oopsUrl </h3>
+<p />
+Save topic text, typically obtained by readTopicText(). Topic data usually includes meta data; the file attachment meta data is replaced by the meta data from the topic file if it exists. <ul>
+<li> <code>$web</code>                - Web name, e.g. <code>'Main'</code>, or empty
+</li> <li> <code>$topic</code>              - Topic name, e.g. <code>'MyTopic'</code>, or <code>"Main.MyTopic"</code>
+</li> <li> <code>$text</code>               - Topic text to save, assumed to include meta data
+</li> <li> <code>$ignorePermissions</code>  - Set to <code>"1"</code> if checkAccessPermission() is already performed and OK
+</li> <li> <code>$dontNotify</code>         - Set to <code>"1"</code> if not to notify users of the change
+</li></ul> 
+Return: <code>$oopsUrl</code>               Empty string if OK; the <code>$oopsUrl</code> for calling redirectCgiQuery() in case of error
+<p />
+This method is a lot less efficient and much more dangerous than <code>saveTopic</code>.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.010 (31 Dec 2002)
+<p />
+<pre>
+my $text &#61; TWiki::Func::readTopicText( $web, $topic );
+
+# check for oops URL in case of error:
+if( $text &#61;~ /^http.&#42;?\/oops/ ) {
+    TWiki::Func::redirectCgiQuery( $query, $text );
+    return;
+}
+# do topic text manipulation like:
+$text &#61;~ s/old/new/g;
+# do meta data manipulation like:
+$text &#61;~ s/(META\:FIELD.&#42;?name\&#61;\&#34;TopicClassification\&#34;.&#42;?value\&#61;\&#34;)&#91;^\&#34;]&#42;/$1BugResolved/;
+$oopsUrl &#61; TWiki::Func::saveTopicText( $web, $topic, $text ); # save topic text
+</pre>
+<p />
+<p />
+<h3><a name="moveTopic_web_topic_newWeb_newTo"></a> moveTopic( $web, $topic, $newWeb, $newTopic ) </h3> <ul>
+<li> <code>$web</code> source web - required
+</li> <li> <code>$topic</code> source topic - required
+</li> <li> <code>$newWeb</code> dest web
+</li> <li> <code>$newTopic</code> dest topic
+</li></ul> 
+Renames the topic. Throws an exception if something went wrong.
+If $newWeb is undef, it defaults to $web. If $newTopic is undef, it defaults
+to $topic.
+<p />
+The destination topic must not already exist.
+<p />
+Rename a topic to the $TWiki::cfg{TrashWebName} to delete it.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<pre>
+use Error qw( :try );
+
+try {
+    moveTopic( &#34;Work&#34;, &#34;TokyoOffice&#34;, &#34;Trash&#34;, &#34;ClosedOffice&#34; );
+} catch Error::Simple with {
+    my $e &#61; shift;
+    # see documentation on Error::Simple
+} catch TWiki::AccessControlException with {
+    my $e &#61; shift;
+    # see documentation on TWiki::AccessControlException
+} otherwise {
+    ...
+};
+</pre>
+<p />
+<p />
+<h3><a name="get_RevisionInfo_web_topic_rev_a"></a> getRevisionInfo($web, $topic, $rev, $attachment ) -&gt; ( $date, $user, $rev, $comment ) </h3>
+Get revision info of a topic or attachment <ul>
+<li> <code>$web</code> - Web name, optional, e.g. <code>'Main'</code>
+</li> <li> <code>$topic</code>   - Topic name, required, e.g. <code>'TokyoOffice'</code>
+</li> <li> <code>$rev</code>     - revsion number, or tag name (can be in the format 1.2, or just the minor number)
+</li> <li> <code>$attachment</code>                 -attachment filename
+</li></ul> 
+Return: <code>( $date, $user, $rev, $comment )</code> List with: ( last update date, login name of last user, minor part of top revision number ), e.g. <code>( 1234561, 'phoeny', "5" )</code>
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> $date </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> in epochSec </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> $user </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> Wiki name of the author (<strong>not</strong> login name) </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> $rev </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> actual rev number </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> $comment </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> WHAT COMMENT? </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+NOTE: if you are trying to get revision info for a topic, use
+<code>$meta-&gt;getRevisionInfo</code> instead if you can - it is significantly
+more efficient, and returns a user object that contains other user
+information.
+<p />
+NOTE: prior versions of TWiki may under some circumstances have returned
+the login name of the user rather than the wiki name; the code documentation
+was totally unclear, and we have been unable to establish the intent.
+However the wikiname is obviously more useful, so that is what is returned.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (29 Jul 2001)
+<p />
+<p />
+<h3><a name="get_RevisionAtTime_web_topic_tim"></a> getRevisionAtTime( $web, $topic, $time ) -&gt; $rev </h3>
+<p />
+Get the revision number of a topic at a specific time. <ul>
+<li> <code>$web</code> - web for topic
+</li> <li> <code>$topic</code> - topic
+</li> <li> <code>$time</code> - time (in epoch secs) for the rev
+</li></ul> 
+Return: Single-digit revision number, or undef if it couldn't be determined
+(either because the topic isn't that old, or there was a problem)
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h3><a name="readTopic_web_topic_rev_meta_tex"></a> readTopic( $web, $topic, $rev ) -&gt; ( $meta, $text ) </h3>
+<p />
+Read topic text and meta data, regardless of access permissions. <ul>
+<li> <code>$web</code> - Web name, required, e.g. <code>'Main'</code>
+</li> <li> <code>$topic</code> - Topic name, required, e.g. <code>'TokyoOffice'</code>
+</li> <li> <code>$rev</code> - revision to read (default latest)
+</li></ul> 
+Return: <code>( $meta, $text )</code> Meta data object and topic text
+<p />
+<code>$meta</code> is a perl 'object' of class <code>TWiki::Meta</code>. This class is
+fully documented in the source code documentation shipped with the
+release, or can be inspected in the <code>lib/TWiki/Meta.pm</code> file.
+<p />
+This method <strong>ignores</strong> topic access permissions. You should be careful to use <code>checkAccessPermissions</code> to ensure the current user has read access to the topic.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="read_TopicText_web_topic_rev_ign"></a> readTopicText( $web, $topic, $rev, $ignorePermissions ) -&gt; $text </h3>
+<p />
+Read topic text, including meta data <ul>
+<li> <code>$web</code>                - Web name, e.g. <code>'Main'</code>, or empty
+</li> <li> <code>$topic</code>              - Topic name, e.g. <code>'MyTopic'</code>, or <code>"Main.MyTopic"</code>
+</li> <li> <code>$rev</code>                - Topic revision to read, optional. Specify the minor part of the revision, e.g. <code>"5"</code>, not <code>"1.5"</code>; the top revision is returned if omitted or empty.
+</li> <li> <code>$ignorePermissions</code>  - Set to <code>"1"</code> if checkAccessPermission() is already performed and OK; an oops URL is returned if user has no permission
+</li></ul> 
+Return: <code>$text</code>                  Topic text with embedded meta data; an oops URL for calling redirectCgiQuery() is returned in case of an error
+<p />
+This method is more efficient than <code>readTopic</code>, but returns meta-data embedded in the text. Plugins authors must be very careful to avoid damaging meta-data. You are recommended to use readTopic instead, which is a lot safer..
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.010 (31 Dec 2002)
+<p />
+<p />
+<h3><a name="attachmentExists_web_topic_attac"></a> attachmentExists( $web, $topic, $attachment ) -&gt; $boolean </h3>
+<p />
+Test if attachment exists <ul>
+<li> <code>$web</code>   - Web name, optional, e.g. <code>Main</code>.
+</li> <li> <code>$topic</code> - Topic name, required, e.g. <code>TokyoOffice</code>, or <code>Main.TokyoOffice</code>
+</li> <li> <code>$attachment</code> - attachment name, e.g.=logo.gif=
+</li></ul> 
+$web and $topic are parsed as described in the documentation for <code>normalizeWebTopicName</code>.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h3><a name="readAttachment_web_topic_name_re"></a> readAttachment( $web, $topic, $name, $rev ) -&gt; $data </h3> <ul>
+<li> <code>$web</code> - web for topic
+</li> <li> <code>$topic</code> - topic
+</li> <li> <code>$name</code> - attachment name
+</li> <li> <code>$rev</code> - revision to read (default latest)
+</li></ul> 
+Read an attachment from the store for a topic, and return it as a string. The
+names of attachments on a topic can be recovered from the meta-data returned
+by <code>readTopic</code>. If the attachment does not exist, or cannot be read, undef
+will be returned. If the revision is not specified, the latest version will
+be returned.
+<p />
+View permission on the topic is required for the
+read to be successful.  Access control violations are flagged by a
+TWiki::AccessControlException. Permissions are checked for the current user.
+<p />
+<pre>
+my( $meta, $text ) &#61; TWiki::Func::readTopic( $web, $topic );
+my &#64;attachments &#61; $meta-&#62;find( &#39;FILEATTACHMENT&#39; );
+foreach my $a ( &#64;attachments ) {
+   try {
+       my $data &#61; TWiki::Func::readAttachment( $web, $topic, $a-&#62;{name} );
+       ...
+   } catch TWiki::AccessControlException with {
+   };
+}
+</pre>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h3><a name="saveAttachment_web_topic_attachm"></a> saveAttachment( $web, $topic, $attachment, $opts ) </h3> <ul>
+<li> <code>$web</code> - web for topic
+</li> <li> <code>$topic</code> - topic to atach to
+</li> <li> <code>$attachment</code> - name of the attachment
+</li> <li> <code>$opts</code> - Ref to hash of options
+</li></ul> 
+<code>$opts</code> may include:
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table3" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>dontlog</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> don't log this change in twiki log </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>comment</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> comment for save </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>hide</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> if the attachment is to be hidden in normal topic view </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>stream</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> Stream of file to upload </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>file</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> Name of a file to use for the attachment data. ignored if stream is set. Local file on the server. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>filepath</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> Client path to file </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>filesize</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> Size of uploaded data </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>filedate</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> Date </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+Save an attachment to the store for a topic. On success, returns undef. If there is an error, an exception will be thrown.
+<p />
+<pre>
+    try {
+        TWiki::Func::saveAttachment( $web, $topic, &#39;image.gif&#39;,
+                                     { file &#61;&#62; &#39;image.gif&#39;,
+                                       comment &#61;&#62; &#39;Picture of Health&#39;,
+                                       hide &#61;&#62; 1 } );
+   } catch Error::Simple with {
+      # see documentation on Error
+   } otherwise {
+      ...
+   };
+</pre>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h3><a name="moveAttachment_web_topic_attachm"></a> moveAttachment( $web, $topic, $attachment, $newWeb, $newTopic, $newAttachment ) </h3> <ul>
+<li> <code>$web</code> source web - required
+</li> <li> <code>$topic</code> source topic - required
+</li> <li> <code>$attachment</code> source attachment - required
+</li> <li> <code>$newWeb</code> dest web
+</li> <li> <code>$newTopic</code> dest topic
+</li> <li> <code>$newAttachment</code> dest attachment
+</li></ul> 
+Renames the topic. Throws an exception on error or access violation.
+If $newWeb is undef, it defaults to $web. If $newTopic is undef, it defaults
+to $topic. If $newAttachment is undef, it defaults to $attachment. If all of $newWeb, $newTopic and $newAttachment are undef, it is an error.
+<p />
+The destination topic must already exist, but the destination attachment must
+<strong>not</strong> exist.
+<p />
+Rename an attachment to $TWiki::cfg{TrashWebName}.TrashAttament to delete it.
+<p />
+<pre>
+use Error qw( :try );
+
+try {
+   # move attachment between topics
+   moveAttachment( &#34;Countries&#34;, &#34;Germany&#34;, &#34;AlsaceLorraine.dat&#34;,
+                     &#34;Countries&#34;, &#34;France&#34; );
+   # Note destination attachment name is defaulted to the same as source
+} catch TWiki::AccessControlException with {
+   my $e &#61; shift;
+   # see documentation on TWiki::AccessControlException
+} catch Error::Simple with {
+   my $e &#61; shift;
+   # see documentation on Error::Simple
+};
+</pre>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Assembling_Pages"></a> Assembling Pages </span></h2>
+<p />
+<p />
+<h3><a name="readTemplate_name_skin_text"></a> readTemplate( $name, $skin ) -&gt; $text </h3>
+<p />
+Read a template or skin. Embedded <a href="/bin/view/TWiki/TWikiTemplates" class="twikiLink">template directives</a> get expanded <ul>
+<li> <code>$name</code> - Template name, e.g. <code>'view'</code>
+</li> <li> <code>$skin</code> - Comma-separated list of skin names, optional, e.g. <code>'print'</code>
+</li></ul> 
+Return: <code>$text</code>    Template text
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="loadTemplate_name_skin_web_text"></a> loadTemplate ( $name, $skin, $web ) -&gt; $text </h3>
+<p /> <ul>
+<li> <code>$name</code> - template file name
+</li> <li> <code>$skin</code> - comma-separated list of skins to use (default: current skin)
+</li> <li> <code>$web</code> - the web to look in for topics that contain templates (default: current web)
+</li></ul> 
+Return: expanded template text (what's left after removal of all %TMPL:DEF% statements)
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+Reads a template and extracts template definitions, adding them to the
+list of loaded templates, overwriting any previous definition.
+<p />
+How TWiki searches for templates is described in <a href="/bin/view/TWiki/TWikiTemplates" class="twikiLink">TWikiTemplates</a>.
+<p />
+If template text is found, extracts include statements and fully expands them.
+<p />
+<p />
+<h3><a name="expandTemplate_def_string"></a> expandTemplate( $def  ) -&gt; $string </h3>
+Do a , only expanding the template (not expanding any variables other than %TMPL) <ul>
+<li> <code>$def</code> - template name
+</li></ul> 
+Return: the text of the expanded template
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+A template is defined using a %TMPL:DEF% statement in a template
+file. See the documentation on TWiki templates for more information.
+<p />
+<p />
+<h3><a name="writeHeader_query_contentLength"></a> writeHeader( $query, $contentLength ) </h3>
+<p />
+Prints a basic content-type HTML header for text/html to standard out <ul>
+<li> <code>$query</code> - CGI query object. If not given, the default CGI query will be used. In most cases you should <em>not</em> pass this parameter.
+</li> <li> <code>$contentLength</code> - Length of content
+</li></ul> 
+Return:             none
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="redirect_CgiQuery_query_url"></a> redirectCgiQuery( $query, $url ) </h3>
+<p />
+Redirect to URL <ul>
+<li> <code>$query</code> - CGI query object. Ignored, only there for compatibility. The session CGI query object is used instead.
+</li> <li> <code>$url</code>   - URL to redirect to
+</li></ul> 
+Return:             none, never returns
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="add_ToHEAD_id_header"></a> addToHEAD( $id, $header ) </h3>
+Adds <code>$header</code> to the HTML header (the <head> tag).
+This is useful for Plugins that want to include some javascript custom css. <ul>
+<li> <code>$id</code> - Unique ID to prevent the same HTML from being duplicated. Plugins should use a prefix to prevent name clashes (e.g EDITTABLEPLUGIN_JSCALENDAR)
+</li> <li> <code>$header</code> - the HTML to be added to the <head> section. The HTML must be valid in a HEAD tag - no checks are performed.
+</li></ul> 
+<p />
+All TWiki variables present in <code>$header</code> will be expanded before being inserted into the <code><head></code> section.
+<p />
+Note that this is <em>not</em> the same as the HTTP header, which is modified through the Plugins <code>modifyHeaderHandler</code>.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+example:
+<pre>
+TWiki::Func::addToHEAD(&#39;PATTERN&#95;STYLE&#39;,&#39;&#60;link id&#61;&#34;twikiLayoutCss&#34; rel&#61;&#34;stylesheet&#34; type&#61;&#34;text/css&#34; href&#61;&#34;&#37;PUBURL&#37;/TWiki/PatternSkin/layout.css&#34; media&#61;&#34;all&#34; /&#62;&#39;)
+</pre>
+<p />
+<p />
+<h3><a name="expand_CommonVariables_text_topi"></a> expandCommonVariables( $text, $topic, $web ) -&gt; $text </h3>
+<p />
+Expand all common <code>%VARIABLES%</code> <ul>
+<li> <code>$text</code>  - Text with variables to expand, e.g. <code>'Current user is %WIKIUSER%'</code>
+</li> <li> <code>$topic</code> - Current topic name, e.g. <code>'WebNotify'</code>
+</li> <li> <code>$web</code>   - Web name, optional, e.g. <code>'Main'</code>. The current web is taken if missing
+</li></ul> 
+Return: <code>$text</code>     Expanded text, e.g. <code>'Current user is TWikiGuest'</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+See also: expandVariablesOnTopicCreation
+<p />
+<p />
+<h3><a name="renderText_text_web_text"></a> renderText( $text, $web ) -&gt; $text </h3>
+<p />
+Render text from TWiki markup into XHTML as defined in <a href="/bin/view/TWiki/TextFormattingRules" class="twikiLink">TWiki.TextFormattingRules</a> <ul>
+<li> <code>$text</code> - Text to render, e.g. <code>'*bold* text and =fixed font='</code>
+</li> <li> <code>$web</code>  - Web name, optional, e.g. <code>'Main'</code>. The current web is taken if missing
+</li></ul> 
+Return: <code>$text</code>    XHTML text, e.g. <code>'&lt;b&gt;bold&lt;/b&gt; and &lt;code&gt;fixed font&lt;/code&gt;'</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="internalLink_pre_web_topic_label"></a> internalLink( $pre, $web, $topic, $label, $anchor, $createLink ) -&gt; $text </h3>
+<p />
+Render topic name and link label into an XHTML link. Normally you do not need to call this funtion, it is called internally by <code>renderText()</code> <ul>
+<li> <code>$pre</code>        - Text occuring before the TWiki link syntax, optional
+</li> <li> <code>$web</code>        - Web name, required, e.g. <code>'Main'</code>
+</li> <li> <code>$topic</code>      - Topic name to link to, required, e.g. <code>'WebNotify'</code>
+</li> <li> <code>$label</code>      - Link label, required. Usually the same as <code>$topic</code>, e.g. <code>'notify'</code>
+</li> <li> <code>$anchor</code>     - Anchor, optional, e.g. <code>'#Jump'</code>
+</li> <li> <code>$createLink</code> - Set to <code>'1'</code> to add question linked mark after topic name if topic does not exist;<br /> set to <code>'0'</code> to suppress link for non-existing topics
+</li></ul> 
+Return: <code>$text</code>          XHTML anchor, e.g. <code>'&lt;a href='/cgi-bin/view/Main/WebNotify#Jump'&gt;notify&lt;/a&gt;'</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="E_mail"></a> E-mail </span></h2>
+<p />
+<h3><a name="sendEmail_text_retries_error"></a> sendEmail ( $text, $retries ) -&gt; $error </h3> <ul>
+<li> <code>$text</code> - text of the mail, including MIME headers
+</li> <li> <code>$retries</code> - number of times to retry the send (default 1)
+</li></ul> 
+Send an e-mail specified as MIME format content. To specify MIME
+format mails, you create a string that contains a set of header
+lines that contain field definitions and a message body such as:
+<pre>
+To: liz&#64;windsor.gov.uk
+From: serf&#64;hovel.net
+CC: george&#64;whitehouse.gov
+Subject: Revolution
+
+Dear Liz,
+
+Please abolish the monarchy (with King George&#39;s permission, of course)
+
+Thanks,
+
+A. Peasant
+</pre>
+Leave a blank line between the last header field and the message body.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h3><a name="wiki_ToEmail_wikiName_email"></a> wikiToEmail( $wikiName ) -&gt; $email </h3> <ul>
+<li> <code>$wikiName</code> - wiki name of the user
+</li></ul> 
+Get the e-mail address(es) of the named user. If the user has multiple
+e-mail addresses (for example, the user is a group), then the list will
+be comma-separated.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Creating_New_Topics"></a> Creating New Topics </span></h2>
+<p />
+<p />
+<h3><a name="expand_VariablesOnTopicCreation"></a> expandVariablesOnTopicCreation ( $text ) -&gt; $text </h3>
+Expand the limited set of variables that are always expanded during topic creation <ul>
+<li> <code>$text</code> - the text to process
+</li></ul> 
+Return: text with variables expanded
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+Expands only the variables expected in templates that must be statically
+expanded in new content.
+<p />
+The expanded variables are: <ul>
+<li> <code>%DATE%</code> Signature-format date
+</li> <li> <code>%SERVERTIME%</code> See <a href="/bin/view/TWiki/TWikiVariables" class="twikiLink">TWikiVariables</a>
+</li> <li> <code>%GMTIME%</code> See <a href="/bin/view/TWiki/TWikiVariables" class="twikiLink">TWikiVariables</a>
+</li> <li> <code>%USERNAME%</code> Base login name
+</li> <li> <code>%WIKINAME%</code> Wiki name
+</li> <li> <code>%WIKIUSERNAME%</code> Wiki name with prepended web
+</li> <li> <code>%URLPARAM{...}%</code> - Parameters to the current CGI query
+</li> <li> <code>%NOP%</code> No-op
+</li></ul> 
+<p />
+See also: expandVariables
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Special_handlers"></a> Special handlers </span></h2>
+Special handlers can be defined to make functions in plugins behave as if they were built-in to TWiki.
+<p />
+<p />
+<h3><a name="register_TagHandler_var_fn_synta"></a> registerTagHandler( $var, \&amp;fn, $syntax ) </h3>
+Should only be called from initPlugin.
+<p />
+Register a function to handle a simple variable. Handles both %VAR% and %VAR{...}%. Registered variables are treated the same as TWiki internal variables, and are expanded at the same time. This is a <em>lot</em> more efficient than using the <code>commonTagsHandler</code>. <ul>
+<li> <code>$var</code> - The name of the variable, i.e. the 'MYVAR' part of %MYVAR%. The variable name <strong>must</strong> match /^[A-Z][A-Z0-9_]*$/ or it won't work.
+</li> <li> <code>\&amp;fn</code> - Reference to the handler function.
+</li> <li> <code>$syntax</code> can be 'classic' (the default) or 'context-free'. 'classic' syntax is appropriate where you want the variable to support classic TWiki syntax i.e. to accept the standard <code>%MYVAR{ "unnamed" param1="value1" param2="value2" }%</code> syntax, as well as an unquoted default parameter, such as <code>%MYVAR{unquoted parameter}%</code>. If your variable will only use named parameters, you can use 'context-free' syntax, which supports a more relaxed syntax. For example, %MYVAR{param1=value1, value 2, param3="value 3", param4='value 5"}%
+</li></ul> 
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+The variable handler function must be of the form:
+<pre>
+sub handler(\&#37;session, \&#37;params, $topic, $web)
+</pre>
+where: <ul>
+<li> <code>\%session</code> - a reference to the TWiki session object (may be ignored)
+</li> <li> <code>\%params</code> - a reference to a TWiki::Attrs object containing parameters. This can be used as a simple hash that maps parameter names to values, with _DEFAULT being the name for the default parameter.
+</li> <li> <code>$topic</code> - name of the topic in the query
+</li> <li> <code>$web</code> - name of the web in the query
+</li></ul> 
+for example, to execute an arbitrary command on the server, you might do this:
+<pre>
+sub initPlugin{
+   TWiki::Func::registerTagHandler(&#39;EXEC&#39;, \&#38;boo);
+}
+
+sub boo {
+    my( $session, $params, $topic, $web ) &#61; &#64;&#95;;
+    my $cmd &#61; $params-&#62;{&#95;DEFAULT};
+
+    return &#34;NO COMMAND SPECIFIED&#34; unless $cmd;
+
+    my $result &#61; `$cmd 2&#62;&#38;1`;
+    return $params-&#62;{silent} ? &#39;&#39; : $result;
+}
+}
+</pre>
+would let you do this:
+<code>%EXEC{"ps -Af" silent="on"}%</code>
+<p />
+<p />
+<h3><a name="registerRESTHandler_alias_fn"></a> registerRESTHandler( $alias, \&amp;fn, ) </h3>
+Should only be called from initPlugin.
+<p />
+Adds a function to the dispatch table of the REST interface  <ul>
+<li> <code>$alias</code> - The name .
+</li> <li> <code>\&amp;fn</code> - Reference to the function.
+</li></ul> 
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+The handler function must be of the form:
+<pre>
+sub handler(\&#37;session)
+</pre>
+where: <ul>
+<li> <code>\%session</code> - a reference to the TWiki session object (may be ignored)
+</li></ul> 
+<p />
+From the REST interface, the name of the plugin must be used
+as the subject of the invokation.
+<p />
+Example
+<hr />
+<p />
+The <a href="/bin/view/TWiki/EmptyPlugin" class="twikiLink">EmptyPlugin</a> has the following call in the initPlugin handler:
+<pre>
+   TWiki::Func::registerRESTHandler(&#39;example&#39;, \&#38;restExample);
+</pre>
+<p />
+This adds the <code>restExample</code> function to the REST dispatch table 
+for the <a href="/bin/view/TWiki/EmptyPlugin" class="twikiLink">EmptyPlugin</a> under the 'example' alias, and allows it 
+to be invoked using the URL
+<p />
+<code>http://server:port/bin/rest/EmptyPlugin/example</code>
+<p />
+note that the URL
+<p />
+<code>http://server:port/bin/rest/EmptyPlugin/restExample</code>
+<p />
+(ie, with the name of the function instead of the alias) will not work.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Searching"></a> Searching </span></h2>
+<p />
+<p />
+<h3><a name="search_InWebContent_searchString"></a> searchInWebContent($searchString, $web, \@topics, \%options ) -&gt; \%map </h3>
+Search for a string in the content of a web. The search is over all content, including meta-data. Meta-data matches will be returned as formatted lines within the topic content (meta-data matches are returned as lines of the format %META:\w+{.*}%) <ul>
+<li> <code>$searchString</code> - the search string, in egrep format
+</li> <li> <code>$web</code> - The web to search in
+</li> <li> <code>\@topics</code> - reference to a list of topics to search
+</li> <li> <code>\%option</code> - reference to an options hash
+</li></ul> 
+The <code>\%options</code> hash may contain the following options: <ul>
+<li> <code>type</code> - if <code>regex</code> will perform a egrep-syntax RE search (default '')
+</li> <li> <code>casesensitive</code> - false to ignore case (defaulkt true)
+</li> <li> <code>files_without_match</code> - true to return files only (default false). If <code>files_without_match</code> is specified, it will return on the first match in each topic (i.e. it will return only one match per topic, and will not return matching lines).
+</li></ul> 
+<p />
+The return value is a reference to a hash which maps each matching topic
+name to a list of the lines in that topic that matched the search,
+as would be returned by 'grep'.
+<p />
+To iterate over the returned topics use:
+<pre>
+my $result &#61; TWiki::Func::searchInWebContent( &#34;Slimy Toad&#34;, $web, \&#64;topics,
+   { casesensitive &#61;&#62; 0, files&#95;without&#95;match &#61;&#62; 0 } );
+foreach my $topic (keys &#37;$result ) {
+   foreach my $matching&#95;line ( &#64;{$result-&#62;{$topic}} ) {
+      ...etc
+</pre>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Plugin_specific_file_handling"></a> Plugin-specific file handling </span></h2>
+<p />
+<p />
+<h3><a name="get_WorkArea_pluginName_director"></a> getWorkArea( $pluginName ) -&gt; $directorypath </h3>
+<p />
+Gets a private directory for Plugin use. The Plugin is entirely responsible
+for managing this directory; TWiki will not read from it, or write to it.
+<p />
+The directory is guaranteed to exist, and to be writable by the webserver
+user. By default it will <strong>not</strong> be web accessible.
+<p />
+The directory and it's contents are permanent, so Plugins must be careful
+to keep their areas tidy.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1 (Dec 2005)
+<p />
+<p />
+<h3><a name="readFile_filename_text"></a> readFile( $filename ) -&gt; $text </h3>
+<p />
+Read file, low level. Used for Plugin workarea. <ul>
+<li> <code>$filename</code> - Full path name of file
+</li></ul> 
+Return: <code>$text</code> Content of file, empty if not found
+<p />
+<strong><em>NOTE:</em></strong> Use this function only for the Plugin workarea, <strong>not</strong> for topics and attachments. Use the appropriate functions to manipulate topics and attachments.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (07 Dec 2002)
+<p />
+<p />
+<h3><a name="saveFile_filename_text"></a> saveFile( $filename, $text ) </h3>
+<p />
+Save file, low level. Used for Plugin workarea. <ul>
+<li> <code>$filename</code> - Full path name of file
+</li> <li> <code>$text</code>     - Text to save
+</li></ul> 
+Return:                none
+<p />
+<strong><em>NOTE:</em></strong> Use this function only for the Plugin workarea, <strong>not</strong> for topics and attachments. Use the appropriate functions to manipulate topics and attachments.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (07 Dec 2002)
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="General_Utilities"></a> General Utilities </span></h2>
+<p />
+<p />
+<h3><a name="get_RegularExpression_name_expr"></a> getRegularExpression( $name ) -&gt; $expr </h3>
+<p />
+Retrieves a TWiki predefined regular expression or character class. <ul>
+<li> <code>$name</code> - Name of the expression to retrieve.  See notes below
+</li></ul> 
+Return: String or precompiled regular expression matching as described below.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.020 (9 Feb 2004)
+<p />
+<strong><em>Note:</em></strong> TWiki internally precompiles several regular expressions to
+represent various string entities in an <span class="twikiNewLink">I18N<a href="/bin/edit/TWiki/I18N?topicparent=TWiki.TWikiFuncDotPm" rel="nofollow" title="I18N (this topic does not yet exist; you can create it)">?</a></span>-compatible manner. Plugins
+authors are encouraged to use these in matching where appropriate. The
+following are guaranteed to be present. Others may exist, but their use
+is unsupported and they may be removed in future TWiki versions.
+<p />
+In the table below, the expression marked type 'String' are intended for
+use within character classes (i.e. for use within square brackets inside
+a regular expression), for example:
+<pre>
+   my $upper &#61; TWiki::Func::getRegularExpression(&#39;upperAlpha&#39;);
+   my $alpha &#61; TWiki::Func::getRegularExpression(&#39;mixedAlpha&#39;);
+   my $capitalized &#61; qr/&#91;$upper]&#91;$alpha]+/;
+</pre>
+Those expressions marked type 'RE' are precompiled regular expressions that can be used outside square brackets. For example:
+<pre>
+   my $webRE &#61; TWiki::Func::getRegularExpression(&#39;webNameRegex&#39;);
+   my $isWebName &#61; ( $s &#61;~ m/$webRE/ );
+</pre>
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table4" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/TWiki/TWikiFuncDotPm?cover=print;sortcol=0;table=4;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Name</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/TWiki/TWikiFuncDotPm?cover=print;sortcol=1;table=4;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Matches</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/TWiki/TWikiFuncDotPm?cover=print;sortcol=2;table=4;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Type</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> upperAlpha </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Upper case characters </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> String </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> upperAlphaNum </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Upper case characters and digits </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> String </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> lowerAlpha </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Lower case characters </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> String </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> lowerAlphaNum </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Lower case characters and digits </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> String </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> numeric </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Digits </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> String </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> mixedAlpha </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Alphabetic characters </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> String </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> mixedAlphaNum </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Alphanumeric characters </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> String </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> wikiWordRegex </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> <a href="/bin/view/TWiki/WikiWord" class="twikiLink">WikiWords</a> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> RE </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> webNameRegex </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> User web names </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> RE </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> anchorRegex </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> #AnchorNames </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> RE </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> abbrevRegex </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Abbreviations e.g. GOV, IRS </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> RE </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> emailAddrRegex </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> <a href="mailto&#58;email&#64;address&#46;com">email&#64;address.com</a> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> RE </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> tagNameRegex </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> Standard variable names e.g. %THIS_BIT% (THIS_BIT only) </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> RE </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<p />
+<h3><a name="normalize_WebTopicName_web_topic"></a> normalizeWebTopicName($web, $topic) -&gt; ($web, $topic) </h3>
+<p />
+Parse a web and topic name, supplying defaults as appropriate. <ul>
+<li> <code>$web</code> - Web name, identifying variable, or empty string
+</li> <li> <code>$topic</code> - Topic name, may be a web.topic string, required.
+</li></ul> 
+Return: the parsed Web/Topic pai
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.1
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table5" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/TWiki/TWikiFuncDotPm?cover=print;sortcol=0;table=5;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Input</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1 twikiLastCol"> <a rel="nofollow" href="/bin/view/TWiki/TWikiFuncDotPm?cover=print;sortcol=1;table=5;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Return</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <tt>( 'Web',  'Topic' )     </tt> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> <tt>( 'Web',  'Topic' ) </tt> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <tt>( '',     'Topic' )     </tt> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> <tt>( 'Main', 'Topic' ) </tt> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <tt>( '',     '' )          </tt> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> <tt>( 'Main', 'WebHome' ) </tt> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <tt>( '',     'Web/Topic' ) </tt> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> <tt>( 'Web',  'Topic' ) </tt> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <tt>( '',     'Web.Topic' ) </tt> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> <tt>( 'Web',  'Topic' ) </tt> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <tt>( 'Web1', 'Web2.Topic' )</tt> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> <tt>( 'Web2', 'Topic' ) </tt> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <tt>( 'Main', 'Topic' )</tt> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> <tt>( 'Main', 'Topic' ) </tt> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <tt>( 'TWiki', 'Topic' )</tt> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> <tt>( 'TWiki', 'Topic' ) </tt> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+where <code>Main</code> and <code>TWiki</code> are the web names set in $cfg{UsersWebName} and $cfg{SystemWebName} respectively.
+<p />
+<p />
+<h3><a name="writeWarning_text"></a> writeWarning( $text ) </h3>
+<p />
+Log Warning that may require admin intervention to data/warning.txt <ul>
+<li> <code>$text</code> - Text to write; timestamp gets added
+</li></ul> 
+Return:            none
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.020 (16 Feb 2004)
+<p />
+<p />
+<h3><a name="writeDebug_text"></a> writeDebug( $text ) </h3>
+<p />
+Log debug message to data/debug.txt <ul>
+<li> <code>$text</code> - Text to write; timestamp gets added
+</li></ul> 
+Return:            none
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.020 (16 Feb 2004)
+<p />
+<p />
+<h3><a name="formatTime_time_format_timezone"></a> formatTime( $time, $format, $timezone ) -&gt; $text </h3>
+<p />
+Format the time in seconds into the desired time string <ul>
+<li> <code>$time</code>     - Time in epoc seconds
+</li> <li> <code>$format</code>   - Format type, optional. Default e.g. <code>'31 Dec 2002 - 19:30'</code>. Can be <code>'$iso'</code> (e.g. <code>'2002-12-31T19:30Z'</code>), <code>'$rcs'</code> (e.g. <code>'2001/12/31 23:59:59'</code>, <code>'$http'</code> for HTTP header format (e.g. <code>'Thu, 23 Jul 1998 07:21:56 GMT'</code>), or any string with tokens <code>'$seconds, $minutes, $hours, $day, $wday, $month, $mo, $year, $ye, $tz'</code> for seconds, minutes, hours, day of month, day of week, 3 letter month, 2 digit month, 4 digit year, 2 digit year, timezone string, respectively
+</li> <li> <code>$timezone</code> - either not defined (uses the displaytime setting), 'gmtime', or 'servertime'
+</li></ul> 
+Return: <code>$text</code>        Formatted time string
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table6" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Note: </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> if you used the removed formatGmTime, add a third parameter 'gmtime' </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.020 (26 Feb 2004)
+<p />
+<p />
+<h3><a name="is_ValidWikiWord_text_boolean"></a> isValidWikiWord ( $text ) -&gt; $boolean </h3>
+<p />
+Check for a valid <a href="/bin/view/TWiki/WikiWord" class="twikiLink">WikiWord</a> or <a href="/bin/view/TWiki/WikiName" class="twikiLink">WikiName</a> <ul>
+<li> <code>$text</code> - Word to test
+</li></ul> 
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.100 (Dec 2005)
+<p />
+<p />
+<h3><a name="extractParameters_attr_params"></a> extractParameters($attr ) -&gt; %params </h3>
+<p />
+Extract all parameters from a variable string and returns a hash of parameters <ul>
+<li> <code>$attr</code> - Attribute string
+</li></ul> 
+Return: <code>%params</code>  Hash containing all parameters. The nameless parameter is stored in key <code>_DEFAULT</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.025 (26 Aug 2004)
+<p /> <ul>
+<li> Example: <ul>
+<li> Variable: <code>%TEST{ 'nameless' name1="val1" name2="val2" }%</code>
+</li> <li> First extract text between <code>{...}</code> to get: <code>'nameless' name1="val1" name2="val2"</code>
+</li> <li> Then call this on the text: <br />
+</li></ul> 
+</li> <li> params = TWiki::Func::extractParameters( $text );= <ul>
+<li> The <code>%params</code> hash contains now: <br />        <code>_DEFAULT =&gt; 'nameless'</code> <br />        <code>name1 =&gt; "val1"</code> <br />        <code>name2 =&gt; "val2"</code>
+</li></ul> 
+</li></ul> 
+<p />
+<p />
+<h3><a name="extract_NameValuePair_attr_name"></a> extractNameValuePair( $attr, $name ) -&gt; $value </h3>
+<p />
+Extract a named or unnamed value from a variable parameter string
+- Note:              | Function TWiki::Func::extractParameters is more efficient for extracting several parameters <ul>
+<li> <code>$attr</code> - Attribute string
+</li> <li> <code>$name</code> - Name, optional
+</li></ul> 
+Return: <code>$value</code>   Extracted value
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p /> <ul>
+<li> Example: <ul>
+<li> Variable: <code>%TEST{ 'nameless' name1="val1" name2="val2" }%</code>
+</li> <li> First extract text between <code>{...}</code> to get: <code>'nameless' name1="val1" name2="val2"</code>
+</li> <li> Then call this on the text: <br />        <code>my $noname = TWiki::Func::extractNameValuePair( $text );</code> <br />        <code>my $val1&nbsp; = TWiki::Func::extractNameValuePair( $text, "name1" );</code> <br />        <code>my $val2&nbsp; = TWiki::Func::extractNameValuePair( $text, "name2" );</code>
+</li></ul> 
+</li></ul> 
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Deprecated_functions"></a> Deprecated functions </span></h2>
+<p />
+From time-to-time, the TWiki developers will add new functions to the interface (either to <a href="/bin/view/TWiki/TWikiFuncDotPm" class="twikiCurrentTopicLink twikiLink">TWikiFuncDotPm</a>, or new handlers). Sometimes these improvements mean that old functions have to be deprecated to keep the code manageable. When this happens, the deprecated functions will be supported in the interface for at least one more TWiki release, and probably longer, though this cannot be guaranteed.
+<p />
+Updated plugins may still need to define deprecated handlers for compatibility with old TWiki versions. In this case, the plugin package that defines old handlers can suppress the warnings in %FAILEDPLUGINS%.
+<p />
+This is done by defining a map from the handler name to the <code>TWiki::Plugins</code> version <em>in which the handler was first deprecated</em>. For example, if we need to define the <code>endRenderingHandler</code> for compatibility with <code>TWiki::Plugins</code> versions before 1.1, we would add this to the plugin:
+<pre>
+package TWiki::Plugins::SinkPlugin;
+use vars qw( &#37;TWikiCompatibility );
+$TWikiCompatibility{endRenderingHandler} &#61; 1.1;
+</pre>
+If the currently-running TWiki version is 1.1 <em>or later</em>, then the <em>handler will not be called</em> and <em>the warning will not be issued</em>. TWiki with versions of <code>TWiki::Plugins</code> before 1.1 will still call the handler as required.
+<p />
+The following functions are retained for compatibility only. You should
+stop using them as soon as possible.
+<p />
+<h3><a name="get_ScriptUrlPath_path"></a> getScriptUrlPath( ) -&gt; $path </h3>
+<p />
+Get script URL path
+<p />
+<strong>DEPRECATED</strong> since 1.1 - use <code>getScriptUrl</code> instead.
+<p />
+Return: <code>$path</code> URL path of TWiki scripts, e.g. <code>"/cgi-bin"</code>
+<p />
+<strong>WARNING:</strong> you are strongly recommended <strong>not</strong> to use this function, as the
+{ScriptUrlPaths} URL rewriting rules will not apply to urls generated
+using it.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="get_PublicWebList_webs"></a> getPublicWebList( ) -&gt; @webs </h3>
+<p />
+<strong>DEPRECATED</strong> since 1.1 - use <code>getListOfWebs</code> instead.
+<p />
+Get list of all public webs, e.g. all webs that do not have the <code>NOSEARCHALL</code> flag set in the <a href="/bin/view/TWiki/WebPreferences" class="twikiLink">WebPreferences</a>
+<p />
+Return: <code>@webs</code> List of all public webs, e.g. <code>( 'Main',&nbsp; 'Know', 'TWiki' )</code>
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (07 Dec 2002)
+<p />
+<p />
+<h3><a name="format_GmTime_time_format_text"></a> formatGmTime( $time, $format ) -&gt; $text </h3>
+<p />
+<strong>DEPRECATED</strong> since 1.1 - use <code>formatTime</code> instead.
+<p />
+Format the time to GM time <ul>
+<li> <code>$time</code>   - Time in epoc seconds
+</li> <li> <code>$format</code> - Format type, optional. Default e.g. <code>'31 Dec 2002 - 19:30'</code>, can be <code>'iso'</code> (e.g. <code>'2002-12-31T19:30Z'</code>), <code>'rcs'</code> (e.g. <code>'2001/12/31 23:59:59'</code>, <code>'http'</code> for HTTP header format (e.g. <code>'Thu, 23 Jul 1998 07:21:56 GMT'</code>)
+</li></ul> 
+Return: <code>$text</code>      Formatted time string
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (7 Dec 2002)
+<p />
+<p />
+<h3><a name="get_DataDir_dir"></a> getDataDir( ) -&gt; $dir </h3>
+<p />
+<strong>DEPRECATED</strong> since 1.1 - use the <a href="/bin/view/TWiki/TWikiFuncDotPm#Functions_Content_Handling" class="twikiCurrentTopicLink twikiAnchorLink">content handling functions</a> to manipulate topics instead
+<p />
+Get data directory (topic file root)
+<p />
+Return: <code>$dir</code> Data directory, e.g. <code>'/twiki/data'</code>
+<p />
+This function violates store encapsulation and is therefore <strong>deprecated</strong>.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (07 Dec 2002)
+<p />
+<p />
+<h3><a name="get_PubDir_dir"></a> getPubDir( ) -&gt; $dir </h3>
+<p />
+<strong>DEPRECATED</strong> since 1.1 - use the <a href="/bin/view/TWiki/TWikiFuncDotPm#Functions_Content_Handling" class="twikiCurrentTopicLink twikiAnchorLink">content handling functions</a> to manipulateattachments instead
+<p />
+Get pub directory (file attachment root). Attachments are in <code>$dir/Web/TopicName</code>
+<p />
+Return: <code>$dir</code> Pub directory, e.g. <code>'/htdocs/twiki/pub'</code>
+<p />
+This function violates store encapsulation and is therefore <strong>deprecated</strong>.
+<p />
+Use <code>readAttachment</code> and <code>saveAttachment</code> instead.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.000 (07 Dec 2002)
+<p />
+<p />
+<h3><a name="checkDependencies_moduleName_dep"></a> checkDependencies( $moduleName, $dependenciesRef ) -&gt; $error </h3>
+<p />
+<strong>DEPRECATED</strong> since 1.1 - use <a href="http://twiki.org/cgi-bin/view/Plugins.BuildContrib" title="'Plugins.BuildContrib' on TWiki.org">TWiki:Plugins.BuildContrib</a> and define DEPENDENCIES that can be statically
+evaluated at install time instead. It is a lot more efficient.
+<p />
+<strong>Since:</strong> TWiki::Plugins::VERSION 1.025 (01 Aug 2004)</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: TWiki<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>TWikiFuncDotPm</span> <br />    
+Topic revision: r3 - 25 Oct 2006 - 00:21:59 - <a href="/bin/view/Main/TWikiContributor" class="twikiLink">TWikiContributor</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

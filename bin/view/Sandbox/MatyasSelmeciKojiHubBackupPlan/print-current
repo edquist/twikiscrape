@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> MatyasSelmeciKojiHubBackupPlan &lt; Sandbox &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Sandbox/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Sandbox/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Sandbox/MatyasSelmeciKojiHubBackupPlan?_T=16 Feb 2017" type="application/x-wiki" title="edit MatyasSelmeciKojiHubBackupPlan" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><meta name="robots" content="noindex,nofollow">
+<base href="https://twiki.opensciencegrid.org/bin/view/Sandbox/MatyasSelmeciKojiHubBackupPlan"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Koji_backup_plans"></a> Koji backup plans </h1>
+<p />
+Parts of our build infrastructure that we need backed up: <ul>
+<li> Configuration on the build server
+</li> <li> Existing packages that we've built
+</li> <li> Database of build metadata
+</li> <li> Configuration on the build host(s)
+</li> <li> Package signing key
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Database_of_Build_Metadata_Prior"></a> Database of Build Metadata (Priority: Critical) </span></h2>
+<p />
+The main build system database contains information on things like "which RPMs belong in which repositories" (or for that matter, "which RPMs exist").
+Again, backup status is uncertain.
+There are two failure cases:
+   (a) Mirrors do not mirror failure
+   (b) Mirrors mirror brokenness (happened to jPackage)
+The Software team must ensure that proper backup and archival procedures are in place.
+Backups of the database should be synchronized with package backups.
+<p /> <ul>
+<li> Estimated recovery time without backups: <font color="#ff0000">1 FTE-month</font> (failure case (a)) or <font color="#ff0000">2 FTE-months</font> (failure case (b))
+</li> <li> Estimated time to implement backup: 1&mdash;2 FTE-days
+</li> <li> Estimated recovery time with backups: 1 FTE-day
+</li> <li> User impact: no package updates until fixed (unless the mirrors also break, in which case no packages at all until fixed)
+</li></ul> 
+<p />
+<h3><a name="Backups"></a> Backups </h3>
+<p />
+Last updated: 28 January 2014
+<p /> <ul>
+<li> Database lives on <code>db-01.batlab.org</code>, is managed by CHTC Infrastructure team, and is being cleaned and vacuumed automatically
+</li> <li> Using <code>pg_dumpall</code> to take a hot snapshot of the database once per day (0:30), which is written to the <code>db-01</code> disk
+</li> <li> Currently, a gzipped snapshot of just the database instance is about 35 MB
+</li> <li> Snapshots <em>of the entire <code>db-01</code> disk</em> are copied to <code>host-3.chtc.wisc.edu</code>
+</li> <li> Not 100% sure of exact retention policy, but it appears that daily backups are stored for a week, and weekly backups for a month
+</li> <li> Have not tried a restore yet
+</li></ul> 
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Existing_packages_that_we_ve_bui"></a> Existing packages that we've built (Priority: Critical) </span></h2>
+<p />
+The existing packages that we've built (and, partially, shipped) also have an uncertain backup status.
+Though the repositories that the packages end up in are copied to the GOC, not all packages that we build or have built get copied.
+Furthermore, the way our packages are organized in the Koji system is NOT saved at the GOC, and recreating that organization would be required before the Software team could continue work.
+There are two failure cases:
+   (a) Mirrors do not mirror failure
+   (b) Mirrors mirror brokenness (happened to jPackage)
+The Software team must ensure that proper backup and archival procedures are in place.
+Backups of packages should be synchronized with database backups (see below).
+<p /> <ul>
+<li> Estimated recovery time without backups: <font color="#ff0000">1 FTE-month</font> (failure case (a)) or <font color="#ff0000">2 FTE-months</font> (failure case (b))
+</li> <li> Estimated time to implement backup: 1&mdash;2 FTE-days
+</li> <li> Estimated recovery time with backups: 1 FTE-day
+</li> <li> User impact: no package updates until fixed (unless the mirrors also break, in which case no packages at all until fixed)
+</li></ul> 
+<p />
+<h3><a name="Backups_AN1"></a> Backups </h3>
+<p /> <ul>
+<li> Currently taking daily snapshots of the entire root partition, ~3.4 GB per day
+</li> <li> Currently taking all of /mnt/koji, about 220 GB per day
+</li> <li> All snapshots go to <code>host-3.chtc.wisc.edu</code>, same retention policy (we think) as the database
+</li> <li> Probably, it is sufficient to backup a few files in /etc and just /mnt/koji/packages, but Mat will investigate
+</li></ul> 
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuration_on_the_build_serve"></a> Configuration on the build server (Priority: High) </span></h2>
+<p />
+Currently the configuration files on our primary build server are almost completely unmanaged.
+Their backup status is also uncertain.
+In case of a machine failure, restoring build services to full functionality would be based on 2-year-old documentation that has not been tested.
+This is assuming all other data (database, packages) is recoverable, which is also uncertain (see later).
+Modern configuration management tools are well understood by our sysadmins, and would be invaluable in both tracking changes to configuration, and restoring it in the event of a failure.
+The Software team should migrate our existing configuration, and verify its functionality by setting up a clone of our build server using only these configuration management tools.
+This requires the assistance of CHTC infrastructure staff so that they can integrate our configuration into their environment.
+<p /> <ul>
+<li> Estimated recovery time without backups: 1 FTE-week
+</li> <li> Estimated time to implement backup: 0.5 FTE-weeks
+</li> <li> Estimated time to implement configuration management: 0.5 FTE-weeks
+</li> <li> Estimated recovery time with backups only: 1 FTE-day
+</li> <li> Estimated recovery time with configuration management: 1&mdash;2 FTE-hours
+</li> <li> User impact: no package updates until fixed
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Configuration_on_the_build_host"></a> Configuration on the build host(s) (Priority: Low) </span></h2>
+<p />
+Currently we have one build host, not including our main server.
+Again, unmanaged configuration that isn't backed up.
+If the Software team implements configuration management of the main server, adding in configuration management of build hosts should be a small amount of extra work.
+Furthermore, this task would allow us to create additional build hosts at minimal effort cost, increasing build throughput.
+<p /> <ul>
+<li> Estimated recovery time without config management: 1 FTE-day
+</li> <li> Estimated time to implement config management: 1 FTE-day (if we also implement config management for the server. 0.5 FTE-weeks if we don't)
+</li> <li> Estimated recovery time with config management: 1 FTE-hour
+</li> <li> User impact: no package updates until fixed
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Package_signing_key_Priority_Med"></a> Package signing key (Priority: Medium) </span></h2>
+<p />
+The package signing key is a private key that the Software team uses to ensure the integrity of packages that we build.
+There are two disaster scenarios here: (a) loss (deletion/corruption) of private key, and (b) compromise of private key
+<p />
+(a) is less worrisome: after the key is lost, we create a new one, and use the new key to sign new packages.
+<p />
+(b) is much worse.
+In addition to having to create a new key, we must revoke the old key and rebuild / re-sign all packages we ship with the new key.
+<p />
+The Software team (with assistance from the Security team?) must evaluate backups and vulnerability of the private key.
+<p /> <ul>
+<li> Estimated recovery time: ?
+</li> <li> Estimated time to evaluate backups and security: ?
+</li> <li> User impact: <ul>
+<li> No package updates until fixed
+</li> <li> (a) and (b): Manual step required to obtain new key
+</li> <li> (b) no way to verify packages until fixed
+</li></ul> 
+</li></ul> 
+<p />
+-- <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a> - 01 Aug 2013
+<p /> <ul>
+<li>  Set HTTP_EQUIV_ON_VIEW = <meta name="robots" content="noindex,nofollow">
+</li></ul> </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Sandbox<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Main/TWikiGroups" class="twikiLink">TWikiGroups</a> &gt; <a href="/bin/view/Main/GridGroup" class="twikiLink">GridGroup</a> &gt; <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a> &gt; <a href="/bin/view/Sandbox/MatyasSelmeciSandbox" class="twikiLink">MatyasSelmeciSandbox</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>MatyasSelmeciKojiHubBackupPlan</span> <br />    
+Topic revision: r6 - 06 Dec 2016 - 18:13:13 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,511 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> KojiRestoreRecipe &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/KojiRestoreRecipe?_T=16 Feb 2017" type="application/x-wiki" title="edit KojiRestoreRecipe" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><meta name="robots" content="noindex,nofollow">
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/KojiRestoreRecipe"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <div class="twikiToc"> <ul>
+<li> <a href="?cover=print#How_to_Restore_Koji"> How to Restore Koji</a> <ul>
+<li> <a href="?cover=print#Background_information"> Background information</a>
+</li> <li> <a href="?cover=print#Setting_up_your_environment"> Setting up your environment</a>
+</li> <li> <a href="?cover=print#I_Restoring_the_database"> I. Restoring the database</a>
+</li> <li> <a href="?cover=print#II_Restoring_koji"> II. Restoring koji</a>
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<h1><a name="How_to_Restore_Koji"></a> How to Restore Koji </h1>
+<p />
+This document contains recipes on how to restore the Koji services and the database they require.
+It is divided into two sections:
+one for the database (to be done if something happens to <em>db-01</em>),
+and one for the server hosting the koji services (to be done if something happens to <em>koji.chtc</em>).
+<p />
+In case both the database and the hub need to be restored, the database should be restored first.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Background_information"></a> Background information </span></h2>
+<p />
+Backups of <em>koji.chtc.wisc.edu</em> and <em>db-01.batlab.org</em> are on <em>host-3.chtc.wisc.edu</em> in <code>/export/backup/<em>$DATE</em></code>.
+That machine is in WID. (Same room as <em>koji.chtc</em> itself, which is why we have offsite backups).
+It's a homebrew rsync-based backup system. (Not our home -- Nate told me it was written for Midwest Tier 2).
+They go back up to a week, with a monthly snapshot for a year.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Setting_up_your_environment"></a> Setting up your environment </span></h2>
+<p />
+For all of these steps, you will need a root shell on <em>host-3.chtc.wisc.edu</em>
+and have the following environment variables defined:<pre class="rootscreen">
+NEWDB=<em>FQDN of new database server</em>
+NEWKOJI=<em>FQDN of new koji host</em>
+DATE=<em>YYYY-MM-DD date of most recent good backup</em>
+DBBACKUP=/export/backup/$DATE/db-01.batlab.org
+KOJIBACKUP=/export/backup/$DATE/koji.chtc.wisc.edu
+RSYNC="rsync --archive --hard-links --verbose"
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="I_Restoring_the_database"></a> I. Restoring the database </span></h2>
+<p />
+The entire filesystem of <em>db-01</em> is backed up -- this includes all of
+<code>/var/lib/pgsql</code>, including the database as-is.  In theory, this means that we
+could just rsync all the files to a blank hard drive, boot up, and we'd have a
+<em>db-01</em> again.  However, the Postgres manual warns against restoring the
+database from a filesystem backup that was made while the database was live,
+and we do not shut down the database before backups.
+<p />
+We might be able to restore every other part of the filesystem besides the
+database, which would speed up the overall restoration process, but only the
+fresh install was tested.
+<p />
+The new database server is called <em>newdb</em> in these instructions.
+<p />
+<p />
+<h3><a name="I_1_Restoring_Services"></a> I.1. Restoring Services </h3>
+<p />
+Prerequisites for <em>newdb</em>: an EL 6+ host with an SSH server set up and accessible (as root) from <em>host-3.chtc.wisc.edu</em>
+<p />
+<pre class="rootscreen">
+## On newdb:
+## Install postgres, get a blank DB up and create the user that koji
+## will be using.
+root@newdb# yum install -y postgresql-server
+root@newdb# service postgresql initdb
+root@newdb# useradd -r -m koji
+## Make a directory we'll put the restored files into.
+root@newdb# mkdir -p /root/dbrestore
+
+## On host-3:
+you@host-3$ sudo $RSYNC $DBBACKUP/homefs/  $NEWDB:/root/dbrestore/home
+you@host-3$ for dir in root etc var; do \
+   sudo $RSYNC $DBBACKUP/rootfs/$dir/ \
+      $NEWDB:/root/dbrestore/$dir \
+   done
+</pre> <ol>
+<li> Continue on to the next section
+</li></ol> 
+<p />
+<h3><a name="I_2_Restoring_Database_Contents"></a> I.2. Restoring Database Contents </h3>
+<p />
+Assumes you have restored the /var directory from backup into <code>/root/dbrestore/var</code>. <ol>
+<li> Restore the postgres config files so the koji-hub daemon can log in.<pre class="rootscreen">
+## On newdb:
+root@newdb# service postgresql stop
+root@newdb# cp -a /root/dbrestore/var/lib/pgsql/data/{*.conf,postmaster.opts} \
+   /var/lib/pgsql/data/
+</pre>
+</li> <li> Edit <code>/var/lib/pgsql/data/pg_hba.conf</code>. There are lines like: <pre>
+# Koji-hub IPv4:
+host    koji        koji        128.104.100.41/32     md5</pre>      Change the IP address to the public IP address of the host that will serve as the new hub.
+</li> <li> Restore the actual database:<pre class="rootscreen">
+## On newdb:
+root@newdb# chown -R postgres:postgres /var/lib/pgsql/*
+root@newdb# service postgresql start
+root@newdb# gunzip -c /root/dbrestore/var/lib/pgsql-backup/postgres-db-01.sql.gz | psql -U postgres postgres
+## (Ignore the error 'role "postgres" already exists' if you see it)
+</pre>
+</li></ol> 
+<p />
+<h3><a name="I_3_Validation"></a> I.3. Validation </h3>
+<p />
+Do the following tests to make sure the database is ready to use:
+<p /> <ol>
+<li> Test that the contents got properly restored:<pre class="rootscreen">
+root@newdb# psql -U koji koji
+koji=&gt; select * from users;
+koji=&gt; select * from build order by id desc limit 10;
+</pre>
+</li> <li> Test logging in as the koji user:<pre class="rootscreen">
+root@newdb# psql -U koji -h newdb koji
+</pre>      (you must use the FQDN of <em>newdb</em>, not <em>localhost</em>).      Be sure you get prompted for a password, and the password from <code>/etc/koji-hub/hub.conf</code> works.
+</li> <li> Go to <a href="/bin/view/SoftwareTeam/KojiRestoreRecipe#RestoringKoji" class="twikiCurrentTopicLink twikiAnchorLink">Restoring koji</a> if needed; otherwise go to <a href="/bin/view/SoftwareTeam/KojiRestoreRecipe#PostRestore" class="twikiCurrentTopicLink twikiAnchorLink">Post-restore steps</a>
+</li></ol> 
+<p />
+<a name="RestoringKoji"></a>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="II_Restoring_koji"></a> II. Restoring koji </span></h2>
+<p />
+Both the root filesystem of <em>koji.chtc</em> and <code>/mnt/koji</code> are backed up.
+The root filesystem backups are in the <code>rootfs</code> subdirectory of <code>/export/backup/$DATE/koji.chtc.wisc.edu</code>
+and the backups of <code>/mnt/koji</code> are in the <code>kojifs</code> subdirectory.
+<p />
+The following instructions show how to restore the critical components of
+Koji onto a new machine.
+<p />
+In the instructions, the new host will be named <em>newkoji</em>.
+<p />
+<h3><a name="II_1_Installing_the_OS"></a> II.1. Installing the OS </h3>
+<p />
+Prerequisites for <em>newkoji</em>: an EL 6+ host with an SSH server set up and accessible (as root) from <em>host-3.chtc.wisc.edu</em>
+(This recipe was tested for EL 6, on the same machine as <em>newdb</em>). <ol>
+<li> Install EPEL and OSG repos.      <pre class="rootscreen">
+root@newkoji# rpm -Uvh \
+   http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm \
+   http://repo.grid.iu.edu/osg/3.3/osg-3.3-el6-release-latest.rpm
+root@newkoji# yum install -y yum-plugin-priorities</pre>
+</li> <li> Edit <code>/etc/yum.repos.d/osg-*development.repo</code>: <ul>
+<li> Enable the development repo
+</li> <li> Add <code>includepkg=koji*</code> to the definition for the development repo
+</li></ul> 
+</li> <li> Go through the other repo files and make sure that EPEL and OS priorities are worse than 98.      Especially look at <code>cobbler-config.repo</code> if it exists.
+</li> <li> Install the koji packages and dependencies, making sure the koji packages themselves come from osg:<pre class="rootscreen">
+root@newkoji# yum install koji koji-builder koji-hub koji-plugin-sign \
+   koji-theme-fedora koji-utils koji-web mod_ssl postgresql
+</pre>
+</li> <li> Mount <code>/mnt/koji</code> if necessary
+</li> <li> Restore the contents of the koji filesystem. On <em>host-3</em>:<pre class="screen">
+## At a minimum, you must restore the /mnt/koji/packages directory
+you@host-3$ sudo $RSYNC $KOJIBACKUP/kojifs/packages/ $NEWKOJI:/mnt/koji/packages
+## The other directories are optional, though it saves a lot of time to restore /mnt/koji/repos
+you@host-3$ sudo $RSYNC $KOJIBACKUP/kojifs/repos/ $NEWKOJI:/mnt/koji/repos
+you@host-3$ sudo $RSYNC $KOJIBACKUP/kojifs/work/ $NEWKOJI:/mnt/koji/work
+you@host-3$ sudo $RSYNC $KOJIBACKUP/kojifs/scratch/ $NEWKOJI:/mnt/koji/scratch
+## Any dirs you did not restore should be created.
+</pre>
+</li> <li> Fix permissions if needed. On <em>newkoji</em>:<pre class="rootscreen">
+root@newkoji# chown -R apache:apache /mnt/koji/{packages,repos,work,scratch}
+root@newkoji# chmod 0755             /mnt/koji/{packages,repos,work,scratch}
+</pre>
+</li> <li> Continue on to the next section
+</li></ol> 
+<p />
+<h3><a name="II_2_Restoring_Configuration"></a> II.2. Restoring Configuration </h3>
+<p />
+On <em>newkoji</em>, define the shell function <code>dirclone</code>, listed below:
+<p />
+<pre class="rootscreen">
+dirclone () {
+   srcdir=$(dirname "$1")/$(basename "$1")
+   destdir=$(dirname "$2")/$(basename "$2")
+   mkdir -p "$(dirname "$2")"
+   rsync --archive --delete-after --acls --xattrs --partial --partial-dir=.rsync-partial "$srcdir/" "$destdir"
+}
+</pre>
+<p /> <ol>
+<li> On <em>newkoji</em>:<pre class="rootscreen">mkdir -p /root/hubrestore</pre>
+</li> <li> On <em>host-3</em>:<pre class="screen">
+sudo $RSYNC $KOJIBACKUP/rootfs/{root,home,etc} $NEWKOJI:/root/hubrestore/
+sudo $RSYNC $KOJIBACKUP/varfs/ $NEWKOJI:/root/hubrestore/var</pre>
+</li> <li> On <em>newkoji</em>, install some utils we will need later:<pre class="rootscreen">
+root@newkoji# yum install -y dos2unix vim-enhanced</pre> (vim-enhanced is used for vimdiff)
+</li> <li> On <em>newkoji</em>:<pre class="rootscreen">
+## Restore some of the directories in /etc:
+root@newkoji# while read subtree; do
+   dirclone /root/hubrestore/etc/$subtree /etc/$subtree
+done &lt;&lt;__END__
+httpd
+kojid
+koji-hub
+kojira
+koji-sign-plugin
+kojiweb
+mock
+pki/tls/certs
+pki/tls/private
+__END__
+## Restore some of the files:
+root@newkoji# cp -a /root/hubrestore/etc/koji.conf /etc/
+root@newkoji# cp -a /root/hubrestore/etc/sysconfig/{httpd,kojid,kojira} /etc/sysconfig/
+</pre>
+</li> <li> Restore users and home directories <ul>
+<li> If <em>newkoji</em> is on a separate host from <em>newdb</em>, then just simply copy over the files:<pre class="rootscreen">
+root@newkoji# dirclone /root/hubrestore/home /home
+root@newkoji# cp -a /root/hubrestore/etc/{passwd,shadow,group,gshadow} /etc
+</pre>
+</li> <li> If <em>newkoji</em> is on the same host as <em>newdb</em>, then you will have to be more careful:<pre class="rootscreen">
+## Skip home directories for the special users
+root@newkoji# for dir in /root/hubrestore/home/*; do
+   bndir=$(basename "$dir")
+   if &#91;&#91; $bndir != koji &amp;&amp; $bndir != postgres &#93;&#93; ; then
+      dirclone "$dir" /home/"$bndir"
+   fi
+done
+## Now merge the passwd, group, shadow, and gshadow files in /etc.
+## Make sure that your editor does not create backup files
+## ("set nobackup" in vim), and that shadow and gshadow are owned by
+## root and have 0400 permissions.
+</pre>
+</li></ul> 
+</li> <li> Ensure a 'koji' user exists
+</li> <li> Fix dirs in <code>/var</code>:<pre class="rootscreen">
+root@newkoji# rm -rf /var/lib/mock/*
+root@newkoji# chown root:mock /var/lib/mock
+root@newkoji# chmod 2775 /var/lib/mock
+</pre>
+</li> <li> Restore <code>/var/www/html</code> and <code>/var/spool/cron</code> (TODO)      <code>/var</code> should have been backed up, but in case it isn't, the following files need to exist in <code>/var/www/html</code>: <ul>
+<li> A symlink <code>mnt -&gt; /mnt</code>
+</li> <li> A robots.txt with contents<pre>User-agent: *
+Disallow: /</pre>
+</li></ul> 
+</li></ol> 
+<p />
+<h3><a name="II_3_Fixing_Names"></a> II.3. Fixing Names </h3>
+<p />
+This section should be done if <em>newdb</em> or <em>newkoji</em> do not have the same as
+the previous db server and hub (i.e. <em>db-01.batlab.org</em> and <em>koji.chtc.wisc.edu</em>).
+This section should be completed on <em>newkoji</em>.
+<p />
+<h4><a name="Fixing_config_files_if_newdb_was"></a> Fixing config files if <em>newdb</em> was renamed </h4>
+<p />
+The only change that's needed if <em>newdb</em> was renamed is to <code>/etc/koji-hub/hub.conf</code>.
+Edit that file and change the DBHost line to point to the new hostname.
+After editing, make sure <code>hub.conf</code> is owned by <code>root:apache</code> and chmodded 0640.
+<p />
+<h4><a name="Installing_new_cert_key_pairs_fo"></a> Installing new cert/key pairs for <em>newkoji</em> </h4>
+<p />
+You will need two cert/key pairs: one for the host, and one for the kojira service.
+Run <code>dos2unix</code> on all cert and key files before using them.
+Define the shell function <code>makepem</code>, listed below.
+<code>makepem</code> combines a public and private keypair to make a .pem file that the koji services use.
+<p />
+Usage: <code>makepem <em>certfile</em> <em>keyfile</em> <em>output_file</em></code><pre class="rootscreen">
+makepem () {
+   certfile=$1
+   keyfile=$2
+   outputfile=$3
+   (set -e
+   keymodulus=$(openssl rsa -noout -modulus -in "$keyfile")
+   certmodulus=$(openssl x509 -noout -modulus -in "$certfile")
+   if &#91;&#91; $keymodulus != $certmodulus &#93;&#93; ; then
+      echo 'keyfile and certfile do not match!'; return 1
+   fi
+   if &#91;&#91; -f $outputfile &#93;&#93; ; then
+      mv -f "$outputfile"{,.bak}
+   fi
+   (dos2unix &lt; "$certfile"; echo; dos2unix &lt; "$keyfile") &gt; "$outputfile"
+   chmod 0600 "$outputfile")
+}</pre>
+<p />
+Place cert and key files into the following paths:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> host cert </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> <code>/root/hostcert.pem</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> host key </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> <code>/root/hostkey.pem</code> </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> kojira cert </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> <code>/root/kojiracert.pem</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> kojira key </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> <code>/root/kojirakey.pem</code> </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+Then use <code>makepem</code> to combine the certs and put them in the proper locations.
+<pre class="rootscreen">
+root@newkoji# makepem /root/hostcert.pem /root/hostkey.pem \
+   /etc/pki/tls/private/kojiweb.pem
+root@newkoji# makepem /root/kojiracert.pem /root/kojirakey.pem \
+   /etc/pki/tls/private/kojira.pem
+root@newkoji# chown apache:apache /etc/pki/tls/private/kojiweb.pem
+root@newkoji# chown root:root /etc/pki/tls/private/kojira.pem</pre>
+<p />
+In addition, copy the host cert and key into the locations HTTPD expects it them.
+<pre class="rootscreen">
+root@newkoji# cp -a /root/hostcert.pem /etc/pki/tls/certs/hostcert.pem
+root@newkoji# cp -a /root/hostkey.pem /etc/pki/tls/private/hostkey.pem
+</pre>
+<p />
+<p />
+<h4><a name="Fixing_hostname_in_config_files"></a> Fixing hostname in config files </h4>
+<p />
+Use sed to replace the hostname in the following config files in /etc: <ul>
+<li> <code>/etc/kojira/kojira.conf</code>
+</li> <li> <code>/etc/koji.conf</code>
+</li> <li> <code>/etc/koji-hub/hub.conf</code>
+</li> <li> <code>/etc/httpd/conf.d/kojiweb.conf</code>
+</li> <li> <code>/etc/httpd/conf/httpd.conf</code>
+</li> <li> <code>/etc/kojid/kojid.conf</code>
+</li></ul> 
+You will need to fix <code>/etc/kojid/kojid.conf</code> on all builder machines as well
+(e.g. <em>kojibuilder2.chtc.wisc.edu</em>).
+<p />
+<h4><a name="Fixing_hostname_in_database"></a> Fixing hostname in database </h4>
+<p />
+You will need to find and fix entries that contain the hostname in the following tables: <ul>
+<li> <code>host</code> (should be 1 entry)
+</li> <li> <code>users</code> (should be 2 entries, one for the host, and one for the kojira user)
+</li></ul> 
+<p />
+<h4><a name="Fixing_hostname_elsewhere"></a> Fixing hostname elsewhere </h4>
+<p />
+These steps are only necessary if you cannot get a DNS Canonical Name (CN) record
+such that <em>koji.chtc.wisc.edu</em> resolves to <em>newkoji</em>.
+<p /> <ol>
+<li> Update the repo definitions in the <em>osg-release</em> package
+</li> <li> Update the mash script(s) at the GOC
+</li> <li> Mail the software team and users that anyone using the <em>minefield</em> repos will need to update <em>osg-release</em>
+</li> <li> Fix all the build machines to point to the new name
+</li> <li> Fix the following files in <em>osg-build</em> and make a new release <ul>
+<li> <code>data/osg-koji-home.conf</code>
+</li> <li> <code>data/osg-koji-site.conf</code>
+</li> <li> <code>osgbuild/constants.py</code>
+</li> <li> <code>osgbuild/kojiinter.py</code>
+</li></ul> 
+</li> <li> Mail people that they will need to update <em>osg-build</em> and rerun <code>osg-koji setup</code>
+</li></ol> 
+<p />
+<h3><a name="II_4_Starting_Services_and_Valid"></a> II.4 Starting Services and Validation </h3>
+<p />
+Now you will start up Koji services and verify that they function.
+Prerequisite: previous restore steps have been completed and <code>postgresql</code> is
+running on the database host.
+<p />
+All steps will be run on <em>newkoji</em>.
+<p /> <ol>
+<li> Start the main koji daemon: <pre class="rootscreen">
+root@newkoji# service httpd start</pre>
+</li> <li> Use <code>ps</code> to verify that it came up
+</li> <li> Connect to the web interface in your browser.      Make sure you can use https and you can log in.
+</li> <li> As yourself, run the <code>koji</code> command-line tool and make a few queries      (e.g. list-tags)
+</li> <li> Start the koji build daemon: <pre class="rootscreen">
+root@newkoji# service kojid start</pre>
+</li> <li> Use <code>ps</code> to verify that it came up
+</li></ol> 
+<p />
+If you did not restore the <code>/mnt/koji/repos</code> directory, you will now need to
+regenerate the build repos. Use <code>koji list-tags</code> to get a list of tags
+and run <code>koji regen-repo</code> on all of the ones with <code>-build</code> in the name.
+This <strong>will</strong> take several hours. You will also need to regen the
+<code>-development</code> repos so that <em>minefield</em> works again. Keep an eye on
+the tasks in the web interface to make sure they are getting farmed out
+to the right hosts.
+<p /> <ol>
+<li> Try a scratch build
+</li> <li> Start <code>kojira</code>: <pre class="rootscreen">
+root@newkoji# service kojira start</pre>
+</li> <li> Use <code>ps</code> to verify that it came up
+</li> <li> Wait half a minute and use <code>ps</code> to verify that <code>kojid</code> is still up;      the two processes can kick each other off if they are both using the      same certificate
+</li> <li> Bump a package if needed and try a real, non-scratch build
+</li> <li> Make sure that kojira is regenerating the repos
+</li></ol> 
+<p />
+If you have updated <em>osg-release</em> and/or <em>osg-build</em>, rebuild those packages
+now.
+<p />
+<p />
+<p />
+<p />
+<p />
+<p />
+<p />
+-- <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a> - 07 Feb 2014
+<p /> <ul>
+<li>  Set HTTP_EQUIV_ON_VIEW = <meta name="robots" content="noindex,nofollow">
+</li></ul> 
+<!-- vim:ft=twiki
+--></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/InternalDocs" class="twikiLink">InternalDocs</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>KojiRestoreRecipe</span> <br />    
+Topic revision: r4 - 09 Jan 2017 - 23:22:56 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,484 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> KojiInitialInstall &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/KojiInitialInstall?_T=16 Feb 2017" type="application/x-wiki" title="edit KojiInitialInstall" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><meta name="robots" content="noindex,nofollow">
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/KojiInitialInstall"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Notes_on_Koji_initial_install"></a>  Notes on Koji initial install </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Machine_setup"> Machine setup</a> <ul>
+<li> <a href="?cover=print#Packages_to_install"> Packages to install</a>
+</li> <li> <a href="?cover=print#Filesystems"> Filesystems</a>
+</li> <li> <a href="?cover=print#Authentication"> Authentication</a>
+</li> <li> <a href="?cover=print#Postgres_Database"> Postgres Database</a>
+</li> <li> <a href="?cover=print#Koji_Hub"> Koji-Hub</a> <ul>
+<li> <a href="?cover=print#Adding_a_real_admin_user"> Adding a real admin user</a>
+</li> <li> <a href="?cover=print#Koji_filesystem"> Koji filesystem</a>
+</li> <li> <a href="?cover=print#Accounts_for_kojira_and_kojid"> Accounts for kojira and kojid</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Koji_Web"> Koji-Web</a>
+</li> <li> <a href="?cover=print#Kojid"> Kojid</a> <ul>
+<li> <a href="?cover=print#SSL_certs"> SSL certs</a>
+</li> <li> <a href="?cover=print#Adding_koji_builder_host_to_data"> Adding koji-builder host to database</a>
+</li> <li> <a href="?cover=print#Start_kojid"> Start kojid</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Kojira"> Kojira</a>
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+This document was written for the original install of koji/koji-hub version
+1.6. The document is kept for historical purposes, as this setup may no longer
+be accurate with newer versions of Koji.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Machine_setup"></a> Machine setup </span></h2>
+<p />
+koji is run on <code>koji.chtc.wisc.edu</code>; right now a single machine is used for the hub (koji-hub), the web frontend (koji-web), repo generation (kojira), and el5 building (kojid).
+A second machine, <code>kojibuilder1.batlab.org</code> is used for el6 building.
+<p />
+As instructions for setting up the machine, I'm just going to take the Fedora guide at <a href="http://fedoraproject.org/wiki/Koji/ServerHowTo" target="_top">http://fedoraproject.org/wiki/Koji/ServerHowTo</a>, and add modifications / comments to suit our setup.
+<p />
+<blockquote>
+* For an overview of yum, mock, Koji (and all its subcomponents), mash,
+and how they all work together, see the excellent slides put together
+by Steve Traylen at CERN <a href="http://indico.cern.ch/event/55091" target="_top">http://indico.cern.ch/event/55091</a>
+</blockquote>
+<h3><a name="Packages_to_install"></a> Packages to install </h3>
+<p />
+<blockquote>
+<strong>On the server (koji-hub/koji-web)</strong> <ul>
+<li> httpd
+</li> <li> mod_ssl
+</li> <li> postgresql-server
+</li> <li> mod_python (&gt;= 3.3.1 for Kerberos authentication)
+</li></ul> 
+<p />
+<strong>On the builder (koji-builder)</strong> <ul>
+<li> mock
+</li> <li> setarch (for some archs you'll require a patched version)
+</li> <li> rpm-build
+</li> <li> createrepo
+</li></ul> 
+</blockquote>
+We use one machine for both these roles, so all of the above has to be installed.
+<p />
+The koji packages to install are: <ul>
+<li> koji-hub
+</li> <li> koji-web
+</li> <li> koji-builder
+</li> <li> koji-utils
+</li></ul> 
+<p />
+<h3><a name="Filesystems"></a> Filesystems </h3>
+<blockquote>
+<h4><a name="A_note_on_filesystem_space"></a>  A note on filesystem space </h4>
+Koji will consume copious amounts of disk space under the primary KojiDir directory (as set in the kojihub.conf file).
+</blockquote>
+This is <code>/mnt/koji</code> by default. Koji keeps <em>all RPMs built</em> in here so a complete history is kept.
+In addition, repositories are kept here.
+A repository is just a set of text files, but since a new one is generated for every build, the space will add up.
+Koji does clean up the repositories once they get old enough.
+For <code>koji.chtc.wisc.edu</code>, we allocated a 120G partition for <code>/mnt/koji</code>.
+<p />
+<blockquote>
+However, as koji makes use of mock on the backend to actually create build roots and perform the builds in those build roots, it might come to a surprise to users that a running koji server will consume large amounts of disk space under /var/lib/mock and /var/cache/mock as well.
+</blockquote>
+<code>kojid</code> (the builder daemon) will refuse to start a build if it does not have sufficient space under <code>/var/lib/mock</code>.
+By default, this is an 8G surplus, but we lowered it to 4G for <code>koji.chtc.wisc.edu</code>.
+The build roots will be wiped after successful builds, but the build roots for failed builds will be kept around for 2 weeks (?); as a result, disk usage of <code>/var/lib/mock</code> can swing wildly.
+For <code>koji.chtc.wisc.edu</code>, we have allocated 35G for <code>/var/lib/mock</code>.
+<code>/var/cache/mock</code> doesn't use up that much space, so we didn't make a separate partition for it, it just uses what's under <code>/</code>.
+<p />
+<h3><a name="Authentication"></a> Authentication </h3>
+Most of the "Koji Authentication Selection" section can be skipped.
+We got our certs from DigiCert. <strong>Note</strong> that certs are sensitive to line ending issues -- you may have to run <code>dos2unix</code> on them before they would work.
+<p />
+We have 3 certs, with the following subjects: <ul>
+<li> <code>/DC=org/DC=opensciencegrid/O=Open Science Grid/OU=Services/CN=koji.chtc.wisc.edu</code> (for koji-hub, koji-web, and kojid)
+</li> <li> <code>/DC=org/DC=opensciencegrid/O=Open Science Grid/OU=Services/CN=kojira/koji.chtc.wisc.edu</code> (for kojira)
+</li> <li> <code>/DC=com/DC=DigiCert-Grid/O=Open Science Grid/OU=Services/CN=kojibuilder1.batlab.org</code> (for kojid on kojibuilder1)
+</li></ul> 
+kojid needed a different cert than kojira because the two would connect to koji-hub at the same time and log each other off.
+<p />
+Copies of the certs exist in AFS at <code>/p/condor/home/certificates/koji.chtc.wisc.edu/</code> and <code>/p/condor/home/certificates/kojibuilder1.batlab.org/</code>
+<p />
+Clients connecting to koji-hub need a file containing the CA certs; this is just a concatenation of the DigiCert Grid Root CA and the DigiCert Grid CA-1 certs, which can be obtained from DigiCert's website (get PEM format).
+We have a <code>digicert-chain.crt</code> in <code>/etc/pki/tls/certs/digicert-chain.crt</code> on <code>koji-hub</code>
+<p />
+We made a <code>kojiadmin</code> user, but we didn't make a cert for it so we just used user/pass authentication until we set up our own accounts and then disabled <code>kojiadmin</code>.
+<p />
+<h4><a name="NEW_Using_proxy_certs"></a>  NEW: Using proxy certs </h4>
+<p />
+<code>/etc/sysconfig/httpd</code> needed to be changed to include the following lines:
+<pre>
+OPENSSL&#95;ALLOW&#95;PROXY&#61;1
+OPENSSL&#95;ALLOW&#95;PROXY&#95;CERTS&#61;1
+
+export OPENSSL&#95;ALLOW&#95;PROXY
+export OPENSSL&#95;ALLOW&#95;PROXY&#95;CERTS
+</pre>
+<p />
+The user must use RFC proxies and must have a version of the koji client of 1.6.0-6.osg or newer.
+<p />
+<h3><a name="Postgres_Database"></a> Postgres Database </h3>
+<p /> <ul>
+<li> Install postgres: <pre>root@koji-hub# yum install postgresql-server</pre>
+</li> <li> Init the db: <pre>root@koji-hub# su - postgres -c "PGDATA=/var/lib/pgsql/data" initdb</pre>
+</li> <li> Start the db: <pre>root@koji-hub# service postgresql start</pre>
+</li> <li> Make a koji account: <pre>root@koji-hub# useradd koji; passwd -d koji</pre>
+</li></ul> 
+<blockquote>
+<h4><a name="Setup_PostgreSQL_and_populate_sc"></a>  Setup PostgreSQL and populate schema: </h4>
+<p />
+The following commands will create the <code>koji</code> user within PostgreSQL and will then create the koji database using the schema within the <code>/usr/share/doc/koji*/docs/schema.sql</code> directory
+<pre>
+root@localhost$ su - postgres
+postgres@localhost$ createuser koji
+Shall the new role be a superuser? (y/n) n
+Shall the new role be allowed to create databases? (y/n) n
+Shall the new role be allowed to create more new roles? (y/n) n
+postgres@localhost$ createdb -O koji koji
+postgres@localhost$ logout
+root@localhost$ su - koji
+koji@localhost$ psql koji koji < /usr/share/doc/koji*/docs/schema.sql
+koji@localhost$ exit
+</pre>
+<p />
+<strong>NOTE:</strong> When issuing the command to import the psql schema into the new database it is important to ensure that the directory path <code>/usr/share/doc/koji*/docs/schema.sql</code> remains intact and is not resolved to a specific version of koji.
+In test it was discovered that when the path is resolved to a specific version of koji then not all of the tables were created correctly.
+</blockquote>
+<p />
+To authorize the koji-web and koji-hub resources, make the following additions to <code>/var/lib/pgsql/data/pg_hba.conf</code> (IP addresses will vary):
+<pre>
+# access for koji
+host    koji        postgres    127.0.0.1/32          trust
+host    koji        koji        127.0.0.1/32          trust
+host    koji        koji        128.104.100.41/32     trust
+host    koji        koji        ::1/128               trust
+</pre>
+<p />
+Next, we'll need a koji admin user to run some commands.
+We'll need to add it to the database manually.
+Once again, we used user/pass authentication for the kojiadmin user until we disabled it.
+All database commands should be done as the <code>koji</code> user:<pre>root@koji-hub# sudo -u koji psql</pre>
+<pre>
+koji=> insert into users (name, password, status, usertype) values \
+('kojiadmin', 'some-throwaway-admin-password-in-plain-text', 0, 0);
+koji=> insert into user_perms (user_id, perm_id, creator_id) values \
+((select id from users where name='kojiadmin'), 1, \
+(select id from users where name='kojiadmin'));
+</pre>
+<p />
+<h3><a name="Koji_Hub"></a> Koji-Hub </h3>
+<p />
+<blockquote>
+Koji-hub is the center of all Koji operations.
+It is an XML-RPC server running under mod_python in Apache.
+koji-hub is passive in that it only receives XML-RPC calls and relies upon the build daemons and other components to initiate communication.
+Koji-hub is the only component that has direct access to the database and is one of the two components that have write access to the file system.
+</blockquote>
+<p />
+Config files we care about: <ul>
+<li> <code>/etc/httpd/conf/httpd.conf</code>
+</li> <li> <code>/etc/httpd/conf.d/kojihub.conf</code>
+</li> <li> <code>/etc/httpd/conf.d/ssl.conf</code>
+</li> <li> <code>/etc/koji-hub/hub.conf</code>
+</li></ul> 
+Install the necessary packages. <pre>root@koji-hub# yum install koji-hub httpd mod_ssl mod_python</pre>
+<p />
+<blockquote>
+<h4><a name="etc_httpd_conf_httpd_conf"></a>  /etc/httpd/conf/httpd.conf: </h4>
+<p />
+The apache web server has two places that it sets maximum requests a server will handle before the server restarts.
+The xmlrpc interface in kojihub is a python application, and mod_python can sometimes grow outrageously large when it doesn't reap memory often enough.
+As a result, it is strongly recommended that you set both instances of MaxRequestsPerChild in <code>httpd.conf</code> to something reasonable in order to prevent the server from becoming overloaded and crashing (at 100 the <code>httpd</code> processes will grow to about 75MB resident set size before respawning).
+<p />
+<pre>
+&#60;IfModule prefork.c&#62;
+...
+MaxRequestsPerChild  100
+&#60;/IfModule&#62;
+&#60;IfModule worker.c&#62;
+...
+MaxRequestsPerChild  100
+&#60;/IfModule&#62;
+</pre>
+<p />
+<h4><a name="etc_koji_hub_hub_conf"></a>  /etc/koji-hub/hub.conf: </h4>
+<p />
+This file contains the configuration information for the hub.
+You will need to edit this configuration to point Koji Hub to the database you are using and to setup Koji Hub to utilize the authentication scheme you selected in the beginning.
+</blockquote>
+We made multiple changes to this config file.
+A snapshot is be attached to this page.
+<p />
+Notable changes: <ul>
+<li> We turned off <code>LoginCreatesUser</code>
+</li> <li> <code>KojiWebURL</code> is <a href="http://koji.chtc.wisc.edu/koji" target="_top">http://koji.chtc.wisc.edu/koji</a>
+</li> <li> <code>PluginPath</code> is <code>/usr/lib/koji-hub-plugins</code>
+</li> <li> <code>Plugins = sign</code> since there is an RPM signing plugin (package name: <code>koji-plugin-sign</code>) that we use
+</li></ul> 
+<p />
+Other notes: <ul>
+<li> Should not be world-readable
+</li> <li> Must be readable by the apache user though
+</li></ul> 
+<p />
+Finally, there is a <code>[policy]</code> section for controlling ACLs.
+The contents of that are described later in this document.
+<p />
+<blockquote>
+<h4><a name="etc_httpd_conf_d_kojihub_conf"></a>  /etc/httpd/conf.d/kojihub.conf: </h4>
+If using SSL auth, uncomment these lines for kojiweb to allow logins.
+<pre>
+&#60;Location /kojihub&#62;
+SSLOptions +StdEnvVars
+&#60;/Location&#62;
+</pre>
+</blockquote>
+This is actually outdated information, useful for Koji &lt; 1.4.0.
+Instead, we add the following:
+<p />
+<pre>
+&#60;Location /kojihub/ssllogin&#62;
+        SSLVerifyClient require
+        SSLVerifyDepth  10
+        SSLOptions +StdEnvVars
+&#60;/Location&#62;
+</pre>
+<p />
+<blockquote>
+<h4><a name="etc_httpd_conf_d_ssl_conf"></a>  /etc/httpd/conf.d/ssl.conf: </h4>
+If using SSL you will also need to add the needed SSL options for apache.
+These options should point to where the certificates are located on the hub.
+</blockquote>
+<p />
+These are the config lines we use:
+<pre>SSLCertificateFile /etc/pki/tls/certs/digicert_hostcert.crt</pre>
+The host cert for koji-hub.
+<pre>SSLCertificateKeyFile /etc/pki/tls/private/digicert_hostkey.key</pre>
+The private key for koji-hub.
+<pre>SSLCertificateChainFile /etc/pki/tls/certs/digicert-chain.crt</pre>
+The concatenation of the DigiCert CA certs we made above.
+<pre>SSLCACertificateFile /etc/pki/tls/certs/ca-bundle.crt</pre>
+All the CA certs on the system.
+<pre>
+SSLVerifyClient require
+SSLVerifyDepth  10
+</pre>
+Restart apache after doing this ( <code>service restart httpd</code> )
+<p />
+<h4><a name="Adding_a_real_admin_user"></a> Adding a real admin user </h4>
+<p />
+At this point, SSL should be set up on Koji Hub.
+Create an account for yourself (your DN): <pre>koji add-user 'Your Name 123456'</pre>
+Give yourself the admin bit.<pre>koji grant-permission admin 'Your Name 123456'</pre>
+<p />
+<strong>Once you're done with all the setup</strong>, you should remove the admin bit from <code>kojiadmin</code>, block the user, and remove its password from the database.
+<pre>koji revoke-permission admin kojiadmin
+koji disable-user kojiadmin</pre>
+In the database:
+<pre>update users set password = null where name='kojiadmin';</pre>
+<p />
+<h4><a name="Koji_filesystem"></a> Koji filesystem </h4>
+<p />
+<code>KojiDir</code> is <code>/mnt/koji</code>, so the following tree should be created:
+<pre>
+root@koji-hub$ mkdir -p /mnt/koji/{packages,repos,work,scratch}
+root@koji-hub$ chown apache:apache *
+</pre>
+<p />
+<code>/etc/koji.conf</code> is attached.
+<p />
+<h4><a name="Accounts_for_kojira_and_kojid"></a> Accounts for kojira and kojid </h4>
+<p />
+<blockquote>
+It is important to note that the kojira component needs repo privileges, but if you just let the account get auto created the first time you run kojira, it won't have that privilege, so you should pre-create the account and grant it the repo privilege now.
+<p />
+<pre>
+kojiadmin@koji-hub$ koji add-user kojira
+kojiadmin@koji-hub$ koji grant-permission repo kojira
+</pre>
+<p />
+For similar technical reasons, you need to add-host each build host prior to starting kojid on that host the first time and could also do that now.
+</blockquote>
+We turned off auto account creation, so there won't be a problem with accounts with bad perms getting created.
+Still, they have to be created manually.
+We have kojid running on koji-hub, so this is the command we used to add it:
+<pre>
+kojiadmin@koji-hub$ koji add-host koji.chtc.wisc.edu i386 x86_64
+</pre>
+<p />
+<h3><a name="Koji_Web"></a> Koji-Web </h3>
+<p />
+Installing:
+<pre>
+root@koji-hub$ yum install koji-web mod_ssl
+</pre>
+<p />
+Configuration:
+<code>/etc/httpd/conf.d/kojiweb.conf</code> is attached.
+<p />
+<h3><a name="Kojid"></a> Kojid </h3>
+<p />
+Installing:
+<pre>
+root@koji-hub$ yum install koji-builder
+</pre>
+Note that we use a patched koji-builder, so be sure to install what's in the OSG repository. (The patch is not likely to be accepted upstream).
+<p />
+<code>/etc/kojid/kojid.conf</code> is attached.
+<p />
+<h4><a name="SSL_certs"></a> SSL certs </h4>
+<p />
+The following files should be in the <code>/etc/pki/tls</code> tree:
+<p /> <dl>
+<dt> <code>/etc/pki/tls/private/digicert_hostkey.key</code> </dt><dd> the host key from DigiCert
+</dd> <dt> <code>/etc/pki/tls/private/kojiweb.pem</code> </dt><dd> digicert_hostcert.crt catted together with digicert_hostkey.key (public key first)
+</dd> <dt> <code>/etc/pki/tls/private/kojira.key</code> </dt><dd> kojira's private key from DigiCert
+</dd> <dt> <code>/etc/pki/tls/private/kojira.pem</code> </dt><dd> kojira.crt catted together with kojira.key (public key first)
+</dd> <dt> <code>/etc/pki/tls/cert.pem</code> </dt><dd> symlink to certs/ca-bundle.crt
+</dd> <dt> <code>/etc/pki/tls/certs/ca-bundle.crt</code> </dt><dd> all certs available on the system; the DigiCert Grid certs should be in here
+</dd> <dt> <code>/etc/pki/tls/certs/kojira.crt</code> </dt><dd> kojira's cert
+</dd> <dt> <code>/etc/pki/tls/certs/digicert_hostcert.crt</code> </dt><dd> the host cert from DigiCert
+</dd> <dt> <code>/etc/pki/tls/certs/digicert-chain.crt</code> </dt><dd> the DigiCert CAs catted together
+</dd></dl> 
+<p />
+<h4><a name="Adding_koji_builder_host_to_data"></a> Adding koji-builder host to database </h4>
+<pre>
+kojiadmin@koji-hub$ koji add-host-to-channel koji.chtc.wisc.edu createrepo
+</pre>
+<p />
+<pre>
+koji=># update host set capacity = 4 where name = 'koji.chtc.wisc.edu';
+</pre>
+<p />
+<h4><a name="Start_kojid"></a> Start kojid </h4>
+<pre>
+root@koji-hub$ /sbin/service kojid start
+</pre>
+Check <code>/var/log/kojid.log</code> to make sure everything started up.
+<p />
+<h3><a name="Kojira"></a> Kojira </h3>
+<p />
+Installing:
+<pre>
+root@koji-hub$ yum install koji-utils
+</pre>
+<code>/etc/kojira/kojira.conf</code> is attached.
+<p />
+Kojira also needs a user
+<pre>
+kojiadmin@koji-hub$ koji add-user kojira
+kojiadmin@koji-hub$ koji grant-permission repo kojira
+</pre>
+<p />
+Start it up
+<pre>
+root@koji-hub$ /sbin/service kojira start
+</pre>
+<p />
+<!-- <ul>
+<li> Set HTTP_EQUIV_ON_VIEW = <meta name="robots" content="noindex,nofollow">
+</li></ul> 
+--></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/InternalDocs" class="twikiLink">InternalDocs</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>KojiInitialInstall</span> <br />    
+Topic revision: r1 - 05 Oct 2016 - 20:36:21 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

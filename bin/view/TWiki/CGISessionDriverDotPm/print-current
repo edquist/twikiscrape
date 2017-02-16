@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> CGISessionDriverDotPm &lt; TWiki &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/TWiki/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/TWiki/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/TWiki/CGISessionDriverDotPm?_T=16 Feb 2017" type="application/x-wiki" title="edit CGISessionDriverDotPm" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/TWiki/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/TWiki/CGISessionDriverDotPm"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#FFD8AA ;
+	}
+	.patternBookView {
+		border-color:#FFD8AA ;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Package"></a> Package == </h1>
+<strong>extends</strong> <tt>CGI::Session::ErrorHandler</tt>
+<p />
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Package"> Package ==</a>
+</li></ul> 
+</div>
+=head1 NAME
+<p />
+CGI::Session::Driver - CGI::Session driver specifications
+<p />
+=head1 WARNING
+<p />
+Version 4.0 of CGI::Session's driver specification is B<NOT> backward compatible with previous specification. If you already have a driver developed to work with the previous version you're highly encouraged to upgrade your driver code to make it compatible with the current version. Fortunately, current driver specs are a lot easier to adapt to.
+<p />
+If you need any help converting your driver to meet current specs, send me an e-mail. For support information see
+L&lt;CGI::Session|CGI::Session&gt;
+<p />
+=head1 SYNOPSIS
+<p />
+    require CGI::Session::Driver;
+    @ISA = qw( CGI::Session::Driver );
+<p />
+=head1 DESCRIPTION
+<p />
+CGI::Session::Driver is a base class for all CGI::Session's native drivers. It also documents driver specifications for those willing to write drivers for different databases not currently supported by CGI::Session.
+<p />
+=head1 WHAT IS A DRIVER
+<p />
+Driver is a piece of code that helps CGI::Session library to talk to specific database engines, or storage mechanisms. To be more precise, driver is a F&lt;.pm&gt; file that inherits from CGI::Session::Driver and defines L&lt;retrieve()|/"retrieve($self, $sid)"&gt;, L&lt;store()|/"store($self, $sid, $datastr)"&gt; and L&lt;remove()|/"remove($self, $sid)"&gt; methods.
+<p />
+=head2 BLUEPRINT
+<p />
+The best way of learning the specs is to look at a blueprint of a driver:
+<p />
+    package CGI::Session::Driver::your_driver_name;
+    use strict;
+    use base qw( CGI::Session::Driver CGI::Session::ErrorHandler );
+<p />
+    sub init {
+        my ($self) = @_;
+        # optional
+    }
+<p />
+    sub DESTROY {
+        my ($self) = @_;
+        # optional
+    }
+<p />
+    sub store {
+        my ($self, $sid, $datastr) = @_;
+        # Store $datastr, which is an already serialized string of data.
+    }
+<p />
+    sub retrieve {
+        my ($self, $sid) = @_;
+        # Return $datastr, which was previously stored using above store() method.
+        # Return $datastr if $sid was found. Return 0 or "" if $sid doesn't exist
+        }
+<p />
+    sub remove {
+        my ($self, $sid) = @_;
+        # Remove storage associated with $sid. Return any true value indicating success,
+        # or undef on failure.
+    }
+<p />
+    sub traverse {
+        my ($self, $coderef) = @_;
+        # execute $coderef for each session id passing session id as the first and the only
+        # argument
+    }
+<p />
+    1;
+<p />
+All the attributes passed as the second argument to CGI::Session's new() or load() methods will automatically
+be made driver's object attributes. For example, if session object was initialized as following:
+<p />
+    $s = CGI::Session-&gt;new("driver:your_driver_name", undef, {Directory=&gt;'/tmp/sessions'});
+<p />
+You can access value of 'Directory' from within your driver like so:
+<p />
+    sub store {
+        my ($self, $sid, $datastr) = @_;
+        my $dir = $self-&gt;{Directory};   # &lt;-- in this example will be '/tmp/sessions'
+    }
+<p />
+Optionally, you can define C&lt;init()&gt; method within your driver to do driver specific global initialization. C&lt;init()&gt; method will be invoked only once during the lifecycle of your driver, which is the same as the lifecycle of a session object.
+<p />
+For examples of C&lt;init()&gt; look into the source code of native CGI::Session drivers.
+<p />
+=head1 METHODS
+<p />
+This section lists and describes all driver methods. All the driver methods will receive driver object ($self) as the first argument. Methods that pertain to an individual session (such as C&lt;retrieve()&gt;, C&lt;store()&gt; and C&lt;remove()&gt;) will also receive session id ($sid) as the second argument.
+<p />
+Following list describes every driver method, including its argument list and what step of session's life they will be invoked. Understanding this may help driver authors.
+<p />
+=over 4
+<p />
+=item retrieve($self, $sid)
+<p />
+Called whenever a specific session is requested either via C&lt;&lt; CGI::Session-&gt;new() &gt;&gt; or C&lt;&lt; CGI::Session-&gt;load() &gt;&gt; syntax. Method should try to retrieve data associated with C&lt; $sid &gt; and return it. In case no data could be retrieved for C&lt; $sid &gt; 0 (zero) or "" should be returned. undef must be returned only to signal error. Error message should be set via set_error(), which can be inherited from L&lt;CGI::Session::ErrorHandler|CGI::Session::ErrorHandler&gt;. 
+<p />
+Tip: set_error() always returns undef. Use it for your advantage.
+<p />
+=item store($self, $sid, $datastr)
+<p />
+Called whenever modified session data is to be stored back to disk. This happens whenever CGI::Session-&gt;flush() is called on modified session. Since CGI::Session-&gt;DESTROY() calls flush(), store() gets requested each time session object is to be terminated.
+<p />
+C&lt; store() &gt; is called both to store new sessions and to update already stored sessions. It's driver author's job to figure out which operation needs to be performed.
+<p />
+$datastr, which is passed as the third argument to represents B<already serialized> session data that needs to be saved.
+<p />
+store() can return any true value indicating success or undef on failure. Error message should be passed to set_error()
+<p />
+=item remove($self, $sid)
+<p />
+Called whenever session data is to be deleted, which is when CGI::Session-&gt;delete() is called. Should return any true value indicating success, undef on failure. Error message should be logged in set_error().
+<p />
+=item traverse($self, \&amp;coderef)
+<p />
+Called only from within CGI::Session-&gt;find(). Job of traverse() is to call \&amp;coderef for every single session stored in disk passing session's id as the first and only argument: C&lt;&lt; $coderef-&gt;( $sid ) &gt;&gt;
+<p />
+=item init($self)
+<p />
+Optional. Called whenever driver object is to be initialized, which happens only once during the lifecycle of CGI::Session object. Here you can do driver-wide initialization, such as to open connection to a database server.
+<p />
+=item DESTROY($self)
+<p />
+Optional. Perl automatically calls this method on objects just before they are to be terminated. This gives your driver chance to close any database connections or close any open file handles.
+<p />
+=back
+<p />
+=head2 NOTES
+<p />
+=over 4
+<p />
+=item *
+<p />
+All driver F&lt;.pm&gt; files must be lowercase!
+<p />
+=item *
+<p />
+DBI-related drivers are better off using L&lt;CGI::Session::Driver::DBI|CGI::Session::Driver::DBI&gt; as base, but don't have to.
+<p />
+=back
+<p />
+=head1 LICENSING
+<p />
+For support and licensing see L&lt;CGI::Session|CGI::Session&gt;.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: TWiki<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>CGISessionDriverDotPm</span> <br />    
+Topic revision: r1 - 22 Jan 2008 - 03:21:33 - <a href="/bin/view/Main/TWikiContributor" class="twikiLink">TWikiContributor</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,395 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> KojiPolicyWriting &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/KojiPolicyWriting?_T=16 Feb 2017" type="application/x-wiki" title="edit KojiPolicyWriting" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/KojiPolicyWriting"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Koji_permissions_and_policy"></a> Koji permissions and policy </span></h2>
+<p />
+These are some notes I wrote on koji acls/policy doing some source diving in the koji code.
+<p />
+EDIT: I later found some documentation at <a href="https://docs.pagure.org/koji/defining_hub_policies/" target="_top">https://docs.pagure.org/koji/defining_hub_policies/</a>. Go read it, that page has better examples.
+<p />
+<h3><a name="Default_policies_defined_in_hub"></a> Default policies (defined in <code>hub/kojixmlrpc.py</code>) </h3>
+<pre>
+build_from_srpm =
+       has_perm admin :: allow
+       all :: deny
+build_from_repo_id =
+       has_perm admin :: allow
+       all :: deny
+channel =
+       has req_channel :: req
+       is_child_task :: parent
+       all :: use default
+package_list =
+       has_perm admin :: allow
+       all :: deny
+vm =
+       has_perm admin win-admin :: allow
+       all :: deny
+</pre>
+<p />
+If <code>MissingPolicyOk</code> is true (default), then policies that do not exist default to "allow".
+<p />
+<h3><a name="Policy_syntax"></a> Policy syntax </h3>
+<p />
+Policies are set in the <code>[policy]</code> section of <code>/etc/koji-hub/hub.conf</code>
+<p />
+Each policy definition starts with
+<p />
+<pre>policy_name =</pre>
+<p />
+The rest of the definition is indented.
+The lines in the policy definition have the following format:
+<p />
+Simple tests:
+<pre>
+test [params] [&& test [params] ...] :: action-if-true
+test [params] [&& test [params] ...] !! action-if-false
+</pre>
+Complex tests:
+<pre>
+test [params [&& ...]] :: {
+   test [params [&& ...]] :: action
+   test [params [&& ...]] :: {
+      ...
+      }
+}
+</pre>
+<p />
+The following generic tests are defined in <code>koji/policy.py</code>: <dl>
+<dt> <code>true</code> / <code>all</code>  </dt><dd> always true
+</dd> <dt> <code>false</code> / <code>none</code>  </dt><dd> always false
+</dd> <dt> <code>has FIELD</code>  </dt><dd> true if policy data contains a field called FIELD
+</dd> <dt> <code>bool FIELD</code>  </dt><dd> true if FIELD is true
+</dd> <dt> <code>match FIELD PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if FIELD matches any of the patterns (globs)
+</dd> <dt> <code>compare FIELD OP NUMBER</code>  </dt><dd> compare FIELD against a number. OP can be <code>&lt;, &gt;, &lt;=, &gt;=, =, =</code>
+</dd></dl> 
+<p />
+the following koji-specific tests are defined in <code>hub/kojihub.py</code>: <dl>
+<dt> <code>buildtag PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if the build tag of a build matches a pattern
+</dd> <dt> <code>fromtag PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if the tag we're moving a package from matches a pattern
+</dd> <dt> <code>has_perm PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if user has any matching permission
+</dd> <dt> <code>hastag TAG</code>  </dt><dd> true if the build has the tag TAG
+</dd> <dt> <code>imported</code>  </dt><dd> true if the build was imported
+</dd> <dt> <code>is_build_owner</code>  </dt><dd> true if the user doing this task owns the build
+</dd> <dt> <code>is_child_task</code>  </dt><dd> true if the task is a child of some other task
+</dd> <dt> <code>is_new_package</code>  </dt><dd> true if the package being looked at is new (i.e. doesn't have an 'id' yet)
+</dd> <dt> <code>method PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if the method matches a pattern
+</dd> <dt> <code>operation PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if current operation matches any of the patterns
+</dd> <dt> <code>package PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if the package name matches any of the patterns
+</dd> <dt> <code>policy POLICY</code>  </dt><dd> true if the named policy is true
+</dd> <dt> <code>skip_tag</code>  </dt><dd> true if the skip_tag option is true
+</dd> <dt> <code>source PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if source matches patterns
+</dd> <dt> <code>tag PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if the tag name matches any of the patterns
+</dd> <dt> <code>user PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if username matches a pattern
+</dd> <dt> <code>user_in_group PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if the user is in any matching group
+</dd> <dt> <code>vm_name PATTERN1 [PATTERN2 ...]</code>  </dt><dd> true if vm name matches a pattern
+</dd></dl> 
+<p />
+The actions are: <dl>
+<dt> <code>allow</code>  </dt><dd> allow the action
+</dd> <dt> <code>deny</code>  </dt><dd> deny the action
+</dd> <dt> <code>req</code>  </dt><dd> ?
+</dd> <dt> <code>parent</code>  </dt><dd> ?
+</dd> <dt> <code>use default</code>  </dt><dd> ?
+</dd></dl> 
+<p />
+<h3><a name="Default_permissions"></a> Default permissions </h3>
+<p />
+These are the permissions that people can be given in koji: <ul>
+<li> <code>admin</code>
+</li> <li> <code>build</code>
+</li> <li> <code>repo</code>
+</li> <li> <code>livecd</code>
+</li> <li> <code>maven-import</code>
+</li> <li> <code>win-import</code>
+</li> <li> <code>win-admin</code>
+</li> <li> <code>appliance</code>
+</li></ul> 
+<p />
+As far as I can tell, additional permissions have to be manually added into the 'permissions' table in postgres.
+<p />
+The following permissions are checked by name in the koji command-line utility (i.e. policies are not used):
+<p /> <dl>
+<dt> <code>admin</code>  </dt><dd> <code>add-group</code>, <code>add-tag</code>, <code>add-target</code>, <code>clone-tag</code>, <code>edit-target</code>, <code>remove-tag</code>, <code>remove-target</code>, <code>wrapper-rpm</code>
+</dd> <dt> <code>maven-import</code>  </dt><dd> <code>import-archive</code> with the <code>--type=maven</code> option
+</dd> <dt> <code>win-import</code>  </dt><dd> <code>import-archive</code> with the <code>--type=win</code> option
+</dd></dl> 
+<p />
+<code>repo</code> is needed for <code>regen-repo</code>.
+<p />
+I haven't found out where some of the other permissions are used.
+<p />
+<p />
+<h3><a name="Adding_permissions"></a> Adding permissions </h3>
+<p />
+Go into postgres and run
+<pre>
+insert into permissions values ((select nextval('permissions_id_seq')), 'NAME');
+</pre>
+where NAME is the name of the permission you want to create.
+You may now grant people that permission and use that name in policies.
+<p />
+<p />
+<h3><a name="Where_policies_are_used_and_what"></a> Where policies are used and what policy data is passed on: </h3>
+<p />
+<h4><a name="build_from_srpm"></a>  build_from_srpm </h4>
+<p />
+<strong>source:</strong> <dl>
+<dt> <code>builder/kojid:BuildTask.handler</code>  </dt><dd> used when source url points to an SRPM (as opposed to an scm) and the build is not a scratch build.
+</dd></dl> 
+<p />
+<strong>policy data:</strong> <dl>
+<dt> <code>user_id</code>  </dt><dd> the owner of the task
+</dd> <dt> <code>source</code>  </dt><dd> the url of the source file
+</dd> <dt> <code>task_id</code>  </dt><dd> the id of the task
+</dd> <dt> <code>build_tag</code>  </dt><dd> the id of the build tag
+</dd> <dt> <code>skip_tag</code>  </dt><dd> true if we're not tagging this build (<code>--scratch</code> or <code>--skip-tag</code> passed on the command line)
+</dd> <dt> <code>target</code>  </dt><dd> the build target (only if we have one?)
+</dd> <dt> <code>tag</code>  </dt><dd> the destination tag (only if <code>skip_tag</code> is false)
+</dd></dl> 
+<p />
+<h4><a name="build_from_repo_id"></a>  build_from_repo_id </h4>
+<p />
+<strong>source:</strong> <dl>
+<dt> <code>builder/kojid:BuildTask.handler</code>  </dt><dd> used when the <code>--repo-id</code> option is passed to <code>koji build</code>
+</dd></dl> 
+<p />
+<strong>policy data:</strong>
+same as <code>build_from_srpm</code>
+<p />
+<h4><a name="package_list"></a>  package_list </h4>
+<p />
+<strong>source:</strong> <dl>
+<dt> <code>hub/kojihub.py:pkglist_add</code>  </dt><dd> <code>add-pkg</code>, <code>block-pkg</code>, <code>set-pkg-arches</code>, <code>set-pkg-owner</code> commands
+</dd></dl> 
+<p />
+<strong>policy data:</strong> <dl>
+<dt> <code>action</code>  </dt><dd> 'add', 'update', 'block' depending on what is being done
+</dd> <dt> <code>force</code>  </dt><dd> true if <code>--force</code> is passed on the command line
+</dd> <dt> <code>package</code>  </dt><dd> package info (the id I think?)
+</dd> <dt> <code>tag</code>  </dt><dd> the id of the tag we're trying to add the package to/package is in
+</dd></dl> 
+<p />
+<strong>source:</strong> <dl>
+<dt> <code>hub/kojihub.py:pkglist_remove</code>  </dt><dd> used internally by the <code>koji clone-tag</code> command?
+</dd></dl> 
+<p />
+<strong>policy data:</strong>
+same as above, except <code>action</code> is 'remove'
+<p />
+<strong>source:</strong> <dl>
+<dt> <code>hub/kojihub.py:pkglist_unblock</code>  </dt><dd> <code>unblock-pkg</code> command
+</dd></dl> 
+<p />
+<strong>policy data:</strong>
+same as above, except <code>action</code> is 'unblock'
+<p />
+<h4><a name="tag"></a>  tag </h4>
+<p />
+NOTE: RootExports is the class containing functions exported via XMLRPC.
+In general, each function corresponds to a koji task.
+<p />
+<strong>source:</strong> <dl>
+<dt> <code>hub/kojihub.py:RootExports.tagBuild</code>  </dt><dd> tagging builds
+</dd></dl> 
+<p />
+<strong>policy data:</strong> <dl>
+<dt> <code>build</code>  </dt><dd> the id of the build
+</dd> <dt> <code>fromtag</code>  </dt><dd> the id of the tag we're moving the build from, if there is one
+</dd> <dt> <code>operation</code>  </dt><dd> 'tag' or 'move'
+</dd> <dt> <code>tag</code>  </dt><dd> the id of the tag
+</dd></dl> 
+<p />
+<strong>source:</strong> <dl>
+<dt> <code>hub/kojihub.py:RootExports.untagBuild</code>  </dt><dd> untagging builds
+</dd></dl> 
+<p />
+<strong>policy data:</strong>
+same as above, except <code>operation</code> is 'untag', and <code>tag</code> is None
+<p />
+<strong>source:</strong> <dl>
+<dt> <code>hub/kojihub.py:RootExports.moveAllBuilds</code>  </dt><dd> moving all builds of a package from tag1 to tag2
+</dd></dl> 
+<p />
+<strong>policy data:</strong>
+same as for <code>tagBuild</code>, except <code>operation</code> is 'move'.
+The policy is checked once for each build being moved.
+<p />
+<strong>source:</strong> <dl>
+<dt> <code>hub/kojihub.py:HostExports.tagBuild</code>  </dt><dd> tagging builds ("host version" ?)
+</dd></dl> 
+<p />
+<strong>policy data:</strong>
+same as for <code>tagBuild</code>, plus <code>user_id</code>
+<p />
+<h4><a name="vm"></a>  vm </h4>
+<p />
+<strong>source:</strong> <dl>
+<dt> <code>hub/kojihub.py:RootExports.winBuild</code>  </dt><dd> windows builds in a vm (<code>win-build</code> command)
+</dd></dl> 
+<p />
+<strong>policy data:</strong> <dl>
+<dt> <code>tag</code>  </dt><dd> the destination tag
+</dd> <dt> <code>vm_name</code>  </dt><dd> the name of the vm
+</dd></dl> 
+<p />
+<p />
+<p />
+<h3><a name="Examples"></a> Examples </h3>
+<p />
+<h4><a name="Let_people_with_the_build_permis"></a>  Let people with the "build" permission also add packages and build SRPMs </h4>
+<p />
+<pre>
+package_list = 
+    has_perm admin :: allow
+    has_perm build && match action add update :: allow
+    all :: deny
+
+build_from_srpm =
+    has_perm admin build :: allow
+    all :: deny
+</pre>
+<p />
+<p />
+<h4><a name="Promotion_policy_for_different_t"></a>  Promotion policy for different teams </h4>
+<p /> <ul>
+<li> Software team members can tag any package as testing/release.
+</li> <li> Operations team members can tag vo-clients as testing/release.
+</li> <li> Security team members can tag CA packages as testing/release.
+</li></ul> 
+<p />
+<pre>
+promotion =
+   has_perm software-team :: allow
+   has_perm operations-team && package vo-client :: allow
+   has_perm security-team && package *-ca-certs* :: allow
+   all :: deny
+
+tag =
+    has_perm admin :: allow
+    operation tag :: {
+        tag *testing *release* && policy promotion :: allow
+        tag *testing *release* !! allow
+    }
+    operation untag :: {
+        fromtag *testing *release* && policy promotion :: allow
+        fromtag *testing *release* !! allow
+    }
+    operation move :: {
+        tag *testing *release* && policy promotion :: allow
+        fromtag *testing *release* && policy promotion :: allow
+        tag *testing *release* !! {
+            fromtag *testing *release* !! allow
+        }
+    }
+    all :: deny
+
+</pre>
+<p />
+<p />
+<p />
+<p />
+<p />
+-- <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a> - 05 Oct 2016</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/InternalDocs" class="twikiLink">InternalDocs</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>KojiPolicyWriting</span> <br />    
+Topic revision: r3 - 06 Dec 2016 - 18:13:13 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

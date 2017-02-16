@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> IPV6Testing_draft &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/IPV6Testing_draft?_T=16 Feb 2017" type="application/x-wiki" title="edit IPV6Testing_draft" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/IPV6Testing_draft"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Testing_Software_with_IPv6"></a>  Testing Software with IPv6 </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#About_this_Document"> About this Document</a> <ul>
+<li> <a href="?cover=print#Requirements"> Requirements</a>
+</li> <li> <a href="?cover=print#Enabling_IPV6"> Enabling IPV6</a>
+</li> <li> <a href="?cover=print#Testing_IPv6_connectivity"> Testing IPv6 connectivity</a>
+</li> <li> <a href="?cover=print#Disabling_IPv4"> Disabling IPv4</a>
+</li> <li> <a href="?cover=print#Disabling_IPv6"> Disabling IPv6</a>
+</li> <li> <a href="?cover=print#Testing_in_mixed_mode"> Testing in mixed mode</a>
+</li> <li> <a href="?cover=print#Virtual_machines_nodes_for_IPv6"> Virtual machines nodes for IPv6 tests</a>
+</li></ul> 
+</li></ul> 
+</div>
+<p />
+<h1><a name="About_this_Document"></a> About this Document </h1>
+<p />
+This document provides instructions on setting up a host with an IPv6 address for testing the OSG software stack. The plan is to be able to spin up special Fermicloud VM&rsquo;s that have corresponding public IPv6 addresses meaning that there will be a limit of ~15 VM&rsquo;s at one time.
+<p />
+For more information on IPv6, consult <a href="http://en.wikipedia.org/wiki/IPv6" target="_top">Wikipedia</a>.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Requirements"></a> Requirements </span></h2>
+<p /> <ol>
+<li> Be familiar with your institute's network policy and firewall configuration
+</li> <li> <em>Root</em> access is required to configure <code>iptables</code>
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Enabling_IPV6"></a> Enabling IPV6 </span></h2>
+<p /> <ol>
+<li> <p>Determine the public IPv6 address of your host (highlighted in <font color="#ff0000">red</font>):</p> <pre class="screen">
+[user@client ~]$ nslookup -type=aaaa &lt;hostname&gt;
+Server:		132.239.0.252      
+Address:	132.239.0.252#53      
+
+Non-authoritative answer:
+ipv6vm001.fnal.gov	has AAAA address <font color="#ff0000">2001:400:2410:29::182</font></pre>   <p>Replacing <code>&lt;hostname&gt;</code> with your machine's hostname.</p>
+</li> <li> <p>Ask your network administrator for your IPv6 default gateway</p>
+</li> <li> <p>Modify <code>/etc/sysconfig/network-scripts/ifcfg-eth0</code> and be sure these lines exist, and :</p> <pre class="file">
+IPV6INIT=yes
+IPV6_AUTOCONF=no
+IPV6ADDR="<font color="#ff0000">IPv6 address</font>"
+IPV6_DEFAULTGW="The IPV6 Default Gateway"</pre><p>Replacing <font color="#ff0000">IPv6 address</font> with the address found in step 1.</p>
+</li> <li> <p>Restart the network devices:</p><pre class="rootscreen">
+[root@client ~]$ service network restart
+Shutting down interface eth0:                              [  OK  ]
+Shutting down loopback interface:                          [  OK  ]
+Bringing up loopback interface:                            [  OK  ]
+Bringing up interface eth0:                                [  OK  ]</pre> 
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Testing_IPv6_connectivity"></a> Testing IPv6 connectivity </span></h2>
+<p />
+To verify that the VM is capable of IPv6 we will be using the <code>ping6</code> command between the test VM and another IPv6 capable machine
+<p /> <ol>
+<li> <p>From another IPv6 capable machine, ping your VM:</p><pre class="screen">
+[user@client ~]$ ping6 ipv6vm001.fnal.gov
+PING ipv6vm001.fnal.gov(ipv6vm001.fnal.gov) 56 data bytes
+64 bytes from ipv6vm001.fnal.gov: icmp_seq=1 ttl=51 time=68.1 ms
+64 bytes from ipv6vm001.fnal.gov: icmp_seq=2 ttl=51 time=57.6 ms</pre>
+</li> <li> <p>From your test VM, ping another IPv6 capable machine (a list of IPv6 machines can be found <a href="/bin/view/SoftwareTeam/IPV6Testing_draft#Ipv6Vms" class="twikiCurrentTopicLink twikiAnchorLink">here</a>):</p><pre class="screen">
+[efajardo@ipv6vm001 ~]# ping6 uaf-4.t2.ucsd.edu
+PING uaf-4.t2.ucsd.edu(uaf-4.t2.ucsd.edu) 56 data bytes
+64 bytes from uaf-4.t2.ucsd.edu: icmp_seq=1 ttl=51 time=57.6 ms</pre>
+</li></ol> 
+<p />
+<h3><a name="Verifying_SSH_over_IPv6"></a> Verifying SSH over IPv6 </h3>
+<p />
+Make sure you can login to your VM over IPv6. Currently, Fermilab's kerberos does not support SSH over IPv6. 
+<p /> <ol>
+<li> <p>Add your ssh_key to your machine and make sure <code>/etc/ssh/sshd_config</code> has the following lines:</p> <pre class="file">
+RSAAuthentication yes
+PubkeyAuthentication yes</pre>
+</li> <li> <p>Try connecting to you IPv6 enabled machine over SSH:</p> <pre class="screen">
+efajardo@uaf-4 ~$ ssh -6 root@ipv6vm001.fnal.gov
+Last login: Wed Jun 11 14:51:47 2014 from 2607:f720:1700:1b30:21f:c6ff:feeb:2631
+[root@ipv6vm001 ~]#  </pre>
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Disabling_IPv4"></a> Disabling IPv4 </span></h2>
+<p />
+If you were able to log into your VM over IPv6, you can disable IPv4 and try to communicate exclusively over IPv6.
+<p /> <ol>
+<li> <p>Comment the <code>IPADDR</code> line in <code>/etc/sysconfig/network-scripts/ifcfg-eth0</code>:</p><pre class="file">
+#IPADDR=131.225.41.182
+IPV6ADDR="2607:f720:1700:1b30::9b"</pre>   <p><b>NOTE:</b> Ensure that your <code>IPV6ADDR</code> is uncommented otherwise you will not be able to connect to the host again!</p>
+</li> <li> <p>Restart the network services:</p> <pre class="rootscreen">
+[root@client ~]$ service network restart</pre>
+</li> <li> <p>The ping command should no longer work:</p> <pre class="screen">
+ping ipv6vm001.fnal.gov
+PING ipv6vm001.fnal.gov (131.225.41.182): 56 data bytes
+Request timeout for icmp_seq 0
+Request timeout for icmp_seq 1</pre>
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Disabling_IPv6"></a> Disabling IPv6 </span></h2>
+<p />
+In your testing, you may find the need to disable IPv6.
+<p /> <ol>
+<li> <p>Comment out the <code>IPV6ADDR</code> line in <code>/etc/sysconfig/network-scripts/ifcfg-eth0</code>:</p><pre class="file">
+IPADDR=131.225.41.182
+#IPV6ADDR="2607:f720:1700:1b30::9b" </pre>   <p><b>NOTE:</b> Ensure that your <code>IPADDR</code> is uncommented otherwise you will not be able to connect to the host again!</p>
+</li> <li> <p>Restart the network services:</p> <pre class="rootscreen">
+[root@client ~]$ service network restart</pre>
+</li> <li> <p>The <code>ping6</code> command should no longer work:</p> <pre class="screen">
+ping6 ipv6vm001.fnal.gov
+Request timeout for icmp_seq 0
+Request timeout for icmp_seq 1</pre>
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Testing_in_mixed_mode"></a> Testing in mixed mode </span></h2>
+<p />
+To test IPv6 in mixed mode, you can use the <code>ntop</code> tool to monitor traffic over IPv6. <code>ntop</code> is installed on all the test machines and you can access the web interface at <em>hostname:3000</em> (e.g. <a href="http://cabinet-10-10-9.t2.ucsd.edu:3000/" target="_top">Ntop cabinet-10-10-9</a>). To see a table that displays network traffic between your VM and another host by going to <em>All Protocols</em> -&gt; <em>Traffic</em> and looking at the IPv6 column.
+<p />
+<img src="https://twiki.opensciencegrid.org/twiki/bin/viewfile/SoftwareTeam/IPV6Testing/Screen_Shot_2014-07-18_at_3.31.07_PM.png" width="800" height=500" border="0" alt="NTP-web" />
+<p />
+<p />
+<p />
+<h3><a name="Enforcing_communication_over_IPv"></a> Enforcing communication over IPv6 </h3>
+<p />
+If you want to enforce IPv6 over mixed mode you can try using the IPv6 address for whatever software that you are testing. For example with xrdcp:
+<p />
+<pre class="screen">
+xrdcp -d 1 /tmp/first_test root://[2607:f720:1700:1b30::a4]:1094//tmp/first_test_8
+[19B/19B][100%][==================================================][0B/s] 
+</pre>
+<p />
+Notice that the IPv6 address follows <a href="http://www.ietf.org/rfc/rfc2732.txt" target="_top">RFC2732</a>.
+<p />
+<a name="Ipv6Vms"></a>
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Virtual_machines_nodes_for_IPv6"></a> Virtual machines nodes for IPv6 tests </span></h2>
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/IPV6Testing_draft?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Node</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/SoftwareTeam/IPV6Testing_draft?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Owner</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/IPV6Testing_draft?cover=print;sortcol=2;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Last Verified</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> cabinet-10-10-1.t2.ucsd.edu </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Edgar </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> 23-Jan-2014 </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> cabinet-10-10-4.t2.ucsd.edu </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Edgar </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> 23-Jan-2014 </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> ipv6vm001.fnal.gov </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Edgar </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> 23-Jan-2014 </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> ipv6vm002.fnal.gov </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Edgar </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> 23-Jan-2014 </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> ipv6vm004.fnal.gov </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> Edgar </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> 23-Jan-2014 </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<p />
+<p />
+<p />
+-- <a href="/bin/view/Main/EdgarFajardo" class="twikiLink">EdgarFajardo</a> - 04 Jun 2014</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>IPV6Testing_draft</span> <br />    
+Topic revision: r1 - 02 Feb 2015 - 21:19:33 - <a href="/bin/view/Main/BrianLin" class="twikiLink">BrianLin</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

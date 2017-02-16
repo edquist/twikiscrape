@@ -1,0 +1,366 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> VMUniverseInCHTC &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/VMUniverseInCHTC?_T=16 Feb 2017" type="application/x-wiki" title="edit VMUniverseInCHTC" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/VMUniverseInCHTC"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="How_to_Run_a_VM_Universe_Job_in"></a> How to Run a VM Universe Job in CHTC </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Overview"></a> Overview </span></h2>
+<p />
+This document describes how to prepare and run a job using HTCondor’s VM universe and CHTC’s pre-made VM images.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="CHTC_Base_Operating_System_VM_Im"></a> CHTC Base Operating System VM Images </span></h2>
+<p />
+CHTC provides VM images with basic operating system installations. Each provides the following semantics, regardless of implementation details:
+<p /> <ul>
+<li> The operating system is up-to-date (within 7 calendar days)
+</li> <li> The system supports installation of other packages from the operating system repositories (nb. RHN)
+</li> <li> The operating system boots normally into an appropriate runlevel to run a user-supplied payload
+</li> <li> The system is on a network with outbound access for reasonable, safe Internet activities, including: <ul>
+<li> Fetching and sending files via http, https, ftp, gsiftp
+</li> <li> Synchronizing the system clock with NTP
+</li></ul> 
+</li> <li> Inbound network access to the virtual guest is severely limited (only ssh from hypervisor)
+</li> <li> The system clock is accurately set with date, time, and local time zone (US Central)
+</li> <li> There is at least 2GB of free disk space under / on the filesystem
+</li> <li> SELinux is disabled
+</li> <li> Following a successful boot, the system runs a user-supplied payload: <ul>
+<li> First, it attempts to mount <code>/dev/vdb</code> (ext2) at <code>/mnt/user</code>
+</li> <li> If successful, it executes <code>/mnt/user/run-job</code> as root
+</li> <li> The job environment for <code>run-job</code> is stripped down to just:<pre class="file">PATH=/sbin:/usr/sbin:/bin:/usr/bin
+USER=root
+PWD=/
+LANG=en_US.UTF-8</pre>
+</li> <li> All standard output and error from run-job is logged to <code>/mnt/user/run-job.log</code>
+</li> <li> If the mount is successful, but the script cannot be run, informative error messages are logged to <code>/mnt/user/run-job-failure.log</code>
+</li></ul> 
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Prepare_a_Job_Payload"></a> Prepare a Job Payload </span></h2>
+<p /> <ol>
+<li> Prepare your job to run in batch mode, as with any HTCondor job <ul>
+<li> All input files that you provide will be contained in the <code>/mnt/user/input</code> directory on the virtual machine
+</li> <li> All output should be written to the <code>/mnt/user/output</code> directory on the virtual machine — all other output files will be lost!
+</li></ul> 
+</li> <li> Select one (or more) base OS images to run your job payload; currently we have Tim’s SL 6.4 and CentOS 6.4 images
+</li> <li> Prepare an executable, named <code>run-job</code>, that prepares the run-time environment of your job and runs it
+</li></ol> 
+<p />
+The latter step is the hard part! The <code>run-job</code> executable is responsible for preparing a bare-bones OS install to run your actual job and thus may need to include steps such as:
+<p /> <ul>
+<li> Installing software packages that your job needs; these may come from the OS repositories or other repositories that you set up
+</li> <li> Configuring the system or other software packages
+</li> <li> Setting up environment variables
+</li> <li> Downloading and/or preparing input files, directory structures, etc.
+</li></ul> 
+<p />
+Further, the set-up steps may depend on the particular base OS image that you selected.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Prepare_an_Input_Output_Image"></a> Prepare an Input-Output Image </span></h2>
+<p />
+After writing the run-job script and collecting all input files, you package all of them into a small disk image that will serve as both input and output partition for the job.
+<p />
+<h3><a name="One_Time_Setup_Tasks"></a> One-Time Setup Tasks </h3>
+<p />
+Creating the image requires extra software on the machine with run-job and the input files. Install the following packages (RPM names verified on el6):
+<p /> <ul>
+<li> libguestfs-tools
+</li></ul> 
+<p />
+After installing, verify that you have a command named <code>virt-make-fs</code>.
+<p />
+<h3><a name="Making_the_Image"></a> Making the Image </h3>
+<p /> <ol>
+<li> Create a new directory:<pre class="screen">mkdir image</pre>
+</li> <li> Create input and output subdirectories:<pre class="screen">mkdir image/input; mkdir image/output</pre>
+</li> <li> Copy your <code>run-job</code> executable into the image directory:<pre class="screen">cp run-job image/</pre>
+</li> <li> Make sure that <code>run-job</code> is executable:<pre class="screen">chmod 0755 image/run-job</pre>
+</li> <li> Copy all input files for your job (<code>run-job</code> and the real job) into the input directory; e.g.:<pre class="screen">cp input-file-1 image/input/</pre>
+</li> <li> Make the image file from the image directory:<pre class="screen">virt-make-fs --size=<em>1M</em> input <em>my-vm-image.raw</em></pre>
+</li></ol> 
+<p />
+In the last step, it is possible to customize the size of the image by changing the value of the <code>--size=</code> option; the format is a number (decimal is fine) followed immediately by b/K/M/G/T/P/E to mean bytes, Kilobytes, Megabytes, Gigabytes, Terabytes, Petabytes or Exabytes. The image size must be big enough to contain run-job, all of your input files, and all of your job’s output files. It is best to leave a little extra room, about 5–10% extra, but not too much extra because this file must be transferred over the network to the execute machine and back.
+<p />
+Also note that the name of the image, given as the last argument above, is arbitrary: Name it whatever you like, although it may be best to keep the <code>.raw</code> suffix as a reminder of the image format.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Write_a_Submit_File"></a> Write a Submit File </span></h2>
+<p />
+Here is a sample HTCondor submit file to customize for your job:
+<p />
+<pre class="file">
+executable              = name-of-job
+
+universe                = vm
+vm_type                 = kvm
+vm_memory               = 2048
+vm_networking           = true
+vm_no_output_vm         = false
+vm_vnc                  = true
+
+vm_disk                 = cat-base-sl64-amd64-htcondor.dsk:vda:w:raw,my-vm-image.raw:vdb:w:raw
+request_disk            = 5.5GB
+
+log                     = run-cluster-$(CLUSTER).log
+
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files    = http://proxy.chtc.wisc.edu/SQUID/cat/cat-base-sl64-amd64-htcondor.dsk,my-vm-image.raw
+transfer_output_files   = my-vm-image.raw
+transfer_output_remaps  = "my-vm-image.raw = my-output-image-$(CLUSTER).$(PROCESS).raw"
+
+queue
+
+# condor_submit will complain about some attributes not being used;
+# ignore it until further notice
+</pre>
+<p />
+Notes on customizing the submit file attributes:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/VMUniverseInCHTC?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Attribute</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1 twikiLastCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/VMUniverseInCHTC?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Usage</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>executable</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> Unlike a typical HTCondor job, this value is completely arbitrary! It does not need to be <code>run-job</code> or your real executable name. It is simply a label to see in <code>condor_q</code> output. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>vm_memory</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> The amount of RAM that your virtual machine will have, in Megabytes; thus, 2048 is 2 GB of RAM. Customize if you know what you are doing! </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>vm_disk</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> Both the base OS image filename and your input-output image filename are listed here. If the names change, change them here, but leave the remaining parts (e.g., <code>:vda:w:raw</code>) as in the sample. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>transfer_input_files</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> These are the filenames of the base OS image and your input-output image. If you change them here, also check <code>vm_disk</code> and, for the input-output image filename, <code>transfer_output_files</code> and <code>transfer_output_remaps</code>. The two base OS image paths are:<br> <code>http://proxy.chtc.wisc.edu/SQUID/cat/cat-base-sl64-amd64-htcondor.dsk</code> <br> <code>http://proxy.chtc.wisc.edu/SQUID/cat/cat-base-centos64-amd64-htcondor.dsk</code> </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>transfer_output_files</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> Names your input-output image as the <strong>one and only</strong> file to transfer back to the submit machine. That is, any changes made to the virtual filesystem <strong>outside of</strong> /mnt/user are discarded after the run. Be sure to use the same input-output image filename here as elsewhere. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>transfer_output_remaps</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> Renames the input-output image filename upon its return to the submit machine, so that you can keep the job-modified copy separate from the original submitted file. Be sure to use the same input-output image filename here as elsewhere. </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Submit_and_Monitor_a_Run"></a> Submit and Monitor a Run </span></h2>
+<p />
+When everything is ready, submit your job to HTCondor as usual:
+<p />
+<pre class="screen">condor_submit my_submit_file.sub</pre>
+<p />
+Other normal HTCondor commands for monitoring and changing your job are available: <code>condor_q</code>, <code>condor_rm</code>, etc.
+<p />
+<h3><a name="Troubleshooting_NEEDS_MORE_INFO"></a> Troubleshooting (NEEDS MORE INFO) </h3>
+<p /> <ul>
+<li> If a job goes on hold, check the hold codes and reason:     <pre class="screen">condor_q -l <em>JOBID</em> | grep -i hold</pre>     <p>If the HoldReason contains the text <code>VMGAHP_ERR_INTERNAL</code>, it probably means that the KVM hypervisor on the execute machine is having problems. Report the bad execute machine to <code>htcondor-inf@cs.wisc.edu</code> and release the job so that it tries to run on another machine:     <pre class="screen">condor_release <em>JOBID</em></pre>
+</li></ul> 
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Extract_Outputs"></a> Extract Outputs </span></h2>
+<p />
+When your <code>run-job</code> scripts finishes, the virtual machine guest shuts down and HTCondor completes the job. The input-output image file is transferred back to the submit host and renamed according to the <code>transfer_output_remaps</code> attribute in the submit file. If your job produces output, you will need to extract files from the input-output image file to a directory. It is helpful to script this process — see below.
+<p />
+<h3><a name="One_Time_Setup_Tasks_AN1"></a> One-Time Setup Tasks </h3>
+<p />
+Creating the image requires extra software on the machine with run-job and the input files. Install the following packages (RPM names verified on el6):
+<p /> <ul>
+<li> libguestfs-tools-c
+</li> <li> python-libguestfs
+</li></ul> 
+<p />
+Then, write the following Python code to an executable file named, for example, <code>extract-image.py</code>:
+<p />
+<pre class="file">
+#!/usr/bin/python
+
+import guestfs
+import os
+import sys
+
+blacklist = set(['/lost+found'])
+
+def print_now(message):
+    print message,
+    sys.stdout.flush()
+
+g = guestfs.GuestFS()
+
+image_filename = sys.argv[1]
+output_dir = sys.argv[2]
+
+if os.path.exists(output_dir):
+    print "Output directory '%s' already exists, will not overwrite, try again" % (output_dir)
+    sys.exit(1)
+os.makedirs(output_dir)
+
+g.add_drive_opts(image_filename, readonly=1, format="raw")
+
+print_now("Extracting files from '%s'..." % (image_filename))
+g.launch()
+
+g.mount('/dev/vda', '/')
+paths = g.find('/')
+for image_path in paths:
+    full_image_path = os.path.join('/', image_path)
+    if not g.is_dir(full_image_path):
+        image_dir = os.path.dirname(image_path)
+        local_dir = os.path.join(output_dir, image_dir)
+        if not os.path.exists(local_dir):
+            os.mkdir(local_dir)
+        g.download(full_image_path, os.path.join(output_dir, image_path))
+
+print "ok"
+</pre>
+<p />
+<h3><a name="Extracting_Files"></a> Extracting Files </h3>
+<p />
+To extract files from your renamed input-output image file, run the Python command:
+<p />
+<pre class="screen">./extract-image.py my-output-image-<em>job-id</em>.raw my-output-dir-<em>job-id</em></pre>
+<p />
+As shown above, the command expects the renamed input-output image filename to contain the job ID (<code>cluster.process</code>). The second argument to the Python script is the name of a new directory to create with the extracted contents from the image.
+<p />
+Instead of the Python script, it is possible to work with the image file directly using the interactive <code>guestfish</code> command. <a href="http://libguestfs.org/" target="_top">Its documentation</a> is available online. Here is a sample invocation and interactive session:
+<p />
+<pre class="screen">
+% guestfish --ro --add my-output-image-81.0.raw 
+
+Welcome to guestfish, the libguestfs filesystem interactive shell for
+editing virtual machine filesystems.
+
+Type: 'help' for help on commands
+      'man' to read the manual
+      'quit' to quit the shell
+
+><fs> run
+><fs> list-filesystems
+/dev/vda: ext2
+><fs> mount /dev/vda /
+><fs> ls /
+input
+lost+found
+output
+run-job
+run-job.log
+><fs> cat /run-job.log
+...
+</pre></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/TestingHome" class="twikiLink">TestingHome</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>VMUniverseInCHTC</span> <br />    
+Topic revision: r2 - 01 Oct 2013 - 17:46:52 - <a href="/bin/view/Main/TimCartwright" class="twikiLink">TimCartwright</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

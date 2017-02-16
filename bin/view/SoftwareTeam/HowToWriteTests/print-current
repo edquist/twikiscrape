@@ -1,0 +1,473 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> HowToWriteTests &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/HowToWriteTests?_T=16 Feb 2017" type="application/x-wiki" title="edit HowToWriteTests" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/HowToWriteTests"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--BEAUTIFIERPLUGIN_CODEFRAGMENT_CSS--><link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/BeautifierPlugin/style.css" type="text/css" media="all" />
+<!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="How_to_Write_Automated_Tests_for"></a>  How to Write Automated Tests for OSG Software (osg-test) </h1>
+<p />
+<div class="twikiToc"> <ul>
+<li> <a href="?cover=print#Where_to_Write_Tests"> Where to Write Tests</a> <ul>
+<li> <a href="?cover=print#Directory_Organization"> Directory Organization</a>
+</li> <li> <a href="?cover=print#Test_Sequence"> Test Sequence</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Coding_Tips"> Coding Tips</a> <ul>
+<li> <a href="?cover=print#Basic_Structure_of_a_Test_Module"> Basic Structure of a Test Module</a>
+</li> <li> <a href="?cover=print#Test_Assertions"> Test Assertions</a>
+</li> <li> <a href="?cover=print#Skipping_Tests"> Skipping Tests</a>
+</li> <li> <a href="?cover=print#Running_System_Commands"> Running System Commands</a>
+</li> <li> <a href="?cover=print#Configuration_and_State"> Configuration and State</a>
+</li> <li> <a href="?cover=print#Module_Wide_Setup_and_Teardown"> Module-Wide Setup and Teardown</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#Testing_your_changes"> Testing your changes</a> <ul>
+<li> <a href="?cover=print#Fermicloud_VMs"> Fermicloud VMs</a>
+</li> <li> <a href="?cover=print#VM_Universe"> VM Universe</a>
+</li></ul> 
+</li> <li> <a href="?cover=print#See_also"> See also</a>
+</li></ul> 
+</div>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Where_to_Write_Tests"></a> Where to Write Tests </span></h2>
+<p />
+All of the OSG Software automated tests are located in the <code>osg-test</code> software and package.
+<p />
+The software itself is in GitHub repository at <a href="https://github.com/opensciencegrid/osg-test" target="_top">https://github.com/opensciencegrid/osg-test</a>; current code is kept in the <code>master</code> branch.
+<p />
+The software package is defined in our Subversion repository at <code>native/redhat/trunk/osg-test</code>.
+<p />
+<h3><a name="Directory_Organization"></a> Directory Organization </h3>
+<p />
+The test software is written in Python and consists of:
+<p /> <ul>
+<li> A driver program, <code>osg-test</code>
+</li> <li> A set of support libraries (Python modules) in <code>osgtest/library</code>
+</li> <li> The tests themselves (also Python modules) in <code>osgtest/tests</code>
+</li> <li> Extra files needed at runtime in <code>files</code>
+</li></ul> 
+<p />
+The whole system uses the standard Python <code>unittest</code> framework to run.
+Note that all tests have to be compatible with Python 2.4; when reading the docs for <code>unittest</code>, keep note of when a feature was introduced.
+<p />
+<h3><a name="Test_Sequence"></a> Test Sequence </h3>
+<p />
+During a test run, the test modules are run in sequence as follows:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/HowToWriteTests?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">File</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/SoftwareTeam/HowToWriteTests?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">When</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/HowToWriteTests?cover=print;sortcol=2;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Purpose</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>special_user.py</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Tests not suppressed,&#8232;or explicitly requested </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Add user (if asked)<br>Check user<br>Set up mapfile </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>special_install.py</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Packages given </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Check repositories<br>Clean yum cache<br>Install packages </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>test_NN_*.py</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Tests not suppressed </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Configure<br>Test<br>Tear down </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>special_cleanup.py</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> Explicitly requested </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Remove user (if added)<br>Remove packages (if installed) </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+The <code>test_*</code> modules are organized roughly into three phases, based on the sequence number of the file:
+<p />
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/HowToWriteTests?cover=print;sortcol=0;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Test Files</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1 twikiLastCol"> <a rel="nofollow" href="/bin/view/SoftwareTeam/HowToWriteTests?cover=print;sortcol=1;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Purpose</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>test_[00-29]_*</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol"> Set up </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> <code>test_[30-69]_*</code> </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLastCol"> Tests </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> <code>test_[70-99]_*</code> </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLastCol twikiLast"> Tear down </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Coding_Tips"></a> Coding Tips </span></h2>
+<p />
+It is important to know the basics of the Python <code>unittest</code> module; <a href="http://docs.python.org/release/2.4.3/lib/module-unittest.html" target="_top">read the documentation for it</a>.
+We build on top of the <code>unittest</code> module, by providing an <code>osgunittest</code> module that inherits from it.
+<p />
+<h3><a name="Basic_Structure_of_a_Test_Module"></a> Basic Structure of a Test Module </h3>
+<p />
+Each test module must import the <code>osgunittest</code> library, plus whichever of the <code>osg-test</code> libraries are needed (conventionally with shortened aliases):
+<p />
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+<font color="brown">import</font> osgunittest
+
+<font color="brown">import</font> osgtest.library.core as core
+<font color="brown">import</font> osgtest.library.files as files</pre></pre></div></div>
+<p />
+Then, a single test class is defined, deriving from <code>osgunittest.OSGTestCase</code>; the individual tests are sequentially numbered functions within the class:
+<p />
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+<font color="brown">class</font> TestFooBarBaz(osgunittest.OSGTestCase):
+
+    <font color="brown">def</font> test_01_first_thing(self):
+        <font color="green"># test stuff!</font>
+
+    <font color="brown">def</font> test_02_more(self):
+        <font color="green"># test stuff!</font>
+
+    <font color="green"># Tests return (success) or raise (failure)</font></font></pre></pre></div></div>
+<p />
+<strong>Note:</strong> <code>osgunittest</code> was introduced in osg-test 1.2.5; tests written for earlier versions may still be using <code>unittest</code> directly.
+These tests should be updated to use <code>osgunittest</code> instead.
+<p />
+<h3><a name="Test_Assertions"></a> Test Assertions </h3>
+<p />
+Within each test function, use the <a href="http://docs.python.org/release/2.4.3/lib/testcase-objects.html" target="_top">TestCase object functions</a> to assert things that should be true:
+<p />
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+<font color="brown">def</font> test_99_example(self):
+    result = do_something()
+    self.assert_(result &amp;gt; 42, '<font color="blue">result too low</font>')
+    self.assertEqual(result, 57, '<font color="blue">result ok</font>')</pre></pre></div></div>
+<p />
+Be sure to learn and use all of the assertion functions, for greatest expressive power and clarity! For example, there are also:
+<p /> <ul>
+<li> <code>assertNotEqual</code>(<em>first</em>, <em>second</em>[, <em>message</em>])
+</li> <li> <code>assertRaises</code>(<em>exception</em>, <em>callable</em>, …)
+</li></ul> 
+<p />
+<h3><a name="Skipping_Tests"></a> Skipping Tests </h3>
+<p />
+There are two cases in which a test should be skipped, and they have different semantics in <code>osgunittest</code>: <ol>
+<li> If the packages they depend on are not installed. This is called an <code>OkSkip</code>, since it does not indicate any sort of error.
+</li> <li> If the packages they depend on <em>are</em> installed, but required services were unavailable. This is called a <code>BadSkip</code>, since it indicates a cascading failure -- an error in a previous step that is causing problems in the current step.
+</li></ol> 
+One of the extensions that <code>osgunittest</code> adds to <code>unittest</code> is the ability to report on these kinds of failures.
+<p />
+The following <code>osgunittest</code> methods cause the test to be skipped with an <code>OkSkip</code> ( <code>OkSkipException</code> ): <dl>
+<dt> <code>skip_ok</code>([<i>message</i>=<i>None</i>]) </dt><dd> skip, with optional message
+</dd> <dt> <code>skip_ok_if</code>(<i>expr</i>, [<i>message</i>=<i>None</i>]) </dt><dd> skip if <code>expr</code> is True, with optional message
+</dd> <dt> <code>skip_ok_unless</code>(<i>expr</i>, [<i>message</i>=<i>None</i>]) </dt><dd> skip if <code>expr</code> is False, with optional message
+</dd></dl> 
+and the following <code>osgunittest</code> methods cause the test to be skipped with a <code>BadSkip</code> ( <code>BadSkipException</code> ): <dl>
+<dt> <code>skip_bad</code>([<i>message</i>=<i>None</i>]) </dt><dd> skip, with optional message
+</dd> <dt> <code>skip_bad_if</code>(<i>expr</i>, [<i>message</i>=<i>None</i>]) </dt><dd> skip if <code>expr</code> is True, with optional message
+</dd> <dt> <code>skip_bad_unless</code>(<i>expr</i>, [<i>message</i>=<i>None</i>]) </dt><dd> skip if <code>expr</code> is False, with optional message
+</dd></dl> 
+<p />
+Note that the <code>OkSkip</code> methods are often not directly used, and convenience functions in <code>osgtest.core</code> are used instead.
+<p />
+<h4><a name="Skipping_Due_to_Missing_Packages"></a>  Skipping Due to Missing Packages (OkSkip) </h4>
+<p />
+The following two patterns are used for skipping tests due to missing packages; use the simplest one for your case (or follow conventions of other tests):
+<p />
+Example 1: A single package with custom skip message
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+<font color="brown">def</font> test_01_start_condor(self):
+    core.skip_ok_unless_installed('<font color="blue">condor</font>',
+                                  message='<font color="blue">HTCondor not installed</font>')</pre></pre></div></div>
+<p />
+Example 2: A normal check of several packages at once:
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+<font color="brown">def</font> test_02_condor_job(self):
+   core.skip_ok_unless_installed('<font color="blue">globus-gram-job-manager-condor</font>',
+                                 '<font color="blue">globus-gram-client-tools</font>',
+                                 '<font color="blue">globus-proxy-utils</font>')</pre></pre></div></div>
+<p />
+Note that old unit test code might be using the methods <code>core.rpm_is_installed()</code> or <code>core.missing_rpm()</code> for this purpose.
+These just printed a message if the test was to be skipped, but the test writer had to actually perform the skip manually.
+<p />
+The following patterns should be converted to match the first and second example, respectively:
+<p />
+Old Example 1:
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+<font color="brown">if</font> <font color="brown">not</font> core.rpm_is_installed('<font color="blue">condor</font>'): <font color="green"># OLD CODE</font>
+    core.skip('<font color="blue">not installed</font>')
+    <font color="brown">return</font></pre></pre></div></div>
+Old Example 2:
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+<font color="brown">if</font> core.missing_rpm('<font color="blue">globus-gram-job-manager-condor</font>', <font color="green"># OLD CODE</font>
+                    '<font color="blue">globus-gram-client-tools</font>',
+                    '<font color="blue">globus-proxy-utils</font>'):
+    <font color="brown">return</font></pre></pre></div></div>
+<p />
+<strong>Note:</strong> Add skip tests to <strong>all</strong> functions that depend on a particular package, not just the first one within a test module.
+<p />
+<h4><a name="Skipping_Due_to_Failure_in_Requi"></a>  Skipping Due to Failure in Required Service (BadSkip) </h4>
+<p />
+Tests often require a service to be up and running.
+If the service is not running, then it is expected that the test will fail through no fault of the component being tested.
+These cascading failures often mask the root cause of the problem.
+In order to avoid that, we instead skip the test, and mark it as having been skipped due to a previous failure (a BadSkip).
+Note that these should be raised only <em>after</em> making sure the service has been installed.
+<p />
+The following examples show how this is done:
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+core.skip_ok_unless_installed('<font color="blue">globus-gram-job-manager-condor</font>')
+self.skip_bad_unless(core.state['<font color="blue">condor.running-service</font>'],
+                     message='<font color="blue">HTCondor service not running</font>')</pre></pre></div></div>
+<p />
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+core.skip_ok_unless_installed(
+    '<font color="blue">globus-gram-job-manager-pbs</font>',
+    '<font color="blue">globus-gram-client-tools</font>',
+    '<font color="blue">globus-proxy-utils</font>',
+    '<font color="blue">globus-gram-job-manager-pbs-setup-seg</font>')
+
+<font color="brown">if</font> (<font color="brown">not</font> core.state['<font color="blue">torque.pbs-configured</font>'] <font color="brown">or</font>
+    <font color="brown">not</font> core.state['<font color="blue">torque.pbs-mom-running</font>'] <font color="brown">or</font>
+    <font color="brown">not</font> core.state['<font color="blue">torque.pbs-server-running</font>'] <font color="brown">or</font>
+    <font color="brown">not</font> core.state['<font color="blue">globus.pbs_configured</font>']):
+    
+    self.skip_bad('<font color="blue">pbs not running or configured</font>')</pre></pre></div></div>
+<p />
+<strong>Note:</strong> Add skip tests to <strong>all</strong> functions that depend on a particular service, not just the first one within a test module.
+<p />
+<p />
+<h3><a name="Running_System_Commands"></a> Running System Commands </h3>
+<p />
+Most tests run commands on the system; this is the nature of our testing environment. Thus, the test libraries have extra support for running system commands. Use these functions! Do not reinvent the wheel.
+<p />
+See the PyDoc for the <code>core</code> library for full documentation on the functions. Below are examples.
+<p />
+The basic system-call pattern:
+<p />
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+<font color="brown">def</font> test_99_made_up_example(self):
+    command = ('<font color="blue">/usr/bin/id</font>','<font color="blue">-u</font>')
+    status, stdout, stderr = core.system(command, True)
+    fail = core.diagnose('<font color="blue">id of test user</font>', status, stdout, stderr)
+    self.assertEqual(status, 0, fail)
+    <font color="green"># Maybe more checks and assertions</font></font></pre></pre></div></div>
+<p />
+In the most common case, you run the <code>core.system()</code> function, check its exit status against 0, and then possibly test its stdout and stderr for problems. There is a helper function for this common case:
+<p />
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+<font color="brown">def</font> test_01_web100clt(self):
+    <font color="brown">if</font> core.missing_rpm('<font color="blue">ndt</font>'):
+        <font color="brown">return</font>
+    command = ('<font color="blue">web100clt</font>', '<font color="blue">-v</font>')
+    stdout, stderr, fail = core.check_system(command, '<font color="blue">NDT client</font>')
+    result = re.search('<font color="blue">ndt.+version</font>', stdout, re.IGNORECASE)
+    self.assert_(result <font color="brown">is</font> <font color="brown">not</font> <font color="brown">None</font>)</pre></pre></div></div>
+<p />
+<h3><a name="Configuration_and_State"></a> Configuration and State </h3>
+<p />
+The test framework does not automatically preserve values across test modules, so you must do so yourself if needed. But, the test library does provide standard mechanisms for saving configuration values and system state.
+<p />
+Store all cross-module configuration values in <code>core.config</code> (a dictionary):
+<p />
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+<font color="brown">def</font> test_04_config_voms(self):
+    core.config['<font color="blue">voms.vo</font>'] = '<font color="blue">osgtestvo</font>'
+    <font color="green"># ...</font></font></pre></pre></div></div>
+<p />
+Record cross-module state values in <code>core.state</code> (a dictionary):
+<p />
+<div class="BeautifierPlugin"><div class="fragment"><pre><pre>
+<font color="brown">def</font> test_01_start_mysqld(self):
+    core.state['<font color="blue">mysql.started-server</font>'] = False
+    <font color="green"># Try to start MySQL service, raise on fail</font>
+    core.state['<font color="blue">mysql.started-server</font>'] = True</pre></pre></div></div>
+<p />
+<p />
+<h3><a name="Module_Wide_Setup_and_Teardown"></a> Module-Wide Setup and Teardown </h3>
+<p />
+Sometimes a module needs certain operations to be done for setting up tests.
+For example, the tests for osg-configure involve importing the unit test modules provided by osg-configure itself, and need to add an entry to <code>sys.path</code>.
+This kind of setup should be put <em>inside</em> the test class; it will not get reliably run if it is only inside the module.
+Making separate test functions for the setup and teardown steps (named, for example, <code>test_00_setup</code> and <code>test_99_teardown</code>) is a good way of handling this.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Testing_your_changes"></a> Testing your changes </span></h2>
+<p />
+Before you go and commit your changes, it's a good idea to make sure they don't break everything. Our <a href="http://vdt.cs.wisc.edu/tests/latest.html" target="_top">nightlies</a> run tests against the master version of osg-test so to avoid the embarassment of everyone knowing that your code is broken, you'll want to make sure your tests work!
+<p />
+<h3><a name="Fermicloud_VMs"></a> Fermicloud VMs </h3>
+<p /> <ol>
+<li> Start a fermicloud VM and install the OSG RPMs, the latest build of <code>osg-test</code> and <code>osg-tested-internal</code>.
+</li> <li> Get rid of the old tests: <pre class="rootscreen">
+<font color="#ff0000"># For RHEL 5, CentOS 5, and SL5</font>
+[root@client ~]$ rm -rf /usr/lib/python2.4/site-packages/osgtest
+<font color="#ff0000"># For RHEL 6, CentOS 6, and SL6 or OSG 3 older than 3.1.15</font>
+[root@client ~]$ rm -rf /usr/lib/python2.6/site-packages/osgtest
+<font color="#ff0000"># For RHEL 7, CentOS 7, and SL7</font>
+[root@client ~]$ rm -rf /usr/lib/python2.7/site-packages/osgtest
+</pre>
+</li> <li> <code>cd</code> into your clone of the <code>osg-test</code> repo and copy over your tests to your VM: <pre class="screen">
+<font color="#ff0000"># For RHEL 5, CentOS 5, and SL5 VMs</font>
+[user@client ~]$ scp -r osgtest/ <font color="#ff0000">&lt;VM Hostname&gt;</font>:/usr/lib/python2.4/site-packages
+<font color="#ff0000"># For RHEL 6, CentOS 6, and SL6 VMs</font>
+[user@client ~]$ scp -r osgtest/ <font color="#ff0000">&lt;VM Hostname&gt;</font>:/usr/lib/python2.6/site-packages
+<font color="#ff0000"># For RHEL 7, CentOS 7, and SL7 VMs</font>
+[user@client ~]$ scp -r osgtest/ <font color="#ff0000">&lt;VM Hostname&gt;</font>:/usr/lib/python2.7/site-packages
+</pre>
+</li> <li> Run the tests and monitor their output: <pre class="rootscreen">
+[root@client ~]$ osg-test -vad &gt; <font color="#ff0000">&lt;outfile&gt;</font> 2&gt;&amp;1 &amp;
+[root@client ~]$ tail -f <font color="#ff0000">&lt;outfile&gt;</font>
+</pre>
+</li></ol> 
+<p />
+<h3><a name="VM_Universe"></a> VM Universe </h3>
+<p />
+It's a good idea to test your changes in the VM Universe if you've made big changes like adding tests or changing entire test modules. Otherwise, you can go ahead and skip this step.
+<p /> <ol>
+<li> SSH to <code>osghost.chtc.wisc.edu</code>
+</li> <li> Prepare a test run: <pre class="screen">
+osg-run-tests -sl <font color="#ff0000">&lt;Test comment&gt;</font>
+</pre>
+</li> <li> <code>cd</code> into the directory that is indicated by the output of <code>osg-run-tests</code>
+</li> <li> Run <code>git diff master</code> from your clone of the <code>osg-test</code> repo to get the changes that you're interested in and fill <code>test-changes.patch</code> with these changes.
+</li> <li> Edit <code>test-parameters.yaml</code> so that the <code>sources</code> section reads: <pre class="file">
+sources:
+  - opensciencegrid:master; 3.3; osg-testing
+</pre>
+</li> <li> Start the tests: <pre class='screen'>
+[user@client ~]$ condor_submit_dag master-run.dag
+</pre>
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="See_also"></a> See also </span></h2>
+<p />
+The main <a href="/bin/view/SoftwareTeam/TestingHome" class="twikiLink">Automated Testing for OSG RPMs</a> page for more information.
+<p />
+<!-- vim:ft=twiki:sw=3
+--></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/InternalDocs" class="twikiLink">InternalDocs</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>HowToWriteTests</span> <br />    
+Topic revision: r6 - 21 Jul 2016 - 22:16:30 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

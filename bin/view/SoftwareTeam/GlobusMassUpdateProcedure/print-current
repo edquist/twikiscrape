@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> GlobusMassUpdateProcedure &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/GlobusMassUpdateProcedure?_T=16 Feb 2017" type="application/x-wiki" title="edit GlobusMassUpdateProcedure" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/GlobusMassUpdateProcedure"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Globus_mass_update_procedure"></a> Globus mass update procedure </h1>
+<p />
+Globus consists of many packages, which we tend to update at the same time.
+This requires extra work, primarily to prevent dependency issues.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Prep_work"></a> Prep work </span></h2>
+<p />
+<h3><a name="Docs"></a> Docs </h3>
+<p />
+Create a spreadsheet or table of the builds. Table should have NVR, perhaps
+URL, status (not started, imported, built, tested), and comments (mostly to
+record if it was a simple pass-through or not).
+<p />
+Get packages to update, using <code>osg-outdated-epel-pkgs</code> from <code>opensciencegrid/tools</code>.
+<p />
+To get in N-V-R format:
+<p />
+<pre class="screen">./osg-outdated-epel-pkgs | egrep '^(globus|myproxy|gsi)' | awk 'BEGIN {OFS=""} {print $1, "-", $3}'</pre>
+<p />
+or to split up N and V-R in a comma-separated way (which you can feed into a Google Sheet to turn it into two columns):
+<p />
+<pre class="screen">./osg-outdated-epel-pkgs | egrep '^(globus|myproxy|gsi)' | awk 'BEGIN {OFS=""} {print $1, ",", $3}'</pre>
+<p />
+<p />
+<h3><a name="SVN"></a> SVN </h3>
+<p />
+Create a separate SVN branch and populate it with all the packages you will update. (Get the list from the doc created above).
+<p />
+<pre class="screen">
+svn mkdir file:///p/vdt/workspace/svn/native/redhat/branches/globus
+### From a checkout, in native/redhat
+for x in trunk/globus* trunk/myproxy; do
+  svn copy $x branches/globus/${x#trunk/}
+done
+</pre>
+<p />
+<p />
+<h3><a name="Koji_Mat_Carl"></a> Koji (Mat/Carl) </h3>
+<p />
+This requires a Koji administrator. Current Koji admins are <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+and <a href="/bin/view/Main/CarlEdquist" class="twikiLink">CarlEdquist</a>.
+<p />
+Create new Koji tags: a destination tag, and a build tag, one for each dver, e.g.:
+<p /> <ul>
+<li> el6-globus
+</li> <li> el6-globus-build
+</li> <li> el7-globus
+</li> <li> el7-globus-build
+</li></ul> 
+<p />
+Set up tag inheritence: base the destination tags off of the corresponding
+development repo tag, and base the build tags off of the corresponding
+<code>dist-el?-build</code> tag. This is because we don't want old osg packages
+interfering with the new versions we're building.
+<p />
+<pre class="screen">
+osg-koji add-tag --parent=osg-3.3-el6-development --arches='i386 x86_64' el6-globus
+osg-koji add-tag --parent=osg-3.3-el7-development --arches=x86_64 el7-globus
+osg-koji add-tag --parent=dist-el6-build --arches='i386 x86_64' el6-globus-build
+osg-koji add-tag --parent=dist-el7-build --arches=x86_64 el7-globus-build
+</pre>
+<p />
+Tag <code>buildsys-macros</code> for the OSG release into the build tags:
+<p />
+<pre class="screen">
+for el in el6 el7; do
+    buildsys_macros_nvr=$(osg-koji -q list-tagged osg-3.3-$el-development buildsys-macros --latest | awk '{print $1}')
+    osg-koji tag-pkg $el-globus-build $buildsys_macros_nvr
+done
+</pre>
+<p />
+Create new Koji targets, one for each dver, e.g.:
+<p /> <ul>
+<li> el6-globus (el6-globus-build &rarr; el6-globus)
+</li> <li> el7-globus (el7-globus-build &rarr; el7-globus)
+</li> <li> kojira-fake-el6-globus (el6-globus &rarr; kojira-fake)
+</li> <li> kojira-fake-el7-globus (el7-globus &rarr; kojira-fake)
+</li></ul> 
+<p />
+<pre class="screen">
+for el in el6 el7; do
+    osg-koji add-target $el-globus $el-globus-build $el-globus
+    osg-koji add-target kojira-fake-$el-globus $el-globus kojira-fake
+done
+</pre>
+<p />
+If basing the packages off of the Globus repos, add the Globus repos as
+external repos, and add them to the build tags (but not the dest tags).
+<p />
+Edit <code>/etc/koji-hub/plugins/sign.conf</code> and set up the GPG signing for the RPMs.
+Run <code>/etc/koji-hub/plugins/fix-permissions</code> after editing the file.
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Per_package_work"></a> Per-package work </span></h2>
+<p /> <ol>
+<li> cd into branches/globus
+</li> <li> Download packages from <a href="http://dl.fedoraproject.org/epel/6/SRPMS/" target="_top">http://dl.fedoraproject.org/epel/6/SRPMS/</a>
+</li></ol> 
+<p />
+A useful alias:
+<p />
+<pre class="screen">alias osg-build-globus="osg-build koji --ktt el6-globus --ktt el7-globus"</pre>
+<p />
+<p />
+<h3><a name="Strict_pass_through_no_osg_direc"></a> Strict pass-through (no osg/ directory) </h3>
+<p /> <ol>
+<li> <pre class="screen">
+osg-import-srpm "$url"
+osg-build-globus --scratch $pkg
+</pre>
+</li> <li> Commit - use a message like:<pre>
+Update to 3.12-1 from EPEL (SOFTWARE-2197)
+</pre>
+</li> <li> Do a non-scratch build.
+</li></ol> 
+<p />
+<p />
+<h3><a name="Non_strict_pass_through"></a> Non-strict pass-through </h3>
+<p /> <ol>
+<li> <pre class="screen">osg-import-srpm --diff3 "$url"</pre>
+</li> <li> Fix merge conflicts in the spec file. If not already there, put a .1      after the Release number to mark the changes as ours.
+</li> <li> <pre class="screen">osg-build quilt $pkg</pre>
+</li> <li> Fix patches if necessary.
+</li> <li> <pre class="screen">osg-build-globus --scratch $pkg</pre>
+</li> <li> Commit - use a message like:<pre>
+Update to 8.29-1 from EPEL and merge OSG changes (SOFTWARE-2197)
+</pre>
+</li> <li> Do a non-scratch build.
+</li></ol> 
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Testing"></a> Testing </span></h2>
+<p />
+Create a yum <code>.repo</code> file similar to <code>osg-minefield</code> that installs from the
+<code>el?-globus</code> repos.
+<p />
+EL7 example:
+<p />
+<pre class="file">
+[globus]
+name=globus
+baseurl=http://koji.chtc.wisc.edu/mnt/koji/repos/el7-globus/latest/$basearch/
+failovermethod=priority
+priority=98
+enabled=0
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSG
+consider_as_osg=yes
+</pre>
+<p />
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Merge"></a> Merge </span></h2>
+<p />
+<h3><a name="Koji_Mat_Carl_AN1"></a> Koji (Mat/Carl) </h3>
+<p />
+This requires a Koji administrator. Current Koji admins are <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+and <a href="/bin/view/Main/CarlEdquist" class="twikiLink">CarlEdquist</a>.
+<p /> <ol>
+<li> Untag broken versions that we don't want to ship.
+</li> <li> Use <code>move-pkg</code>:<pre class="screen">
+for el in el6 el7; do
+    osg-koji -q list-tagged ${el}-globus | awk '{print $1}' &gt; ${el}-tagged.txt
+done
+### Check the txts if they look sane
+for el in el6 el7; do
+    xargs -a ${el}-tagged.txt  osg-koji move-pkg ${el}-globus osg-3.3-${el}-development
+done
+</pre>
+</li></ol> 
+<p />
+<p />
+<h3><a name="SVN_AN1"></a> SVN </h3>
+<p /> <ol>
+<li> Merge from <code>trunk</code> to <code>branches/globus</code> first, to pick up any globus      changes that may have happened in trunk.
+</li> <li> Merge from <code>branches/globus</code> to <code>trunk</code>.
+</li> <li> Move <code>branches/globus</code> to <code>tags/globus-<em>DATE</em></code>.
+</li></ol> </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/InternalDocs" class="twikiLink">InternalDocs</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>GlobusMassUpdateProcedure</span> <br />    
+Topic revision: r1 - 23 Sep 2016 - 20:46:41 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> MatyasSelmeciKojiHubUpgradePlan &lt; Sandbox &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Sandbox/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Sandbox/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Sandbox/MatyasSelmeciKojiHubUpgradePlan?_T=16 Feb 2017" type="application/x-wiki" title="edit MatyasSelmeciKojiHubUpgradePlan" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><meta name="robots" content="noindex,nofollow"> 
+<base href="https://twiki.opensciencegrid.org/bin/view/Sandbox/MatyasSelmeciKojiHubUpgradePlan"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Koji_Hub_Upgrade_Plan"></a> Koji-Hub Upgrade Plan </span></h2>
+<p />
+Upgrading koji-hub will require a day of downtime and timely assistance from CHTC infrastructure, so we need to schedule a day that works for everyone.
+<p />
+Tasks which we can do are marked with (OSG); tasks that CHTC infrastructure needs to do are marked with (INF).
+<p />
+<h3><a name="Before"></a> Before </h3>
+<p />
+Schedule one day of downtime; inform osg-software, bbockelm, and the goc, since the following things will not work while koji-hub is down: <ul>
+<li> koji builds
+</li> <li> mash scripts at repo.grid.iu.edu (goc repo updates)
+</li> <li> mash scripts at hcc
+</li> <li> installs from minefield
+</li></ul> 
+<p />
+<h3><a name="Upgrade"></a> Upgrade </h3>
+<p /> <ol>
+<li> <code>(OSG)</code> Inform osg-software that downtime has started and they should not attempt to build
+</li> <li> <code>(OSG)</code> Shut down koji-hub
+</li> <li> <code>(OSG)</code> Stop postgres on db-01 and make a backup of the database (dirclone /var/lib/pgsql /var/lib/pgsql.snapshot)
+</li> <li> <code>(INF)</code> Take out the hard drives from koji-hub and put in two blank 1TB hard drives; set them up for hardware RAID-1
+</li> <li> <code>(INF)</code> Install the latest SL6 (minimal install + puppet), keeping the name as koji-hub.batlab.org, partitioned as follows: <ul>
+<li> 40G for /var/lib/mock
+</li> <li> 30G for /
+</li> <li> 30G for /var
+</li> <li> Remainder for /mnt/koji
+</li></ul> 
+</li> <li> <code>(INF)</code> Run puppet and set up the machine to use CHTC logins
+</li> <li> <code>(INF)</code> Shut off the machine, put the old hard drives into the other two drive bays, turn on the machine
+</li> <li> <code>(OSG)</code> Mount the partitions from the old hard drives, read-only: <ol>
+<li> Edit /etc/fstab and add:<pre class="file">
+UUID=1bc76f3e-6762-4ef3-beae-4c4c10dd90c8  /mnt/oldkoji           ext4  noauto,ro  1 1
+UUID=110be48f-a256-45ac-852d-cf8c7030f96f  /mnt/oldkoji/home      ext4  noauto,ro  1 2
+UUID=815e97cf-08fe-4221-8e0c-49ea49a2d9a5  /mnt/oldkoji/mnt/koji  ext4  noauto,ro  1 2
+</pre>
+</li> <li> Create the mount points: <code>mkdir -p /mnt/oldkoji/{home,mnt/koji}</code>
+</li> <li> Mount: <code>mount /mnt/oldkoji; mount /mnt/oldkoji/home; mount /mnt/oldkoji/mnt/koji</code>
+</li>  </ol><ul>
+<li> Note: get help from inf right away if something breaks here
+</li></ul> 
+</li> <li> <code>(OSG)</code> Follow the "Restoring Koji-Hub" section in <a href="/bin/view/Sandbox/MatyasSelmeciKojiHubRestoreRecipe" class="twikiLink">MatyasSelmeciKojiHubRestoreRecipe</a>, except restore from /mnt/oldkoji instead of backups
+</li> <li> <code>(OSG)</code> Start postgres on db-01
+</li> <li> <code>(OSG)</code> Follow the "Starting Services and Validation" section in the restore recipe
+</li> <li> <code>(OSG)</code> Send an all-clear to osg-software
+</li></ol> 
+<p />
+<h3><a name="Afterward"></a> Afterward </h3>
+<p /> <ol>
+<li> <code>(INF)</code> Turn Nagios monitoring back on if necessary
+</li> <li> <code>(INF)</code> Set up Nagios monitoring for koji-hub's hardware RAID
+</li></ol> 
+<p />
+<h3><a name="Rollback"></a> Rollback </h3>
+<p /> <ol>
+<li> <code>(OSG)</code> Shut down koji-hub
+</li> <li> <code>(OSG)</code> Stop postgres on db-01
+</li> <li> <code>(OSG)</code> Restore postgres database from snapshot on db-01 (dirclone /var/lib/pgsql.snapshot /var/lib/pgsql)
+</li> <li> <code>(OSG)</code> Start postgres on db-01
+</li> <li> <code>(INF)</code> Remove the new hard drives from koji-hub and put the old hard drives back in
+</li> <li> <code>(INF)</code> Start koji-hub
+</li></ol> </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Sandbox<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Main/TWikiGroups" class="twikiLink">TWikiGroups</a> &gt; <a href="/bin/view/Main/GridGroup" class="twikiLink">GridGroup</a> &gt; <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a> &gt; <a href="/bin/view/Sandbox/MatyasSelmeciSandbox" class="twikiLink">MatyasSelmeciSandbox</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>MatyasSelmeciKojiHubUpgradePlan</span> <br />    
+Topic revision: r6 - 11 Mar 2015 - 16:21:58 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

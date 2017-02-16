@@ -1,0 +1,528 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> StorageProbeDevelopment &lt; Accounting &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Accounting/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Accounting/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Accounting/StorageProbeDevelopment?_T=16 Feb 2017" type="application/x-wiki" title="edit StorageProbeDevelopment" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Accounting/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Accounting/StorageProbeDevelopment"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Writing_an_OSG_Storage_Probe"></a> Writing an OSG Storage Probe </h1>
+<p />
+This page provides a rough set of notes and outline for writing a storage probe.  If you use the Gratia Python API for services probes and provide the correct information for a single site, you can get storage reports for your site.
+<p />
+<h1><a name="Install_dependencies"></a> Install dependencies </h1>
+<p />
+We recommend that you use RPMs found in the <a href="/bin/view/Accounting/ProbeInstallation" class="twikiLink">ProbeInstallation</a> document.  As we will use python-only probes and Gratia doesn't install to standard linux places, you can use the same probe for SL4 or SL5 on 32 or 64-bit machines.  Install <ul>
+<li> gratia-probe-common
+</li> <li> gratia-probe-services
+</li></ul> 
+(Direct link here: <a href="http://gratia.fnal.gov/Files/probe/RPMS/" target="_top">http://gratia.fnal.gov/Files/probe/RPMS/</a>) Version 1.04.5 is the minimum version required.
+<p />
+Install these RPMs and put the directories /opt/vdt/gratia/probe/common and /opt/vdt/gratia/probe/services into your python path.  I use the following snippet of code to bootstrap my python module:
+<p />
+<pre>
+# Bootstrap our python configuration.  This should allow us to discover the
+# configurations in the case where our environment wasn&#39;t really configured
+# correctly.
+sys.path.append(&#39;.&#39;)
+gratia&#95;path &#61; os.path.expandvars(&#39;/opt/vdt/gratia/probe/common&#39;)
+if gratia&#95;path not in sys.path and os.path.exists(gratia&#95;path):
+    sys.path.append(gratia&#95;path)
+gratia&#95;path &#61; os.path.expandvars(&#39;/opt/vdt/gratia/probe/services&#39;)
+if gratia&#95;path not in sys.path and os.path.exists(gratia&#95;path):
+    sys.path.append(gratia&#95;path)
+if &#39;VDT&#95;LOCATION&#39; in os.environ:
+    gratia&#95;path &#61; os.path.expandvars(&#39;$VDT&#95;LOCATION/gratia/probe/common&#39;)
+    if gratia&#95;path not in sys.path and os.path.exists(gratia&#95;path):
+        sys.path.append(gratia&#95;path)
+    gratia&#95;path &#61; os.path.expandvars(&#39;$VDT&#95;LOCATION/gratia/probe/services&#39;)
+    if gratia&#95;path not in sys.path and os.path.exists(gratia&#95;path):
+        sys.path.append(gratia&#95;path)
+
+import Gratia
+import StorageElement
+import StorageElementRecord
+</pre>
+<p />
+<h1><a name="Terminology"></a> Terminology </h1>
+<p />
+The storage information is divided into two different record types (as opposed to the transfer probes, which simply piggybacked onto the existing JobUsageRecord).  The StorageElement class mainly holds static information about the topology of the storage element.  The StorageElementRecord corresponds to a storage measurement for some entity in the StorageElement.
+<p />
+Instead of trying to come up with a database schema to match every conceivable storage element, we allow you to make arbitrary record types and specify parent-child relationships between any two unique components in the SE.  Because Gratia uses a relational database, we end up with a very poorly normalized database schema.  In advance, I apologize.  For a defined subset of these configurations, if you fill in information, we can automatically turn your reported data into storage reports emailed out to site admins.
+<p />
+The table below outlines the different pieces of terminology we use:
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="StorageElement"></a> StorageElement </span></h2>
+These are the semi-static, topology-related parts of the storage element accounting
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Accounting/StorageProbeDevelopment?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Term</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/Accounting/StorageProbeDevelopment?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Must be used?</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/Accounting/StorageProbeDevelopment?cover=print;sortcol=2;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Explanation</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Timestamp </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Timestamp of when this was recorded.  Can either be a string in form "YYYY-MM-DDTHH:MM:SSZ" or numeric output of time.time().  Does NOT get automatically set. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> SEUniqueID </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> This is the UniqueID of the SE; usually, it is the hostname of the primary SRM endpoint.  If there is no primary SRM endpoint, try to set this to the host name of the "primary" node in the system.  This must be a globally-unique string, hence our suggestion to use a FQDN </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Space Type </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> The type of the logical space.  Suggested strings are given below. Note that some of these refer to raw disk used (Pool, PoolGroup) while others refer to logical usage within the storage element (Quota, Trash.StorageSpaceReservation, Directory).  The storage report undesrtands quotas, directories, and SE space types.  It can also be taught to understand space reservations if desired. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Space Name </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> An arbitrary name for the space.  Must be unique for the SE. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Space Unique ID </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> This string is generated by the tool and <strong>must</strong> have the following form: <SE UniqueID>:<space type>:<space name> This space name must be unique for the entire SE. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> Parent ID </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> This string (may be null) is set to the space unique ID for any logical parent that the space might have.  For example, a pool might have a parent pool group.  A pool group might have a parent link group.  A space reservation would have a parent link group. (All for dCache).  For many of the spaces, the parent space might be the entire storage element.  See the above comment about the Space Unique ID to know how to generate the Parent ID from a given space.  Note that a Parent's space does not have to add up to the sum of its children!  For example, a SE could have 10TB, and given 20 users with a 1TB quota. </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> VO </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Any VO (or group) allowed to write into the space.  May be comma-seperated.  May be a wildcard.  May be left blank.  Not validated against a list of known VOs. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> Owner </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1 twikiLast"> No </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> The owner of a space.  Might be a person's name (Johnny Public), a unix username, or a certificate's DN </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+Sample strings for SpaceType: <ul>
+<li> Trash.StorageSpaceReservation: A SRM space reservation
+</li> <li> Pool: A single disk server
+</li> <li> PoolGroup: A group of disk servers
+</li> <li> LinkGroup: A group of <span class="twikiNewLink">PoolGroups<a href="/bin/edit/Accounting/PoolGroups?topicparent=Accounting.StorageProbeDevelopment" rel="nofollow" title="PoolGroups (this topic does not yet exist; you can create it)">?</a></span> (dCache specific)
+</li> <li> StaticSpaceReservation: A staticly configured space reservation (BeStMan)
+</li> <li> Quota: A quota on the storage element.
+</li> <li> Directory: All space used inside a specific directory.
+</li> <li> SE: The entire Storage Element
+</li> <li> Area: Some logical area in the SE.  Can be part of the namespace, or maybe a grouping of space reservations.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="StorageElementRecord"></a> StorageElementRecord </span></h2>
+These are the dynamic pieces of information related to a specific measurement in time.
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Accounting/StorageProbeDevelopment?cover=print;sortcol=0;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Term</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/Accounting/StorageProbeDevelopment?cover=print;sortcol=1;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Must be used?</font></a> </th>
+			<th bgcolor="#d8dde4" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/Accounting/StorageProbeDevelopment?cover=print;sortcol=2;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Explanation</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> Timestamp </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Timestamp of when this was recorded.  Can either be a string in form "YYYY-MM-DDTHH:MM:SSZ" or numeric output of time.time().  Does NOT get automatically set. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> MeasurementType </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> Yes </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Either "logical" or "raw"; refers to whether this is referring to space used on a hard drive, or the amount of space a user could use (taking replication into account, for example). </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> FreeSpace </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Some measurement of free space (logical or raw, depending on the space type).  Must be inputted in BYTES </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> UsedSpace </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Some measurement of used space in the SE area </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol"> TotalSpace </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol"> Measurement of the area's size; in many cases, should be <span class="twikiNewLink">FreeSpace<a href="/bin/edit/Accounting/FreeSpace?topicparent=Accounting.StorageProbeDevelopment" rel="nofollow" title="FreeSpace (this topic does not yet exist; you can create it)">?</a></span>+UsedSpace.  In the case of a quota, this should be the size of the quota. </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol0 twikiFirstCol"> FileCount </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol1"> No </td>
+			<td bgcolor="#f2f3f6" valign="top" class="twikiTableCol2 twikiLastCol"> Number of files in the area </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> FileCountLimit </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol1 twikiLast"> No </td>
+			<td bgcolor="#ffffff" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> Maximum number of files in the area </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+While FreeSpace, UsedSpace, TotalSpace, and FileCount are not all required, if they are all left blank, the record may be ignored.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Other_information"></a> Other information </span></h2>
+<p />
+Many storage elements have additional arbitrary data that they would like to report.  For example, HDFS has a lightweight fsck utility that takes a few seconds to run and reports the general state of the system.  If such information is pertinent, you can send a UsageRecord containing arbitrary XML.
+<p />
+The UsageRecord must conform to the following: <ul>
+<li> ResourceType must be set to <strong>Storage-CustomInfo</strong>
+</li> <li> AdditionalInfo must contain a key-value pair of <strong>CustomInfo</strong> and <strong>CommandOutput</strong>
+</li> <li> Status must be set to the exit code of the storage command used.  Use this to report failures in collecting data
+</li> <li> StartTime and EndTime must be populated, preferably to the start and end time of the command run, respectively.
+</li> <li> JobName should be set to the command run.
+</li> <li> ProjectName must be set to the Space Unique ID of the SE.
+</li> <li> Call GenericAddToList with key <strong>CommandOutput</strong> and value of XML-escaped output of the command.
+</li></ul> 
+<p />
+I use a generic function called "collect_data" to run an arbitrary command and send a record containing its output:
+<p />
+<pre>
+import time
+import xml.sax.saxutils
+
+import Gratia
+
+def collect&#95;data(cmd, name, se):
+    &#34;&#34;&#34;
+    Parameters:
+       - cmd: The command to run
+       - name: The display name of the information returned.  Used as a header in the storage report
+       - se: The UniqueID of the associated SE.
+    &#34;&#34;&#34;
+    time&#95;start &#61; time.time()
+    fd &#61; os.popen(cmd)
+    output &#61; fd.read()
+    result &#61; fd.close()
+    time&#95;end &#61; time.time()
+    if result:
+        output &#61; &#34;WARNING: Non-zero exit code\n&#34; + output
+    else:
+        result &#61; 0
+    output &#61; xml.sax.saxutils.escape(output)
+    ur &#61; Gratia.UsageRecord()
+    ur.StartTime(time&#95;start)
+    ur.ResourceType(&#34;Storage-CustomInfo&#34;)
+    ur.AdditionalInfo(&#34;CustomInfo&#34;, &#34;CommandOutput&#34;)
+    ur.GenericAddToList(&#34;CommandOutput&#34;, output)
+    ur.Status(str(result))
+    ur.WallDuration(time&#95;end - time&#95;start)
+    ur.EndTime(time&#95;end)
+    ur.JobName(name, description&#61;cmd)
+    ur.ProjectName(&#39;&#37;s:SE:&#37;s&#39; &#37; (se, se))
+    Gratia.Send(ur)
+</pre>
+<p />
+<h1><a name="Entries_for_Storage_Report"></a> Entries for Storage Report </h1>
+<p />
+The Storage report requires the following records: <ul>
+<li> StorageElement and StorageElementRecord for the "SE" space type.  The measurement type must be "raw".
+</li> <li> StorageElement for at least one area in the system.
+</li> <li> At least one StorageElement and StorageElementRecord for a directory, quota, or space reservation within the area.
+</li></ul> 
+<p />
+There will be one column for yesterday's record, one column for the day before that, and one column for 7 days previous.
+Additionally, the storage report will create a section for each uniquely named "Other information" as described above.  There will be one table per area.  For example, CMS sites may have one area for users, one area for simulated data, and one area for detector data.
+<p />
+<h1><a name="Examples"></a> Examples. </h1>
+<p />
+This is the part you were looking for.  I'll illustrate records I use for our entire SE, a record for a single datanode, a record for an area in the SE, and a record for a quota.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="SE"></a> SE </span></h2>
+StorageElement:
+<pre>
+    sa &#61; StorageElement.StorageElement()
+    timestamp &#61; time.time()
+    se &#61; &#34;hadoop-name.unl.edu&#34;
+    name &#61; &#34;Nebraska Hadoop&#34;
+    unique&#95;id &#61; &#39;&#37;s:SE:&#37;s&#39; &#37; (se, se)
+    parent&#95;id &#61; &#39;&#37;s:SE:&#37;s&#39; &#37; (se, se) # Note that the SE is its own parent.
+    sa.UniqueID(unique&#95;id) 
+    sa.Name(name)
+    sa.SE(se)
+    sa.SpaceType(&#39;SE&#39;)
+    sa.Implementation(&#39;Hadoop&#39;)
+    sa.Version(&#34;0.19.2&#34;)
+    sa.Status(&#39;Production&#39;)
+    sa.ParentID(parent&#95;id)
+    sa.Timestamp(timestamp)
+    Gratia.Send(sa)
+</pre>
+<p />
+StorageElementRecord:
+<pre>
+    sar &#61; StorageElementRecord.StorageElementRecord()
+    timestamp &#61; time.time()
+    se &#61; &#34;hadoop-name.unl.edu&#34;
+    name &#61; &#34;Nebraska Hadoop&#34;
+    unique&#95;id &#61; &#39;&#37;s:SE:&#37;s&#39; &#37; (se, se)
+    parent&#95;id &#61; &#39;&#37;s:SE:&#37;s&#39; &#37; (se, se)
+    sar.UniqueID(unique&#95;id)
+    sar.MeasurementType(&#39;raw&#39;)
+    sar.StorageType(&#39;disk&#39;)
+    sar.TotalSpace(12345) # Some number in bytes
+    sar.FreeSpace(12340) # Some number in bytes
+    sar.UsedSpace(5) # Again, in bytes.
+    sar.Timestamp(timestamp)
+    sar.FileCount(file&#95;count)
+    if quota !&#61; &#39;none&#39;:
+        sar.FileCountLimit(quota)
+    Gratia.Send(sar)
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Pool"></a> Pool </span></h2>
+<p />
+Pools are not currently used in the storage report (but definitely could be added...)
+<p />
+<pre>
+    name &#61; &#34;node254&#34;
+    se &#61; &#34;hadoop-unl.name.edu&#34;
+    unique&#95;id &#61; &#39;&#37;s:Pool:&#37;s&#39; &#37; (se, name)
+    parent&#95;id &#61; &#39;&#37;s:SE:&#37;s&#39; &#37; (se, se)
+    sa &#61; StorageElement.StorageElement()
+    sar &#61; StorageElementRecord.StorageElementRecord()
+    sa.UniqueID(unique&#95;id)
+    sa.Name(name)
+    sa.SE(se)
+    sa.SpaceType(&#39;Pool&#39;)
+    sa.Implementation(&#39;Hadoop&#39;)
+    sa.Version(&#34;0.19.2&#34;)
+    sa.Status(status)
+    sa.ParentID(parent&#95;id)
+    sa.Timestamp(timestamp)
+    sar.Timestamp(timestamp)
+    sar.UniqueID(unique&#95;id)
+    sar.MeasurementType(&#39;raw&#39;)
+    sar.StorageType(&#39;disk&#39;)
+    sar.TotalSpace(node.get(&#39;Configured Capacity&#39;, &#39;0&#39;).split()&#91;0])
+    sar.FreeSpace(node.get(&#39;DFS Remaining&#39;, &#39;0&#39;).split(&#39;(&#39;)&#91;0].strip())
+    sar.UsedSpace(node.get(&#39;DFS Used&#39;, &#39;0&#39;).split()&#91;0])
+    Gratia.Send(sa)
+    Gratia.Send(sar)
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Area"></a> Area </span></h2>
+<p />
+Note that for areas, only a StorageElement is required.
+<p />
+<pre>
+        se &#61; &#34;hadoop-name.unl.edu&#34;
+        space&#95;type &#61; &#34;Area&#34;
+        name &#61; &#34;CMS /store/user&#34;
+        sa &#61; StorageElement.StorageElement()
+        unique&#95;id &#61; &#39;&#37;s:&#37;s:&#37;s&#39; &#37; (se, space&#95;type, name)
+        parent&#95;id &#61; &#39;&#37;s:SE:&#37;s&#39; &#37; (se, se)
+        sa.UniqueID(unique&#95;id)
+        sa.Name(name)
+        sa.SE(se)
+        sa.SpaceType(space&#95;type)
+        sa.Implementation(&#39;Hadoop&#39;)
+        sa.Version(&#34;0.19.2&#34;)
+        sa.Status(&#39;Production&#39;)
+        sa.ParentID(parent&#95;id)
+        sa.Timestamp(time.time())
+        Gratia.Send(sa)
+</pre>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Directory_Quota_measurement"></a> Directory/Quota measurement </span></h2>
+<p />
+Notes: <ul>
+<li> The parent name refers to the parent area
+</li> <li> This is a logical measurement; i.e., we are looking at how many bytes of user data there is, regardless of how many hard drive bytes it takes to store it.
+</li></ul> 
+<p />
+<pre>
+        space&#95;name &#61; &#34;/store/user/brian&#34;
+        area&#95;name &#61; &#34;CMS /store/user&#34;
+        space&#95;unique&#95;id &#61; &#39;&#37;s:&#37;s:&#37;s&#39; &#37; (se, space&#95;type, space&#95;name)
+        parent&#95;id &#61; &#39;&#37;s:&#37;s:&#37;s&#39; &#37; (se, &#39;Area&#39;, area.name)
+        sa.Name(space&#95;name)
+        sa.SE(se)
+        sa.UniqueID(space&#95;unique&#95;id)
+        sa.SpaceType(space&#95;type)
+        sa.Implementation(&#34;Hadoop&#34;)
+        sa.Version(get&#95;version(cp))
+        sa.Status(&#34;Production&#34;)
+        sa.ParentID(parent&#95;id)
+        sar.UniqueID(space&#95;unique&#95;id)
+        sar.MeasurementType(measurement&#95;type)
+        sar.StorageType(storage&#95;type)
+        sar.TotalSpace(size)
+        sar.FreeSpace(0)
+        sar.FileCountLimit(0)
+        sar.FileCount(file&#95;count)
+        sar.UsedSpace(size)
+        sar.Timestamp(timestamp)
+        sa.Timestamp(timestamp)
+        if quota !&#61; &#39;none&#39;:
+                sar.FileCountLimit(quota)
+        if space&#95;quota !&#61; &#39;none&#39;:
+                sar.TotalSpace(space&#95;quota)
+                sar.FreeSpace(remaining&#95;space&#95;quota)
+        Gratia.Send(sa)
+        Gratia.Send(sar)
+</pre>
+<p />
+<h1><a name="Example_Report_Output"></a> Example Report Output </h1>
+<p />
+The example below shows the top part of a storage report.  This should give you a feel of what output the site admin gets with the raw information about the whole SE and one area with a few directories
+<p />
+<pre>
+&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;
+  The Hadoop Chronicle &#124; 86 &#37; &#124; 2009-10-28
+&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;
+
+--------------------
+&#124; Global Storage   &#124;
+-----------------------------------------------------
+&#124;                  &#124;  Today  &#124; Yesterday &#124; One Week &#124;
+-----------------------------------------------------
+&#124; Total Space (GB) &#124; 429,863 &#124;   457,113 &#124;  460,744 &#124;
+&#124; Free Space (GB)  &#124;  62,082 &#124;    91,642 &#124;  100,926 &#124;
+&#124; Used Space (GB)  &#124; 367,781 &#124;   365,471 &#124;  359,818 &#124;
+&#124; Used Percentage  &#124;     86&#37; &#124;       80&#37; &#124;      78&#37; &#124;
+-----------------------------------------------------
+
+--------------
+&#124; CMS /store &#124;
+-------------------------------------------------------------------------------------------------------------
+&#124;           Path           &#124; Size(GB) &#124; 1 Day Change &#124; 7 Day Change &#124; # Files &#124; 1 Day Change &#124; 7 Day Change &#124;
+-------------------------------------------------------------------------------------------------------------
+&#124; /store/user              &#124;      773 &#124;            0 &#124;            0 &#124;   5,232 &#124;            0 &#124;            0 &#124;
+&#124; /store/mc                &#124;  128,875 &#124;          508 &#124;        2,375 &#124; 109,460 &#124;          226 &#124;        1,165 &#124;
+&#124; /store/relval            &#124;        8 &#124; UNKNOWN      &#124; UNKNOWN      &#124;      11 &#124; UNKNOWN      &#124; UNKNOWN      &#124;
+&#124; /store/test              &#124;        0 &#124;            0 &#124;            0 &#124;     694 &#124;            0 &#124;            0 &#124;
+&#124; /store/results           &#124;      487 &#124;            0 &#124;            0 &#124;     302 &#124;            0 &#124;            0 &#124;
+&#124; /store/phedex&#95;monarctest &#124;      729 &#124;            0 &#124;            0 &#124;     257 &#124;            0 &#124;            0 &#124;
+&#124; /store/unmerged          &#124;      174 &#124;           29 &#124;           64 &#124;  25,351 &#124;        1,740 &#124;       13,912 &#124;
+&#124; /store/CSA07             &#124;        0 &#124;            0 &#124;            0 &#124;       0 &#124;            0 &#124;            0 &#124;
+&#124; /store/data              &#124;    1,678 &#124;            0 &#124;            0 &#124;     433 &#124;            0 &#124;            0 &#124;
+&#124; /store/PhEDEx&#95;LoadTest07 &#124;       10 &#124;            0 &#124;            3 &#124;       6 &#124;           -1 &#124;           -1 &#124;
+&#124; /store/group             &#124;      389 &#124;            0 &#124;            0 &#124;     701 &#124;            0 &#124;            0 &#124;
+-------------------------------------------------------------------------------------------------------------
+</pre>
+<p />
+-- <a href="/bin/view/Main/BrianBockelman" class="twikiLink">BrianBockelman</a> - 29 Oct 2009</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Accounting<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Accounting/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/Accounting/ProbeDevelopement" class="twikiLink">ProbeDevelopement</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>StorageProbeDevelopment</span> <br />    
+Topic revision: r2 - 04 Oct 2010 - 19:56:35 - <a href="/bin/view/Main/TanyaLevshina" class="twikiLink">TanyaLevshina</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

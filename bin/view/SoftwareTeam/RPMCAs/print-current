@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> RPMCAs &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/RPMCAs?_T=16 Feb 2017" type="application/x-wiki" title="edit RPMCAs" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/RPMCAs"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Plan_for_Handling_CA_Certificate"></a> Plan for Handling CA Certificates in RPMs </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Existing_work"></a> Existing work </span></h2>
+<p /> <ul>
+<li> We have agreed that we want both osg-ca-certs RPM and vdt-ca-manage packaged as a separate RPM.
+</li> <li> GOC currently hosts osg-ca-certs, v1.19 (about to be 1.20) in a stand-alone repository.
+</li> <li> OSG Software has created osg-ca-certs and placed it in its repository <ul>
+<li> Unfortunately, this is <strong>not</strong> the same as the GOC one, as the packager didn't have access to their SRPM.  They versioned as version "3", and made it a meta-RPM that pulls in vdt-ca-certs
+</li> <li> This was done out of expediency to have something to show for the Site Admins meeting.  We need to undo it, as mentioned below.
+</li></ul> 
+</li> <li> vdt-ca-manage has not been packaged into an RPM.
+</li> <li> We are working with <a href="/bin/view/Operations/RPMRepositoryPlan" class="twikiLink">GOC</a> to merge the OSG Software and OSG Operations repositories into one repository.  The joint repository will still be hosted by Operations, but its contents will be managed by Koji.  So, in order for a package to be added to the software repository, it must first be added to Koji; the transition from development to testing to release will be handled through Koji tools. <ul>
+<li> An example of how this might work:  Anand (OSG Security) creates a new osg-ca-certs RPM, he will upload the source RPM to OSG Software's Koji.  It will be built, his actions recorded in a database, and checksums of all components will be taken.  Within 1 hour, it will be appear at the GOC development repository.  Anand will test the RPM, and ask Soichi (OSG Operations) to promote it to the testing repository on the next ITB maintenance window.  If all goes well, at the following week's production maintenance window, Soichi will promote the RPM from testing to production. <ul>
+<li> Note Koji will be used to maintain an audit trail and record what is located in which repository, but the workflow does not involve OSG Software, and the repositories are hosted by OSG Operations.
+</li></ul> 
+</li></ul> 
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Requirements_Issues"></a> Requirements / Issues </span></h2>
+<p /> <ul>
+<li> We need to unwind the versioning mistake made in the OSG Software osg-ca-certs. (This can be done with epoch or just blocking the old RPM.)
+</li> <li> We should have one RPM for osg-ca-certs, one RPM for IGTF-only certs, and one RPM for vdt-ca-manage <ul>
+<li> All RPMs should have a virtual provides of "grid-certificates".  Hence, any package that needs certificates will add "Requires: grid-certificates", not a specific method.
+</li> <li> It should not be possible to install vdt-ca-manage and one of the CA certificates.
+</li> <li> Each set of CAs will have two RPMs: one for the old format, one for the new format.
+</li></ul> 
+</li> <li> We need a short documentation page explaining how to install and manage certificates.  This will be included into other install documents <strong>prior</strong> to the first "yum install" call to make sure the admin knows what they are getting.
+</li> <li> OSG Security must be able to control the contents of the CA certificates in the repository.
+</li> <li> It is not yet determined who will package vdt-ca-manage and related tools.
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Brian_s_Proposal"></a> Brian's Proposal </span></h2>
+<p /> <ul>
+<li> Software will design acceptable RPMs to meet the requirements listed above. <ul>
+<li> Software will push an initial version to the development repository.  Subsequent releases will be done by Security.
+</li></ul> 
+</li> <li> Software will provide training to Security and Operations on using the build system.  It is the responsibility of Security to merge this information into their <span class="twikiNewLink">CreatingCADistributions<a href="/bin/edit/SoftwareTeam/Security?topicparent=SoftwareTeam.RPMCAs" rel="nofollow" title="CreatingCADistributions (this topic does not yet exist; you can create it)">?</a></span> document.
+</li> <li> Security will write documentation for installing and managing certificates.
+</li></ul> 
+<p />
+<p />
+<h1><a name="Punchlist_for_a_Certificate_Rele"></a> Punchlist for a Certificate Release </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Produce_RPMs"></a> Produce RPMs </span></h2>
+<p />
+We currently produce 4 RPMs: <ul>
+<li> osg-ca-certs (legacy format, all CAs)
+</li> <li> osg-ca-certs-experimental (new format, all CAs)
+</li> <li> igtf-ca-certs (legacy format, IGTF CAs)
+</li> <li> igtf-ca-certs-experimental (new format, IGTF CAs)
+</li></ul> 
+<p />
+We currently prefer sites install osg-ca-certs if no specific package is requested.
+<p />
+Each RPMs has a virtual provides of "grid-certificates".  This way, other RPMs only need to depend on "grid-certificates", and any of the above packages will match.  We further version the virtual provides in order to make sure the preferred RPM is provided in the case of a new install.
+<p />
+<h3><a name="Update_and_Rebuild"></a> Update and Rebuild </h3>
+<p />
+For each RPM: <ul>
+<li> Upload the new versions onto the UW AFS area.
+</li> <li> Update source files in OSG SVN.
+</li> <li> Bump version numbers, as described below.
+</li> <li> Update the changelog.
+</li></ul> 
+<p />
+<h3><a name="Versioning"></a> Versioning </h3>
+<p />
+There's two version numbers in each RPM:
+<p /> <ul>
+<li> RPM version: This is the IGTF version for igtf-ca-certs* or the OSG release version.  These are currently 1.40 and 1.20, respectively.
+</li> <li> Virtual provides version: This is an internal number.  All RPMs must have "Provides: grid-certificates = XXX", where XXX is the virtual provides version.  These must be incremented each time, and the 'preferred' RPM must have the greatest number.  Currently (release 1.20), these are: <ul>
+<li> osg-ca-certs: 7
+</li> <li> osg-ca-certs-experimental: 6
+</li> <li> igtf-ca-certs: 5
+</li> <li> igtf-ca-certs-experimental: 4      So, for the next release, the numbers should be 11, 10, 9, 8, respectively.
+</li></ul> 
+</li></ul> 
+<p />
+<h3><a name="Testing"></a> Testing </h3>
+<p />
+You should fire up a new, clean VM, install the osg-development repository, and do <code><b>yum install grid-certificates</b></code>.  Verify the preferred RPM is installed.</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/InternalDocs" class="twikiLink">InternalDocs</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>RPMCAs</span> <br />    
+Topic revision: r7 - 06 Dec 2016 - 18:13:13 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

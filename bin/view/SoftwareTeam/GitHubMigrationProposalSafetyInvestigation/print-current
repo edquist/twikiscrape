@@ -1,0 +1,309 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> GitHubMigrationProposalSafetyInvestigation &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/GitHubMigrationProposalSafetyInvestigation?_T=16 Feb 2017" type="application/x-wiki" title="edit GitHubMigrationProposalSafetyInvestigation" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/GitHubMigrationProposalSafetyInvestigation"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Safety_investigation_of_the_GitH"></a> Safety investigation of the GitHub migration proposal </span></h2>
+<p />
+From <a href="/bin/view/Main/CarlEdquist" class="twikiLink">CarlEdquist</a>:
+<pre>
+What kind of vulnerabilities are we concerned with?
+
+1. &#34;corruption&#34; -- anything that destroys history; specifically, the ability
+to do fast-forward fetches.
+
+2. &#34;garbage&#34; -- an unauthorized or rogue user (or a rogue github) pushes
+unwanted commits that do not destroy history.  (&#34;Sufficiently-fat-fingered&#34;
+can also be considered rogue.)
+</pre>
+<p />
+3. "destruction" -- someone hacks into github and pushes the "delete" button on
+   a repo.
+<p />
+<h3><a name="Preventing_corruption"></a> Preventing "corruption" </h3>
+<p />
+From <a href="/bin/view/Main/CarlEdquist" class="twikiLink">CarlEdquist</a>:
+<p />
+<pre>
+- If &#34;corruption&#34; happens on github, the automated fetch to the AFS repos
+  will fail, and we&#39;ll be notified immediately.  Since non-fast-forward
+pushes will (should) be disabled on github, this would be an indication that
+somebody&#39;s not playing nice, and we may want to investigate that.
+
+In any case, the AFS repos won&#39;t be changed, so we can force-push everything
+back to github to recover.  (Temporarily re-enabling force-pushes for this
+recovery.)
+
+On the developer end, corrupted updates from the github upstream get
+rejected by pulls.  New checkouts of the corrupted github repos (before our
+recovery) will of course contain the corruption, so they can be discarded as
+we&#39;ll direct everyone in an email.
+</pre>
+<p />
+<h3><a name="Preventing_garbage"></a> Preventing "garbage" </h3>
+<p />
+From <a href="/bin/view/Main/CarlEdquist" class="twikiLink">CarlEdquist</a>:
+<p />
+<pre>
+- If &#34;garbage&#34; commits make their way into the github repos; first someone
+will have to notice.  If someone is trying to be sneaky and sneak something
+in, it may not be obvious.  (The case seems about the same as for the UW SVN
+repo.)  There are ways to protect against it (namely having everyone sign
+all their own commits, and enforcing checking for this), but I suspect
+that&#39;s more than we really want.
+
+But if a bad commit is discovered (aha! gotcha!), and it&#39;s offensive enough
+that we want to remove it from our repo entirely (instead of just adding a
+further commit to revert it), we can &#39;git reset&#39; the AFS repos to just
+before the offending commit, optionally run &#39;git gc&#39; to remove any offending
+blobs from the object store, force-push back to github, and email everybody.
+
+As a special case, if a 4TB garbage commit makes it to the github repos
+(assuming github itself doesn&#39;t reject it!), then the automated fetches to
+AFS would fail, exhausting the vdt disk quota on AFS.  In this case, the AFS
+repos will not be in a corrupted state, and the garbage commit will not be
+included in the repo, but a (large) incomplete temporary file will be left
+behind (with an obvious name like objects/02/tmp&#95;obj&#95;YCIXgK).
+
+We will have to manually delete such a temp file, and then force-push the
+(unchanged) AFS repo back to github.
+</pre>
+<p />
+<h3><a name="Responding_to_GitHub_outages"></a> Responding to GitHub outages </h3>
+<p />
+From <a href="/bin/view/Main/CarlEdquist" class="twikiLink">CarlEdquist</a>:
+<p />
+<pre>
+There are two cases to consider.
+
+1. Temporary outages.  (Kind of like when JIRA goes down  :)
+
+2. Severe or permanent outages.  (When it&#39;s too long to tolerate...)
+
+
+For temporary outages, developers can continue to commit to their local
+repos, and do whatever development they want.  This includes making new tags
+and cutting release tarballs to use as new upstream sources for builds.
+Anyone can also clone or update from the official ones in AFS in the mean
+time -- though as long as the outage is considered temporary, no one should
+push back to AFS, but wait until it becomes possible to push back to github
+again.
+
+For severe or permanent outages (which someone with Say can determine), then
+everyone can just switch their upstream (remote) back to AFS.
+
+Something like:
+
+    upstream&#61;/p/condor/workspaces/vdt/git/software/&#60;project&#62;.git
+    git remote set-url origin $upstream
+
+for checkouts with direct AFS access; or for access via ssh:
+
+    upstream&#61;/p/condor/workspaces/vdt/git/software/&#60;project&#62;.git
+    cshost&#61;library.cs.wisc.edu
+    git remote set-url origin $cshost:$upstream
+
+Everyone then gets to play nice (no pull requests) and push directly to the
+AFS location (like they do in FW&#39;s CONDOR&#95;SRC git).  If someday github comes
+back online, we should be able to just fast-forward push the updates to
+github, and tell everybody to switch back.  (But, it&#39;s important that they
+listen!)
+</pre>
+<p />
+<h3><a name="Recovering_from_repo_destruction"></a> Recovering from repo destruction </h3>
+<p />
+Destruction of a GitHub repo can be handled the same way as a permanent
+outage, since once the repo is destroyed, fetches from it will fail. While we
+wait for GitHub to be usable again, we switch the location of the upstream Git
+repo to the AFS repo, and work as above.
+<p />
+<h3><a name="Preventing_tag_corruption"></a> Preventing tag corruption </h3>
+<p />
+From <a href="/bin/view/Main/CarlEdquist" class="twikiLink">CarlEdquist</a>:
+<p />
+<pre>
+&#91;2] Removing the &#39;+&#39; in the fetch refspec prevents non-fast-forward updates,
+but tag updates are actually a separate issue.  Normally for a checkout, if
+an upstream tag changes, a pull will not update the local tag.  Also, a
+(non-force) push will fail for an updated tag (that is, it will refuse to
+update a tag reference on a remote.)  But in our case, we have a bare repo
+(not a working copy/checkout) and we do fetches, not pulls or pushes.  To my
+horror, I have found no way to prevent tag updates via fetch to a bare repo.
+If tags are included in your fetch, tag updates will come also.
+
+(Again, tag updates will not get pulled into working copy/checkouts that
+have the original tag, but the main issue is how to protect the tags in the
+AFS repos from upstream corruption.)
+
+I would very much welcome any suggestions on how to handle this potential
+issue.  (&#64;bb?)  So far, I have come up with two ways to protect against
+this, both of which I consider a little ugly.
+
+1. fetch to an intermediate bare repo, and then push to the main bare repo.
+The fetch will update the tag, but the push will fail.  This has the
+advantage of being able to detect easily when tag updates happen (which
+should be forbidden, so we do want to know).  The downside is this approach
+uses an extra staging repo.  (Then again, we could use that as an extra
+backup...)
+
+2. use a non-standard fetch refspec for tags; for example:
+
+        fetch &#61; refs/heads/&#42;:refs/heads/&#42;
+        fetch &#61; refs/tags/&#42;:refs/tag-stage/&#42;
+
+Instead of fetching everything (&#39;refs/&#42;&#39;), single out heads and tags, but
+fetch tags to a non-standard location.  As a side effect, new tags will get
+created in the standard location (under refs/tags), along with
+refs/tag-stage, but tag updates will only make it to tag-stage, and will
+(silently) not update the tags under refs/tags.  This appears to work, and
+has the advantage of not needing a separate staging repo.  One disadvantage
+is it does not automatically bring in &#39;other&#39; types of refs (eg, github
+&#39;pull&#39; refs), although if we really want them, we can list them explicitly
+in the fetch list.  Also, this is a little less obvious to detect; there are
+no failures, though if you parse the command output you can detect trouble
+any time there is a tag-stage update, eg:
+
+   8c1bcea..cec9488  v1.2.3         -&#62; refs/tag-stage/v1.2.3
+
+Also worrisome is that the semantics here don&#39;t seem to be clearly
+documented... It would make me feel a little better if we could point to
+something that says yes it&#39;s supposed to work that way.  But in any case,
+I&#39;ve confirmed it works in both git 1.7.12 and 2.5.0.  (So, the behavior
+seems stable...)
+
+---
+
+Alternatively, if we are OK with just being informed of tag updates (instead
+of preventing them), we can add reflogs for all tags, which under normal
+circumstances will remain empty.  Making reflogs for tags automatically is
+not really convenient in git; for some reason core.logAllRefUpdates works
+for refs/heads but not refs/tags (which at least is documented), and
+&#39;git tag --create-reflog&#39; only seems to create a reflog for a new tag.
+
+We can add something like the following to the fetch script, after the fetch
+command runs, to create reflogs for all new tags, and detect tag updates
+from existing ones.
+
+    # from $GIT&#95;DIR
+    for tag in $(git tag); do
+        taglog&#61;logs/refs/tags/$tag
+        tagdir&#61;${taglog&#37;/&#42;}
+        &#91;&#91; -d $tagdir ]] &#124;&#124; mkdir -p $tagdir
+        &#91;&#91; -e $taglog ]] &#124;&#124; touch $taglog
+        if &#91;&#91; -s $taglog ]]; then
+            echo &#34;Warning: tag $tag has a history...&#34;
+            git reflog refs/tags/$tag
+            echo
+        fi &#62;&#38;2
+    done
+
+</pre>
+<p />
+A third option is to have developers sign tags with their GPG keys.  That might
+not prevent tag corruption, but it would let us know if it had taken place.
+<p />
+<p />
+<p />
+<p />
+<p />
+-- <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a> - 26 Feb 2016</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/InternalDocs" class="twikiLink">InternalDocs</a> &gt; <a href="/bin/view/SoftwareTeam/GitHubMigrationProposal" class="twikiLink">GitHubMigrationProposal</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>GitHubMigrationProposalSafetyInvestigation</span> <br />    
+Topic revision: r1 - 26 Feb 2016 - 22:21:58 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

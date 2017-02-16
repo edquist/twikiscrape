@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> NativePackagingRequirements &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/NativePackagingRequirements?_T=16 Feb 2017" type="application/x-wiki" title="edit NativePackagingRequirements" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/NativePackagingRequirements"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> -- <a href="/bin/view/Main/DanFraser" class="twikiLink">DanFraser</a> - 16 Mar 2011
+<p />
+There are three main drivers for native packaging: <ol>
+<li> The primary driver for using native packages is to incorporate OSG software into standard configuration management tools (e.g. Puppet, CFEngine, Rocks, …). Currently these tools do not integrate with Pacman, and as a result, many site admins are already creating their own binary RPM packages (and sometimes even sharing these with other admins) for use in their installations. A significant step forward would be to help them get out of the business of creating binary RPMs on their own.
+</li> <li> Another key driver is to get the VDT team out of the business of repackaging existing packages. 
+</li> <li> An important use case by Atlas is to manage multiple (clustered) CEs. This is the main driver behind <a href="/bin/view/SoftwareTeam/CREAM" class="twikiLink">CREAM</a>.
+</li></ol> 
+<p />
+The requirement is to focus first on components that are installed and/or managed most frequently. 
+In addition, there needs to be “configuration” RPMs for carrying basic configuration capabilities.
+Need to package the following binary RPMs and place them in a Yum repository that would support commands like “yum install osg-wn-client”. This repository should include:
+<p /> <ul>
+<li> OSG WN Client packages: <ul>
+<li> Globus-client
+</li> <li> Globus-RLS-Client
+</li> <li> CA-certificates
+</li> <li> Licenses
+</li> <li> Pegasus-worker
+</li> <li> <span class="twikiNewLink">UberFTP<a href="/bin/edit/SoftwareTeam/UberFTP?topicparent=SoftwareTeam.NativePackagingRequirements" rel="nofollow" title="UberFTP (this topic does not yet exist; you can create it)">?</a></span>
+</li> <li> SRM-Client-Fermi
+</li> <li> SRM-Client-LBNL
+</li> <li> Dccp
+</li> <li> <span class="twikiNewLink">MyProxy<a href="/bin/edit/SoftwareTeam/MyProxy?topicparent=SoftwareTeam.NativePackagingRequirements" rel="nofollow" title="MyProxy (this topic does not yet exist; you can create it)">?</a></span>-client
+</li> <li> LCG-utils
+</li> <li> LFC-client
+</li> <li> Voms-client
+</li> <li> Glite-FTS-client
+</li> <li> EDG-GridFTP-client
+</li></ul> 
+</li></ul> 
+<p /> <ul>
+<li> Glexec – since installation does not work on a network filesystem.
+</li> <li> CA Certificate Installation management (e.g. vdt-ca-manage)
+</li> <li> Xrootd (primarily for Atlas Tier-3’s) <ul>
+<li> From discussion at the AHM meeting, we are currently waiting on the Xrootd team to provide a basic configuration template to build on.
+</li> <li> There were additional discussions that need to be incorporated here.
+</li> <li> Issues reported by Doug B. that need to be addressed include: <ul>
+<li> Note -  epel yum repository - has xrootd rpm  which clashes with OSG rpm . epl xrootd rpm is of unknown origin. At CERN SL5 work stations have epel repository enabled. Can we coordinate with epel on this?
+</li> <li> Critical Missing files: <ul>
+<li> /etc/init.d/xrootd
+</li> <li> xrootd/etc/StartXRD
+</li> <li> xrootd/etc/StartXRD.cf
+</li></ul> 
+</li> <li> Critical Missing directories: <ul>
+<li> /opt/vdt/xrootd/core
+</li></ul> 
+</li> <li> The RPM does not create non-privilege account to run xrootd.  Note in ATLAS Tier 3 we recommend people use xrootd:xrootd account.
+</li> <li> In the condor rpm if the condor user is missing it is created. Can that happen here?
+</li> <li> Critical missing directory ownership: (Assuming that xrootd will run under xrootd account) <ul>
+<li> directories owned by xrootd:xrootd <ul>
+<li> /opt/vdt/xrootd/core
+</li> <li> /opt/vdt/xrootd/var/*
+</li></ul> 
+</li></ul> 
+</li> <li> Other issues -  (understood that this is missing for now - perhaps a configuration rpm) <ul>
+<li> missing auth_file: xrootd.cfg
+</li> <li> files that must be edited.
+</li> <li> xrootd/etc/StartXRD  - for starting extra xrootd on redirector machine Server Side inventory.  (started with -n cns flag)
+</li> <li> /etc/init.d/xrootdfs to get the proper mount points.
+</li></ul> 
+</li></ul> 
+</li></ul> 
+</li></ul> 
+<p /> <ul>
+<li> Additional native packaging requirements from LIGO. <ul>
+<li> Tim and Alain understand what these are.
+</li></ul> 
+</li></ul> 
+<p /> <ul>
+<li> <a href="/bin/view/SoftwareTeam/CREAM" class="twikiLink">CREAM</a> <ul>
+<li> From discussions with John H. at the AHM, the first set of RPMs only needs to be good enough to deploy a basic <a href="/bin/view/SoftwareTeam/CREAM" class="twikiLink">CREAM</a> install. They can be binary only and they only need to include enough to run <a href="/bin/view/SoftwareTeam/CREAM" class="twikiLink">CREAM</a>--they don't need a complete CE. 
+</li> <li> Date requested: End of March, Early April would be good. As soon as this is provided, John plans to have folks from his team start working on it.  <ul>
+<li> Full integration of <a href="/bin/view/SoftwareTeam/CREAM" class="twikiLink">CREAM</a> into Gratia, GIP, and the rest of the stack is tantamount to having the full integrated CE available as RPM. John would like to have this as soon as we can. The Aug time frame would be great. 
+</li></ul> 
+</li></ul> 
+</li></ul> </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/Projects" class="twikiLink">Projects</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>NativePackagingRequirements</span> <br />    
+Topic revision: r1 - 16 Mar 2011 - 03:02:45 - <a href="/bin/view/Main/DanFraser" class="twikiLink">DanFraser</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

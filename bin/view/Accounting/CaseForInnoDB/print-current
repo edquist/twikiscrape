@@ -1,0 +1,351 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> CaseForInnoDB &lt; Accounting &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Accounting/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Accounting/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Accounting/CaseForInnoDB?_T=16 Feb 2017" type="application/x-wiki" title="edit CaseForInnoDB" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/Accounting/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/Accounting/CaseForInnoDB"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#D0D0D0;
+	}
+	.patternBookView {
+		border-color:#D0D0D0;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <!--
+<p /> <ul>
+<li> Set I = InnoDB
+</li> <li> Set M = MyISAM
+</li></ul> 
+<p />
+-->
+<p />
+<h1><a name="The_case_for_InnoDB"></a> The case for InnoDB </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Overview"></a> Overview </span></h2>
+<p />
+This document attempts to marshal the arguments for making the transition to using InnoDB as the engine underlying Gratia's MySQL DBs and address with substantive data where possible possible differences between the two systems, especially in performance.
+<p />
+The major difference between InnoDB and MyISAM is that InnoDB supports transactions and true atomic inserts.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Pertinent_characteristics_of_the"></a> Pertinent characteristics of the Gratia system. </span></h2>
+<p />
+<ul>
+  <li>A single coherent "record" updates several tables not including summary tables.</li>
+  <li>Summary tables are updated currently by triggers.</li>
+  <li>The per-job usage data are large (~2K per row). This may be cut down by schema updates in the future.</li>
+  <li>Current understanding of OSG requirements call for for ~1.5TB of per-job data storage, equating to a year's worth of job-level data</li>
+  <li>The collector system is capable of running multiple DB update threads if the underlying DB engine supports it.</li>
+  <li>Eventually, summary tables will be generated periodically rather than by triggers.</li>
+  <li>Reports are generally produced using data obtained from "cookie-cutter" generated stored procedures.</li>
+</ul>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Limitations_of_the_current_Grati"></a> Limitations of the current Gratia system perceived to be due at least in part to limitations of the MyISAM engine. </span></h2>
+<p />
+<ul>
+  <li>Large job-level queries are slow.</li>
+  <li>Data are vulnerable to corruption as a result of connection loss for any reason between collector and DB.</li>
+  <li>Long queries (including nightly reporting to WLCG) and backup operations (<code>mysqlhotcopy</code>, <code>mysqldump</code>) lock out the DB for reads as well as writes, sometimes for hours (production system is regularaly stalled for &gt;1h every night).</li>
+  <li>Insert throughput cannot be increased to the DB using multiple update threads unless the underlying DB engine supports transactions.</li>
+</ul>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Performance_comparisons_of_Grati"></a> Performance comparisons of Gratia operations with MyISAM and InnoDB </span></h2>
+<p />
+<h3><a name="Implementation_notes"></a> Implementation notes </h3>
+<p />
+The Gratia system has already been adapted to enable automatic upgrade of an existing MyISAM schema to InnoDB. 
+<p />
+Enabling conversion to InnoDB on a given collector installation is as simple as changing one line in <code>hibernate.cfg.xml</code> provided optimum configuration settings are enabled in MySQL's <code>my.cnf</code>.
+<p />
+Utilizing transactions under InnoDB will require a survey of SQL operations in the current code and insertion of appropriate begin/end transaction statements.
+<p />
+<h3><a name="Optimum_MySQL_configuration"></a> Optimum MySQL configuration </h3>
+<p />
+InnoDB-specific configuration options used are listed below:<pre>&#91;mysqld]
+thread&#95;concurrency &#61; 8
+set-variable &#61; max&#95;connections&#61;500
+log-bin&#61;/test/mysqldb/mysql-bin
+innodb&#95;data&#95;home&#95;dir &#61; /test/mysqldb
+innodb&#95;data&#95;file&#95;path &#61; ibdata1:2000M;ibdata2:10M:autoextend
+innodb&#95;log&#95;group&#95;home&#95;dir &#61; /test/mysqldb
+innodb&#95;buffer&#95;pool&#95;size &#61; 2048M
+innodb&#95;additional&#95;mem&#95;pool&#95;size &#61; 20M
+innodb&#95;log&#95;file&#95;size &#61; 512M
+innodb&#95;log&#95;files&#95;in&#95;group &#61; 2
+innodb&#95;log&#95;buffer&#95;size &#61; 8M
+innodb&#95;file&#95;per&#95;table
+innodb&#95;flush&#95;log&#95;at&#95;trx&#95;commit &#61; 1
+innodb&#95;lock&#95;wait&#95;timeout &#61; 50
+</pre>
+<p />
+<h3><a name="Performance_tests"></a> Performance tests </h3>
+<p />
+Query tests were performed on copies of the ITB data corpus, one of which had been converted to InnoDB while the other was still MyISAM.
+<p />
+The tests were executed in the following order:
+<p /> <ol>
+<li> Q1 InnoDB Trials 01 - 05;
+</li> <li> Q1 MyISAM Trials 01 - 05;
+</li> <li> Q1 InnoDB Trial 01a;
+</li> <li> Q1 MyISAM Trial 01a;
+</li> <li> Q2 InnoDB Trials 01 - 05;
+</li> <li> Q2 MyISAM Trials 01 - 05;
+</li> <li> Q2 InnoDB Trial 01a;
+</li> <li> Q2 MyISAM Trial 01a;
+</li> <li> Q1 InnoDB Trial 01b;
+</li> <li> Q1 MyISAM Trial 01b;
+</li> <li> Q2 InnoDB Trial 01b;
+</li> <li> Q2 MyISAM Trial 01b.
+</li></ol> 
+<p />
+Notes:
+<p /> <ul>
+<li> Q1 and Q2 refer to query 1 (one week's worth of job-level data) and query 2 (approx 5 weeks' worth of job-level data) respectively.
+</li> <li> The times are not entirely static even with the use of the SQL_NO_CACHE directive, which is partly why I did the multiple test runs in the first place.
+</li> <li> The InnoDB configuration was optimized specifically to take account of the 6GB memory on the system; the MyISAM configuration was not.
+</li></ul> 
+<p />
+<h4><a name="Query_1"></a> Query 1 </h4>
+<h4><a name="Definition"></a> Definition </h4>
+<pre>select SQL&#95;NO&#95;CACHE
+  R.VOName,
+  sum(R.WallDuration) as WallDuration,
+  sum(R.CpuUserDuration + R.CpuSystemDuration) as Cpu,
+  sum(R.Njobs) as Njobs
+from JobUsageRecord&#95;Report R
+where R.EndTime &#62;&#61; date(&#39;2007-08-11 00:00:00&#39;)
+  and R.EndTime &#60;&#61; date(&#39;2007-08-28 00:00:00&#39;)
+  and R.ResourceType &#61; &#39;Batch&#39;
+group by R.VOName
+order by R.VOName;</pre>
+<p />
+<h5><a name="Results"></a> Results </h5>
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table1" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" rowspan="2" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Accounting/CaseForInnoDB?cover=print;sortcol=0;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Trial #</font></a> </th>
+			<th bgcolor="#d8dde4" rowspan="2" align="center" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/Accounting/CaseForInnoDB?cover=print;sortcol=1;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">InnoDB<br />    time (s)</font></a> </th>
+			<th bgcolor="#d8dde4" rowspan="2" align="center" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/Accounting/CaseForInnoDB?cover=print;sortcol=2;table=1;up=0#sorted_table" title="Sort by this column"><font color="#252b37">MyISAM<br />    time (s)</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 01 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol1"> 93 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 43 </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 02 </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol1"> 33 </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 17 </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 03 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol1"> 33 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 17 </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 04 </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol1"> 33 </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 17 </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 05 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol1"> 33 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 17 </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 01a </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol1"> 33 </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 17 </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> 01b </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol1 twikiLast"> 33 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> 17 </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h4><a name="Query_2"></a> Query 2 </h4>
+<h4><a name="Definition_AN1"></a> Definition </h4>
+<pre>select SQL&#95;NO&#95;CACHE
+  R.VOName,
+  sum(R.WallDuration) as WallDuration,
+  sum(R.CpuUserDuration + R.CpuSystemDuration) as Cpu,
+  sum(R.Njobs) as Njobs
+from JobUsageRecord&#95;Report R
+where R.EndTime &#62;&#61; date(&#39;2007-07-11 00:00:00&#39;)
+  and R.EndTime &#60;&#61; date(&#39;2007-08-28 00:00:00&#39;)
+  and R.ResourceType &#61; &#39;Batch&#39;
+group by R.VOName
+order by R.VOName;</pre>
+<p />
+<h5><a name="Results_AN1"></a> Results </h5>
+<table cellspacing="0" cellpadding="0" border="0" class="twikinetWrapperTable" rules="none">
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableT twikinetWrapperTableTL"></td>
+<td class="twikinetWrapperTableT twikinetWrapperTableTR"></td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td colspan="2" class="twikinetWrapperTableMain">
+<table cellspacing="0" id="table2" cellpadding="0" class="twikiTable" rules="cols" border="1">
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<th bgcolor="#d8dde4" rowspan="2" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> <a rel="nofollow" href="/bin/view/Accounting/CaseForInnoDB?cover=print;sortcol=0;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">Trial #</font></a> </th>
+			<th bgcolor="#d8dde4" rowspan="2" align="center" valign="top" class="twikiTableCol1"> <a rel="nofollow" href="/bin/view/Accounting/CaseForInnoDB?cover=print;sortcol=1;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">InnoDB<br />    time (s)</font></a> </th>
+			<th bgcolor="#d8dde4" rowspan="2" align="center" valign="top" class="twikiTableCol2 twikiLastCol"> <a rel="nofollow" href="/bin/view/Accounting/CaseForInnoDB?cover=print;sortcol=2;table=2;up=0#sorted_table" title="Sort by this column"><font color="#252b37">MyISAM<br />    time (s)</font></a> </th>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 01 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol1"> 43 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 374 </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 02 </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol1"> 43 </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 153 </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 03 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol1"> 43 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 115 </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 04 </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol1"> 43 </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 96 </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 05 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol1"> 43 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 92 </td>
+		</tr>
+		<tr class="twikiTableEven twikiTableRowdataBgSorted0 twikiTableRowdataBg0">
+			<td bgcolor="#ffffff" align="center" valign="top" class="twikiTableCol0 twikiFirstCol"> 01a </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol1"> 43 </td>
+			<td bgcolor="#ffffff" align="right" valign="top" class="twikiTableCol2 twikiLastCol"> 93 </td>
+		</tr>
+		<tr class="twikiTableOdd twikiTableRowdataBgSorted1 twikiTableRowdataBg1">
+			<td bgcolor="#f2f3f6" align="center" valign="top" class="twikiTableCol0 twikiFirstCol twikiLast"> 01b </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol1 twikiLast"> 43 </td>
+			<td bgcolor="#f2f3f6" align="right" valign="top" class="twikiTableCol2 twikiLastCol twikiLast"> 93 </td>
+		</tr></table>
+</td>
+</tr>
+<tr class="twikinetWrapperTableRow">
+<td class="twikinetWrapperTableB twikinetWrapperTableBL"></td>
+<td class="twikinetWrapperTableB twikinetWrapperTableBR"></td>
+</tr>
+</table>
+<p />
+<h4><a name="Results_commentary"></a> Results commentary </h4>
+<p /> <ul>
+<li> Despite the request for MySQL not to cache the results, there is a marked difference in some of the query times, especially for MyISAM. Speculation is that this is OS or CPU-related caching (memory, file, etc).
+</li> <li> In general, queries against the large table are a factor of two slower for small queries only. For larger queries, the MyISAM times blow up, settling down from a factor 20 to a factor 2 slower than the same query under InnoDB after multiple consecutive queries.
+</li></ul> 
+<p />
+-- <a href="/bin/view/Main/ChrisGreen" class="twikiLink">ChrisGreen</a> - 03 Dec 2007</div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Accounting<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Accounting/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>CaseForInnoDB</span> <br />    
+Topic revision: r5 - 11 Dec 2008 - 18:51:43 - <a href="/bin/view/Main/KyleGross" class="twikiLink">KyleGross</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

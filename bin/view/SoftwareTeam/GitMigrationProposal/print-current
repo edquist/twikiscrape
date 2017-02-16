@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> GitMigrationProposal &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/GitMigrationProposal?_T=16 Feb 2017" type="application/x-wiki" title="edit GitMigrationProposal" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/GitMigrationProposal"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <strong>Note: this document is outdated and has been superseded by <a href="/bin/view/SoftwareTeam/GitHubMigrationProposal" class="twikiLink">SoftwareTeam.GitHubMigrationProposal</a></strong>
+<p />
+<h1><a name="Switching_Software_Area_software"></a> Switching Software Area (/software) to Git </h1>
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Objectives"></a> Objectives </span></h2>
+<p /> <ul>
+<li> The OSG (or CHTC) must own and fully manage the operations of the authoritative Git repositories
+</li> <li> We must have dependable backups of the repositories
+</li> <li> There should be public mirrors of our repositories (on GitHub) that are kept up to date
+</li> <li> Anyone should be able to read the repositories or their public copies (e.g., GitHub), including histories
+</li> <li> Anyone should be able to submit a contribution
+</li> <li> The OSG Technology team must have sole write privileges on the authoritative repositories
+</li> <li> Team members must be able to easily review and approve submitted contributions
+</li> <li> The workflows for both contributors and team members must be clearly documented.     Common use cases should be efficient and easy to learn
+</li> <li> The migration process must preserve existing data, should interrupt work little, and should be reversible
+</li></ul> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Architecture"></a> Architecture </span></h2>
+<p />
+<h3><a name="Location_of_Access_to_the_Author"></a> Location of/Access to the Authoritative Repos </h3>
+<p />
+The authoritative repos will be on the UW's AFS. We'll use the UW CSL's kerberos authentication.
+External team members will clone their repos over SSH to some machine they have access to (e.g. <code>library</code>).
+This was the chosen architecture.
+<p />
+<strong>Advantages</strong> <ul>
+<li> No additional auths to set up -- all team members already have all the privileges they would need to use this
+</li> <li> Volumes will be backed up as-is (though care must be taken to ensure consistency)
+</li> <li> Not dependent on a single machine (any machine with AFS access is good)
+</li> <li> Precedent: HTCondor team does this
+</li></ul> 
+<p />
+<strong>Disadvantages</strong> <ul>
+<li> Need to ensure backup/mirroring cronjobs have AFS tokens
+</li> <li> Management divided between OSG Software and CSL
+</li></ul> 
+<p />
+<h3><a name="Public_GitHub_Mirror"></a> Public (GitHub) Mirror </h3>
+In order to facilitate contributions from external collaborators, we will
+create one GitHub repo for each authoritative repo. The GitHub repos will be
+owned by the "opensciencegrid" organization. Team members will need to have
+GitHub accounts and be members of the organization in order to approve
+contributions.
+<p />
+We will have a dedicated GitHub account for doing automated pushes to GitHub.
+We'll have a cron job that mirrors periodically, as well as a "post-receive"
+hook for each repo that does a push to GitHub after every push it receives.
+<p />
+<h3><a name="Backups"></a> Backups </h3>
+<p />
+Regardless of the other parts of the architecture, a rolling backup system like
+what we do for the SVN repos would be a good idea.
+<p />
+Here's a simple outline. For each repository: <ol>
+<li> Lock the repo (probably via an "update" hook that does exit 1)
+</li> <li> Wait for git-receive-pack processes to exit
+</li> <li> Rsync to copy the repo (preferably to AFS)
+</li> <li> Unlock the repo (remove the hook)
+</li> <li> Delete the oldest backups until we have &lt;=10
+</li></ol> 
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Contributions"></a> Contributions </span></h2>
+<p />
+External collaborators can fork or clone our GitHub mirror and send pull
+requests. A team member can examine the pull request, download it as a patch,
+then apply it to their own repo, and push the commit(s) to the real repos.
+<p />
+Shouldn't take too long -- GitHub provides copy-and-paste instructions, though
+they will have to be slightly modified since they are providing instructions on
+how to apply the change to the GitHub repo, not your own.
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Migration"></a> Migration </span></h2>
+<p />
+<h3><a name="One_time_Setup"></a> One-time Setup </h3>
+<p /> <ol>
+<li> Set up a git server
+</li> <li> Create an authors file to map SVN user names to email addresses for Git (there is one at "/p/condor/workspaces/vdt/svn-access/authors.txt")
+</li> <li> Create a backup cronjob that reads a list of repositories to back up; should be run by cndrutil user if we care about AFS
+</li> <li> Create a GitHub user that will be used for auto uploads; create a passwordless ssh key for it and store it somewhere safe; also store the GitHub password for the user somewhere safe
+</li> <li> Create a mirror cronjob that reads a list of repositories and mirrors them all to github using the user from the previous step
+</li> <li> Create or obtain replacement for our SVN post-commit email hook.      <a href="http://git.kernel.org/cgit/git/git.git/tree/contrib/hooks/multimail/git_multimail.py?id=HEAD" target="_top">Git-Multimail</a>, which was made by the Git developers, should be fine for this.
+</li></ol> 
+<p />
+<h3><a name="Per_project_Migration"></a> Per-project Migration </h3>
+<p /> <ol>
+<li> Schedule a switchover date with the owner
+</li> <li> Use subgit import to convert the repository (it's a lot nicer than git-svn)
+</li> <li> Add info about the repo to the gitolite config file (if using gitolite)
+</li> <li> Set up git hooks (copy them from another converted repository, or we may have a template)
+</li> <li> Update the backup cronjob
+</li> <li> Test the repo <ol>
+<li> Test viewing via web interface
+</li> <li> Test making changes (you should test this, and then the owner should as well) <ol>
+<li> Clone the repo
+</li> <li> Make a branch
+</li> <li> Make a change, commit it to the branch
+</li> <li> Push the branch
+</li></ol> 
+</li> <li> View the logs for the git repo, make sure they match the logs of the SVN repo
+</li> <li> If anything fails, either debug, <em>carefully recording all steps</em> or just nuke the git repo and try again
+</li></ol> 
+</li> <li> Make a file in the trunk of the SVN dir called <code>MOVED-TO-GIT</code> that contains the following text:<pre>
+The source code for this project is now contained in a Git repository located at:
+<b>repo url</b>
+Changes committed to SVN will be ignored.</pre>
+</li> <li> svn lock the project in SVN
+</li></ol> 
+<p />
+<h3><a name="Per_Project_Mirroring_to_GitHub"></a> Per-Project Mirroring to GitHub </h3>
+<p /> <ol>
+<li> Create an opensciencegrid/<em>PROJECT</em> github repo
+</li> <li> In the local (authoritative) git repo, do <code>git remote add --mirror github <a href="mailto&#58;git&#64;github&#46;com">git&#64;github.com</a>:opensciencegrid/<em>PROJECT</em>.git</code>
+</li> <li> Add the repo to the list of repositories managed by the mirror cronjob
+</li> <li> Add a "post-receive" hook to the local repo to push to github -- might be as simple as <pre>
+exec git push --quiet github &
+</pre>
+</li></ol> 
+<p />
+<h3><a name="Notes"></a> Notes </h3>
+<p />
+We will not have information on full project renames (since each project dir will become a separate repo).
+<p />
+We need to keep the old SVN repo around to get the full history.
+(The old repo will be locked to prevent further commits).
+<p />
+We may wish to omit dead projects or old names of renamed projects (vdt-build for example).
+<p />
+<h3><a name="Alternate_Architecture_Options"></a> Alternate Architecture Options </h3>
+These were the proposed alternatives to having the Git repos hosted on
+the UW's AFS.
+<p />
+<h4><a name="CHTC_controlled_Git_server_git_c"></a> CHTC-controlled Git server (git.chtc.wisc.edu) </h4>
+Server managed by the CHTC infrastructure team in Madison.
+Access via Gitolite. All team members will clone their repos over SSH to the
+Git server using an SSH public/private key pair.
+<p />
+<strong>Advantages</strong> <ul>
+<li> Git server is already set up, just need to add new repositories and public keys
+</li> <li> Web interface also already set up
+</li> <li> Precedent: CHTC infrastructure team does this
+</li></ul> 
+<p />
+<strong>Disadvantages</strong> <ul>
+<li> OSG Software team has no login access to that machine
+</li> <li> Dependent on a single machine
+</li> <li> CHTC infrastructure team already overloaded
+</li></ul> 
+<p />
+<h4><a name="OSG_Software_controlled_Git_serv"></a> OSG Software-controlled Git server (perhaps on osghost.chtc.wisc.edu?) </h4>
+Access via Gitolite. Users will need to use public keys and SSH.
+<p />
+<strong>Advantages</strong> <ul>
+<li> Full control over software, users, cronjobs, daemons, backups, everything
+</li></ul> 
+<p />
+<strong>Disadvantages</strong> <ul>
+<li> Full responsibility for software, users, cronjobs, daemons, backups, everything
+</li> <li> Dependent on a single machine
+</li> <li> Nothing set up
+</li></ul> 
+<p />
+<p />
+<h1><a name="Switching_RPM_area_native_redhat"></a> Switching RPM area (/native/redhat) to Git (on hold) </h1>
+Moved to <a href="/bin/view/SoftwareTeam/GitMigrationProposalArchive" class="twikiLink">GitMigrationProposalArchive</a>
+<p />
+<h1><a name="Comments"></a> Comments </h1>
+<form method="post" action="https://twiki.opensciencegrid.org/bin/save/SoftwareTeam/GitMigrationProposal" enctype="multipart/form-data" name="tableappend0" id="tableappend0">
+<p />
+<div class="commentPlugin commentPluginPromptBox">
+<table><tr valign="middle"><td><textarea  rows="3" cols="70" name="comment" wrap="soft" onfocus="if(this.value=='')this.value=''" onblur="if(this.value=='')this.value=''"></textarea></td><td><input  type="submit" value="Add comment" /></td></tr></table>
+</div><!--/commentPlugin-->
+<p />
+<input type="hidden" name="comment_action" value="save"  />
+<input type="hidden" name="comment_type" value="tableappend"  />
+<input type="hidden" name="comment_index" value="0"  /></form>
+<p />
+<!-- vim:ft=twiki:tw=72
+--></div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/InternalDocs" class="twikiLink">InternalDocs</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>GitMigrationProposal</span> <br />    
+Topic revision: r12 - 12 Feb 2016 - 00:20:34 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

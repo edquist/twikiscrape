@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> EnstoreJobPriorityAndQueueManagement &lt; Sandbox &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/Sandbox/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/Sandbox/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/Sandbox/EnstoreJobPriorityAndQueueManagement?_T=16 Feb 2017" type="application/x-wiki" title="edit EnstoreJobPriorityAndQueueManagement" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><meta name="robots" content="noindex,nofollow"> 
+<base href="https://twiki.opensciencegrid.org/bin/view/Sandbox/EnstoreJobPriorityAndQueueManagement"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> Users submit read and write jobs to encp (often through an interface, e.g., dCache). Encp sends a request for each job to an Enstore library manager for processing. The library manager receives these requests, stores them in a queue, assigns a priority to each one, and passes them to a mover for actual data transfer. A request&#8217;s priority determines when it will get processed relative to others in the queue, and its priority may change as circumstances change while it waits in the queue. There are four items that factor into determining priority: category, numerical value within the category, &#8220;Fair Share&#8221;, and ownership of resources by a group/experiment. 
+<p />
+<p />
+<h1><a name="Job_Priority_Categories"></a> Job Priority Categories </h1>
+There are two categories of job priority: normal and DAQ/Admin. The default priority is &#8220;normal&#8221;. DAQ/Admin priority, as its name implies, is reserved for high-priority jobs. 
+<p />
+DAQ/Admin priority is granted only to job requests that satisfy certain preconfigured conditions. Conditions, if set, filter on the request&#8217;s originating username, group, node, and so on. For example, conditions could be set to grant DAQ/Admin priority to all jobs submitted by user joe from node mynode1, by users george or kim from any node, and by any user from node myspecialnode; all other jobs get normal priority. 
+<p />
+Setting conditions for DAQ/Admin priority is an administrative function. 
+<p />
+Requests that get submitted and receive DAQ/Admin priority get moved to the head of the LM&#8217;s request queue. If there is more than one at a time, the other priority-related factors determine the order in which these requests get processed. Any normal priority transfer that is in progress is allowed to complete, but the system does not then process other normal priority requests in the queue that are waiting for the same volume. At the completion of the current transfer, the tape is replaced in the drive if necessary, then the (first) DAQ/Admin request gets processed. 
+<p />
+<p />
+<h1><a name="Numerical_Priority_Values"></a> Numerical Priority Values </h1>
+Within its priority category, each request is also assigned an initial numeric priority value. The numeric priority is set by default according to preconfigured conditions. It can be overridden on the command line using the encp options described in "<a href="/bin/view/Sandbox/EnstoreCopyingFilesWithEncp#EncpCommandOptions" class="twikiAnchorLink">Encp Command Options</a>" although we strongly recommend against doing this. The numeric priority may change while the request waits in the queue depending on: <ol>
+<li type="a"> the encp options used, 
+</li> <li type="a"> the elapsed time in the queue. 
+</li></ol> 
+<p />
+<h1><a name="Fair_Share_Resource_Allotment"></a> Fair Share Resource Allotment </h1>
+Enstore queue management has an algorithm called &#8220;Fair Share&#8221;, that helps to keep any one storage group (experiment or group) from monopolizing tape drives. 
+<p />
+When a mover which does not have a mounted tape asks the Library Manager for the next request, the Fair Share determines which storage groups currently have requests in progress (at a mover) and which ones don&#8217;t, then gives preference to requests associated with those that don&#8217;t. This helps ensure that there is a fair distribution of resources available to all groups currently using the system. 
+<p />
+<p />
+<h1><a name="Resource_Ownership"></a> Resource Ownership </h1>
+When an experiment or group purchases one or more tape drives, the drives go into the pool of Enstore resources, accessible by all users, with the recognition that the purchasing group has preferential access to this number of drives. The <a href="/bin/view/Sandbox/EnstoreJobPriorityAndQueueManagement#FairShareResourceAllotment" class="twikiCurrentTopicLink twikiAnchorLink">Fair Share configuration</a> gets modified to guarantee this access. The priorities of other requests in the queue may be perturbed when Enstore needs to free up one or more tape drives for jobs submitted by the purchasing group. 
+<p />
+In contrast to DAQ/Admin requests, these (normal priority) requests, identified by their storage group, must wait until a tape has dismounted in the normal way before being processed. A tape normally dismounts after all requests in the queue requiring that tape have completed. </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: Sandbox<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/Main/TWikiUsers" class="twikiLink">TWikiUsers</a> &gt; <a href="/bin/view/Main/ForrestChristian" class="twikiLink">ForrestChristian</a> &gt; <a href="/bin/view/Sandbox/ForrestChristianSandbox" class="twikiLink">ForrestChristianSandbox</a> &gt; <a href="/bin/view/Sandbox/EnstoreIntro" class="twikiLink">EnstoreIntro</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>EnstoreJobPriorityAndQueueManagement</span> <br />    
+Topic revision: r1 - 26 Sep 2006 - 23:13:53 - <span class="twikiNewLink">ForrestChristian<a href="/bin/edit/Sandbox/ForrestChristian?topicparent=Sandbox.EnstoreJobPriorityAndQueueManagement" rel="nofollow" title="ForrestChristian (this topic does not yet exist; you can create it)">?</a></span>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />

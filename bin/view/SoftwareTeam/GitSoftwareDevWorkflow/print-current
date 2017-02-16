@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en_US" lang="en_US">
+<head>
+<link rel="stylesheet" href="https://twiki.opensciencegrid.org/twiki/pub/TWiki/HeadlinesPlugin/style.css" type="text/css" media="all" />
+<title> GitSoftwareDevWorkflow &lt; SoftwareTeam &lt; TWiki    </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="shortcut icon" href="/twiki/pub/SoftwareTeam/WebPreferences/favicon.ico    " type="image/x-icon" />
+<link rel="alternate" href="https://twiki.opensciencegrid.org/bin/edit/SoftwareTeam/GitSoftwareDevWorkflow?_T=16 Feb 2017" type="application/x-wiki" title="edit GitSoftwareDevWorkflow" />
+<meta name="SCRIPTURLPATH" content="/bin" />
+<meta name="SCRIPTSUFFIX" content="" />
+<meta name="TEXT_JUMP" content="Jump" />
+<meta name="TEXT_SEARCH" content="Search" />
+<meta name="TEXT_NUM_TOPICS" content="Number of topics:" />
+<meta name="TEXT_MODIFY_SEARCH" content="Modify search" />
+<meta name="robots" content="noindex" /><link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/bin/view/SoftwareTeam/WebRss" />    
+<base href="https://twiki.opensciencegrid.org/bin/view/SoftwareTeam/GitSoftwareDevWorkflow"></base>
+<!--BEHAVIOURCONTRIB--><script type="text/javascript" src="/twiki/pub/TWiki/BehaviourContrib/behaviour.compressed.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikilib.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiWindow.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiEvent.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiHTML.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiCSS.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiForm.js"></script>
+<script type="text/javascript" src="/twiki/pub/TWiki/PatternSkin/pattern.js"></script><style type="text/css" media="all">
+@import url('/twiki/pub/TWiki/TWikiTemplates/base.css');
+</style><script type="text/javascript" src="/twiki/pub/TWiki/TWikiJavascripts/twikiStyles.js"></script><style type="text/css" media="all">
+
+
+</style>
+<style type="text/css" media="all">
+@import url("/twiki/pub/TWiki/TWikiNetSkin/layout.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/style.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/colors.css");
+@import url("/twiki/pub/TWiki/TWikiNetSkin/rounded_corners.css");
+</style>
+<style type="text/css" media="all">
+	/* Styles that are set using variables */
+	#patternLeftBar .patternWebIndicator,
+	.patternBookView .twikiTopRow {
+		background-color:#DDDDDD;
+	}
+	.patternBookView {
+		border-color:#DDDDDD;
+	}
+	.patternPreviewPage #patternMain {
+		/* uncomment to set the preview image */
+		/*background-image:url("/twiki/pub/TWiki/PreviewBackground/preview2bg.gif    ");*/
+	}
+	
+</style><style type="text/css" media="all">
+
+
+
+</style>
+<style type="text/css" media="all">
+	@import url("/twiki/pub/TWiki/TWikiNetSkin/print.css");
+</style><!--GOOGLEANALYTICSPLUGIN--><!-- Google Analytics script -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-69012-21']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</head>
+<body class="patternViewPage patternPrintPage">
+<a name="PageTop"></a>
+<div id="patternScreen">
+<div id="patternPageShadow">
+<div id="patternPage">
+<div id="patternOuter">
+<div id="patternFloatWrap">
+<div id="patternMain">
+<div id="patternMainContents">
+<div class="patternContent"><div class="patternTopic"> <h1><a name="Git_software_development_workflo"></a> Git software development workflow </h1>
+<p />
+<p />
+This document describes the development workflow for OSG software packages kept
+in GitHub. It is intended for people who wish to contribute to OSG software.
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Git_and_GitHub_basics"></a> Git and GitHub basics </span></h2>
+<p />
+<p />
+If you are unfamiliar with Git and GitHub, the GitHub website has a good
+series of tutorials at <a href="https://help.github.com/categories/bootcamp/" target="_top">https://help.github.com/categories/bootcamp/</a>
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Getting_shell_access_to_GitHub"></a> Getting shell access to GitHub </span></h2>
+<p />
+<p />
+There are multiple ways of authenticating to GitHub from the shell.  This
+section will cover using SSH keys.  This is no longer the method recommended by
+GitHub, but is easier to set up for someone with existing SSH experience.
+<p />
+The instructions here are derived from <a href="https://help.github.com/articles/generating-an-ssh-key/" target="_top">GitHub's own instructions on using SSH keys</a>.
+<p />
+<p />
+<h3><a name="Creating_a_new_SSH_key_optional"></a> Creating a new SSH key (optional but recommended) </h3>
+<p />
+If you already have an SSH keypair in your <code>~/.ssh</code> directory that you want to
+use for GitHub, you may skip this step.  It is more secure, however, to create
+a new keypair specifically for use with GitHub.
+<p />
+The instructions below will create an SSH public/private key pair with the
+private key stored in <code>~/.ssh/id_github</code> and public key stored in
+<code>~/.ssh/id_github.pub</code>.
+<p />
+<h4><a name="Generating_the_key"></a> Generating the key </h4>
+<p />
+Use <code>ssh-keygen</code> to generate the SSH keypair.  For <em>EMAIL_ADDRESS</em>,
+use the email address associated with your GitHub account.
+<p />
+<pre class="screen">ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_github -C <em>EMAIL_ADDRESS</em></pre>
+<p />
+<h4><a name="Configuring_SSH_to_use_the_key_f"></a> Configuring SSH to use the key for GitHub </h4>
+<p />
+Make sure SSH uses the new key by default to access GitHub.  Create or edit
+<code>~/.ssh/config</code> and append the following lines:
+<p />
+<pre class="file">
+Host github.com
+IdentityFile <em>YOUR_HOME_DIR/.ssh/id_github</em>
+</pre>
+<p />
+<h3><a name="Adding_the_SSH_public_key_to_Git"></a> Adding the SSH public key to GitHub </h3>
+<p />
+Using the GitHub web interface:
+<p /> <ol>
+<li> On the upper right of the screen, click on your profile picture
+</li> <li> In the menu that pops up, click "Settings"
+</li> <li> On the left-hand sidebar, click "SSH and GPG keys"
+</li> <li> In the top right of the "SSH keys" box, click "New SSH key"
+</li> <li> In the "Title" field of the dialog that pops up, enter a descriptive name for the key
+</li> <li> Open the public key file (e.g. <code>~/.ssh/id_github.pub</code> (don't forget the <code>.pub</code>)) in a text editor and copy its full contents to the clipboard
+</li> <li> In the "Key" field, paste the public key
+</li> <li> Below the "Key" field, click "Add SSH key"
+</li></ol> 
+<p />
+You should see your new key in the "SSH keys" list.
+<p />
+<h3><a name="Testing_that_shell_access_works"></a> Testing that shell access works </h3>
+<p />
+To verify you can authenticate to GitHub using SSH, SSH to <code>git@github.com</code>.
+You should see a message that 'you've successfully authenticated, but GitHub
+does not provide shell access.'
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Contribution_workflow"></a> Contribution workflow </span></h2>
+<p />
+<p />
+We use the standard GitHub <a href="https://help.github.com/articles/using-pull-requests/" target="_top">pull request</a> workflow for making contributions to OSG software.
+<p />
+If you've never contributed to this project on GitHub before, do the following
+steps first: <ol>
+<li> Using the GitHub web interface, <!-- or curl if you're Carl -->fork the repo you wish to contribute to.
+</li> <li> Make a clone of your forked repo on your local machine.<pre class="screen">
+git clone git@github.com:<em>USERNAME</em>/<em>PROJECT</em></pre> <dl>
+<dt> NOTE</dt><dd> If you get a "Permission denied" error, your public key may not be      set up with GitHub -- please see the "Getting shell access to GitHub"      section above.      <br />          If you get some other error, <a href="https://help.github.com/categories/ssh/" target="_top">the GitHub page on SSH</a> may contain      useful information on troubleshooting.
+</dd></dl> 
+</li></ol> 
+<p />
+Once you have your local repo, do the following: <ol>
+<li> Create a branch to hold changes that are related to the issue you are      working on. Give the branch a name that will remind you of its purpose,      such as <code>sw2345-pathchange</code>.<pre class="screen">
+git checkout -b <em>BRANCH</em></pre>
+</li> <li> Make your commits to this branch, then push the branch to your repo on GitHub.<pre class="screen">
+git push origin <em>BRANCH</em></pre>
+</li> <li> Select your branch in the GitHub web interface, then create a "pull      request" against the original repo. Add a good description of your change      into the message for the pull request. Enter a JIRA ticket number in the      message to automatically link the pull request to the JIRA ticket.
+</li> <li> Wait for your pull request to be reviewed by a software team member. <ul>
+<li> If the team member accepts your changes, they will merge your pull        request, and your changes will be incorporated upstream. You may then        delete the branch you created your pull request from.
+</li> <li> If your changes are rejected, then you may make additional changes to        the branch that your pull request is for. Once you push the changes        from your local repo to your GitHub repo, they will automatically be        added to the pull request.
+</li></ul> 
+</li></ol> 
+<p />
+<p />
+<h2 class="twikinetRoundedAttachments"><span class="twikinetHeader"><a name="Release_workflow"></a> Release workflow </span></h2>
+<p />
+This section is intended for OSG Software team members or the primary
+developers of a software project (i.e. those that make releases). Some of the
+steps require direct write access the GitHub repo for the project owned by
+<code>opensciencegrid</code>. (If you can approve pull requests, you have write access).
+<p />
+<!--
+Before you release, you need to make sure your local clone is in sync with the
+AFS backup of the GitHub repo at UW. This requires a UW CS login.
+<p /> <ol>
+<li> If you haven't already, add the UW repo as a "remote" to your repo:<pre class="screen">
+git remote add uw <em>USERNAME</em>@<em>MACHINE</em>:/p/condor/workspaces/vdt/git/repo/<em>PROJECT</em>.git</pre>      (where <em>USERNAME</em> is your UW CS username (e.g. "matyas"),      <em>MACHINE</em> is a machine you have access to (e.g.      "library.cs.wisc.edu"), and <em>PROJECT</em> is the name of the project      you are releasing (e.g. "osg-configure"))
+</li> <li> Fetch changes from the UW repo:<pre class="screen">
+git fetch uw</pre>
+</li> <li> Compare your branch you are releasing from (probably <code>master</code>) to its copy in the UW repo:<pre class="screen">
+git checkout master; git diff uw/master</pre>      There should be no differences.
+</li></ol> 
+-->
+A release of a software is created from your local clone of a software project.
+Before you release, you need to make sure your local clone is in sync with the
+GitHub repo owned by <code>opensciencegrid</code> (the OSG repo):
+<p /> <ol>
+<li> If you haven't already, add the OSG repo as a "remote" to your repo:<pre class="screen">
+git remote add upstream git@github.com:opensciencegrid/<em>PROJECT</em></pre>
+</li> <li> Fetch changes from the OSG repo:<pre class="screen">
+git fetch upstream</pre>
+</li> <li> Compare your branch you are releasing from (probably <code>master</code>) to its copy in the OSG repo:<pre class="screen">
+git checkout master; git diff upstream/master</pre>      There should be no differences.
+</li> <li> Once this is done, release the software as you usually do. This process      varies from one project to another, but often it involves running      <code>make upstream</code> or similar. Check your project's <code>README</code> file for      instructions.
+</li> <li> <strong>Test your software.</strong>
+</li> <li> Tag the commit that you made the release from. Git release tags are      conventionally called <code>v<em>VERSION</em></code>, where      <em>VERSION</em> is the version of the software you are releasing.      So if you're releasing version 1.3.0, you would create the tag <code>v1.3.0</code>.      <br />          <strong>Note:</strong> once a tag has been pushed to the OSG repo, it      should not be changed. Be sure the commit you want to tag is the final      one you made the release from. <ol>
+<li> Create the tag in your local repo:<pre class="screen">
+git tag <em>TAG</em></pre>
+</li> <li> Push the tag to your own GitHub repo:<pre class="screen">
+git push origin <em>TAG</em></pre>
+</li> <li> Push the tag to the OSG repo:<pre class="screen">
+git push upstream <em>TAG</em></pre>
+</li></ol> 
+</li></ol> </div><!-- /patternTopic-->
+<p />
+<p />
+</div><!-- /patternContent-->
+<hr />
+This topic: SoftwareTeam<span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span><a href="/bin/view/SoftwareTeam/WebHome" class="twikiCurrentWebHomeLink twikiLink">WebHome</a> &gt; <a href="/bin/view/SoftwareTeam/InternalDocs" class="twikiLink">InternalDocs</a><span class='twikiSeparator'>&nbsp;&gt;&nbsp;</span>GitSoftwareDevWorkflow</span> <br />    
+Topic revision: r5 - 02 Aug 2016 - 16:15:43 - <a href="/bin/view/Main/MatyasSelmeci" class="twikiLink">MatyasSelmeci</a>
+</div><!-- /patternMainContents-->
+</div><!-- /patternMain-->
+</div><!-- /patternFloatWrap-->
+<div class="clear">&nbsp;</div>
+</div><!-- /patternOuter--><div id="patternBottomBar"><div id="patternBottomBarContents"><div id="twikinetBadge"><a href="http://www.twiki.net/"><img src="https://twiki.opensciencegrid.org/twiki/pub/TWiki/TWikiNetSkin/twiki-badge-88x31.gif" alt="TWIKI.NET" width="88" height="31" border="0" /></a></div><!--/twikinetBadge--><div id="patternWebBottomBar"><p>
+<font size="-1">
+TWiki |
+<a href="https://ticket.grid.iu.edu/goc/twiki">Report Bugs</a> |
+<a href="https://twiki.grid.iu.edu/bin/view/Operations/IUPrivacyPolicy">Privacy Policy</a>
+</p>
+<p>
+<font size="-2">
+<span class="twikiRight"> <a href="http://twiki.org/"><img src="/twiki/pub/TWiki/TWikiLogos/T-logo-80x15.gif" alt="This site is powered by the TWiki collaboration platform" width="80" height="15" title="This site is powered by the TWiki collaboration platform" border="0" /></a></span>Copyright by the contributing authors. All material on this collaboration platform is the property of the contributing authors..
+</font>
+</p></div><!--/patternWebBottomBar--></div><!-- /patternBottomBarContents--></div><!-- /patternBottomBar-->
+</div><!-- /patternPage-->
+</div><!-- /patternPageShadow-->
+</div><!-- /patternScreen-->
+</body></html>
+<p />
